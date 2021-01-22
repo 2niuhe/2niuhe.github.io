@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="树莓派连接LCD1602做一个电子钟"/>
+    <meta property="og:url" content="../../../../../pages/2018/08/28/raspberrypi-lcd-clock/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/08/28/raspberrypi-lcd-clock/" />
+
+    <title>树莓派连接LCD1602做一个电子钟 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li class="active"><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/08/28/raspberrypi-lcd-clock/" rel="bookmark"
+             title="Permalink to 树莓派连接LCD1602做一个电子钟">树莓派连接LCD1602做一个电子钟</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/raspberry.html">Raspberry</a>
+
+    on 2018-08-28
+
+        |
+        tags:         <a href="../../../../../tag/shu-mei-pai.html">树莓派</a>
+
+
+        |
+        <a href="../../../../../pages/2018/08/28/raspberrypi-lcd-clock/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h3>安装LCD库</h3>
+<blockquote>
+<p>使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。</p>
+</blockquote>
+<p>通过源码安装：</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git
+
+<span class="nb">cd</span> ./Adafruit_Python_CharLCD
+sudo python setup.py install
+</code></pre></div>
+
+
+<h3>将树莓派和LCD1602连接</h3>
+<p>连接的图如下所示：
+<img alt="连线图" src="/img/LCD1602_link.jpg"></p>
+<h3>LCD电子钟程序</h3>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">gpio</span>
+<span class="c1">#to add the LCD library</span>
+<span class="kn">import</span> <span class="nn">Adafruit_CharLCD</span> <span class="k">as</span> <span class="nn">LCD</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="n">gpio</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">gpio</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+
+<span class="c1">#声明 LCD pins（对应BCM引脚）</span>
+<span class="n">lcd_rs</span> <span class="o">=</span> <span class="mi">17</span>
+<span class="n">lcd_en</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="n">lcd_d4</span> <span class="o">=</span> <span class="mi">27</span>
+<span class="n">lcd_d5</span> <span class="o">=</span> <span class="mi">22</span>
+<span class="n">lcd_d6</span> <span class="o">=</span> <span class="mi">23</span>
+<span class="n">lcd_d7</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">lcd_backlight</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">lcd_columns</span> <span class="o">=</span> <span class="mi">16</span> <span class="c1">#Lcd column</span>
+<span class="n">lcd_rows</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">#number of LCD rows</span>
+
+<span class="n">lcd</span> <span class="o">=</span> <span class="n">LCD</span><span class="o">.</span><span class="n">Adafruit_CharLCD</span><span class="p">(</span><span class="n">lcd_rs</span><span class="p">,</span> <span class="n">lcd_en</span><span class="p">,</span> \
+        <span class="n">lcd_d4</span><span class="p">,</span> <span class="n">lcd_d5</span><span class="p">,</span> <span class="n">lcd_d6</span><span class="p">,</span> <span class="n">lcd_d7</span><span class="p">,</span> <span class="n">lcd_columns</span><span class="p">,</span> <span class="n">lcd_rows</span><span class="p">,</span>\
+        <span class="n">lcd_backlight</span><span class="p">)</span>
+<span class="n">lcd</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">lcd</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;     CLOCK&#39;</span><span class="p">)</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">lcd</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">localtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="p">)[</span><span class="mi">4</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">localtime</span><span class="p">)</span>
+    <span class="n">lcd</span><span class="o">.</span><span class="n">message</span><span class="p">(</span><span class="n">localtime</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h3>效果图</h3>
+<p>显示的效果图如下，可以显示日期和时间，每秒钟刷新屏幕一次：
+<img alt="效果图" src="/img/LCD1602.jpg"></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/08/28/raspberrypi-lcd-clock/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

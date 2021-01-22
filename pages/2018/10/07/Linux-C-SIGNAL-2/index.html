@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Linux信号处理——发送信号"/>
+    <meta property="og:url" content="../../../../../pages/2018/10/07/Linux-C-SIGNAL-2/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/10/07/Linux-C-SIGNAL-2/" />
+
+    <title>Linux信号处理——发送信号 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li class="active"><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/10/07/Linux-C-SIGNAL-2/" rel="bookmark"
+             title="Permalink to Linux信号处理——发送信号">Linux信号处理——发送信号</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/linux.html">Linux</a>
+
+    on 2018-10-07
+
+        |
+        tags:         <a href="../../../../../tag/c.html">C</a>
+        <a href="../../../../../tag/linux.html">Linux</a>
+
+
+        |
+        <a href="../../../../../pages/2018/10/07/Linux-C-SIGNAL-2/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进程智能向属于同一个回话或同一个用户的进程发送信号。
+</p>
+</blockquote>
+<h3>发送信号</h3>
+<blockquote>
+<p>常用的函数原型如下
+</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">向进程发送信号</span>
+<span class="cm">    pid&gt;0 进程ID为pid的进程</span>
+<span class="cm">    pid=0 同一进程组的进程</span>
+<span class="cm">    pid&lt;0 &amp;&amp; pid!=-1 进程组ID为-pid的所有进程</span>
+<span class="cm">    pid=-1 除发送给进程自身外，还发送给所有进程ID&gt;1的进程</span>
+<span class="cm">成功返回0，否则-1</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">kill</span><span class="p">(</span><span class="kt">pid_t</span> <span class="n">pid</span><span class="p">,</span><span class="kt">int</span> <span class="n">signo</span><span class="p">);</span>
+<span class="cm">/*向进程本身发送信号，等价于kill(getpid(),sig),成功返回0，否则-1*/</span>
+<span class="kt">int</span> <span class="nf">raise</span><span class="p">(</span><span class="kt">int</span> <span class="n">signo</span><span class="p">);</span>
+<span class="cm">/*向进程发送SIGABORT信号,默认情况下进程会退出*/</span>
+<span class="kt">void</span> <span class="nf">abort</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="cm">/*</span>
+<span class="cm">向进程发送实时信号</span>
+<span class="cm">    pid 接收信号的进程ID，只能向一个进程发送信号</span>
+<span class="cm">    sig 指定即将发送的信号</span>
+<span class="cm">    val指定信号传递的参数</span>
+<span class="cm">成功返回0，否则-1</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">sigqueue</span><span class="p">(</span><span class="kt">pid_t</span> <span class="n">pid</span><span class="p">,</span><span class="kt">int</span> <span class="n">sig</span><span class="p">,</span><span class="k">const</span> <span class="k">union</span> <span class="n">sigval</span> <span class="n">val</span><span class="p">);</span>
+
+<span class="k">union</span> <span class="n">sigval</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sival_int</span><span class="p">;</span>      <span class="c1">//传送一个整形数</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">sival_ptr</span><span class="p">;</span>    <span class="c1">//传送任何数据结构的指针</span>
+<span class="p">};</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">si_signo</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">si_code</span><span class="p">;</span>
+    <span class="k">union</span> <span class="n">sigval</span> <span class="n">si_value</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">si_errno</span><span class="p">;</span>
+    <span class="kt">pid_t</span> <span class="n">si_pid</span><span class="p">;</span>
+    <span class="kt">uid_t</span> <span class="n">si_uid</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">si_addr</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">si_status</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">si_band</span><span class="p">;</span>
+<span class="p">}</span> <span class="kt">siginfo_t</span><span class="p">;</span>
+</code></pre></div>
+
+
+<p><strong>案例:使用sigqueue发送带参数的信号</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">SigHandler</span><span class="p">(</span><span class="kt">int</span> <span class="n">signo</span><span class="p">,</span><span class="kt">siginfo_t</span> <span class="o">*</span><span class="n">info</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span><span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">info</span><span class="o">-&gt;</span><span class="n">si_value</span><span class="p">.</span><span class="n">sival_ptr</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">sigaction</span> <span class="n">sigAct</span><span class="p">;</span>
+    <span class="kt">sigval_t</span> <span class="n">val</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">pMsg</span> <span class="o">=</span> <span class="s">&quot;i still believe&quot;</span><span class="p">;</span>
+
+    <span class="n">sigAct</span><span class="p">.</span><span class="n">sa_flags</span> <span class="o">=</span> <span class="n">SA_SIGINFO</span><span class="p">;</span>
+    <span class="n">sigAct</span><span class="p">.</span><span class="n">sa_sigaction</span><span class="o">=</span><span class="n">SigHandler</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">sigaction</span><span class="p">(</span><span class="n">SIGUSR1</span><span class="p">,</span><span class="o">&amp;</span><span class="n">sigAct</span><span class="p">,</span><span class="nb">NULL</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>   
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;fail set sig_handler&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">val</span><span class="p">.</span><span class="n">sival_ptr</span><span class="o">=</span><span class="n">pMsg</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">sigqueue</span><span class="p">(</span><span class="n">getpid</span><span class="p">(),</span><span class="n">SIGUSR1</span><span class="p">,</span><span class="n">val</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;fail send sigqueue&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<h3>sleep睡眠延时</h3>
+<blockquote>
+<p>可以使用sleep函数将程序延迟一段时间后继续执行，其实现机制是：</p>
+<ol>
+<li>调用alarm函数设置延迟时间</li>
+<li>调用pause函数挂起进程，等待系统发送SIGALARM信号，当SIGALARM信号到达进程时，进程被唤醒。
+</li>
+</ol>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">设置时间闹钟</span>
+<span class="cm">    seconds表示闹钟间隔时间，原有闹钟无效</span>
+<span class="cm">若调用alarm函数前，进程已经设置了闹钟，则返回上一个闹钟剩余时间，否则返回0</span>
+<span class="cm">*/</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">alarm</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">seconds</span><span class="p">);</span>
+<span class="c1">//等待信号,进程收到信号后，执行信号处理函数，pause函数返回，原进程继续执行</span>
+<span class="kt">void</span> <span class="nf">pause</span><span class="p">();</span>
+</code></pre></div>
+
+
+<p><strong>案例：实现sleep函数</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">alarmhandler</span><span class="p">(</span><span class="kt">int</span> <span class="n">signum</span><span class="p">)</span>
+<span class="p">{</span>   
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Alarm received from kernel</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">mysleep</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">time</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;about to sleep for %d seconds</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">time</span><span class="p">);</span>
+    <span class="n">signal</span><span class="p">(</span><span class="n">SIGALRM</span><span class="p">,</span><span class="n">alarmhandler</span><span class="p">);</span>
+    <span class="n">alarm</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+    <span class="n">pause</span><span class="p">();</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;continue from alarm </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;start run the program.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="n">mysleep</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;i am awake,haha</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<h3>间隔计时器</h3>
+<blockquote>
+<p>alarm函数计时单位是秒，当延迟时间到来，只能触发一次。不能满足需要高精度时间、有周期性定时需求的需求。为此，引入间隔计时器，其原理是：</p>
+<p>当等待时间来到，内核向处于等待状态的进程发送信号，同时，再次设置时间间隔。间隔计时器属于面向进程的计时器。
+</p>
+</blockquote>
+<p><strong>进程运行时间</strong></p>
+<blockquote>
+<p>通常，LInux系统最小时钟间隔是10ms，意味着每秒产生100个时钟中断。进程以时间片的形式分享CPU，进程的执行有两种模式：用户态和内核态。当进程执行的是用户地址空间的代码，称进程运行在用户态；当进程进入系统调用或硬件中断，称进程运行在内核态。此外，进程还有休眠态，即将CPU交给其他进程。所以进程并非时刻都在运行，而是在用户态、内核态、休眠态之间切换。</p>
+<p>由此内核提供三种计时器：</p>
+<ul>
+<li>真实时间    用户态+内核态+休眠态时间</li>
+<li>虚拟时间    用户态时间</li>
+<li>实用时间    用户态+内核态时间
+</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">获得当前进程中指定类型间隔计时器的值</span>
+<span class="cm">which 计时器类型</span>
+<span class="cm">    ITIMER_REAL     真实时间，经过指定时间，内核发送SIGALRM限号</span>
+<span class="cm">    ITIMER_VIRTUAL  用户态时间，经过指定时间，内核发送SIGVTALRM信号</span>
+<span class="cm">    ITIMER_PROF     实用时间，经过指定时间，内核发送SIGPRT信号</span>
+<span class="cm">value 存储获得的间隔计时器的值</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">getitimer</span><span class="p">(</span><span class="kt">int</span> <span class="n">which</span><span class="p">,</span><span class="k">struct</span> <span class="n">itmerval</span> <span class="o">*</span><span class="n">value</span><span class="p">);</span>
+
+<span class="k">struct</span> <span class="n">itimerval</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">it_interval</span><span class="p">;</span> <span class="c1">//下一个值</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">it_value</span>     <span class="c1">//当前值</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">timeval</span>
+<span class="p">{</span>
+    <span class="kt">long</span> <span class="n">tv_sec</span><span class="p">;</span>    <span class="c1">//秒</span>
+    <span class="kt">long</span> <span class="n">tv_usec</span><span class="p">;</span>   <span class="c1">//微秒</span>
+<span class="p">};</span>
+<span class="cm">/*</span>
+<span class="cm">设置间隔计时器</span>
+<span class="cm">which 指定定时器类型</span>
+<span class="cm">newval指向被设置值</span>
+<span class="cm">oldval指向被替换设置值</span>
+<span class="cm">成功返回0，否则-1</span>
+<span class="cm">若oldval不为NULL，之前计时器的值将被复制到oldval</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">setitimer</span><span class="p">(</span><span class="kt">int</span> <span class="n">which</span><span class="p">,</span><span class="k">const</span> <span class="k">struct</span> <span class="n">itimerval</span> <span class="o">*</span><span class="n">newval</span><span class="p">,</span><span class="k">struct</span> <span class="n">itimerval</span> <span class="o">*</span><span class="n">oldval</span><span class="p">);</span>
+</code></pre></div>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/10/07/Linux-C-SIGNAL-2/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

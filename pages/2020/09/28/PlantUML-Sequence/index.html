@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="PlantUML画时序图"/>
+    <meta property="og:url" content="../../../../../pages/2020/09/28/PlantUML-Sequence/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/09/28/PlantUML-Sequence/" />
+
+    <title>PlantUML画时序图 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li class="active"><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/09/28/PlantUML-Sequence/" rel="bookmark"
+             title="Permalink to PlantUML画时序图">PlantUML画时序图</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/others.html">Others</a>
+
+    on 2020-09-28
+
+        |
+        tags:         <a href="../../../../../tag/plantuml.html">PlantUML</a>
+
+
+        |
+        <a href="../../../../../pages/2020/09/28/PlantUML-Sequence/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>本文主要介绍PlantUML绘图环境的搭建以及时序图的绘制，主要以Linux平台为例。</p>
+</blockquote>
+<h3>安装</h3>
+<blockquote>
+<p>若安装时序图和活动图以外的图形，需要安装graphviz</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo apt install graphviz 
+</code></pre></div>
+
+
+<blockquote>
+<p>VScode安装插件</p>
+<ul>
+<li>PlantUML</li>
+<li>Markdown Preview Enhanced</li>
+</ul>
+<p>插件支持的文件名后缀是：.wsd, .pu, .puml, .plantuml, .iuml</p>
+<p>编辑文件完成后，按快捷键<code>ALT+D</code>预览</p>
+<p><code>Ctrl+Shift+p</code>可以选择导出图片</p>
+<p>需要java</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo apt install default-jre
+</code></pre></div>
+
+
+<p><strong>浏览器插件支持PlantUML</strong></p>
+<blockquote>
+<p>PlantUML Viewer插件可以打开UML文本并预览</p>
+</blockquote>
+<h3>时序图示例</h3>
+<blockquote>
+<p>你可以用<code>-&gt;</code>来绘制参与者之间传递的消息， 而不必显式地声明参与者。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">startuml</span>
+<span class="err">用户</span> <span class="o">-&gt;</span> <span class="err">认证中心</span><span class="o">:</span> <span class="err">登录操作</span>
+<span class="err">认证中心</span> <span class="o">-&gt;</span> <span class="err">缓存</span><span class="o">:</span> <span class="err">存放</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">token</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="n">token</span><span class="p">)</span><span class="n">token</span>
+
+<span class="err">用户</span> <span class="o">&lt;-</span> <span class="err">认证中心</span> <span class="o">:</span> <span class="err">认证成功返回</span><span class="n">token</span>
+<span class="err">用户</span> <span class="o">-&gt;</span> <span class="err">认证中心</span><span class="o">:</span> <span class="err">下次访问头部携带</span><span class="n">token认证</span>
+<span class="err">认证中心</span> <span class="o">&lt;-</span> <span class="err">缓存</span><span class="o">:</span> <span class="n">key</span><span class="o">=</span><span class="n">token</span><span class="o">+</span><span class="n">ip获取token</span>
+<span class="err">其他服务</span> <span class="o">&lt;-</span> <span class="err">认证中心</span><span class="o">:</span> <span class="err">存在且校验成功则跳转到用户请求的其他服务</span>
+<span class="err">其他服务</span> <span class="o">-&gt;</span> <span class="err">用户</span><span class="o">:</span> <span class="err">信息</span>
+<span class="p">@</span><span class="n">enduml</span>
+</code></pre></div>
+
+
+<p><img alt="test" src="/img/test.png"></p>
+<blockquote>
+<p>也可以通过关键字声明参与者</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">startuml</span>
+<span class="n">actor</span> <span class="n">Foo1</span>
+<span class="n">boundary</span> <span class="n">Foo2</span>
+<span class="n">control</span> <span class="n">Foo3</span>
+<span class="n">entity</span> <span class="n">Foo4</span>
+<span class="n">database</span> <span class="n">Foo5</span>
+<span class="n">collections</span> <span class="n">Foo6</span>
+<span class="n">Foo1</span> <span class="o">-&gt;</span> <span class="nl">Foo2</span> <span class="p">:</span> <span class="n">To</span> <span class="n">boundary</span>
+<span class="n">Foo1</span> <span class="o">-&gt;</span> <span class="nl">Foo3</span> <span class="p">:</span> <span class="n">To</span> <span class="n">control</span>
+<span class="n">Foo1</span> <span class="o">-&gt;</span> <span class="nl">Foo4</span> <span class="p">:</span> <span class="n">To</span> <span class="n">entity</span>
+<span class="n">Foo1</span> <span class="o">-&gt;</span> <span class="nl">Foo5</span> <span class="p">:</span> <span class="n">To</span> <span class="n">database</span>
+<span class="n">Foo1</span> <span class="o">-&gt;</span> <span class="nl">Foo6</span> <span class="p">:</span> <span class="n">To</span> <span class="n">collections</span>
+
+<span class="p">@</span><span class="n">enduml</span>
+</code></pre></div>
+
+
+<p><img alt="test" src="/img/test-1601137819953.png"></p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">startuml</span>
+<span class="nl">title</span><span class="p">:</span> <span class="err">序列图</span><span class="n">sequence</span><span class="p">(</span><span class="err">示例</span><span class="p">)</span>
+<span class="n">participant</span> <span class="n">A</span>
+<span class="n">participant</span> <span class="n">B</span>
+<span class="n">participant</span> <span class="n">C</span>
+<span class="n">participant</span> <span class="n">D</span>
+<span class="n">participant</span> <span class="n">E</span>
+
+<span class="n">note</span> <span class="n">left</span> <span class="n">of</span> <span class="nl">A</span><span class="p">:</span> <span class="n">A左侧说明</span>
+<span class="n">note</span> <span class="n">over</span> <span class="nl">D</span><span class="p">:</span> <span class="err">覆盖</span><span class="n">D的说明</span>
+<span class="n">note</span> <span class="n">right</span> <span class="n">of</span> <span class="nl">F</span><span class="p">:</span> <span class="n">F右侧说明</span>
+
+<span class="n">A</span> <span class="o">-&gt;</span><span class="n">x</span> <span class="nl">B</span><span class="p">:</span> <span class="err">丢失的消息</span>
+<span class="n">B</span> <span class="o">-&gt;</span> <span class="nl">C</span><span class="p">:</span> <span class="err">实线箭头</span>
+<span class="n">C</span> <span class="o">-&gt;&gt;</span> <span class="nl">D</span><span class="p">:</span> <span class="err">实线细箭头</span>
+<span class="n">D</span> <span class="o">-</span><span class="err">\</span> <span class="nl">E</span><span class="p">:</span> <span class="err">实线半箭头</span>
+<span class="n">E</span> <span class="o">-</span><span class="err">\\</span> <span class="nl">F</span><span class="p">:</span> <span class="err">实线半箭头</span>
+<span class="n">F</span> <span class="o">--/</span> <span class="nl">E</span><span class="p">:</span> <span class="err">虚线半箭头</span>
+<span class="n">E</span> <span class="o">--&gt;</span><span class="n">o</span> <span class="nl">D</span><span class="p">:</span> <span class="err">虚线箭头加圈</span>
+<span class="n">D</span> <span class="o">--</span><span class="err">\</span><span class="n">o</span> <span class="nl">C</span><span class="p">:</span> <span class="err">虚线半箭头加圈</span>
+<span class="n">C</span> <span class="o">&lt;--&gt;</span> <span class="nl">B</span><span class="p">:</span> <span class="err">实线双向箭头</span>
+<span class="n">A</span> <span class="o">--&gt;</span> <span class="nl">A</span><span class="p">:</span> <span class="err">自己到自己</span>
+<span class="p">@</span><span class="n">enduml</span>
+</code></pre></div>
+
+
+<p><img alt="test" src="/img/test-1601138063784.png"></p>
+<h3>参考</h3>
+<p><a href="https://plantuml.com/zh/">PlantUML官网</a></p>
+<p><a href="https://chrome.google.com/webstore/search/plantuml?hl=zh-CN">浏览器插件</a></p>
+<p><a href="https://plantuml.com/zh/sequence-diagram">时序图示例</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/09/28/PlantUML-Sequence/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="树莓派3启用UART并连接GPS传感器"/>
+    <meta property="og:url" content="../../../../../pages/2018/08/25/activate-serial-uart/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/08/25/activate-serial-uart/" />
+
+    <title>树莓派3启用UART并连接GPS传感器 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li class="active"><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/08/25/activate-serial-uart/" rel="bookmark"
+             title="Permalink to 树莓派3启用UART并连接GPS传感器">树莓派3启用UART并连接GPS传感器</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/raspberry.html">Raspberry</a>
+
+    on 2018-08-25
+
+        |
+        tags:         <a href="../../../../../tag/shu-mei-pai.html">树莓派</a>
+
+
+        |
+        <a href="../../../../../pages/2018/08/25/activate-serial-uart/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>在树莓派3B+里启用串口，并通过UART读取GPS模块的数据帧。</p>
+</blockquote>
+<h3>树莓派3启用UART</h3>
+<h5>先更新系统</h5>
+<div class="highlight"><pre><span></span><code><span class="err">sudo apt-get update</span>
+<span class="err">sudo apt-get upgrade</span>
+<span class="err">sudo raspi-config</span>
+</code></pre></div>
+
+
+<p>在raspi-config中设置：</p>
+<blockquote>
+<ul>
+<li>disable login shell over serial</li>
+<li>enable serial hardware port</li>
+</ul>
+</blockquote>
+<h5>然后重启</h5>
+<div class="highlight"><pre><span></span><code>sudo reboot
+</code></pre></div>
+
+
+<h5>编辑配置文件</h5>
+<div class="highlight"><pre><span></span><code>sudo nano /boot/config.txt
+</code></pre></div>
+
+
+<p>在最后一段加上：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">dtparam</span><span class="o">=</span><span class="nv">spi</span><span class="o">=</span>on
+<span class="nv">dtoverlay</span><span class="o">=</span>pi3-disable-bt
+<span class="nv">core_freq</span><span class="o">=</span><span class="m">250</span>
+<span class="nv">enable_uart</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">force_turbo</span><span class="o">=</span><span class="m">1</span>
+</code></pre></div>
+
+
+<p>然后编辑cmdline.txt</p>
+<div class="highlight"><pre><span></span><code>sudo cp boot/cmdline.txt boot/cmdline_backup.txt
+sudo nano /boot.cmdline.txt
+</code></pre></div>
+
+
+<p>将cmdline.txt的内容替换为：
+<code>dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles</code></p>
+<h5>禁用树莓派Serial Getty服务</h5>
+<div class="highlight"><pre><span></span><code>sudo systemctl stop serial-getty@ttyS0.service
+sudo systemctl disable serial-getty@ttyS0.service
+</code></pre></div>
+
+
+<p>重启系统</p>
+<div class="highlight"><pre><span></span><code>sudo reboot
+</code></pre></div>
+
+
+<h5>激活ttyAMAO</h5>
+<p>上一步我们禁用了ttyS0,现在我们启用ttyAMA0.</p>
+<div class="highlight"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> serial-getty@ttyAMA0.service
+</code></pre></div>
+
+
+<p>好了到了现在，我们已经启用了树莓派的串口，并可以通过/dev/ttyAMA0来访问串口设备。</p>
+<h3>树莓派的串口引脚</h3>
+<p>树莓派的引脚定义图如下所示：
+<img alt="树莓派引脚定义" src="/img/树莓派引脚定义.jpg"></p>
+<p>UART的收发引脚分别为：</p>
+<blockquote>
+<ul>
+<li>Tx ——GPIO14（pin8)</li>
+<li>Rx ——GPIO15（pin10)</li>
+</ul>
+</blockquote>
+<h3>连接串口设备并测试</h3>
+<p>我们使用GPS串口设备进行测试，GPS模块有如下5个引脚：</p>
+<blockquote>
+<ul>
+<li>VCC</li>
+<li>GND</li>
+<li>TX</li>
+<li>RX</li>
+<li>PPS</li>
+</ul>
+</blockquote>
+<p>GPS模块和树莓派连接方式如下：</p>
+<blockquote>
+<ul>
+<li>VCC ——pin01</li>
+<li>GND——pin06</li>
+<li>TX——pin10</li>
+</ul>
+<p>其他引脚可以不连接。</p>
+</blockquote>
+<p>使用cat或者minicom调试GPS串口：</p>
+<div class="highlight"><pre><span></span><code>cat /dev/ttyAMA0
+<span class="c1">#或者</span>
+minicom -D /dev/ttyAMA0 -b <span class="m">9600</span>
+</code></pre></div>
+
+
+<p>能够读取到类似下边的串口输出：</p>
+<div class="highlight"><pre><span></span><code><span class="err">$</span><span class="n">GPTXT</span><span class="p">,</span><span class="mi">01</span><span class="p">,</span><span class="mi">01</span><span class="p">,</span><span class="mi">01</span><span class="p">,</span><span class="n">ANTENNA</span> <span class="n">OK</span><span class="o">*</span><span class="mi">35</span>
+
+<span class="err">$</span><span class="n">GNGGA</span><span class="p">,</span><span class="mi">115810</span><span class="p">.</span><span class="mi">475</span><span class="p">,,,,,</span><span class="mi">0</span><span class="p">,</span><span class="mi">00</span><span class="p">,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="p">,,,,,,</span><span class="o">*</span><span class="mi">70</span>
+
+<span class="err">$</span><span class="n">GNGLL</span><span class="p">,,,,,</span><span class="mi">115810</span><span class="p">.</span><span class="mi">475</span><span class="p">,</span><span class="n">V</span><span class="p">,</span><span class="n">M</span><span class="o">*</span><span class="mi">6</span><span class="n">D</span>
+
+<span class="err">$</span><span class="n">GPGSA</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="mi">1</span><span class="p">,,,,,,,,,,,,,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="o">*</span><span class="mi">02</span>
+
+<span class="err">$</span><span class="n">BDGSA</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="mi">1</span><span class="p">,,,,,,,,,,,,,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="p">.</span><span class="mi">5</span><span class="o">*</span><span class="mi">13</span>
+
+<span class="err">$</span><span class="n">GPGSV</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">09</span><span class="p">,</span><span class="mi">05</span><span class="p">,</span><span class="mi">05</span><span class="p">,</span><span class="mi">121</span><span class="p">,,</span><span class="mi">10</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">314</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">138</span><span class="p">,,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">058</span><span class="p">,</span><span class="mi">16</span><span class="o">*</span><span class="mi">73</span>
+
+<span class="err">$</span><span class="n">GPGSV</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">09</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">49</span><span class="p">,</span><span class="mi">043</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">53</span><span class="p">,</span><span class="mi">321</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">249</span><span class="p">,,</span><span class="mi">24</span><span class="p">,</span><span class="mi">77</span><span class="p">,</span><span class="mi">090</span><span class="p">,</span><span class="o">*</span><span class="mi">77</span>
+
+<span class="err">$</span><span class="n">GPGSV</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">09</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">265</span><span class="p">,</span><span class="o">*</span><span class="mi">40</span>
+<span class="err">​</span><span class="o">```</span>
+</code></pre></div>
+
+
+<h3>参考</h3>
+<blockquote>
+<ul>
+<li><a href="https://www.raspberrypi.org/documentation/configuration/uart.md">树莓派UART文档</a></li>
+<li><a href="https://circuitdigest.com/microcontroller-projects/raspberry-pi-3-gps-module-interfacing">Raspberry Pi GPS Module Interfacing Tutorial</a></li>
+</ul>
+</blockquote>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/08/25/activate-serial-uart/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

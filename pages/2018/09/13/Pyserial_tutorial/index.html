@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Pyserial快速上手"/>
+    <meta property="og:url" content="../../../../../pages/2018/09/13/Pyserial_tutorial/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/09/13/Pyserial_tutorial/" />
+
+    <title>Pyserial快速上手 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li class="active"><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/09/13/Pyserial_tutorial/" rel="bookmark"
+             title="Permalink to Pyserial快速上手">Pyserial快速上手</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/raspberry.html">Raspberry</a>
+
+    on 2018-09-13
+
+        |
+        tags:         <a href="../../../../../tag/chuan-gan-qi.html">传感器</a>
+        <a href="../../../../../tag/python.html">python</a>
+
+
+        |
+        <a href="../../../../../pages/2018/09/13/Pyserial_tutorial/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。
+而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍python的串口读写模块Pyserial</p>
+</blockquote>
+<h3>安装</h3>
+<div class="highlight"><pre><span></span><code>sudo pip install pyserial
+</code></pre></div>
+
+
+<h3>使用</h3>
+<h4>确定串口设备名</h4>
+<blockquote>
+<p>Linux下把串口设备抽象成了文件，通常放在<code>/dev/</code>目录下，先找出串口设备的名称。</p>
+</blockquote>
+<ul>
+<li>断开串口设备的连接，执行</li>
+</ul>
+<div class="highlight"><pre><span></span><code>ls /dev/ &gt; /tmp/old.txt
+</code></pre></div>
+
+
+<ul>
+<li>将串口设备连接到计算机，执行</li>
+</ul>
+<div class="highlight"><pre><span></span><code>ls /dev/ &gt; /tmp/new.txt
+</code></pre></div>
+
+
+<p>最后，比较old.txt和new.txt，new.txt中多出的设备名就是我们的串口设备</p>
+<div class="highlight"><pre><span></span><code>diff /tmp/old.txt /tmp/new.txt
+</code></pre></div>
+
+
+<h4>例程</h4>
+<blockquote>
+<p>以下是我读取超声波测距传感器的例程，传感器返回串口数据,每一帧数据的帧头是0xFF,其后的2byte数据是距离值。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">with</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="s1">&#39;/dev/ttyUSB0&#39;</span><span class="p">,</span><span class="mi">9600</span><span class="p">,</span><span class="n">stopbits</span><span class="o">=</span><span class="n">serial</span><span class="o">.</span><span class="n">STOPBITS_ONE</span><span class="p">,</span><span class="n">bytesize</span><span class="o">=</span><span class="n">serial</span><span class="o">.</span><span class="n">EIGHTBITS</span><span class="p">)</span> <span class="k">as</span> <span class="n">ser</span><span class="p">:</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">head</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFF</span><span class="s1">&#39;</span><span class="p">:</span>
+           <span class="n">distance</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+           <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;m&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h4>常用方法</h4>
+<blockquote>
+<p>在创建串口对象后，即<code>ser = serial.Serial('/dev/ttyUSB0')</code>，可以操作串口读写。</p>
+</blockquote>
+<ul>
+<li>ser.read(size)</li>
+<li>ser.readline(size)</li>
+<li>ser.write(str_data)</li>
+<li>ser.close()</li>
+</ul>
+<p>具体使用参见官方文档API</p>
+<h3>参考</h3>
+<p><a href="https://pyserial.readthedocs.io/en/latest/pyserial_api.html">API参考</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/09/13/Pyserial_tutorial/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

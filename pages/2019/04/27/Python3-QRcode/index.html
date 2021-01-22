@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Python3操作二维码图片"/>
+    <meta property="og:url" content="../../../../../pages/2019/04/27/Python3-QRcode/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2019/04/27/Python3-QRcode/" />
+
+    <title>Python3操作二维码图片 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li class="active"><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2019/04/27/Python3-QRcode/" rel="bookmark"
+             title="Permalink to Python3操作二维码图片">Python3操作二维码图片</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/python.html">Python</a>
+
+    on 2019-04-27
+
+        |
+        tags:         <a href="../../../../../tag/python.html">python</a>
+
+
+        |
+        <a href="../../../../../pages/2019/04/27/Python3-QRcode/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <p><strong>python3中如何对二维码QRcode进行编码解码</strong></p>
+<p>通常对于二维码，我们需要进行两种操作：</p>
+<ul>
+<li>将二维码图片扫描后解析成字符串</li>
+<li>将字符串编码生成二维码图片</li>
+</ul>
+<p>这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在window平台上的安装极其繁琐，有很多坑。</p>
+<p>所以想通过python3处理二维码的过程中，查了很多资料。目前比较好的解决办法如下：</p>
+<h3>用<a href="https://github.com/NaturalHistoryMuseum/pyzbar/">pyzbar</a>代替zbar解析二维码</h3>
+<p>安装：</p>
+<div class="highlight"><pre><span></span><code>pip install pyzbar
+</code></pre></div>
+
+
+<blockquote>
+<p>这是可能的，因为pyzbar是一个围绕zbar库的基于ctypes的包装器，它包含在dll和Windows Python的轮子中。</p>
+</blockquote>
+<p><strong>使用</strong>：</p>
+<h5>网络上二维码图片解析</h5>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">array</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">pyzbar.pyzbar</span> <span class="kn">import</span> <span class="n">decode</span>
+
+
+<span class="c1"># decode_result的格式是[Decoded(data=&#39;****&#39;,……)]，列表里包含一个nametuple</span>
+<span class="k">def</span> <span class="nf">decode_qrcode</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">decode_result</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span><span class="p">)</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">decode_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h5>本地二维码图片解析</h5>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">pyzbar.pyzbar</span> <span class="kn">import</span> <span class="n">decode</span>
+
+
+<span class="k">def</span> <span class="nf">decode_qrcode</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">decode_result</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">decode_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>更详细用法参见<a href="https://pypi.org/project/pyzbar/">release页面</a></p>
+<h3>下载zbar.exe文件并安装，通过系统命令行调用来解码</h3>
+<p>下载地址：<a href="https://versaweb.dl.sourceforge.net/project/zbar/zbar/0.10/zbar-0.10-setup.exe">zbar-0.10-setup.exe</a></p>
+<p>说明：</p>
+<p><img alt="zbar说明" src="/img/zbar说明.jpg"></p>
+<p>使用：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;C:\zbarimg.exe -d d:\Winapps\Zbar\Examples\barcode.png&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h3>Linux平台上<a href="https://launchpad.net/qr-tools">qrtools</a>解码</h3>
+<p><em>注：这个方法我没用过。</em></p>
+<p>安装：</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install python-qrtools
+</code></pre></div>
+
+
+<p>使用：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">qrtools</span>
+<span class="n">qr</span> <span class="o">=</span> <span class="n">qrtools</span><span class="o">.</span><span class="n">QR</span><span class="p">()</span>
+<span class="n">qr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;horn.png&quot;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="n">qr</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div>
+
+
+<h3>用PyQRCode来生成二维码</h3>
+<p>安装：</p>
+<div class="highlight"><pre><span></span><code>pip install pyqrcode
+</code></pre></div>
+
+
+<p>用法：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pyqrcode</span>
+<span class="n">url</span> <span class="o">=</span> <span class="n">pyqrcode</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;http://uca.edu&#39;</span><span class="p">)</span>
+<span class="n">url</span><span class="o">.</span><span class="n">svg</span><span class="p">(</span><span class="s1">&#39;uca-url.svg&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>说明：
+pyqrcode具有完善的帮助文档和强大的功能，可以快速生产二维码图片,细节参考：</p>
+<ul>
+<li><a href="https://pypi.org/project/PyQRCode/">Release页面</a></li>
+<li><a href="https://pythonhosted.org/PyQRCode/index.html">帮助文档</a></li>
+</ul>
+<h3>其他值得关注的内容</h3>
+<p><a href="https://github.com/ewino/qreader">qreader</a>是一个正在开发中的项目，使用纯Python编写的二维码解析库，不依赖zbar。感兴趣的可以去提交PR。</p>
+<h3>免费的二维码编码解码API接口</h3>
+<h4><a href="http://api.qrserver.com/">http://api.qrserver.com/</a></h4>
+<blockquote>
+<p>Send a GET request of following form to our system to decode a QR code graphic (=to read a QR code from the web):
+http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-to-qrcode-image-file]</p>
+</blockquote>
+<h4><a href="http://www.7xiwang.com/Tools/Index">http://www.7xiwang.com/Tools/Index</a></h4>
+<div class="highlight"><pre><span></span><code><span class="err">解码</span><span class="n">api</span><span class="err">：</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="p">.</span><span class="mi">7</span><span class="n">xiwang</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">WebService</span><span class="o">/</span><span class="n">QRCodeDecode</span>
+
+<span class="n">api参数</span><span class="err">：</span><span class="n">base64img</span>
+
+<span class="n">api请求类型</span><span class="err">：</span><span class="n">HttpPost</span>
+
+<span class="err">参数数据格式（</span><span class="n">JSON</span><span class="err">）：{</span><span class="ss">&quot;base64img&quot;</span><span class="p">:</span><span class="ss">&quot;&quot;</span><span class="err">}</span>
+
+<span class="n">api返回数据格式</span><span class="err">（</span><span class="n">JSON</span><span class="err">）：</span>
+
+<span class="err">请求成功：{</span><span class="ss">&quot;status&quot;</span><span class="p">:</span><span class="ss">&quot;1&quot;</span><span class="p">,</span><span class="ss">&quot;text&quot;</span><span class="p">:</span><span class="ss">&quot;&quot;</span><span class="err">}</span>
+<span class="err">请求失败：{</span><span class="ss">&quot;status&quot;</span><span class="p">:</span><span class="ss">&quot;0&quot;</span><span class="p">,</span><span class="ss">&quot;Msg&quot;</span><span class="p">:</span><span class="ss">&quot;错误信息&quot;</span><span class="err">}</span>
+</code></pre></div>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2019/04/27/Python3-QRcode/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="创建虚拟机"/>
+    <meta property="og:url" content="../../../../../pages/2020/10/31/Create-Instance/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/10/31/Create-Instance/" />
+
+    <title>创建虚拟机 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li class="active"><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/10/31/Create-Instance/" rel="bookmark"
+             title="Permalink to 创建虚拟机">创建虚拟机</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/openstack.html">Openstack</a>
+
+    on 2020-10-31
+
+        |
+        tags:         <a href="../../../../../tag/nova.html">Nova</a>
+
+
+        |
+        <a href="../../../../../pages/2020/10/31/Create-Instance/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h3>创建虚拟机</h3>
+<p><img alt="img" src="img/31555782_1550044632AC7C.png"></p>
+<p>1、界面或命令行通过RESTful API向keystone获取认证信息。</p>
+<p>2、keystone通过用户请求认证信息，并生成auth-token返回给对应的认证请求。</p>
+<p>3、界面或命令行通过RESTful API向nova-api发送一个boot instance的请求（携带auth-token）。</p>
+<p>4、nova-api接受请求后向keystone发送认证请求，查看token是否为有效用户和token。</p>
+<p>5、keystone验证token是否有效，如有效则返回有效的认证和对应的角色（注：有些操作需要有角色权限才能操作）。</p>
+<p>6、通过认证后nova-api和数据库通讯。</p>
+<p>7、初始化新建虚拟机的数据库记录。</p>
+<p>8、nova-api通过rpc.call向nova-scheduler请求是否有创建虚拟机的资源(Host ID)。</p>
+<p>9、nova-scheduler进程侦听消息队列，获取nova-api的请求。</p>
+<p>10、nova-scheduler通过查询nova数据库中计算资源的情况，并通过调度算法计算符合虚拟机创建需要的主机。</p>
+<p>11、对于有符合虚拟机创建的主机，nova-scheduler更新数据库中虚拟机对应的物理主机信息。</p>
+<p>12、nova-scheduler通过rpc.cast向nova-compute发送对应的创建虚拟机请求的消息。</p>
+<p>13、nova-compute会从对应的消息队列中获取创建虚拟机请求的消息。</p>
+<p>14、nova-compute通过rpc.call向nova-conductor请求获取虚拟机消息。（Flavor）</p>
+<p>15、nova-conductor从消息队队列中拿到nova-compute请求消息。</p>
+<p>16、nova-conductor根据消息查询虚拟机对应的信息。</p>
+<p>17、nova-conductor从数据库中获得虚拟机对应信息。</p>
+<p>18、nova-conductor把虚拟机信息通过消息的方式发送到消息队列中。</p>
+<p>19、nova-compute从对应的消息队列中获取虚拟机信息消息。</p>
+<p>20、nova-compute通过keystone的RESTfull API拿到认证的token，并通过HTTP请求glance-api获取创建虚拟机所需要镜像。</p>
+<p>21、glance-api向keystone认证token是否有效，并返回验证结果。</p>
+<p>22、token验证通过，nova-compute获得虚拟机镜像信息(URL)。</p>
+<p>23、nova-compute通过keystone的RESTfull API拿到认证k的token，并通过HTTP请求neutron-server获取创建虚拟机所需要的网络信息。</p>
+<p>24、neutron-server向keystone认证token是否有效，并返回验证结果。</p>
+<p>25、token验证通过，nova-compute获得虚拟机网络信息。</p>
+<p>26、nova-compute通过keystone的RESTfull API拿到认证的token，并通过HTTP请求cinder-api获取创建虚拟机所需要的持久化存储信息。</p>
+<p>27、cinder-api向keystone认证token是否有效，并返回验证结果。</p>
+<p>28、token验证通过，nova-compute获得虚拟机持久化存储信息。</p>
+<p>29、nova-compute根据instance的信息调用配置的虚拟化驱动来创建虚拟机。</p>
+<p>以Nova为例，<code>nova/compute</code>目录并不是一定在nova-compute节点上运行，而主要是和compute相关(虚拟机操作相关）的功能实现，同样的，scheduler目录代码并不全在scheduler服务节点运行，但主要是和调度相关的代码。不过目录结构遵循一定的规律。</p>
+<p>通常一个OpenStack项目的代码目录都会包含<code>api.py</code>、<code>rpcapi.py</code>、<code>manager.py</code>，这三个是最重要的模块。</p>
+<ul>
+<li><code>api.py</code>： 通常是供其它组件调用的封装库。换句话说，该模块通常并不会由本模块调用。比如compute目录的api.py，通常由nova-api服务的controller调用。可以简单认为是供其他服务调用的sdk。</li>
+<li><code>rpcapi.py</code>：这个是RPC请求的封装，或者说是RPC封装的client端，该模块封装了RPC请求调用。</li>
+<li><code>manager.py</code>： 这个才是真正服务的功能实现，也是RPC的server端，即处理RPC请求的入口，实现的方法通常和rpcapi实现的方法一一对应。</li>
+</ul>
+<p>关机流程</p>
+<p>API节点 nova-api接收用户请求 -&gt; nova-api调用compute/api.py -&gt; compute/api调用compute/rpcapi.py -&gt; rpcapi.py向目标计算节点发起stop_instance()RPC请求 计算节点 收到stop_instance()请求 -&gt; 调用compute/manager.py的callback方法stop_instance() -&gt; 调用libvirt关机虚拟机</p>
+<p>前面提到OpenStack项目的目录结构是按照功能划分的，而不是服务组件，因此并不是所有的目录都能有对应的组件。仍以Nova为例:</p>
+<ul>
+<li><code>nova/cmd</code>：这是服务的启动脚本，即所有服务的main函数。看服务怎么初始化，就从这里开始。</li>
+<li><code>nova/db</code>: 封装数据库访问，目前支持的driver为sqlalchemy。</li>
+<li><code>nova/conf</code>：Nova所有配置项声明都放在这个目录。</li>
+<li><code>nova/locale</code>: 本地化处理。</li>
+<li><code>nova/image</code>: 封装Glance接口。</li>
+<li><code>nova/network</code>: 封装Neutron接口。</li>
+<li><code>nova/volume</code>: 封装Cinder接口。</li>
+<li><code>nova/virt</code>: 这是支持的所有虚拟化驱动实现，即compute driver实现，主流的如<code>libvirt</code>、<code>hyperv</code>、<code>ironic</code>、<code>vmwareapi</code>等。</li>
+<li><code>nova/objects</code>: 对象模型，封装了所有Nova对象的CURD操作，相对以前直接调用db的model更安全，并且支持版本控制。</li>
+<li><code>nova/policies</code>： API policy集合。</li>
+<li><code>nova/tests</code>: 测试代码，如单元测试、功能测试。</li>
+<li><code>nova/hacking</code>: Nova代码规范定义的一些规则。</li>
+</ul>
+<p>nova --debug boot --image 81e58b1a-4732-4255-b4f8-c844430485d2 --flavor 1 yikun</p>
+<p><code>controller</code>的<code>index</code>方法对应<code>list</code>操作、<code>show</code>方法对应<code>get</code>操作、<code>create</code>对应创建操作、<code>delete</code>对应删除操作、<code>update</code>对应更新操作等。</p>
+<p>openstack-nova-compute.service 两个职责，其一，是守护进程，负责基于各种虚拟化技术Hypervisior实现创建和终止虚拟机；其二，整合了计算资源CPU，存储，网络三类资源部署管理虚拟机，实现计算能力的交付。</p>
+<p>Cell V2的设计思想是，由API、Super Conductor去访问上层的全局数据库（nova_api数据库），而底下的cell中的组件，只需要关心cell中的逻辑即可</p>
+<ol>
+<li>首先，api中进行第一次Quota检测，主要方法就是收集地下各个cell数据库中的资源信息，然后和api数据库中的quota上限进行对比。例如，一个用户可以创建10个虚拟机，在cell1中有2个，cell2中有7个，再创建一个虚拟机时，会搜集cell1和cell2中的虚拟机个数之和（9个），然后加上变化（新增一个），与总配额进行比较。</li>
+<li>二次检测（cell v2在super conductor里做）。由于在并发场景下，可能出现同时检测发现满足，之后进行创建，就会造成配额的超分，针对这个问题，社区目前给出的方案是，在创建虚拟机记录之后，再进行recheck，如果发现超额了，会将超额分配的虚拟机标记为ERROR，不再继续往下走了。</li>
+</ol>
+<p>在Cell v2场景，虚拟机的创建记录已经需要写入的子cell中，因此，conductor需要做的事，包括一下几个步骤：</p>
+<ol>
+<li>进行调度，选出host。</li>
+<li>根据host，通过<strong>host_mappings</strong>找到对应的cell</li>
+<li>在对应的cell db中创建虚拟机记录，并且记录<strong>instances_mappings</strong>信息</li>
+<li>通过cell_mappings来查找对应的cell的mq，然后投递到对应的cell中的compute</li>
+</ol>
+<p>完成这些操作时，需要牵扯到3个关键的数据结构，我们来简单的看一下：</p>
+<ul>
+<li>host_mappings：记录了host和cell的映射信息</li>
+<li>instances_mappings：记录了虚拟机和cell的映射信息</li>
+<li>cell_mappings：记录了cell和cell对应的mq的映射信息</li>
+</ul>
+<p>与Cell v1不太相同，在目前的设计中，认为scheduler能看到的应该是底下能够提供资源的具体的所有的Resource Provider（对于计算资源来说，就是所有的计算节点），而不是整个cell，也就是说所有cell中的资源scheduler都可以看到，而子cell就负责创建就好了。因此，在super conductor中，需要做一些transfer的事情，这样也就不必在像cell v1那样，在子cell里还得搞个scheduler去做调度。</p>
+<ol>
+<li>通过Placement获取可用的备选资源，参考<a href="https://specs.openstack.org/openstack/nova-specs/specs/pike/approved/placement-allocation-requests.html">Placement Allocation Requests</a>的实现。
+   在Ocata版本时，<a href="https://specs.openstack.org/openstack/nova-specs/specs/ocata/implemented/resource-providers-scheduler-db-filters.html">Resource Providers - Scheduler Filters in DB</a>这个BP就已经在调度前加了一步，获取备选节点。从BP的标题就可以看出，设计者想通过Placement服务提供的新的一套机制，来做过滤。原因是之前的调度需要在scheduler维护每一个compute节点的hoststate信息，然后调度的时候，再一个个去查，这太低效了，尤其是在计算节点数目比较多的时候。因此，增加了一个“预过滤”的流程，通过向Placement查询，Placement服务直接通过SQL去查一把，把满足条件（比如CPU充足、RAM充足等）先获取到。
+   而原来获取备选节点的时候，只支持获取单一的Resource Provider，这个BP增强了获取备选资源的能力，用于后续支持更复杂的请求，比如共享资源、嵌套资源的Provider查询。后面，Placement还会陆续支持更多的请求，比如对一些非存量不可计数的资源的支持。这样留给后面Filter&amp;Weight的压力就小一些了，再往后，会不会完全取代Filter呢？我想，现有的各种过滤都可以通过Placement支持后，完全有可能的。</li>
+<li>Scheduler通过Placement来claim资源。参考<a href="https://blueprints.launchpad.net/nova/+spec/placement-claims">Scheduler claiming resources to the Placement API</a>的实现。
+   在最早的时候，claim资源是由compute来做的，现在相当于提前到scheduler去搞了。有什么好处呢？我们先看看原来的问题：
+   调度时刻和真正的去compute节点去claim资源的时刻之间是由一段时间的，在资源不是那么充足的环境，就会造成在scheduler调度的时候，资源还没刷新，所以调度时候成功了，但是真正下来的时候，才发现compute实际已经没有资源了，然后又“跨越半个地球”去做重调度，无形地增加了系统的负载。
+   而且增加了创建的时长（哦，哪怕创建失败呢？），你想想，用户创了那么久的虚拟机，最后你告诉我调度失败了，用户不太能忍。
+   所以这个BP就把Claim资源放在调度处了，我上一个调度请求处理完，马上就告诉placement，这资源老子用了，其他人不要动了。OK，世界终于清净了，能拿到资源的拿到了，拿不到资源的马上也知道自己拿不到了，大大增强了调度的用户体验。</li>
+</ol>
+<h3>2.4 Placement</h3>
+<p>恩，在调度的时候，已经介绍过这个服务了，在虚拟机创建的流程中，比较常用的接口就是获取备选资源和claim资源。
+Placement目标很宏伟，大致的作用就是：资源我来管，要资源问我要，用了资源告诉我。后面准备用一篇文章整体介绍一下Placement。（yep，这个Flag我立下了，会写的）</p>
+<p>service的详细信息主要包括如下几项：
+binary, host, zone, status, state
+其中： binary，可以理解为service的名称，类似于nova-compute；
+host是service所在的主机名称；
+zone是service所属的AZ，其实就是service所在的主机所属的aggregate，只是aggregate的概念不对外呈现，所以用户看到的是AZ。其实，在Nova内部，AZ是AG的metadata而已。</p>
+<div class="highlight"><pre><span></span><code><span class="err">zone的确定，涉及到两个配置项，对于非计算节点，zone的名称依赖于配置项internal_service_availability_zone（默认是internal）；</span>
+<span class="err">对于计算节点，如果不属于任何AG，或者所属的AG没有AZ的metadata信息，默认的zone依赖于配置项default_availability_zone（默认是nova）。</span>
+</code></pre></div>
+
+
+<p>status是服务disable属性的体现，该属性可以直接通过API修改;
+state是服务真实的状态，是通过servicegroup api获取。每个服务在启动时会加入servicegroup，以db后端为例，会在服务中启动定时器，更新service表中的<code>report_count</code>的值，同时也会刷新更新时间，后续会根据这个更新时间确定服务的死活；</p>
+<p>当然，查询service信息也支持过滤条件，比如：
+1、查询某个host相关的service；
+2、按binary名称查询service；</p>
+<p>其实Nova中没有host这个独立的资源（数据库对象），但是Nova却有针对host的API操作，其实，在内部实现中，就是通过前面的service信息，间接组装返回host信息。</p>
+<p>租户：配额</p>
+<div class="highlight"><pre><span></span><code><span class="err">与此同时，虚拟机state或task_state发生变化时，也会向外部发送通知。</span>
+<span class="err">前提是配置项notify_on_state_change要配置为vm_state或vm_and_task_state。</span>
+</code></pre></div>
+
+
+<p>Nova中的虚拟机每个操作（启动、停止、暂停、恢复等等），都会在db中保存相关的操作记录，给用户提供查询。利用这个功能，<strong>用户对自己的虚拟机整个生命周期的过程和状态都会了如指掌</strong>，便于用户的管理。参见<a href="http://developer.openstack.org/api-ref-compute-v2-ext.html#ext-os-instance-actions">这里</a>。示例如下：</p>
+<p>在内部实现中，nova-api层会记录action开始的记录，在nova-compute层，则会添加event开始和结束的信息，action和event根据request id（一次消息请求的标识）关联。</p>
+<ul>
+<li>先说通知，虚拟机操作异常时，一般都会发送error通知，通知中包含异常的函数名称、异常时函数的参数以及异常信息。</li>
+<li>再说db，虚拟机操作异常时，无论是在conductor, scheduler还是compute层，除了会发送通知外，还会记录异常信息到数据库（<code>instance_faults</code>表），当查询虚拟机信息时，会返回虚拟机的异常信息。</li>
+</ul>
+<p>一个hypervisor，是创建虚拟机能够调度到的最小单元。</p>
+<ol>
+<li><code>api.py</code>提供对外访问的接口，可以从这开始入手跟踪各个功能实现。</li>
+<li><code>rpcapi.py</code>封装RPC请求调用，大多数是异步调用。</li>
+<li><code>manager.py</code>各种RPC调用的实现，基本和<code>rpcapi.py</code>中调用的名称一一对应。</li>
+</ol>
+<p>此外还有一点，Openstack的目录结构是根据功能划分的，比如Nova中compute目录不一定都是在<code>nova-compute</code>节点上运行，而是所有和虚拟机创建相关的功能都在这里。 </p>
+<p>从配置文件可以明显的看出，nova-api对应的文件是<code>nova/cmd/api.py</code>的<code>main()</code>函数：</p>
+<p>vm_state</p>
+<p>power_state</p>
+<p>task_state</p>
+<p>_record_action_start
+notify_about_instance_action
+elevated</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">startuml</span>
+
+<span class="nl">title</span><span class="p">:</span> <span class="err">创建虚拟机</span>
+
+<span class="n">participant</span> <span class="s">&quot;API&quot;</span> <span class="n">as</span> <span class="n">api</span>
+<span class="n">note</span> <span class="n">left</span> <span class="n">of</span> <span class="n">api</span>
+<span class="n">nova</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">openstack</span><span class="o">/</span><span class="n">compute</span><span class="o">/</span><span class="n">servers</span><span class="p">.</span><span class="n">py</span>
+<span class="n">end</span> <span class="n">note</span> 
+<span class="n">participant</span> <span class="s">&quot;Scheduler&quot;</span> <span class="n">as</span> <span class="n">sch</span>
+<span class="n">database</span> <span class="s">&quot;Database&quot;</span> <span class="n">as</span> <span class="n">db</span> <span class="err">#</span><span class="n">Green</span> 
+<span class="n">participant</span> <span class="s">&quot;Condutor(super)&quot;</span> <span class="n">as</span> <span class="n">pconductor</span>
+<span class="n">participant</span> <span class="s">&quot;Placement&quot;</span> <span class="n">as</span> <span class="n">placement</span> 
+<span class="n">box</span> <span class="s">&quot;internal service&quot;</span>
+<span class="n">participant</span> <span class="s">&quot;Compute&quot;</span> <span class="n">as</span> <span class="n">compute</span>
+<span class="n">participant</span> <span class="s">&quot;Libvirt&quot;</span> <span class="n">as</span> <span class="n">virt</span> 
+<span class="n">end</span> <span class="n">box</span>
+<span class="n">participant</span> <span class="s">&quot;Conductor(cell)&quot;</span> <span class="n">as</span> <span class="n">ccondutor</span>
+
+<span class="n">participant</span> <span class="s">&quot;Neutron&quot;</span> <span class="n">as</span> <span class="n">neutron</span>
+<span class="n">participant</span> <span class="s">&quot;Cinder&quot;</span> <span class="n">as</span> <span class="n">cinder</span> 
+<span class="n">participant</span> <span class="s">&quot;Glance&quot;</span> <span class="n">as</span> <span class="n">glance</span>
+
+
+<span class="n">autonumber</span> <span class="s">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="p">[</span><span class="o">-&gt;</span> <span class="n">api</span><span class="o">++</span> <span class="o">:</span> <span class="err">创建虚拟机</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">validate</span> <span class="n">schema</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">get</span> <span class="n">context</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">get</span> <span class="n">server_dict</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">gen</span> <span class="n">create_kwargs</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">policy</span> <span class="n">check</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">provision</span> <span class="n">instance</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">glance</span> <span class="p">:</span> <span class="err">获取镜像信息</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">policy校验</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="err">配额校验</span>
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="err">添加</span><span class="n">Group</span>
+
+
+<span class="n">hnote</span> <span class="n">left</span> <span class="err">#</span><span class="n">FFAAAA</span>
+<span class="nl">vm_state</span><span class="p">:</span> <span class="n">Building</span>
+<span class="nl">task_state</span><span class="p">:</span> <span class="n">Scheduling</span>
+<span class="n">end</span> <span class="n">note</span>
+
+
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="nl">db</span> <span class="p">:</span> <span class="err">创建</span><span class="n">instance</span>
+
+<span class="n">db</span> <span class="o">-&gt;</span> <span class="nl">api</span> <span class="p">:</span> <span class="n">create</span> <span class="n">success</span>
+
+<span class="p">[</span><span class="o">&lt;-</span> <span class="nl">api</span> <span class="p">:</span> <span class="k">return</span> <span class="mi">202</span>
+
+<span class="n">deactivate</span> <span class="n">api</span>
+
+<span class="n">api</span> <span class="o">-&gt;</span> <span class="n">pconductor</span> <span class="o">++:</span> <span class="n">schedule</span> <span class="o">&amp;</span> <span class="n">build</span>
+<span class="n">pconductor</span> <span class="o">-&gt;</span> <span class="nl">sch</span> <span class="p">:</span> <span class="n">select_destination</span>
+
+<span class="n">sch</span> <span class="o">-&gt;</span> <span class="nl">placement</span> <span class="p">:</span> <span class="n">get</span> <span class="n">allocation</span> <span class="n">candidates</span>
+<span class="n">placement</span> <span class="o">-&gt;</span> <span class="nl">sch</span> <span class="p">:</span> <span class="n">alloc_reqs</span><span class="p">.</span><span class="n">provider_summarys</span>
+
+<span class="n">sch</span> <span class="o">-&gt;</span> <span class="nl">sch</span> <span class="p">:</span> <span class="n">Filter</span> <span class="o">&amp;</span> <span class="n">weighter</span>
+
+<span class="n">sch</span> <span class="o">-&gt;</span> <span class="nl">placement</span> <span class="p">:</span> <span class="n">claim</span> <span class="n">Resources</span>
+<span class="n">placement</span> <span class="o">-&gt;</span> <span class="nl">sch</span> <span class="p">:</span> <span class="n">hello</span>
+
+<span class="n">sch</span> <span class="o">-&gt;</span> <span class="nl">pconductor</span> <span class="p">:</span> <span class="k">return</span> <span class="n">host</span>
+<span class="n">pconductor</span> <span class="o">-&gt;</span> <span class="nl">pconductor</span> <span class="p">:</span> <span class="k">in</span> <span class="n">target</span> <span class="n">cell</span> <span class="n">DB中创建instance</span>
+<span class="n">pconductor</span> <span class="o">-&gt;</span> <span class="nl">pconductor</span> <span class="p">:</span> <span class="err">配额校验</span> <span class="n">recheck</span>
+<span class="n">pconductor</span> <span class="o">-&gt;</span> <span class="nl">pconductor</span> <span class="p">:</span> <span class="err">刷新</span><span class="n">instance</span> <span class="n">cell</span> <span class="err">信息</span>
+<span class="n">pconductor</span> <span class="o">-&gt;</span> <span class="nl">pconductor</span> <span class="p">:</span> <span class="err">删除</span><span class="n">build</span> <span class="n">request</span><span class="p">()</span>
+
+<span class="n">pconductor</span> <span class="o">-&gt;</span> <span class="nl">compute</span> <span class="p">:</span> <span class="err">在指定</span><span class="n">cell中创建虚拟机</span>
+<span class="n">hnote</span> <span class="n">left</span> <span class="err">#</span><span class="n">FFAAAA</span>
+<span class="nl">vm_state</span><span class="p">:</span> <span class="n">Building</span>
+<span class="nl">task_state</span><span class="p">:</span> <span class="n">None</span>
+<span class="n">end</span> <span class="n">note</span>
+
+<span class="n">compute</span> <span class="o">-&gt;</span> <span class="nl">neutron</span> <span class="p">:</span> <span class="err">创建网络</span>
+<span class="n">hnote</span> <span class="n">left</span> <span class="err">#</span><span class="n">FFAAAA</span>
+<span class="nl">vm_state</span><span class="p">:</span> <span class="n">Building</span>
+<span class="nl">task_state</span><span class="p">:</span> <span class="n">Networking</span> 
+<span class="n">end</span> <span class="n">note</span>
+
+<span class="n">compute</span> <span class="o">-&gt;</span> <span class="nl">cinder</span> <span class="p">:</span> <span class="err">构建块设备</span>
+<span class="n">hnote</span> <span class="n">left</span> <span class="err">#</span><span class="n">FFAAAA</span>
+<span class="nl">vm_state</span><span class="p">:</span> <span class="n">Building</span>
+<span class="nl">task_state</span><span class="p">:</span> <span class="n">Block</span> <span class="n">Device</span> <span class="n">Mapping</span>
+<span class="n">end</span> <span class="n">note</span>
+
+<span class="n">compute</span> <span class="o">-&gt;</span> <span class="nl">compute</span> <span class="p">:</span> <span class="n">spawn</span><span class="p">()</span>
+<span class="n">hnote</span> <span class="n">left</span> <span class="err">#</span><span class="n">FFAAAA</span>
+<span class="nl">vm_state</span><span class="p">:</span> <span class="n">Building</span>
+<span class="nl">task_state</span><span class="p">:</span> <span class="n">Spawning</span>
+<span class="n">end</span> <span class="n">note</span>
+
+<span class="n">compute</span> <span class="o">-&gt;</span> <span class="nl">glance</span> <span class="p">:</span> <span class="err">下载镜像</span>
+
+<span class="n">compute</span> <span class="o">-&gt;</span> <span class="nl">compute</span> <span class="p">:</span> <span class="err">生成</span><span class="n">xml</span>
+<span class="n">compute</span> <span class="o">-&gt;</span> <span class="nl">compute</span> <span class="p">:</span> <span class="err">刷新虚拟机状态</span>
+<span class="n">hnote</span> <span class="n">left</span> <span class="err">#</span><span class="n">FFAAAA</span>
+<span class="nl">vm_state</span><span class="p">:</span> <span class="n">Building</span>
+<span class="nl">task_state</span><span class="p">:</span> <span class="n">None</span>
+<span class="n">end</span> <span class="n">note</span>
+
+
+
+
+
+
+
+
+
+<span class="p">@</span><span class="n">enduml</span>
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code>@startuml
+
+title: Lock虚拟机
+
+participant <span class="s2">&quot;API&quot;</span> as api
+database <span class="s2">&quot;Database&quot;</span> as db <span class="c1">#Green </span>
+
+
+autonumber <span class="s2">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="o">[</span>-&gt; api : lock
+api -&gt; api : get_context
+api -&gt; api : authorize  action <span class="o">[</span>lock<span class="o">]</span> policy
+api -&gt; db : get instance by id
+db -&gt; api : <span class="k">done</span>
+api -&gt; api : check policy
+api -&gt; db : instance.locked <span class="o">=</span> True<span class="se">\n</span> <span class="nv">locked_by</span><span class="o">=</span>owner or admin<span class="se">\n</span> record locked reason
+db -&gt; api : <span class="k">done</span>
+<span class="o">[</span>&lt;- api : response
+@enduml
+
+
+@startuml
+
+title: Pause虚拟机
+
+participant <span class="s2">&quot;API&quot;</span> as api
+database <span class="s2">&quot;Database&quot;</span> as db <span class="c1">#Green </span>
+box <span class="s2">&quot;internal service&quot;</span>
+participant <span class="s2">&quot;Compute&quot;</span> as compute
+participant <span class="s2">&quot;Libvirt&quot;</span> as virt 
+end box
+
+autonumber <span class="s2">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="o">[</span>-&gt; api++ : pause instance
+api -&gt; api : authorize context
+api -&gt; db++ : get instance by uuid
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; api : check policy
+api -&gt; api : check instance lock
+api -&gt; api : check instance cell
+api -&gt; api : ensure instance state is ACTIVE
+api -&gt; db++ : <span class="nv">task_state</span> <span class="o">=</span> PAUSING
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; api : record pause action
+api -&gt; compute++ : pause_instance
+compute -&gt; compute : notify : pause.start
+compute -&gt; virt++ : pause 
+virt -&gt; virt : get domain
+virt -&gt; virt : domain.suspend<span class="o">()</span>
+<span class="k">return</span> <span class="k">done</span> 
+compute -&gt; db++ : <span class="nv">vm_state</span> <span class="o">=</span> PAUSE<span class="se">\n</span> <span class="nv">task_state</span> <span class="o">=</span> None
+<span class="k">return</span> <span class="k">done</span> 
+compute -&gt; compute : notify: pause.end
+
+
+
+<span class="o">[</span>&lt;- api : response
+
+
+
+@enduml
+
+@startuml
+
+title: Rename虚拟机
+
+participant <span class="s2">&quot;API&quot;</span> as api
+database <span class="s2">&quot;Database&quot;</span> as db <span class="c1">#Green </span>
+
+
+
+autonumber <span class="s2">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="o">[</span>-&gt; api : update name
+activate api
+api -&gt; api : validate schema 
+api -&gt; api : get context
+api -&gt; api : authorize <span class="o">[</span>update<span class="o">]</span> policy
+api -&gt; api : get update_dict<span class="o">[</span><span class="s2">&quot;display_name&quot;</span><span class="o">]</span>
+api -&gt; db++ : get server by id
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; db : update<span class="o">(</span>update_dict<span class="o">)</span>
+db -&gt; db : save 
+<span class="o">[</span>&lt;- api : responee
+
+
+
+@enduml
+
+
+@startuml
+
+title: Suspend虚拟机
+
+participant <span class="s2">&quot;API&quot;</span> as api
+database <span class="s2">&quot;Database&quot;</span> as db <span class="c1">#Green </span>
+box <span class="s2">&quot;internal service&quot;</span>
+participant <span class="s2">&quot;Compute&quot;</span> as compute
+participant <span class="s2">&quot;Libvirt&quot;</span> as virt 
+end box
+
+autonumber <span class="s2">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="o">[</span>-&gt; api++ : <span class="nb">suspend</span> instance
+
+api -&gt; api : authorize context
+api -&gt; db++ : get instance by uuid
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; api : check policy
+api -&gt; api : check instance lock
+api -&gt; api : check instance cell
+api -&gt; api : ensure instance state is ACTIVE
+api -&gt; db++ : <span class="nv">task_state</span> <span class="o">=</span> SUSPANDING
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; api : record action : suspand
+api -&gt; compute++ : suspand_instance
+compute -&gt; compute : notify : suspand.start
+compute -&gt; virt++ : suspand
+virt -&gt; virt : get instance guest
+virt -&gt; virt : detach pci device
+virt -&gt; virt : detach sriow ports
+virt -&gt; virt : guest.save_memory_state<span class="o">()</span>
+<span class="k">return</span> <span class="k">done</span> 
+compute -&gt; db++ : <span class="nv">vm_state</span> <span class="o">=</span> SUSPENDED<span class="se">\n</span> <span class="nv">task_state</span> <span class="o">=</span> None
+<span class="k">return</span> <span class="k">done</span> 
+compute -&gt; compute : notify: suspend.end
+
+
+
+<span class="o">[</span>&lt;- api : response
+@enduml
+
+
+@startuml
+hide empty description
+<span class="o">[</span>*<span class="o">]</span> --&gt; State1
+State1 --&gt; <span class="o">[</span>*<span class="o">]</span>
+vm_state:powering<span class="se">\n</span> task_state:good<span class="se">\n</span> nihao
+State1 : this is another string
+State1 -&gt; State2
+State2 --&gt; <span class="o">[</span>*<span class="o">]</span>
+@enduml
+
+
+@startuml
+
+title: Unlock虚拟机
+
+participant <span class="s2">&quot;API&quot;</span> as api
+database <span class="s2">&quot;Database&quot;</span> as db <span class="c1">#Green </span>
+
+
+autonumber <span class="s2">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="o">[</span>-&gt; api : lock
+api -&gt; api : get_context
+api -&gt; api : authorize  action <span class="o">[</span>unlock<span class="o">]</span> policy
+api -&gt; db : get instance by id
+db -&gt; api : <span class="k">done</span>
+api -&gt; api : check policy
+api -&gt; db : query instance.locked
+db -&gt; api : <span class="k">done</span>
+
+api -&gt; db : instance.locked <span class="o">=</span> False<span class="se">\n</span> <span class="nv">locked_by</span><span class="o">=</span>None<span class="se">\n</span> clear locked reason
+db -&gt; api : <span class="k">done</span>
+<span class="o">[</span>&lt;- api : response
+@enduml
+
+
+@startuml
+
+title: Unpause虚拟机
+
+participant <span class="s2">&quot;API&quot;</span> as api
+database <span class="s2">&quot;Database&quot;</span> as db <span class="c1">#Green </span>
+box <span class="s2">&quot;internal service&quot;</span>
+participant <span class="s2">&quot;Compute&quot;</span> as compute
+participant <span class="s2">&quot;Libvirt&quot;</span> as virt 
+end box
+
+autonumber <span class="s2">&quot;&lt;b&gt; [00]&quot;</span>
+<span class="o">[</span>-&gt; api++ : unpause instance
+
+
+api -&gt; api : authorize context
+api -&gt; db++ : get instance by uuid
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; api : check policy
+api -&gt; api : check instance lock
+api -&gt; api : check instance cell
+api -&gt; api : ensure instance state is PAUSED
+api -&gt; db++ : <span class="nv">task_state</span> <span class="o">=</span> UNPAUSING
+<span class="k">return</span> <span class="k">done</span> 
+api -&gt; api : record action : unpause
+api -&gt; compute++ : unpause_instance
+compute -&gt; compute : notify : unpause.start
+compute -&gt; virt++ : unpause 
+virt -&gt; virt : get domain
+virt -&gt; virt : domain.resume<span class="o">()</span>
+<span class="k">return</span> <span class="k">done</span> 
+compute -&gt; db++ : <span class="nv">vm_state</span> <span class="o">=</span> ACTIVE<span class="se">\n</span> <span class="nv">task_state</span> <span class="o">=</span> None
+<span class="k">return</span> <span class="k">done</span> 
+compute -&gt; compute : notify: unpause.end
+
+
+
+<span class="o">[</span>&lt;- api : response
+@enduml
+</code></pre></div>
+
+
+<h3>参考</h3>
+<p><a href="https://docs.openstack.org/zh_CN/user-guide/cli-nova-launch-instance-from-volume.html">Openstack虚拟机启动方式</a></p>
+<p><a href="https://www.hi-roy.com/2019/09/16/OpenStack%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/">Openstack源码学习笔记</a></p>
+<p><a href="https://docs.openstack.org/mitaka/zh_CN/install-guide-rdo/common/glossary.html#term-domain">Openstack词汇表</a></p>
+<p><a href="https://docs.openstack.org/zh_CN/user-guide/cli-nova-launch-instance-from-volume.html">Openstack从硬盘启动实例</a></p>
+<p><a href="http://yikun.github.io/2017/09/27/OpenStack-Nova%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B%E8%A7%A3%E6%9E%90/">Nova虚拟机创建流程分析</a></p>
+<p><a href="https://www.cnblogs.com/jmilkfan-fanguiju/p/10589721.html">Nova创建虚拟机流程分析</a></p>
+<p><a href="https://www.jingh.top/2019/04/29/%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BBOpenStack%E6%BA%90%E7%A0%81(%E6%9B%B4%E6%96%B0%E7%89%88)/">如何阅读openstack源码</a></p>
+<p><a href="https://blog.csdn.net/u010305706/article/details/52206175">虚拟机创建的50个步骤和100个知识点</a></p>
+<p><a href="https://www.hi-roy.com/2020/07/20/OpenStack%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B06/">Openstack源码学习之热迁移</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/10/31/Create-Instance/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

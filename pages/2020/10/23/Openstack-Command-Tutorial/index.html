@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Openstack命令行基础"/>
+    <meta property="og:url" content="../../../../../pages/2020/10/23/Openstack-Command-Tutorial/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/10/23/Openstack-Command-Tutorial/" />
+
+    <title>Openstack命令行基础 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li class="active"><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/10/23/Openstack-Command-Tutorial/" rel="bookmark"
+             title="Permalink to Openstack命令行基础">Openstack命令行基础</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/openstack.html">Openstack</a>
+
+    on 2020-10-23
+
+        |
+        tags:         <a href="../../../../../tag/nova.html">Nova</a>
+        <a href="../../../../../tag/linux.html">Linux</a>
+        <a href="../../../../../tag/openstack.html">Openstack</a>
+
+
+        |
+        <a href="../../../../../pages/2020/10/23/Openstack-Command-Tutorial/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>不同命令的功能有重复和交集</p>
+</blockquote>
+<h3>Openstack篇</h3>
+<blockquote>
+<p>Openstack每个组件都有其命令，openstack社区为了方便使用，将所有组件的命令进行了统一，以openstack开头</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看所有openstack服务</span>
+openstack service list
+<span class="c1"># 查看openstack服务状态</span>
+openstack-service status
+<span class="c1"># 重启本节点所有openstack服务</span>
+openstack-service restart
+<span class="c1"># openstack服务URL列表查询</span>
+<span class="c1"># endpoint表示一个服务在哪可被访问的URL和端口号列表</span>
+openstack endpoint list
+<span class="c1"># 查询domain，domain是一个keystone验证实体</span>
+openstack domain list
+<span class="c1"># 查看nova服务列表</span>
+openstack compute service list
+<span class="c1"># 查看网络服务列表</span>
+openstack network agent list
+<span class="c1"># =======================================================</span>
+<span class="c1"># 项目（租户）列表查询</span>
+openstack project list
+<span class="c1"># 查看租户详情</span>
+openstack project show &lt;project_id/name&gt;
+<span class="c1"># 创建租户</span>
+openstack project create --description <span class="s1">&#39;Admin Project&#39;</span> &lt;租户名&gt;
+<span class="c1"># 删除租户</span>
+openstack project delete &lt;租户id/name&gt;
+<span class="c1"># 禁用启用租户</span>
+openstack project <span class="nb">set</span> &lt;租户id/name&gt; --disable/enable
+<span class="c1"># 更新租户名称</span>
+openstack project <span class="nb">set</span> &lt;租户id/name&gt; --name &lt;new name&gt;
+<span class="c1"># ========================================================</span>
+<span class="c1"># 查看某一个项目下所有用户user</span>
+openstack user list --project<span class="o">=</span>&lt;project_id/name&gt;
+<span class="c1"># 查看所有用户</span>
+openstack user list
+<span class="c1"># 查看用户详情</span>
+openstack user show &lt;user_name/id&gt;
+<span class="c1"># 创建用户</span>
+openstack user create --domain &lt;域名&gt; --project &lt;项目/租户名&gt; --password &lt;密码&gt; &lt;用户名&gt;
+<span class="c1"># 删除用户</span>
+openstack user delete &lt;用户名&gt;
+<span class="c1"># 禁用启用某一个用户</span>
+openstack user <span class="nb">set</span> &lt;user_name/id&gt; --disable/enable
+<span class="c1"># 更新用户名称</span>
+openstack user <span class="nb">set</span> &lt;user_name/id&gt; --name &lt;new name&gt;
+<span class="c1"># 查询某一用户与项目、角色的关系</span>
+openstack role assignment list --user<span class="o">=</span>用户名
+<span class="c1"># =======================================================</span>
+<span class="c1"># 角色查询</span>
+<span class="c1"># 一个角色包括一组权利和特权，角色访问控制提供预定义的用户可操作列表，如开启或停止虚机，重置密码等。在身份验证服务和计算服务中均被支持。</span>
+openstack role list
+<span class="c1"># 角色详情查询</span>
+opensatck role show &lt;role_name/id&gt;
+<span class="c1"># 创建角色</span>
+openstack role create &lt;role_name&gt;
+<span class="c1"># 分配角色，将项目和用户加入到角色中</span>
+openstack role add --user &lt;用户名&gt; --project &lt;项目名&gt; &lt;角色名&gt;
+<span class="c1"># 删除角色</span>
+openstack role remove --user &lt;用户名&gt; --project &lt;项目名&gt; &lt;角色名&gt;
+<span class="c1"># ======================================================</span>
+<span class="c1"># 列出所有的镜像</span>
+openstack image list
+<span class="c1"># 查看某一个镜像信息</span>
+openstack image show &lt;image_id&gt;
+<span class="c1"># 设置镜像标签</span>
+openstack image <span class="nb">set</span> --tag &lt;标签名&gt; &lt;image_name/id&gt;
+<span class="c1"># 创建镜像</span>
+<span class="c1"># 格式化类型包括raw、qcow2、vmdk等</span>
+openstack image create &lt;镜像名&gt; --file &lt;镜像文件名&gt; --disk-format &lt;格式化类型&gt; --container-format bare --public
+<span class="c1"># openstack image create “test1” --file cirros-0.5.1-x86_64-disk.img --disk-format qcow2 --container-format bare --public</span>
+<span class="c1"># 查看安全组信息</span>
+openstack group list
+<span class="c1"># 查看flavor类型</span>
+openstack flavor list
+<span class="c1"># 查询网络信息</span>
+openstack network list
+<span class="c1"># 查看端口信息（虚拟网络）</span>
+openstack port list
+<span class="c1"># 创建虚拟机</span>
+openstack server create --image &lt;image_id/name&gt; --flavor &lt;flavor_id/name&gt; --nic net-id<span class="o">=</span>&lt;net_id&gt; &lt;instance_name&gt;
+<span class="c1"># 创建虚拟机帮助</span>
+openstack server create --help
+<span class="c1"># ==================================================</span>
+<span class="c1"># 查看openstack环境主机列表</span>
+openstack host list
+<span class="c1"># 查看某个host主机资源情况</span>
+openstack host show &lt;host_name&gt;
+<span class="c1"># 查看虚拟机列表</span>
+openstack server list
+<span class="c1"># 查看虚拟机详情</span>
+openstack server show &lt;instance_id&gt;
+<span class="c1"># 虚拟机暂停</span>
+openstack server pause &lt;instance_id&gt;
+<span class="c1"># 虚拟机从暂停中恢复</span>
+openstack server unpause &lt;instance_id&gt;
+<span class="c1"># 虚拟机重启</span>
+openstack server reboot &lt;instance_id&gt;
+<span class="c1"># 虚拟机删除</span>
+openstack server delete &lt;instance_id&gt;
+</code></pre></div>
+
+
+<h3>Nova篇</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看openstack版本</span>
+nova-manage version
+<span class="c1"># 查看命令帮助信息</span>
+nova <span class="nb">help</span> &lt;command&gt;
+<span class="c1"># 返回nova服务所在的host信息</span>
+<span class="c1"># 在电子通信领域，host和node的区别在于，host是向外提供某种服务，而node只需要是连接到网络的设备</span>
+<span class="c1"># 运行有nova服务的主机被认为是host</span>
+nova host-list
+<span class="c1"># 查看host具体资源信息</span>
+nova host-describe &lt;host_name&gt;
+<span class="c1"># 查看nova服务和状态</span>
+nova service-list
+<span class="c1"># =======================================</span>
+<span class="c1"># 查看计算节点</span>
+nova hypervisor-list
+<span class="c1"># 查看计算节点详情</span>
+nova hypervisor-show &lt;hypervisor ID&gt;
+<span class="c1"># 查看计算节点上的虚拟机</span>
+nova hypervisor-servers &lt;hypervisor ID&gt;
+<span class="c1"># ======================================</span>
+<span class="c1"># 列出所有flavor(模板)</span>
+nova flavor-list
+<span class="c1"># 创建flavor，模板ID建议为auto</span>
+nova flavor-create --is-public <span class="nb">true</span> &lt;模板名称&gt; &lt;模板ID&gt; &lt;内存<span class="o">(</span>MB<span class="o">)</span>&gt; &lt;磁盘<span class="o">(</span>GB<span class="o">)</span>&gt; &lt;VCPUS&gt;
+<span class="c1"># 显示flavro详情</span>
+nova flavor-show &lt;模板ID&gt;
+<span class="c1"># 删除flavor</span>
+nova flavor-delet &lt;模板ID&gt;
+<span class="c1"># =======================================</span>
+<span class="c1"># 查看虚拟机列表</span>
+nova list
+nova list --all-te
+<span class="c1"># 查看虚拟机详情</span>
+nova show &lt;instance_id&gt;
+<span class="c1"># 查看虚拟机控制台日志</span>
+nova console-log &lt;instance_id&gt;
+<span class="c1"># 查看密钥对列表</span>
+nova keypair-list
+<span class="c1"># 查看镜像列表</span>
+nova image-list
+<span class="c1"># 查看浮动ip列表</span>
+nova floating-ip-list
+<span class="c1"># 查看安全组列表</span>
+nova secgroup-list
+<span class="c1"># =====================================</span>
+<span class="c1"># 查看浮动ip列表</span>
+nova-manage floating list
+<span class="c1"># 数据库同步</span>
+nova-manage db sync
+nova-manage api_db sync
+nova-manage placement sync
+<span class="c1"># 查看数据库版本</span>
+nova-manage db version
+<span class="c1"># nova组件更新检查</span>
+nova-status upgrade check
+<span class="c1"># ====================================</span>
+nova <span class="nb">suspend</span> &lt;instance_id&gt;
+nova resume &lt;instance_id&gt;
+nova start &lt;instance_id&gt;
+nova stop &lt;instance_id&gt;
+nova delete &lt;instance_id&gt;
+nova reboot &lt;instance_id&gt;
+<span class="c1"># 硬重启</span>
+nova reboot --hard &lt;instance_id&gt;
+<span class="c1"># 进入救援模式</span>
+nova rescue &lt;instance_id&gt;
+<span class="c1"># 使用指定镜像进入救援模式</span>
+nova rescue --image &lt;image_id&gt; &lt;instance_id&gt;
+<span class="c1"># 重启虚拟机，由救援模式进入正常模式</span>
+nova unrescue &lt;instance_id&gt;
+<span class="c1"># 重置虚拟机状态</span>
+nova reset-state &lt;instance_id&gt;
+<span class="c1"># 指定节点热迁移</span>
+nova live-migration &lt;instance_id&gt; &lt;compute_node_id&gt;
+<span class="c1"># 调整虚拟机资源</span>
+nova resize &lt;instance_id&gt; &lt;flavor_id&gt; --poll
+<span class="c1"># 确认调整虚拟机资源</span>
+nova resize-confirm &lt;instance_id&gt;
+<span class="c1"># 资源调整失败回滚</span>
+nova resize-revert &lt;instance_id&gt;
+<span class="c1"># 通过快照创建一个镜像</span>
+nova image-create &lt;instance_id&gt; &lt;image_name&gt;
+<span class="c1"># ===================================</span>
+<span class="c1"># 从镜像创建虚拟机</span>
+nova boot --image cirros --flavor <span class="m">1</span> --nic net-name<span class="o">=</span>net1 vm1
+<span class="c1"># 从卷(块设备)创建虚拟机</span>
+<span class="c1"># 1. 从镜像生成volumn</span>
+cinder create --image-id &lt;image_id&gt; --name &lt;volume_name&gt; &lt;size_in_gb&gt;
+<span class="c1"># 2. 从volumn创建虚拟机</span>
+nova boot --flavor &lt;flavor_id&gt; <span class="nv">source</span><span class="o">=</span>volumn,,id<span class="o">=</span>卷ID,dest<span class="o">=</span>volume,shutdown<span class="o">=</span>preserve,bootindex<span class="o">=</span><span class="m">0</span> 虚拟机名称 
+<span class="c1"># ==================================</span>
+<span class="c1"># 挂载云硬盘</span>
+nova volume-attach &lt;instance_id&gt; &lt;volume_name&gt; /dev/sdb
+<span class="c1"># 卸载云硬盘</span>
+nova volume-detach &lt;instance_id&gt; &lt;volume_name&gt;
+</code></pre></div>
+
+
+<h3>Neutron篇</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 列出当前租户网络</span>
+neutron net-list
+<span class="c1"># 列出所有租户网络</span>
+neutron  net-list --all-te
+<span class="c1"># 查看网络详情</span>
+neutron net-show &lt;net_id&gt;
+<span class="c1"># 删除一个网络</span>
+neutron net-delete &lt;net_id&gt;
+<span class="c1"># 查看所有agent</span>
+neutron agent-list
+<span class="c1"># 查看所有租户拥有的port</span>
+<span class="c1"># port是虚拟网口，是路由器和虚拟机挂接网络的着附点</span>
+neutron port-list
+<span class="c1"># 查看port详情</span>
+neutron port-show &lt;port_id&gt;
+<span class="c1"># 查看安全组</span>
+neutron security-group-rule-list
+</code></pre></div>
+
+
+<h3>Glance篇</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 列出全部镜像</span>
+glance image-list
+<span class="c1"># 查看image具体信息</span>
+glance show &lt;image ID&gt;
+<span class="c1"># 上传镜像</span>
+glance image-create --visibility public --container-format docker/bare --disk-format raw/qcow2 --name xxx --file /root/xxx --progress
+
+glance image-create --name <span class="s2">&quot;CentOS7.0&quot;</span> --disk-format qcow2 --container-format bare --progress &lt;/opt/images/centos_7-x86_64_xiandian.qcow2
+</code></pre></div>
+
+
+<h3>Cinder篇</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 显示存储列表</span>
+cinder list
+<span class="c1"># 显示存储卷类型列表</span>
+cinder type-list
+<span class="c1"># 创建存储卷</span>
+cinder create --display-name VOLNAME SIZE（SIZE的单位为GB）
+</code></pre></div>
+
+
+<h3>Ceilmeter篇</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看监控资源</span>
+ceilometer meter-list
+<span class="c1">#查看告警列表</span>
+ceilometer alarm-list
+<span class="c1"># 删除一个告警</span>
+ceilometer alarm-delete -a ALARM_ID
+<span class="c1"># 获取某一个告警信息</span>
+ceilometer alarm-state-get ALARM_ID
+</code></pre></div>
+
+
+<h3>服务状态</h3>
+<div class="highlight"><pre><span></span><code>systemctl list-units <span class="p">|</span> grep openstack
+systemctl status httpd.service
+<span class="c1"># 查看Apache的http服务日志</span>
+<span class="nb">cd</span> /etc/httpd/logs
+tail -f &lt;日志文件&gt;
+</code></pre></div>
+
+
+<h3>参考</h3>
+<p><a href="https://www.fcwys.cc/archives/475.html">Openstack常用命令</a></p>
+<p><a href="https://docs.openstack.org/python-openstackclient/latest/cli/command-list.html">Openstack官方常用命令手册</a></p>
+<p><a href="https://www.sdnlab.com/20489.html">Openstack命令行操作虚拟机</a></p>
+<p><a href="https://docs.openstack.org/ocata/cli-reference/nova.html">Nova命令行官方参考</a></p>
+<p><a href="https://github.com/danielscai/openstack_user_guide">Openstack用户指南</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/10/23/Openstack-Command-Tutorial/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

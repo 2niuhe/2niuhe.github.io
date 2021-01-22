@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="远程ssh连接家中的树莓派"/>
+    <meta property="og:url" content="../../../../../pages/2018/09/04/Raspi_Remote_SSH_Tunnel/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/09/04/Raspi_Remote_SSH_Tunnel/" />
+
+    <title>远程ssh连接家中的树莓派 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li class="active"><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/09/04/Raspi_Remote_SSH_Tunnel/" rel="bookmark"
+             title="Permalink to 远程ssh连接家中的树莓派">远程ssh连接家中的树莓派</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/raspberry.html">Raspberry</a>
+
+    on 2018-09-04
+
+        |
+        tags:         <a href="../../../../../tag/shu-mei-pai.html">树莓派</a>
+
+
+        |
+        <a href="../../../../../pages/2018/09/04/Raspi_Remote_SSH_Tunnel/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？
+公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。</p>
+</blockquote>
+<h3>VPS + SSH远程代理隧道</h3>
+<blockquote>
+<p>这是这篇文章重点，需要：</p>
+<ul>
+<li>一个安装了linux的VPS，如一台腾讯云服务器。（如果没有，请看下一种方法：公网IP+路由器端口转发）</li>
+<li>连上网络的树莓派,将树莓派ssh公钥放到VPS上</li>
+</ul>
+</blockquote>
+<h4><strong>树莓派上使用autossh+crontab</strong></h4>
+<div class="highlight"><pre><span></span><code>sudo apt install autossh
+<span class="nb">cd</span> ~/
+<span class="nb">echo</span> <span class="s2">&quot;sleep 20;</span>
+<span class="s2">/usr/bin/autossh -M 5678  -NfR 9999:localhost:22 user@T.T.T.T  -i /home/user/.ssh/id_rsa&quot;</span> &gt; autossh.sh
+chmod +x autossh.sh
+crontab -e
+</code></pre></div>
+
+
+<blockquote>
+<p>在crontab的配置文件中加入</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>@reboot /home/nh/autossh.sh &gt;&gt; tunnel.log
+</code></pre></div>
+
+
+<h4>在服务器上操作</h4>
+<div class="highlight"><pre><span></span><code>ssh -fCNL <span class="s2">&quot;*:11111:localhost:9999&quot;</span> localhost
+</code></pre></div>
+
+
+<h4>远程登录</h4>
+<blockquote>
+<p>现在就可以使用服务器作为跳板，连接到家中的树莓派。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>ssh -p <span class="m">11111</span> user@T.T.T.T
+</code></pre></div>
+
+
+<blockquote>
+<p>注：user@T.T.T.T,user是树莓派用户名，T.T.T.T是服务器公网IP。-p指定向服务器1111端口发送ssh请求，1111端口转发到9999端口，也就是树莓派的22端口。</p>
+</blockquote>
+<p>显示效果如下：</p>
+<p><img alt="效果图" src="/img/树莓派远程登陆.jpg"></p>
+<p><strong>以下树莓派配置方法均不推荐，想折腾的自己玩，服务器配置方法都一样</strong></p>
+<hr>
+<h4>树莓派上安装sshpass(可选）</h4>
+<div class="highlight"><pre><span></span><code>sudo apt-get install sshpass
+</code></pre></div>
+
+
+<h4>树莓派上编辑shell脚本</h4>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1">#saved as create_ssh_tunnel.sh</span>
+createTunnel<span class="o">()</span> <span class="o">{</span>
+  sshpass -p <span class="s2">&quot;Password&quot;</span> ssh -o <span class="s2">&quot;ServerAliveInterval 300&quot;</span> -o <span class="s2">&quot;ServerAliveCountMax 2&quot;</span> -fCNR <span class="m">9999</span>:localhost:22 user@T.T.T.T
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$?</span> -eq <span class="m">0</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>    
+    <span class="nb">echo</span> <span class="k">$(</span>date<span class="k">)</span> Tunnel to jumpbox created successfully  &gt;&gt; /root/tunnel.log
+  <span class="k">else</span>
+    <span class="nb">echo</span> <span class="k">$(</span>date<span class="k">)</span>  An error occurred creating a tunnel to jumpbox. RC was <span class="nv">$?</span> &gt;&gt; /root/tunnel.log
+  <span class="k">fi</span>
+<span class="o">}</span>
+/bin/pidof ssh
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="k">$(</span>date<span class="k">)</span> Creating new tunnel connection &gt;&gt; /root/tunnel.log
+  createTunnel
+<span class="k">fi</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>注：这种方式非常危险，不推荐这种方式，因为明文存储了服务器密码。</p>
+<ul>
+<li>"Password"指的是你的服务器密码</li>
+<li>user@T.T.T.T是你的服务器用户名和IP地址</li>
+<li>9999是将树莓派的22端口绑定到服务器额9999端口</li>
+</ul>
+<p><strong>推荐将树莓派上的公钥放到远程服务器上，然后使用如下脚本</strong></p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1">#saved as create_ssh_tunnel.sh</span>
+createTunnel<span class="o">()</span> <span class="o">{</span>
+  ssh -o <span class="s2">&quot;ServerAliveInterval 300&quot;</span> -o <span class="s2">&quot;ServerAliveCountMax 2&quot;</span> -NR <span class="m">9999</span>:localhost:22 user@T.T.T.T
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$?</span> -eq <span class="m">0</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>    
+    <span class="nb">echo</span> <span class="k">$(</span>date<span class="k">)</span> Tunnel to jumpbox created successfully  &gt;&gt; ~/tunnel.log
+  <span class="k">else</span>
+    <span class="nb">echo</span> <span class="k">$(</span>date<span class="k">)</span>  An error occurred creating a tunnel to jumpbox. RC was <span class="nv">$?</span> &gt;&gt; ~/tunnel.log
+  <span class="k">fi</span>
+<span class="o">}</span>
+/bin/pidof ssh
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="k">$(</span>date<span class="k">)</span> Creating new tunnel connection &gt;&gt; ~/tunnel.log
+  createTunnel
+<span class="k">fi</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>给脚本添加执行权限</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>chmod +x creat_ssh_tunnel.sh
+</code></pre></div>
+
+
+<h4>树莓派上开启cron定时任务</h4>
+<div class="highlight"><pre><span></span><code>sudo crontab -e
+</code></pre></div>
+
+
+<p>在文件最后一行添加：</p>
+<div class="highlight"><pre><span></span><code>*/10 * * * * ～/create_ssh_tunnel.sh &gt;&gt; tunnel.log <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>意思是每十分钟执行一次刚刚我们编辑的shell脚本</p>
+</blockquote>
+<h3>公网IP + 路由器端口转发</h3>
+<blockquote>
+<p>如果用网线将树莓派连接到互联网上，只要获得公网IP，皆可以通过ssh访问。但是我们在家中通常是用wifi连接树莓派，我们获得的公网iP，只是路由器的IP。由于一个路由器上连接很多设备，我们无法通过这个公网IP访问到树莓派。而且由于路由器的公网IP是会变动的。所以我们要解决的问题是：</p>
+<ul>
+<li>找到路由器的公网IP</li>
+<li>通过公网IP找到路由器下连接的树莓派</li>
+</ul>
+</blockquote>
+<p>可以在路由器设置里将树莓派分配固定的IP，并绑定固定端口。这样就可以通过访问这个端口访问到局域网下的树莓派。之后不管是将公网IP发送到邮箱还是，使用动态DNS解析服务，通过域名访问树莓派，都可以很容易实现。</p>
+<h3>参考</h3>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000002718360">SSH反向代理</a></li>
+<li><a href="https://tech.itabas.com/2016/09/08/raspberry/access-raspberry/">外网访问树莓派方法汇总</a></li>
+<li><a href="http://tuijiankan.com/2016/07/04/ddns/index.html">用DDNS服务通过域名访问树莓派</a></li>
+<li><a href="https://www.tunnelsup.com/raspberry-pi-phoning-home-using-a-reverse-remote-ssh-tunnel/">使用crontab让SSH反向代理更持久</a></li>
+</ul>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/09/04/Raspi_Remote_SSH_Tunnel/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

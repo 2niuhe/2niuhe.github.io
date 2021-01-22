@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="GDB调试Python代码"/>
+    <meta property="og:url" content="../../../../../pages/2020/10/16/Angular-Tutorial/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/10/16/Angular-Tutorial/" />
+
+    <title>GDB调试Python代码 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li class="active"><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/10/16/Angular-Tutorial/" rel="bookmark"
+             title="Permalink to GDB调试Python代码">GDB调试Python代码</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/python.html">Python</a>
+
+    on 2020-10-16
+
+        |
+        tags:         <a href="../../../../../tag/python.html">Python</a>
+        <a href="../../../../../tag/gdb.html">GDB</a>
+
+
+        |
+        <a href="../../../../../pages/2020/10/16/Angular-Tutorial/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h3>Core Dump文件</h3>
+<blockquote>
+<p>凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。</p>
+<p>Gdb可以附着在特定进程上调试，但是为了不影响运行中的进程，可以通过生成 core file 的方式来保存进程的当前信息。</p>
+</blockquote>
+<h3>实验环境配置</h3>
+<blockquote>
+<p>环境是Ubuntu20.04</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 新开一个Shell的时候，ulimit选项都恢复了默认选项，需要重新设置该值</span>
+<span class="c1"># 查看shell进程资源</span>
+<span class="nb">ulimit</span> -a
+<span class="c1"># 查看core文件大小限制</span>
+<span class="nb">ulimit</span> -c
+<span class="c1"># 修改core文件大小限制</span>
+<span class="nb">ulimit</span> -c unlimited
+<span class="c1"># 查看修改是否生效</span>
+<span class="nb">ulimit</span> -c
+<span class="c1"># 设置core_pattern</span>
+<span class="c1"># core_pattern文件中定义了当产生core dump后对core文件进行什么操作</span>
+cat /proc/sys/kernel/core_pattern
+<span class="c1"># 需要修改core_pattern文件使得core文件保存在磁盘上</span>
+<span class="c1"># 方法1</span>
+        <span class="c1"># 暂停apport服务</span>
+        sudo service apport stop
+        cat /proc/sys/kernel/core_pattern
+
+        <span class="c1"># 生成core文件后恢复apport服务</span>
+        sudo service apport start
+
+<span class="c1"># 方法2</span>
+        mkdir /var/cores
+        <span class="nb">echo</span> <span class="s2">&quot;/var/cores/core.%e.%p&quot;</span> &gt; /proc/sys/kernel/core_pattern
+<span class="c1"># 方法3</span>
+        vim /etc/sysctl.conf
+        <span class="c1"># 在最后一行添加kernel.core_uses_pid = 1</span>
+        sysctl -p
+<span class="c1"># 阅读core文件头     </span>
+readelf -h core 
+</code></pre></div>
+
+
+<blockquote>
+<p>安装Python-dbg</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo apt install gdb python3-dbg
+</code></pre></div>
+
+
+<h3>GDB调试Python代码</h3>
+<h4>实验1：直接调试core dump文件</h4>
+<blockquote>
+<p>将如下代码保存为explode.py</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code> <span class="kn">import</span> <span class="nn">os</span>
+
+ <span class="k">def</span> <span class="nf">my_exploding_func</span><span class="p">():</span>
+     <span class="n">my_local_var</span> <span class="o">=</span> <span class="s1">&#39;hi&#39;</span>
+     <span class="n">number</span> <span class="o">=</span> <span class="mi">4</span> 
+     <span class="n">number2</span> <span class="o">=</span> <span class="mi">5</span> 
+     <span class="n">number4</span> <span class="o">=</span> <span class="n">number</span><span class="o">+</span><span class="mi">3</span>
+     <span class="n">os</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
+
+ <span class="n">my_exploding_func</span><span class="p">()</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>执行代码，产生core dump文件</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>python explode.py
+</code></pre></div>
+
+
+<blockquote>
+<p>同样的Python版本执行gdb调试</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 读取core文件</span>
+gdb <span class="sb">`</span>which python<span class="sb">`</span> core
+</code></pre></div>
+
+
+<blockquote>
+<p>可以使用一些常见的命令调试</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1">#0  __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50</span>
+<span class="m">50</span>  ../sysdeps/unix/sysv/linux/raise.c: 没有那个文件或目录.
+<span class="o">(</span>gdb<span class="o">)</span> py-list
+   <span class="m">3</span>    def my_exploding_func<span class="o">()</span>:
+   <span class="m">4</span>        <span class="nv">my_local_var</span> <span class="o">=</span> <span class="s1">&#39;hi&#39;</span>
+   <span class="m">5</span>        <span class="nv">number</span> <span class="o">=</span> <span class="m">4</span>
+   <span class="m">6</span>        <span class="nv">number2</span> <span class="o">=</span> <span class="m">5</span>
+   <span class="m">7</span>        <span class="nv">number4</span> <span class="o">=</span> number+3
+  &gt;8        os.abort<span class="o">()</span>
+   <span class="m">9</span>    
+  <span class="m">10</span>    my_exploding_func<span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span> py-bt
+Traceback <span class="o">(</span>most recent call first<span class="o">)</span>:
+  &lt;built-in method abort of module object at remote 0x7f08dfc7d360&gt;
+  File <span class="s2">&quot;explode.py&quot;</span>, line <span class="m">8</span>, in my_exploding_func
+    os.abort<span class="o">()</span>
+  File <span class="s2">&quot;explode.py&quot;</span>, line <span class="m">10</span>, in &lt;module&gt;
+    my_exploding_func<span class="o">()</span>
+</code></pre></div>
+
+
+<h4>实验2:主动生成core dump文件</h4>
+<blockquote>
+<p>如下代码保存为test.py</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
+        <span class="n">do</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>运行该代码后找到PID</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="err">ps -ef | grep &quot;python test.py&quot;</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>主动生成core dump文件,不影响进程继续运行</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>gdb python PID
+generate-core-file
+</code></pre></div>
+
+
+<blockquote>
+<p>所有gdb命令都支持使用，同时还有安装python-dbg支持的命令</p>
+<p>在gdb调试命令行中输入</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># py + TAB键位弹出常用命令</span>
+py-bt               py-list             py-up
+py-bt-full          py-locals           python
+py-down             py-print            python-interactive
+<span class="c1"># help + 命令显示帮助信息</span>
+<span class="nb">help</span> py-bt
+</code></pre></div>
+
+
+<h3>参考</h3>
+<p><a href="http://www.brendangregg.com/blog/2016-08-09/gdb-example-ncurses.html">gdb Debugging Full Example </a></p>
+<p><a href="https://mcgrady-forever.github.io/2018/03/27/linux-coredump/">Linux上Core Dump文件的形成和分析</a></p>
+<p><a href="http://vra.github.io/2017/12/03/ubuntu-core-dump-debug/">Linux上coredump实验</a></p>
+<p><a href="https://blog.csdn.net/haima1998/article/details/89962435">GDB调试Python命令</a></p>
+<p><a href="https://wiki.python.org/moin/DebuggingWithGdb">Debuggin with gdb</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/10/16/Angular-Tutorial/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

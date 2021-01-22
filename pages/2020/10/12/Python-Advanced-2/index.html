@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Python进阶中"/>
+    <meta property="og:url" content="../../../../../pages/2020/10/12/Python-Advanced-2/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/10/12/Python-Advanced-2/" />
+
+    <title>Python进阶中 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li class="active"><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/10/12/Python-Advanced-2/" rel="bookmark"
+             title="Permalink to Python进阶中">Python进阶中</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/python.html">Python</a>
+
+    on 2020-10-12
+
+        |
+        tags:         <a href="../../../../../tag/python.html">Python</a>
+
+
+        |
+        <a href="../../../../../pages/2020/10/12/Python-Advanced-2/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h4>生成器Generator</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">countdown</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">num</span>
+        <span class="n">num</span> <span class="o">-=</span> <span class="mi">1</span>
+
+<span class="c1"># this will not print &#39;Starting&#39;</span>
+<span class="n">cd</span> <span class="o">=</span> <span class="n">countdown</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># this will print &#39;Starting&#39; and the first value</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">cd</span><span class="p">))</span>
+
+<span class="c1"># will print the next values</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">cd</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">cd</span><span class="p">))</span>
+
+<span class="c1"># this will raise a StopIteration</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">cd</span><span class="p">))</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>迭代器使用方式</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># you can iterate over a generator object with a for in loop</span>
+<span class="n">cd</span> <span class="o">=</span> <span class="n">countdown</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cd</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># you can use it for functions that take iterables as input</span>
+<span class="n">cd</span> <span class="o">=</span> <span class="n">countdown</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sum_cd</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cd</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sum_cd</span><span class="p">)</span>
+
+<span class="n">cd</span> <span class="o">=</span> <span class="n">countdown</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sorted_cd</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cd</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sorted_cd</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>生成器表达式</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># generator expression</span>
+<span class="n">mygenerator</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">mygenerator</span><span class="p">),</span> <span class="s2">&quot;bytes&quot;</span><span class="p">)</span>
+
+<span class="c1"># list comprehension</span>
+<span class="n">mylist</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">mylist</span><span class="p">),</span> <span class="s2">&quot;bytes&quot;</span><span class="p">)</span>
+
+<span class="c1"># 120bytes</span>
+<span class="c1"># 4272 bytes</span>
+</code></pre></div>
+
+
+<h5>生成器概念</h5>
+<blockquote>
+<p>类可以实现生成器作为一个可迭代对象，它需要实现<code>__iter__</code>方法和<code>__next__</code>方法，使得类对象可迭代。此外，还需要注意记录迭代次数，以及最后raise一个StopIteration异常。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">firstn</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">cur</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+
+<span class="n">firstn_object</span> <span class="o">=</span> <span class="n">firstn</span><span class="p">(</span><span class="mi">1000000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">firstn_object</span><span class="p">))</span>
+</code></pre></div>
+
+
+<h4>装饰器Decorators</h4>
+<blockquote>
+<p>装饰器的典型使用场景有：</p>
+<ul>
+<li>计算函数执行时间</li>
+<li>用于调试，打印出函数的参数和调用信息</li>
+<li>作为函数的参数校验</li>
+<li>以插件的形式注册函数</li>
+<li>降低代码执行速度来测试网络，如使用sleep函数</li>
+<li>缓存代码执行结果Memoization</li>
+<li>附加信息或者更新状态</li>
+</ul>
+<p><strong>装饰器就是一个语法糖，如下装饰器就类似<code>target = somedecorator(target)</code></strong></p>
+<p><strong>装饰器一个特性就是将被装饰函数替换为其他函数</strong></p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="nd">@somedecorator</span>
+<span class="k">def</span> <span class="nf">target</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running target&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>简单装饰器模板</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="k">def</span> <span class="nf">my_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>      <span class="c1"># 保持被装饰函数的属性</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Do something before</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Do something after</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>带参数的装饰器函数，可以认为是两层函数，在简单装饰器外部套一个函数来扩展装饰器的行为。</p>
+<p>即两层闭包，一个持有外部环境变量的函数就是闭包。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">num_times</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator_repeat</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_times</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorator_repeat</span>
+
+<span class="nd">@repeat</span><span class="p">(</span><span class="n">num_times</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">greet</span><span class="p">(</span><span class="s1">&#39;Alex&#39;</span><span class="p">)</span>
+
+<span class="c1"># 输出</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hello Alex</span>
+<span class="sd">    Hello Alex</span>
+<span class="sd">    Hello Alex</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h5>层叠装饰器</h5>
+<blockquote>
+<p>装饰器的执行顺序是decorator(func)，从外到内执行，如果有多个装饰器堆叠在一起，按照decorator2(docorator1(func))的执行顺序。</p>
+<p>其更清晰的执行顺序是：</p>
+<ul>
+<li><strong>func = decorator1(func)</strong></li>
+<li><strong>func = decorator2(func)</strong></li>
+<li><strong>func()</strong></li>
+</ul>
+<p>多个装饰器装饰函数时，有个规律是从下到上包裹（装饰）函数，在装饰的过程中执行装饰器函数和内部闭包wrapper函数之间代码，闭包函数知识作为一个对象被返回，在装饰过程中并不执行。</p>
+<p>而在执行被装饰函数的过程中，从上到下执行wrapper函数内部的代码。</p>
+<p>如下代码多个装饰器，其装饰的顺序和wrapper执行的顺序相反。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 装饰过程</span>
+<span class="n">say_hello</span> <span class="o">=</span> <span class="n">start_end_decorator_2</span><span class="p">(</span><span class="n">start_end_decorator_1</span><span class="p">(</span><span class="n">say_hello</span><span class="p">))</span>
+
+<span class="n">say_hello</span><span class="p">()</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>多装饰器实验</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">functools</span>
+<span class="c1"># a decorator function that prints debug information about the wrapped function</span>
+<span class="k">def</span> <span class="nf">start_end_decorator_2</span><span class="p">(</span><span class="n">func</span><span class="p">):</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Start decorator2&#39;</span><span class="p">)</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper2</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Exec wrapper 2&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;End wrapper 2&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">wrapper2</span>
+
+
+<span class="k">def</span> <span class="nf">start_end_decorator_1</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Start decorator1&#39;</span><span class="p">)</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper1</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Exec wrapper 1&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;End wrapper 1&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">wrapper1</span>
+
+
+<span class="nd">@start_end_decorator_2</span>
+<span class="nd">@start_end_decorator_1</span>
+<span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">greeting</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">greeting</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">greeting</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">相当于</span>
+<span class="sd">func = start_end_decorator_1(func)</span>
+<span class="sd">此时func是下面这个wrapper1函数</span>
+<span class="sd">    def wrapper1(*args, **kwargs):</span>
+<span class="sd">        print(&#39;Exec wrapper 1&#39;)</span>
+<span class="sd">        result = func(*args, **kwargs)</span>
+<span class="sd">        print(&#39;End wrapper 1&#39;)</span>
+<span class="sd">        return result</span>
+<span class="sd">再经过下一个装饰器start_end_decorator_2</span>
+<span class="sd">func再次被替换</span>
+<span class="sd">func = start_end_decorator_2(start_end_decorator_1(func))</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">say_hello</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Alex&#39;</span><span class="p">)</span>
+
+<span class="c1"># exec result</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start decorator1</span>
+<span class="sd">    Start decorator2</span>
+<span class="sd">    Exec wrapper 2</span>
+<span class="sd">    Exec wrapper 1</span>
+<span class="sd">    Hello Alex</span>
+<span class="sd">    End wrapper 1</span>
+<span class="sd">    End wrapper 2</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h5>装饰器执行时间</h5>
+<blockquote>
+<p>装饰器需要区分导入时和运行时，</p>
+<p>装饰器一个特性就是装饰的过程在import时执行，当import代码时，装饰器立刻执行，将被装饰函数变为另一个函数。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">registry</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running register(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">func</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+<span class="nd">@register</span>
+<span class="k">def</span> <span class="nf">f1</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running f1&quot;</span><span class="p">)</span>
+
+<span class="nd">@register</span>
+<span class="k">def</span> <span class="nf">f2</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running f2&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">f3</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running f3&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running main&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;registry -&gt;&quot;</span><span class="p">,</span> <span class="n">registry</span><span class="p">)</span>
+    <span class="n">f1</span><span class="p">()</span>
+    <span class="n">f2</span><span class="p">()</span>
+    <span class="n">f3</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+<span class="c1"># import该模块的输出如下</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">running register(&lt;function f1 at 0x7f4105056af0&gt;)</span>
+<span class="sd">running register(&lt;function f2 at 0x7f4105056c10&gt;)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># 执行main函数的输出如下    </span>
+<span class="c1"># 在运行时，被装饰函数才开始执行</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">running register(&lt;function f1 at 0x7f65b62d70d0&gt;)</span>
+<span class="sd">running register(&lt;function f2 at 0x7f65b62d7160&gt;)</span>
+<span class="sd">running main</span>
+<span class="sd">registry -&gt; [&lt;function f1 at 0x7f65b62d70d0&gt;, &lt;function f2 at 0x7f65b62d7160&gt;]</span>
+<span class="sd">running f1</span>
+<span class="sd">running f2</span>
+<span class="sd">running f3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h5>类装饰器</h5>
+<blockquote>
+<p>可以使用类作为装饰器，因此，需要首先实现魔法方法<code>__call__</code>，使得对象是callable可调用的，类装饰器典型用处是保存状态，如函数被调用次数。我们使用<code>functools.update_wrapper()</code>而不是<code>functools.wraps</code>来持久化被装饰器函数信息。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="k">class</span> <span class="nc">CountCalls</span><span class="p">:</span>
+    <span class="c1"># the init needs to have the func as argument and stores it</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="n">functools</span><span class="o">.</span><span class="n">update_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_calls</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># extend functionality, execute function, and return the result</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Call </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_calls</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nd">@CountCalls</span>
+<span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>
+
+<span class="n">say_hello</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">say_hello</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># result</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call 1 of &#39;say_hello&#39;</span>
+<span class="sd">    Hello!</span>
+<span class="sd">    Call 2 of &#39;say_hello&#39;</span>
+<span class="sd">    Hello!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h3>Context Managers</h3>
+<blockquote>
+<p>上下文管理器用于资源管理，允许你方便的分配和释放资源</p>
+<p>Python内置的关键字with用于处理上下文管理器，上下文管理器典型的用途有：</p>
+<ul>
+<li>打开和关闭文件</li>
+<li>打开和关闭数据库连接</li>
+<li>获得和释放锁</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+<span class="c1"># error-prone:</span>
+<span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+<span class="c1"># do stuff</span>
+<span class="c1"># lock should always be released!</span>
+<span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<span class="c1"># Better:</span>
+<span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+    <span class="c1"># do stuff</span>
+</code></pre></div>
+
+
+<h4>实现一个上下文管理器类</h4>
+<blockquote>
+<p>为了支持with关键字，需要在类中实现<code>__enter__</code>和<code>__exit__</code>方法，当Python执行到with语句，会执行<code>__enter__</code>方法，此时应该获取资源并返回，而当离开上下文环境时，将执行<code>__exit__</code>方法，此时应该释放资源。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ManagedFile</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;enter&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">ManagedFile</span><span class="p">(</span><span class="s1">&#39;notes.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing stuff...&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;some todo...&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h5>处理异常</h5>
+<blockquote>
+<p>当异常产生时，Python将异常类型、值和traceback信息传递给<code>__exit__</code>方法，它可以处理该异常。如果<code>__exit__</code>方法返回了除True之外的任何值，则由with语句引发异常。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ManagedFile</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;enter&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exc:&#39;</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+
+<span class="c1"># No exception</span>
+<span class="k">with</span> <span class="n">ManagedFile</span><span class="p">(</span><span class="s1">&#39;notes.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing stuff...&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;some todo...&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;continuing...&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Exception is raised, but the file can still be closed</span>
+<span class="k">with</span> <span class="n">ManagedFile</span><span class="p">(</span><span class="s1">&#39;notes2.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing stuff...&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;some todo...&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">do_something</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;continuing...&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>也可以在<code>__exit__</code>方法中处理异常，并返回<code>True</code></p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ManagedFile</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;enter&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Exception has been handled&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">with</span> <span class="n">ManagedFile</span><span class="p">(</span><span class="s1">&#39;notes2.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;doing stuff...&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;some todo...&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">do_something</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;continuing...&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h4>用生成器实现一个上下文管理器</h4>
+<blockquote>
+<p>与其写一个类，也可以写一个生成器函数，并用<code>contextlib.contextmanager</code>来装饰它。</p>
+<p>为了实现这个目的，函数必须在<code>try</code>语句段中<code>yield</code>资源，而在<code>finally</code>语句中实现类似<code>__exit__</code>的功能，即释放资源。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">open_managed_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">f</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">open_managed_file</span><span class="p">(</span><span class="s1">&#39;notes.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;some todo...&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>生成器首先获取资源，然后暂时挂起执行流程，并<code>yeild</code>返回资源，资源可以被调用者使用，当调用着离开with上下文，生成器接着执行后续的<code>finally</code>语句，释放资源。</p>
+</blockquote>
+<h4>Python中的解引用</h4>
+<blockquote>
+<p>Python中的<code>*</code>号具有多种作用：</p>
+<ul>
+<li>Use <code>*args</code> for variable-length arguments</li>
+<li>Use <code>**kwargs</code> for variable-length keyword arguments</li>
+<li>Use <code>*,</code> followed by more function parameters to enforce keyword-only arguments</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+<span class="n">my_function</span><span class="p">(</span><span class="s2">&quot;Hey&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Alex&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1"># Parameters after &#39;*&#39; or &#39;*identifier&#39; are keyword-only parameters and may only be passed using keyword arguments.</span>
+<span class="k">def</span> <span class="nf">my_function2</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+
+<span class="c1"># my_function2(&quot;Michael&quot;, 5) --&gt; this would raise a TypeError</span>
+<span class="n">my_function2</span><span class="p">(</span><span class="s2">&quot;Michael&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h4>Python函数传参以及深拷贝浅拷贝</h4>
+<blockquote>
+<p>在Python中，赋值语句<code>obj_b = obj_a</code>不产生真正的对象拷贝，只创建一个新的变量和obj_a具有相同的引用，因此当你想要产生可变对象的真正的拷贝，并在不影响原来对象的情况下修改拷贝对象时，需要格外小心。</p>
+<p>可以使用copy模块产生真正的拷贝，然而，对于混合/嵌套对象，浅拷贝和深拷贝有重要的区别，</p>
+<ul>
+<li>浅拷贝</li>
+</ul>
+<blockquote>
+<p>只有一层深，对于比一层深的嵌套对象是源对象的引用，因此修改会导致源对象的更改</p>
+</blockquote>
+<ul>
+<li>深拷贝</li>
+</ul>
+<blockquote>
+<p>一份完全独立的拷贝，递归产生源对象中所有嵌套对象的拷贝</p>
+</blockquote>
+</blockquote>
+<h5>赋值操作</h5>
+<blockquote>
+<p>会产生源对象的一个引用，修改会导致源对象的变更</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="n">list_a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="n">list_a</span>
+
+<span class="n">list_a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_b</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    [-10, 2, 3, 4, 5]</span>
+<span class="sd">    [-10, 2, 3, 4, 5]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h5>浅拷贝</h5>
+<blockquote>
+<p>浅拷贝只有一层深度，修改第一层不会影响源对象，使用<code>copy.copy()</code>方法或者对象特定的拷贝方法或者拷贝构造函数</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">copy</span>
+<span class="n">list_a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+
+<span class="c1"># not affects the other list</span>
+<span class="n">list_b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_b</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>但是在嵌套对象中，修改第二层或者更深层次的数据时，会影响到源对象，因为在第二层时拷贝的是引用，而不是值。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">copy</span>
+<span class="n">list_a</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]]</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+
+<span class="c1"># affects the other!</span>
+<span class="n">list_a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_b</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]]</span>
+<span class="sd">    [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>对于列表，类似的浅拷贝方法还有</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># shallow copies</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="n">list_a</span><span class="p">[:]</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="n">list_a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</code></pre></div>
+
+
+<h5>深拷贝</h5>
+<blockquote>
+<p>深拷贝是一份完全独立的克隆，使用<code>copy.deepcopy</code>方法实现</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">copy</span>
+<span class="n">list_a</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]]</span>
+<span class="n">list_b</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+
+<span class="c1"># not affects the other</span>
+<span class="n">list_a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">list_b</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]]</span>
+<span class="sd">    [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h5>对象的深拷贝和浅拷贝</h5>
+<blockquote>
+<p>可以使用<code>copy</code>模块实现对特定对象的深拷贝或者浅拷贝</p>
+</blockquote>
+<ul>
+<li>赋值只拷贝对象引用</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">age</span>
+
+<span class="c1"># Only copies the reference</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alex&#39;</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">p1</span>
+<span class="n">p2</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">28</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    28</span>
+<span class="sd">    28</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<ul>
+<li>浅拷贝拷贝一层</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># shallow copy</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Alex&#39;</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+<span class="n">p2</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">28</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    27</span>
+<span class="sd">    28</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<ul>
+<li>深拷贝可以完整拷贝</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Company</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boss</span><span class="p">,</span> <span class="n">employee</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span> <span class="n">boss</span> <span class="o">=</span> <span class="n">boss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">employee</span> <span class="o">=</span> <span class="n">employee</span>
+
+<span class="c1"># shallow copy will affect nested objects</span>
+<span class="n">boss</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
+<span class="n">employee</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Joe&#39;</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+<span class="n">company</span> <span class="o">=</span> <span class="n">Company</span><span class="p">(</span><span class="n">boss</span><span class="p">,</span> <span class="n">employee</span><span class="p">)</span>
+
+<span class="n">company_clone</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">company</span><span class="p">)</span>
+<span class="n">company_clone</span><span class="o">.</span><span class="n">boss</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">56</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">company</span><span class="o">.</span><span class="n">boss</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">company_clone</span><span class="o">.</span><span class="n">boss</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    56</span>
+<span class="sd">    56</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># deep copy will not affect nested objects</span>
+<span class="n">boss</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
+<span class="n">employee</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;Joe&#39;</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+<span class="n">company</span> <span class="o">=</span> <span class="n">Company</span><span class="p">(</span><span class="n">boss</span><span class="p">,</span> <span class="n">employee</span><span class="p">)</span>
+<span class="n">company_clone</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">company</span><span class="p">)</span>
+<span class="n">company_clone</span><span class="o">.</span><span class="n">boss</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">56</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">company</span><span class="o">.</span><span class="n">boss</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">company_clone</span><span class="o">.</span><span class="n">boss</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    55</span>
+<span class="sd">    56</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h5>函数传参</h5>
+<blockquote>
+<p>在C语言中传参有显式的值传递和地址传递，在Python中也有类似的机制。</p>
+<p>Python中数据类型存在可变和不可变的区别，即mutable和immutable。</p>
+<p>对于可变类型，例如列表，由于传递的是列表的引用，列表可以在一个方法中被修改</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># immutable objects -&gt; no change</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># x += 5 also no effect since x is immutable and a new variable must be created</span>
+
+<span class="n">var</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;var before foo():&#39;</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;var after foo():&#39;</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    var before foo(): 10</span>
+<span class="sd">    var after foo(): 10</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<ul>
+<li>可变对象</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># mutable objects -&gt; change</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="n">a_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list before foo():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list after foo():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    my_list before foo(): [1, 2, 3]</span>
+<span class="sd">    my_list after foo(): [1, 2, 3, 4]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<ul>
+<li>重新绑定一个可变对象的引用</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Rebind a mutable reference -&gt; no change</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="c1"># 赋值操作产生一个新的局部变量</span>
+    <span class="n">a_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">]</span> <span class="c1"># a_list is now a new local variable within the function</span>
+    <span class="n">a_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list before foo():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list after foo():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+</code></pre></div>
+
+
+<ul>
+<li>区分+=和=</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># another example with rebinding references:</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="n">a_list</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># this chanches the outer variable</span>
+
+<span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="n">a_list</span> <span class="o">=</span> <span class="n">a_list</span> <span class="o">+</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># this rebinds the reference to a new local variable</span>
+
+<span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list before foo():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list after foo():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+
+<span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list before bar():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+<span class="n">bar</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;my_list after bar():&#39;</span><span class="p">,</span> <span class="n">my_list</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    my_list before foo(): [1, 2, 3]</span>
+<span class="sd">    my_list after foo(): [1, 2, 3, 4, 5]</span>
+<span class="sd">    my_list before bar(): [1, 2, 3]</span>
+<span class="sd">    my_list after bar(): [1, 2, 3]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+<h3>参考</h3>
+<p><a href="https://github.com/python-engineer/python-engineer-notebooks">Python-Notebook</a></p>
+<p><a href="https://www.python-engineer.com/courses/advancedpython/19-asterisk/">Python中的*号</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/%E9%97%AD%E5%8C%85_(%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6)">闭包概念</a></p>
+<p><a href="https://www.cnblogs.com/z-joshua/p/7742146.html">Python装饰器</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/10/12/Python-Advanced-2/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

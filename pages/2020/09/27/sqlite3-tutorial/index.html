@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="sqlite3入门"/>
+    <meta property="og:url" content="../../../../../pages/2020/09/27/sqlite3-tutorial/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/09/27/sqlite3-tutorial/" />
+
+    <title>sqlite3入门 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li class="active"><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/09/27/sqlite3-tutorial/" rel="bookmark"
+             title="Permalink to sqlite3入门">sqlite3入门</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/others.html">Others</a>
+
+    on 2020-09-27
+
+        |
+        tags:         <a href="../../../../../tag/db.html">DB</a>
+
+
+        |
+        <a href="../../../../../pages/2020/09/27/sqlite3-tutorial/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h3>命令行</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 从文件中执行sql语句</span>
+sqlite&gt; .read cars.sql
+<span class="c1"># 打开test.db数据库文件，如果文件不存在，创建</span>
+sqlite3 test.db
+<span class="c1"># 元命令</span>
+<span class="c1"># 显示可用表</span>
+.tables
+
+
+sqlite&gt; .mode column
+sqlite&gt; .headers on
+sqlite&gt; SELECT * FROM Friends<span class="p">;</span>
+Id          Name        Sex       
+----------  ----------  ----------
+<span class="m">1</span>           Jane        F         
+<span class="m">2</span>           Thomas      M         
+<span class="m">3</span>           Franklin    M         
+<span class="m">4</span>           Elisabeth   F         
+<span class="m">5</span>           Mary        F         
+<span class="m">6</span>           Lucy        F         
+<span class="m">7</span>           Jack        M 
+
+本示例说明如何在 sqlite 的列模式下格式化数据。 .headers命令也已用于显示列标题。 默认情况下，标题是隐藏的。
+
+.width命令调整列的大小。 （此 meta 命令仅与列模式下的表有关。）
+
+sqlite&gt; SELECT Name, Title FROM Authors NATURAL JOIN Books<span class="p">;</span>
+Name         Title     
+-----------  ----------
+Jane Austen  Emma      
+Leo Tolstoy  War and Pe
+Joseph Hell  Catch XII 
+Charles Dic  David Copp
+Joseph Hell  Good as Go
+Leo Tolstoy  Anna Karen
+
+
+
+列宽不足以正确显示所有数据。
+
+sqlite&gt; .width <span class="m">15</span> <span class="m">18</span>
+sqlite&gt; SELECT Name, Title FROM Authors NATURAL JOIN Books<span class="p">;</span>
+Name             Title             
+---------------  ------------------
+Jane Austen      Emma              
+Leo Tolstoy      War and Peace     
+Joseph Heller    Catch XII         
+Charles Dickens  David Copperfield 
+Joseph Heller    Good as Gold      
+Leo Tolstoy      Anna Karenia 
+SQL
+在这里，我们更改列宽。 第一列为 <span class="m">15</span> 个字符，第二列为 <span class="m">18</span> 个字符。
+
+
+
+.show命令列出了各种设置。 其中包括输出模式，列表模式中使用的分隔符以及标题是否打开。
+
+
+.schema命令显示表的结构。 它提供了 DDL SQL 来创建表。
+
+sqlite&gt; .schema Cars
+CREATE TABLE Cars<span class="o">(</span>Id INTEGER PRIMARY KEY, Name TEXT, Price INTEGER<span class="o">)</span><span class="p">;</span>
+SQL
+.schema命令显示表的结构。 它提供了 DDL SQL 来创建表。
+
+
+
+可以使用.prompt命令更改sqlite3的提示。
+
+sqlite&gt; .prompt <span class="s2">&quot;&gt; &quot;</span> <span class="s2">&quot;. &quot;</span>
+&gt; SELECT * FROM Cars
+. LIMIT <span class="m">2</span><span class="p">;</span>
+Id          Name        Price     
+----------  ----------  ----------
+<span class="m">1</span>           Audi        <span class="m">52642</span>     
+<span class="m">2</span>           Mercedes    <span class="m">57127</span>     
+&gt; 
+SQL
+有两个提示。 一个是主提示，另一个是继续提示。 默认的主提示是sqlite<span class="p">&amp;</span>gt<span class="p">;</span>，默认的继续提示是...<span class="p">&amp;</span>gt<span class="p">;</span>。
+
+
+我们可以从 Shell 执行 SQL 命令。
+
+$ sqlite3 test.db <span class="s2">&quot;SELECT * FROM Cars;&quot;</span>
+
+
+我们将使用.dump命令转储该表。
+
+sqlite&gt; .output cars2.sql
+sqlite&gt; .dump Cars
+SQL
+我们还可以将输出重定向到文件。 .output命令会将输出重定向到cars2.sql文件。
+
+sqlite&gt; .tables
+Authors       Cars          Friends       Reservations
+Books         Customers     Orders  
+sqlite&gt; DROP TABLE Cars<span class="p">;</span>
+sqlite&gt; .tables
+Authors       Customers     Orders      
+Books         Friends       Reservations
+sqlite&gt; .read cars.sql
+sqlite&gt; .tables
+Authors       Cars          Friends       Reservations
+Books         Customers     Orders     
+sqlite&gt; SELECT * FROM Cars WHERE <span class="nv">Id</span><span class="o">=</span><span class="m">1</span><span class="p">;</span>
+Id          Name        Price     
+----------  ----------  ----------
+<span class="m">1</span>           Audi        <span class="m">52642</span>   
+</code></pre></div>
+
+
+<p>在这里，我们得到SELECT语句的输出。 默认情况下，输出模式为line，分隔符为|。</p>
+<h3>使用案例</h3>
+<p>1、输入" sqlite3 + 数据库名.db " (如：  " sqlite3 collect.db ") 打开数据库</p>
+<p>2、可输入 " .table " 查看数据库中存在哪些表</p>
+<p>3、可输入" .schema ' 查看建表语句</p>
+<p>4、通过SQL查询语句 " select * from 表名 " （如：" select * from  Book "）</p>
+<h3>参考</h3>
+<p><a href="https://geek-docs.com/sqlite/sqlite-tutorial/sqlite-tutorial.html">sqlite教程</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/09/27/sqlite3-tutorial/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

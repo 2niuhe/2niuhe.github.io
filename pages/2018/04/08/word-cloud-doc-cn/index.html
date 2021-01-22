@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="WordCloud文档中文翻译"/>
+    <meta property="og:url" content="../../../../../pages/2018/04/08/word-cloud-doc-cn/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/04/08/word-cloud-doc-cn/" />
+
+    <title>WordCloud文档中文翻译 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li class="active"><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/04/08/word-cloud-doc-cn/" rel="bookmark"
+             title="Permalink to WordCloud文档中文翻译">WordCloud文档中文翻译</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/python.html">Python</a>
+
+    on 2018-04-08
+
+        |
+        tags:         <a href="../../../../../tag/python.html">python</a>
+        <a href="../../../../../tag/wordcloud.html">wordcloud</a>
+
+
+        |
+        <a href="../../../../../pages/2018/04/08/word-cloud-doc-cn/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h2>Python模块wordcloud参考文档的中文翻译</h2>
+<p>官网链接：<a href="https://amueller.github.io/word_cloud/references.html">wordcloud api reference</a><br>
+Github链接：<a href="https://github.com/amueller/word_cloud">wordcloud</a></p>
+<p>所有函数均封装在WordCloud类里:   </p>
+<ul>
+<li>WordCloud([...])      生成并绘制WordCloud对象</li>
+<li>ImageColorGenerator(image)  词云颜色生成器（基于图片颜色）</li>
+<li>random_color_func([])  词云颜色随机生成</li>
+</ul>
+<h3>wordcloud.WordCloud</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">wordcloud</span><span class="o">.</span><span class="n">WordCloud</span><span class="p">(</span><span class="n">font_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ranks_only</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefer_horizontal</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_words</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">min_font_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stopwords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">max_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="n">relative_scaling</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collocations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize_plurals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h4>参数：</h4>
+<blockquote>
+<p><strong>font_path</strong> : string  </p>
+<blockquote>
+<p>需要使用的字体路径(支持OTF和TTF)。Linux系统上默认指向DroidSansMono路径。若使用其他操作系统或者没有DroidSansMono字体，需要指定字体路径。</p>
+</blockquote>
+<p><strong>width</strong> : int (default=400)</p>
+<blockquote>
+<p>画布的宽度。</p>
+</blockquote>
+<p><strong>height</strong> : int (default=200)</p>
+<blockquote>
+<p>画布的高度。</p>
+</blockquote>
+<p><strong>prefer_horizontal</strong> : float (default=0.90)</p>
+<blockquote>
+<p>尝试水平摆放字体和垂直摆放字体的比例，若prefer_horizontal &lt; 1，当摆放不合适的时候，算法将尝试旋转单词。目前没有内置的方法来获取垂直单词  </p>
+</blockquote>
+<p><strong>mask</strong> : nd-array or None (default=None)</p>
+<blockquote>
+<p>如果不是None，则在哪里绘制单词时给出二进制掩码。 如果mask不是None，那么宽度和高度将被忽略，并且将使用mask的形状。 所有白色（#FF或#FFFFFF）条目将被视为“被遮盖”，而其他条目将被自由绘制。 [这在最新版本中发生了变化！]</p>
+</blockquote>
+<p><strong>scale</strong> : float (default=1)</p>
+<blockquote>
+<p>计算值和绘图之间的缩放比例。 对于大型文字云图像，使用缩放而不是较大的画布尺寸要快得多，但可能导致较粗糙的文字。</p>
+</blockquote>
+<p><strong>min_font_size</strong> : int (default=4)</p>
+<blockquote>
+<p>使用最小的字体大小。 当没有更多的空间时停止绘制。</p>
+</blockquote>
+<p><strong>font_step</strong> : int (default=1)</p>
+<blockquote>
+<p>字体的步长。 font_step &gt; 1时可能会加快计算速度，但会导致糟糕的字体适应性布局。</p>
+</blockquote>
+<p><strong>max_words</strong> : number (default=200)</p>
+<blockquote>
+<p>单词的最大数目。</p>
+</blockquote>
+<p><strong>stopwords</strong> : set of strings or None</p>
+<blockquote>
+<p>敏感词集合，这些词将被忽略。 如果没有，则将使用内置的STOPWORDS列表。  </p>
+</blockquote>
+<p><strong>background_color</strong> : color value (default=”black”)</p>
+<blockquote>
+<p>词云图像的背景颜色。</p>
+</blockquote>
+<p><strong>max_font_size</strong> : int or None (default=None)</p>
+<blockquote>
+<p>使用的最大字体大小。 默认使用图像的高度。</p>
+</blockquote>
+<p><strong>mode</strong> : string (default=”RGB”)</p>
+<blockquote>
+<p>当模式为“RGBA”且background_color为None时，会生成透明背景。</p>
+</blockquote>
+<p><strong>relative_scaling</strong> : float (default=.5)</p>
+<blockquote>
+<p>字体大小的相对单词频率的重要性。 relative_scaling = 0时，只考虑单词等级。 使用relative_scaling = 1时，频繁两倍的单词将具有两倍的大小。 如果你想考虑单词的频率，而不仅仅是他们的等级，那么0.5左右的relative_scaling通常看起来不错。</p>
+</blockquote>
+<p><strong>color_func</strong> : callable, default=None</p>
+<blockquote>
+<p>可用参数关键字<strong>font_size, position, orientation, font_path, random_state</strong>调用，它为每个单词返回一个PIL颜色。 覆盖"colormap"。 请参阅colormap来指定matplotlib的颜色映射。</p>
+</blockquote>
+<p><strong>regexp</strong> : string or None (optional)</p>
+<blockquote>
+<p>正则表达式将输入文本拆分为待处理文本中的标记。 如果指定None，则使用r“\ w [\ w'] +”。</p>
+</blockquote>
+<p><strong>collocations</strong> : bool, default=True</p>
+<blockquote>
+<p>是否包含两个词的搭配（bigrams），默认为True。</p>
+</blockquote>
+<p><strong>colormap</strong> : string or matplotlib colormap, default=”viridis”</p>
+<blockquote>
+<p>Matplotlib色彩映射表为每个单词随机绘制颜色。 如果指定了“color_func”，则忽略。</p>
+</blockquote>
+<p><strong>normalize_plurals</strong> : bool, default=True</p>
+<blockquote>
+<p>是否从文字中删除“尾随”。 如果为真，当出现以's'结尾的单词，则以's'结尾的单词将被删除，并将其计数添加到没有's'结尾的版本 <br>
+以'ss'结尾的单词被忽略。</p>
+</blockquote>
+</blockquote>
+<h4>注意：</h4>
+<blockquote>
+<p>较大的画布使代码明显变慢。 如果您需要较大的单词云，请尝试较小的画布大小，然后设置缩放参数。  </p>
+<p>根据最大字体大小和缩放启发式算法，相比单词实际出现的频率，算法可能会给单词的等级更多的权重。</p>
+</blockquote>
+<h4>属性：</h4>
+<p><code>words_</code>    </p>
+<blockquote>
+<p>(dict of string to float) 单词标识对应其出现次数，如{'hello':90, 'good':30} <br>
+<strong>.. versionchanged: 2.0 words_</strong>: 现在是一个字典  </p>
+</blockquote>
+<p><code>layout_</code>   </p>
+<blockquote>
+<p>(list of tuples (string, int, (int, int), int, color))) <br>
+编码拟合词云，为每个单词编码字符串，字体大小，位置，方向和颜色。</p>
+</blockquote>
+<h4>方法：</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 初始化实例</span>
+<span class="fm">__init__</span><span class="p">(</span><span class="n">font_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ranks_only</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefer_horizontal</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_words</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">min_font_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stopwords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">background_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">max_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="n">relative_scaling</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collocations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize_plurals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p><code>fit_words(frequencies)</code></p>
+<blockquote>
+<p>根据单词和频率创建一个word_cloud。<br>
+别名为generate_from_frequencies。</p>
+<p><strong>参数</strong>:   </p>
+<blockquote>
+<p>frequencies : array of tuples</p>
+<blockquote>
+<p>元组包含单词及其频率。Note:最新版已经改为字典了。</p>
+</blockquote>
+</blockquote>
+<p><strong>返回值</strong>：  </p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<p><code>generate(text)</code></p>
+<blockquote>
+<p>从文本生成wordcloud。<br>
+别名generate_from_text。<br>
+实际调用process_text和generate_from_frequencies。  </p>
+<p><strong>返回值</strong>：  </p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+<p>generate_from_frequencies(frequencies, max_font_size=None)</p>
+<blockquote>
+<p>根据单词和频率创建词云。</p>
+</blockquote>
+<p><strong>参数</strong>:   </p>
+<blockquote>
+<p>frequencies : dict from string to float</p>
+<blockquote>
+<p>字典包含单词及其频率。</p>
+</blockquote>
+<p>max_font_size : int</p>
+<blockquote>
+<p>使用此最大字体大，而不是self.max_font_size</p>
+</blockquote>
+</blockquote>
+<p><strong>返回值</strong>：  </p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<p><code>generate_from_text(text)</code></p>
+<blockquote>
+<p>从文本生成wordcloud。<br>
+实际调用process_text和generate_from_frequencies。</p>
+<p><em>..versionchanged:: 1.2.2</em>  <br>
+process_text（)的返回值不再是generate_from_frequencies（）的参数。 <br>
+返回值：  </p>
+<blockquote>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p><code>process_text(text)</code></p>
+<blockquote>
+<p>将长文本拆分为单词，去除停用词(敏感词)。<br>
+<strong>参数</strong>:   </p>
+<blockquote>
+<p>text : string</p>
+<blockquote>
+<p>待处理的文本</p>
+</blockquote>
+</blockquote>
+<p><strong>返回值</strong>：  </p>
+<blockquote>
+<p>words : dict (string, int)</p>
+<blockquote>
+<p>带有关联频率的词语标记。<br>
+..versionchanged:: 1.2.2  <br>
+将返回类型从元组列表更改为字典。</p>
+</blockquote>
+</blockquote>
+<p><strong>Notes</strong>  </p>
+<blockquote>
+<p>有更好的方法做词频分析，在此不做赘述。</p>
+</blockquote>
+</blockquote>
+<p><code>recolor(random_state=None, color_func=None, colormap=None)</code></p>
+<blockquote>
+<p>重新着色现有布局。<br>
+应用新的着色要比生成整个词云快得多。</p>
+<p><strong>参数</strong>:   </p>
+<blockquote>
+<p>random_state : RandomState, int, or None, default=None</p>
+<blockquote>
+<p>如果不是None，则使用固定的随机状态。 如果给出了一个int，它将用作random.Random状态的种子。</p>
+</blockquote>
+<p>color_func : function or None, default=None</p>
+<blockquote>
+<p>根据(word count, font size, position and orientation)字数，字体大小，位置和方向生成新颜色的函数。 如果为None，则使用self.color_func。  </p>
+</blockquote>
+<p>colormap : string or matplotlib colormap, default=None</p>
+<blockquote>
+<p>使用此颜色映射表来生成新的颜色。 如果指定了color_func，则忽略。 如果没有，则使用self.color_func（或self.color_map）。</p>
+</blockquote>
+</blockquote>
+<p><strong>返回值</strong>：  </p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<p><code>to_array()</code></p>
+<blockquote>
+<p>转换为numpy数组。</p>
+<p><strong>返回值</strong>：  </p>
+<blockquote>
+<p>image : n维数组 (width, height, 3)</p>
+<blockquote>
+<p>词云图像作为numpy矩阵。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p><code>to_file(filename)</code></p>
+<blockquote>
+<p>导出为图像文件。</p>
+<p><strong>参数</strong>:   </p>
+<blockquote>
+<p>filename : string</p>
+<blockquote>
+<p>要写入的位置。</p>
+</blockquote>
+</blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3>wordcloud.ImageColorGenerator</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">wordcloud</span><span class="o">.</span><span class="n">ImageColorGenerator</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>基于彩色图像的颜色生成器.</p>
+<p>根据RGB图像生成颜色。 一个单词将使用彩色图像中包围矩形的平均颜色进行着色。
+构造完成后，该对象充当可调用对象，可以将其作为color_func传递给WordCloud类的构造函数或recolor这个重新着色方法。</p>
+<p><strong>参数</strong>:   </p>
+<blockquote>
+<p>image : n维矩阵, shape (height, width, 3)</p>
+<blockquote>
+<p>用于生成文字颜色的图像。 <a href="https://baike.baidu.com/item/alpha%E9%80%9A%E9%81%93/3163191?fr=aladdin">Alpha通道</a>被忽略。对于wordcloud实例，这应该和画布大小相同。</p>
+</blockquote>
+</blockquote>
+<p><strong>方法</strong></p>
+<blockquote>
+<p><code>__call__(word, font_size, font_path, ...)</code></p>
+<blockquote>
+<p>使用特定图像为给定单词生成颜色。  </p>
+</blockquote>
+<p><code>__init__(image)</code></p>
+</blockquote>
+</blockquote>
+<h3>wordcloud.random_color_func</h3>
+<div class="highlight"><pre><span></span><code><span class="n">wordcloud</span><span class="o">.</span><span class="n">random_color_func</span><span class="p">(</span><span class="n">word</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>随机色调颜色生成.</p>
+<p>默认着色方法。 这只是随机选择一个值为80％和光照50％的色调。</p>
+<p><strong>参数</strong>:   </p>
+<blockquote>
+<p><strong>word, font_size, position, orientation</strong>: ignored.<br>
+<strong>random_state</strong> : random.Random object or None, (default=None)</p>
+<blockquote>
+<p>如果给定了一个随机对象，则用它来生成随机数。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/04/08/word-cloud-doc-cn/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

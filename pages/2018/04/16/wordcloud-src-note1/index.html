@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="wordcloud源码阅读1——初探"/>
+    <meta property="og:url" content="../../../../../pages/2018/04/16/wordcloud-src-note1/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/04/16/wordcloud-src-note1/" />
+
+    <title>wordcloud源码阅读1——初探 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li class="active"><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/04/16/wordcloud-src-note1/" rel="bookmark"
+             title="Permalink to wordcloud源码阅读1——初探">wordcloud源码阅读1——初探</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/python.html">Python</a>
+
+    on 2018-04-16
+
+        |
+        tags:         <a href="../../../../../tag/wordcloud.html">wordcloud</a>
+        <a href="../../../../../tag/python.html">python</a>
+
+
+        |
+        <a href="../../../../../pages/2018/04/16/wordcloud-src-note1/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <p>wordcloud是python用来生成词云的第三方库，github地址是<a href="https://github.com/amueller/word_cloud">word_cloud</a> <br>
+下载源码：</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/amueller/word_cloud
+</code></pre></div>
+
+
+<p>然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。</p>
+<div class="highlight"><pre><span></span><code>git tag
+git checkout <span class="m">1</span>.2.1
+</code></pre></div>
+
+
+<p>现在我们的目录结构如下：
+<img alt="项目目录" src="/img/词云项目目录.jpg"></p>
+<p>可以看到，核心代码都在wordcloud目录下：</p>
+<p>wordcloud项目主要用了以下第三方库：</p>
+<ul>
+<li>Numpy</li>
+<li>PIL</li>
+<li>Cython</li>
+</ul>
+<p>储备知识：</p>
+<ul>
+<li><a href="https://zh.wikipedia.org/zh-hans/HSL%E5%92%8CHSV%E8%89%B2%E5%BD%A9%E7%A9%BA%E9%97%B4">HSL和HSV色彩空间</a></li>
+<li><a href="https://baike.baidu.com/item/RGB">图片RGB</a></li>
+</ul>
+<hr>
+<p><strong>框架大体流程：</strong>
+<img alt="词云流程" src="/img/词云流程.jpg"></p>
+<p>可以看出wordcloud类的两个核心方法<code>process_text()</code>和<code>generate_from_frequencies()</code>。</p>
+<p>如果输入是处理后的{string:frequency}字典类型，直接生成词云的<code>layout</code>，若输入是未处理过的字符串，就要先进行<code>process_text()</code>统计词频等工作。</p>
+<p><strong>继续看<code>generate_from_frequencies()</code>的流程：</strong></p>
+<p><img alt="词云流程2" src="/img/词云流程2.jpg"></p>
+<p>就得到了词云的layout，后边可以通过<code>recolor()</code>重新上色。</p>
+<blockquote>
+<p><code>mask</code>是一个n维数组（图片），在我的理解是photoshop里的蒙板，也叫遮色片。在wordcloud里mask决定了生成词云的位置。白色<code>#FFFFFF</code>称为<code>mask out</code>，即不在白色区域绘制词云。     </p>
+<p><code>layout</code> is list of tuple ,格式<code>(string, int, (int, int), int, color))</code> 定义了每个单词的（字符串，字体大小，（x位置，y位置), 方向， 颜色）</p>
+</blockquote>
+<p><strong>参考：</strong> <br>
+wordcloud的API可以参考<a href="http://blog.niuhemoon.xyz/pages/2018/04/08/word-cloud-doc-cn/">wordcloud文档中文翻译</a>  <br>
+具体使用也可以参考<a href="https://github.com/2niuhe/lyrics_wordcloud">网易云音乐歌手词云</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/04/16/wordcloud-src-note1/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

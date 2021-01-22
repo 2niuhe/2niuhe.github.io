@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Linux信号处理——自定义信号处理函数"/>
+    <meta property="og:url" content="../../../../../pages/2018/10/06/Linux-C-SIGNAL-1/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/10/06/Linux-C-SIGNAL-1/" />
+
+    <title>Linux信号处理——自定义信号处理函数 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li class="active"><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/10/06/Linux-C-SIGNAL-1/" rel="bookmark"
+             title="Permalink to Linux信号处理——自定义信号处理函数">Linux信号处理——自定义信号处理函数</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/linux.html">Linux</a>
+
+    on 2018-10-06
+
+        |
+        tags:         <a href="../../../../../tag/c.html">C</a>
+        <a href="../../../../../tag/linux.html">Linux</a>
+
+
+        |
+        <a href="../../../../../pages/2018/10/06/Linux-C-SIGNAL-1/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>信号是内核和进程之间通信的一种方式，信号是由内核产生，并发送给一个或一组进程的短消息，用不同特定的数字表示不同的信号，信号的作用是表示某种事件的发生。</p>
+</blockquote>
+<h3>信号简介</h3>
+<blockquote>
+<p><strong>分类</strong></p>
+<ul>
+<li>非实时不可靠信号，值为1-31</li>
+<li>实时的可靠信号，值为32-63</li>
+</ul>
+<p>信号由内核生成，信号生成和事件的发生密切相关，可将事件发生源分为以下三类：</p>
+<p><strong>信号事件发生源：</strong></p>
+<ul>
+<li>用户，如键入CTRL+C，终端驱动程序将通知内核产生信号发送到相应的进程</li>
+<li>内核，内核执行过程中，遇到非法指令和浮点数溢出等情况</li>
+<li>进程，一个进程调用kill函数向另一个进程发送信号，进行进程间通信</li>
+</ul>
+<p>通常，LInux为每个信号定义了缺省的处理方式，但是用户可根据需要，对信号的处理方式进行重新定义。</p>
+<p><strong>信号的缺省处理方式包括</strong></p>
+<ul>
+<li>A 结束进程</li>
+<li>B 忽略信号</li>
+<li>C 结束进程并写入内核文件</li>
+<li>D 停止进程</li>
+<li>E 信号不能被捕获</li>
+<li>F 信号不能被忽略</li>
+<li>G 非POSIX信号</li>
+</ul>
+</blockquote>
+<h3>自定义信号处理函数</h3>
+<blockquote>
+<p>必须重新建立信号值和处理方式之间的对应关系，才能重新定义信号的处理方式。LInux提供signal和sigaction函数来实现信号的设置。signal和sigaction的区别在于signal不支持项信号处理函数传递数据。</p>
+<p>注：SIGKILL和SIGSTOP不能被重定义或忽略。
+</p>
+</blockquote>
+<p><strong>signal函数原型:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// __sig为需设置的信号，__handler为新信号处理函数；失败返回SIG_ERR，否则成功。</span>
+<span class="c1">//__handler为SIG_IGN忽略信号，SIG_DEL默认信号处理</span>
+<span class="k">extern</span> <span class="n">__sighandler_t</span> <span class="nf">signal</span> <span class="p">(</span><span class="kt">int</span> <span class="n">__sig</span><span class="p">,</span> <span class="n">__sighandler_t</span> <span class="n">__handler</span><span class="p">)</span>
+      <span class="n">__THROW</span><span class="p">;</span>
+</code></pre></div>
+
+
+<p><strong>案例：使用signal重定义SIGINT处理函数</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">signal</span><span class="p">(</span><span class="n">SIGINT</span><span class="p">,</span><span class="n">f</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span><span class="kt">int</span> <span class="n">signum</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello Linux</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<p><strong>sigaction函数原型</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">signo需要处理的信号</span>
+<span class="cm">act指向描述信号操作的结构</span>
+<span class="cm">oact指向被替换操作的结构</span>
+<span class="cm">成功返回0，否则返回-1</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">sigaction</span><span class="p">(</span><span class="kt">int</span> <span class="n">signo</span><span class="p">,</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sigaction</span> <span class="o">*</span><span class="n">act</span><span class="p">,</span><span class="k">struct</span> <span class="n">sigaction</span> <span class="o">*</span><span class="n">oact</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm">sa_mask指定在信号处理过程中，何种信号被阻塞。缺省情况是当前信号被阻塞，以免信号处理函数被递归调用。</span>
+<span class="cm">*/</span>
+<span class="k">struct</span> <span class="n">sigaction</span>
+<span class="p">{</span>
+    <span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="n">sa_handler</span><span class="p">)(</span><span class="kt">int</span><span class="p">);</span>                     <span class="c1">//信号处理函数</span>
+    <span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="n">sa_sigaction</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span><span class="kt">siginfo_t</span><span class="o">*</span><span class="p">,</span><span class="kt">void</span> <span class="o">*</span><span class="p">);</span> <span class="c1">//带参数的信号处理函数</span>
+    <span class="kt">sigset_t</span> <span class="n">sa_mask</span><span class="p">;</span>                           <span class="c1">//信号掩码</span>
+    <span class="kt">int</span> <span class="n">sa_flags</span><span class="p">;</span>                               <span class="c1">//设定信号处理相关行为</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<p><strong>案例：sigaction定义信号SIGINT处理函数，并屏蔽其他信号</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="n">num</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">int_handle</span><span class="p">(</span><span class="kt">int</span> <span class="n">signum</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;SIGINT:%d]n&quot;</span><span class="p">,</span><span class="n">signum</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;int_handle called %d times</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="o">++</span><span class="n">num</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="k">struct</span> <span class="n">sigaction</span> <span class="n">act</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="n">int_handle</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+    <span class="n">act</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">=</span> <span class="n">int_handle</span><span class="p">;</span>
+    <span class="n">sigfillset</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">act</span><span class="p">.</span><span class="n">sa_mask</span><span class="p">));</span>
+    <span class="n">sigaction</span><span class="p">(</span><span class="n">SIGINT</span><span class="p">,</span><span class="o">&amp;</span><span class="n">act</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;i am sleepy..</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">num</span> <span class="o">&gt;=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="p">{</span>   
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<h3>信号集、信号屏蔽与阻塞</h3>
+<blockquote>
+<p>信号屏蔽就是临时阻塞信号被发送到某个进程，它包含一个被阻塞的信号集。当进程屏蔽某个信号时，内核将不发送该信号至屏蔽它的进程，直至该信号的屏蔽被解除。
+信号集用于描述所有信号的集合。对于sigaction中的sa_mask字段，每一位对应一个信号，若某一位被设置为1，表示该位对应信号被屏蔽。</p>
+</blockquote>
+<p><strong>信号集定义及其操作函数</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span> <span class="k">struct</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">sig</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="p">}</span><span class="kt">sigset_t</span>
+
+<span class="kt">int</span> <span class="n">sigemptyset</span><span class="p">(</span><span class="kt">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">);</span>     <span class="c1">//清空信号集中所有信号</span>
+<span class="kt">int</span> <span class="nf">sigfillset</span><span class="p">(</span><span class="kt">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">);</span>      <span class="c1">//在set信号集中加入linux支持的所有信号</span>
+<span class="kt">int</span> <span class="nf">sigaddset</span><span class="p">(</span><span class="kt">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">,</span><span class="kt">int</span> <span class="n">signum</span><span class="p">);</span>    <span class="c1">//向信号集中加入signum信号</span>
+<span class="kt">int</span> <span class="nf">sigdelset</span><span class="p">(</span><span class="kt">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">,</span><span class="kt">int</span> <span class="n">signum</span><span class="p">);</span>    <span class="c1">//从信号集中删除signum信号</span>
+<span class="kt">int</span> <span class="n">sigismember</span><span class="p">(</span><span class="k">const</span> <span class="kt">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">,</span> <span class="kt">int</span> <span class="n">signum</span><span class="p">)</span>    <span class="c1">//判断signum信号是否在信号集set中</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>每个进程定义一个信号掩码，该掩码对应一个信号集，该信号集中的所有信号在发送至进程后都将被阻塞。通过更改进程的信号掩码来阻塞或解除阻塞所选择的信号。以此来保护不希望由信号中断的临界代码。
+</p>
+</blockquote>
+<p><strong>信号阻塞函数sigprocmask</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cm">/*</span>
+<span class="cm">how 如何修改信号掩码</span>
+<span class="cm">    SIG_BLOCK 添加信号到进程屏蔽</span>
+<span class="cm">    SIG_UNBLOCK将信号从进程屏蔽中删除</span>
+<span class="cm">    SIG_SETMASK将set的值设定为新的信号掩码</span>
+<span class="cm">set 指向设置信号列表</span>
+<span class="cm">oldset指向之前的信号掩码列表</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">sigprocmask</span><span class="p">(</span><span class="kt">int</span> <span class="n">how</span><span class="p">,</span><span class="k">const</span> <span class="kt">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">,</span><span class="kt">sigset_t</span> <span class="o">*</span><span class="n">oldset</span><span class="p">);</span>
+</code></pre></div>
+
+
+<p><strong>案例:阻塞SIGINT信号3秒后恢复</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>   
+    <span class="kt">sigset_t</span> <span class="n">set</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">set</span><span class="p">);</span>
+    <span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">set</span><span class="p">,</span><span class="n">SIGINT</span><span class="p">);</span>
+    <span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span><span class="o">&amp;</span><span class="n">set</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;don&#39;t disturb me (%d)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">count</span><span class="o">--</span><span class="p">);</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_UNBLOCK</span><span class="p">,</span><span class="o">&amp;</span><span class="n">set</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;you did not disturb me!!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/10/06/Linux-C-SIGNAL-1/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

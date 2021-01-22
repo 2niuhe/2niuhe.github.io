@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="tcpdump的基本使用【译】"/>
+    <meta property="og:url" content="../../../../../pages/2020/10/19/Tcpdump-Usage/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/10/19/Tcpdump-Usage/" />
+
+    <title>tcpdump的基本使用【译】 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li class="active"><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/10/19/Tcpdump-Usage/" rel="bookmark"
+             title="Permalink to tcpdump的基本使用【译】">tcpdump的基本使用【译】</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/linux.html">Linux</a>
+
+    on 2020-10-19
+
+        |
+        tags:         <a href="../../../../../tag/linux.html">Linux</a>
+
+
+        |
+        <a href="../../../../../pages/2020/10/19/Tcpdump-Usage/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>Tcpdump是一个linux命令行的抓包工具，可以抓取TCP/IP和其他数据包，如UDP,ARP,ICMP，可以使用过滤器过滤出想要的包。</p>
+</blockquote>
+<h4>抓取特定接口上的包</h4>
+<blockquote>
+<p>当使用tcpdump不加任何参数，将分析所有接口上的数据包。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump
+</code></pre></div>
+
+
+<blockquote>
+<p>可以使用<code>-i</code>选项指定特定接口</p>
+<p>可以使用<code>-c</code>选项限制数据包的个数</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -i wlp2s0 -c <span class="m">10</span>
+</code></pre></div>
+
+
+<h4>抓取特定主机的数据包</h4>
+<blockquote>
+<p>可以使用<code>-host</code>选项指定和特定主机相关的数据包</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -i ens160 -c <span class="m">5</span> -ttttnnvvS host <span class="m">14</span>.249.62.219
+</code></pre></div>
+
+
+<h4>通过指定端口抓包</h4>
+<blockquote>
+<p>可以指定接口的端口进行抓包，也可以抓取特定接口以外的数据包</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 抓取22端口数据包</span>
+sudo tcpdump -i ens160 -c <span class="m">5</span> -nn port <span class="m">22</span>
+<span class="c1"># 抓取22端口以外数据包</span>
+sudo tcpdump -i ens160 -nn not port <span class="m">22</span>
+<span class="c1"># 指定端口号的范围</span>
+sudo tcpdump -i ens160 -c <span class="m">3</span> -nns <span class="m">0</span> portrange <span class="m">20</span>-23
+</code></pre></div>
+
+
+<h4>抓取特定代理的数据包</h4>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -i ens160 -c <span class="m">5</span> -nn tcp
+</code></pre></div>
+
+
+<h4>保存抓包日志</h4>
+<blockquote>
+<p>使用<code>-s</code>选项来指定每个数据包保存的长度，默认保存68个字节，剩余字节被忽略，指定0表示完整保存。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -i ens160 -c <span class="m">5</span> -nn tcp -w packets-record.pcap -s <span class="m">0</span>
+</code></pre></div>
+
+
+<h4>读取tcpdump记录文件</h4>
+<blockquote>
+<p>更常用的是使用wireshark软件分析</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -r packets-record.pcap 
+</code></pre></div>
+
+
+<h4>过滤特定源头的数据包</h4>
+<blockquote>
+<p>使用<code>src</code>选项指定来自特定源IP的数据包</p>
+<p>使用<code>dst</code>选项指定特定目的IP的数据包</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump src <span class="m">100</span>.9.8.40
+sudo tcpdump dst <span class="m">14</span>.249.62.219
+</code></pre></div>
+
+
+<h4>抓取特定网段的数据包</h4>
+<blockquote>
+<p>使用<code>-net</code>选项指定incoming/outgoing特定网段的数据包</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudu tcpdump net <span class="m">192</span>.169.0.0/24
+</code></pre></div>
+
+
+<h4>指定数据包格式</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 16进制格式</span>
+sudo tcpdump -X -i eth0
+<span class="c1"># Ascii码格式</span>
+sudo tcpdump -A -i eth0
+</code></pre></div>
+
+
+<h4>抓取IPV6包</h4>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -nn ip6 proto <span class="m">6</span>
+</code></pre></div>
+
+
+<h4>过滤Http的User Agent</h4>
+<blockquote>
+<p>从http请求头中过滤出user agent和host信息</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -nn -A -s1500 -l <span class="p">|</span> egrep -i <span class="s1">&#39;User-Agent:|Host:&#39;</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>过滤cookie信息</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -nn -A -s0 -l <span class="p">|</span> egrep -i <span class="s1">&#39;Set-Cookie|Host:|Cookie:&#39;</span>
+</code></pre></div>
+
+
+<h5>列出可选的接口</h5>
+<div class="highlight"><pre><span></span><code> sudo tcpdump -D
+</code></pre></div>
+
+
+<h4>循环写入抓包文件</h4>
+<blockquote>
+<p>对于长时间的抓包，为了防止单个文件过大，每30分钟（1800秒）写入一个新文件，文件大小限制为100M，文件个数的24个</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>sudo tcpdump -i ens160 -w /tmp/network-%H-%M.pcap -W <span class="m">24</span> -G <span class="m">1800</span> -C <span class="m">100</span>
+</code></pre></div>
+
+
+<h4>Tcpdump选项</h4>
+<ul>
+<li><code>-i &lt;interface&gt;</code>: 监听特定接口</li>
+<li><code>-n</code>: Don’t resolve hostnames. You can use <code>-nn</code> to don’t resolve hostnames or port names.</li>
+<li><code>-t</code>: Print human-readable timestamp on each dump line, <code>-tttt</code>: Give maximally human-readable timestamp output.</li>
+<li><code>-X</code>: 以ascii和十六进制两种格式显示数据包内容</li>
+<li><code>-v</code>, <code>-vv</code>, <code>-vvv</code>: 增加获取数据包的数量</li>
+<li><code>-c N</code>: 只获取N个数据包然后停止</li>
+<li><code>-s</code>: Define the snaplength (size) of the capture in bytes. Use <code>-s0</code> to get everything, unless you are intentionally capturing less.</li>
+<li><code>-S</code>: 打印绝对序列号</li>
+<li><code>-q</code>: 显示较少的协议信息</li>
+<li><code>-w &lt;file name&gt;</code>: 将原始数据包写入文件</li>
+</ul>
+<h4>逻辑运算符号</h4>
+<blockquote>
+<p>Tcpdump支持更精确的过滤，使用and/or/not这种逻辑运算。</p>
+<p>抓取来自 10.20.0.0/16 网段，并且目的地址是10.30.0.0/16 网段的数据包，使用便于阅读的时间戳， 不求解主机名和端口号，反向输出并使用绝对序号。</p>
+<p>Capture traffic coming from 10.20.0.0/16 and going to the network 10.30.0.0/16 with showing human-readable timestamps (tt), with no resolution of hostnames or port numbers (nn), verbose output (vv) and using absolute sequence numbers (S):</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>$ sudo  -ttnnvvS tcpdump src net <span class="m">10</span>.20.0.0/16 and dst net <span class="m">10</span>.30.0.0/16
+</code></pre></div>
+
+
+<blockquote>
+<p>Display traffic from source 192.168.0.10 which is not UDP protocol:</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>$ sudo tcpdump src <span class="m">192</span>.168.0.10 and src net and not udp
+</code></pre></div>
+
+
+<blockquote>
+<p>To capture arp or ping traffic for a specific host and save the output to a file named packetfile.txt:</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>$ sudo tcpdump -nnti eth0 arp or icmp and host <span class="m">192</span>.168.0.1 -w packetfile.txt
+</code></pre></div>
+
+
+<h4>Tcpdump 输出格式</h4>
+<blockquote>
+<p>截取一行输出，分析其输出的格式</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">13.440803</span> <span class="n">IP</span> <span class="n">Ubuntu</span><span class="o">.</span><span class="na">ssh</span> <span class="o">&gt;</span> <span class="mf">117.6</span><span class="o">.</span><span class="mf">129.86</span><span class="o">.</span><span class="mi">50736</span><span class="o">:</span> <span class="n">Flags</span> <span class="o">[</span><span class="n">P</span><span class="o">.],</span> <span class="n">seq</span> <span class="mi">188</span><span class="o">:</span><span class="mi">400</span><span class="o">,</span> <span class="n">ack</span> <span class="mi">1</span><span class="o">,</span> <span class="n">win</span> <span class="mi">501</span><span class="o">,</span> <span class="n">options</span> <span class="o">[</span><span class="n">nop</span><span class="o">,</span><span class="n">nop</span><span class="o">,</span><span class="n">TS</span> <span class="n">val</span> <span class="mi">468736347</span> <span class="n">ecr</span> <span class="mi">335665367</span><span class="o">],</span> <span class="n">length</span> <span class="mi">212</span>
+</code></pre></div>
+
+
+<p>其中:</p>
+<p><code>10:31:13.401128</code> - 本地数据包被抓取的时间</p>
+<p><code>IP</code> -  表示数据包是IPV4协议的</p>
+<p><code>Ubuntu.ssh</code> - 标识源IP地址或者主机名 ，.ssh 表示端口，这里时22端口</p>
+<p><code>117.6.129.86.50376</code> - 表示数据包的目的IP地址 ，使用<code>.</code>分割端口号</p>
+<p>标志位：</p>
+<p><code>[P.]</code> - This is TCP flags field.</p>
+<p><code>[.]</code> - ACK (Acknowledgment).</p>
+<p><code>[S]</code> - SYN (Start Connection).</p>
+<p><code>[P]</code> - PSH (Push Data).</p>
+<p><code>[F]</code> - FIN (Finish Connection).</p>
+<p><code>[R]</code> - RST (Reset Connection).</p>
+<p><code>[S.]</code> - SYN-ACK (SynAcK Packet).</p>
+<p><code>seq 188:400</code> - 序列号表示该数据包包含序列是188-400字节的数据</p>
+<p><code>win 501</code> - 窗口大小，表示接受缓冲区中可用的字节</p>
+<p><code>options [nop,nop,TS val 468736347 ecr 335665367]</code> - These are TCP options such as the MSS (Maximum Segment Size) or Window Scale. You can refer more about <a href="https://www.iana.org/assignments/tcp-parameters/tcp-parameters.xhtml">TCP protocol options</a>.</p>
+<p><code>length 212</code> - 表示数据包中payload数据的字节</p>
+<h3>参考</h3>
+<p><a href="https://linoxide.com/linux-how-to/14-tcpdump-commands-capture-network-traffic-linux/">Tcpdump基本使用</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/10/19/Tcpdump-Usage/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

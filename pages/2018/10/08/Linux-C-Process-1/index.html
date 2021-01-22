@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Linux进程——地址空间"/>
+    <meta property="og:url" content="../../../../../pages/2018/10/08/Linux-C-Process-1/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2018/10/08/Linux-C-Process-1/" />
+
+    <title>Linux进程——地址空间 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li class="active"><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2018/10/08/Linux-C-Process-1/" rel="bookmark"
+             title="Permalink to Linux进程——地址空间">Linux进程——地址空间</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/linux.html">Linux</a>
+
+    on 2018-10-08
+
+        |
+        tags:         <a href="../../../../../tag/c.html">C</a>
+        <a href="../../../../../tag/linux.html">Linux</a>
+
+
+        |
+        <a href="../../../../../pages/2018/10/08/Linux-C-Process-1/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <blockquote>
+<p>可执行程序是存储在磁盘设备上由代码和数据按某种格式组织的静态实体，而进程是可被调度的代码的动态运行。在Linux系统中，在一个进程的生命周期里，都有各自的运行环境和所需的资源，这些信息储存在各自的进程控制块中。</p>
+<p>进程控制块主要结构如下:</p>
+<ul>
+<li>用户标识</li>
+<li>进程和会话标识</li>
+<li>虚拟地址管理</li>
+<li>文件描述符表</li>
+<li>信号</li>
+</ul>
+</blockquote>
+<h3>进程地址空间</h3>
+<blockquote>
+<p>在32位地址总线的计算机上，每个进程拥有4GB的虚拟地址空间。</p>
+<p>可执行程序被加载至进程的用户虚拟地址空阿金，即将可执行程序中的代码段和数据段的内容复制到用户地址空间。为了执行程序，内核需在用户虚拟地址空间中建立一些辅助区域，例如堆区和栈区等，从而将用户虚拟地址空间划分为若干区域，分别为代码区、未初始化数据区、初始化数据区、环境变量和命令行参数区、堆区、栈区。不同区域中存储了不同的信息，有各自不同的属性。
+</p>
+</blockquote>
+<p><img alt="Linux进程地址空间" src="/img/Linux进程地址空间.jpg"></p>
+<p><strong>代码区</strong></p>
+<blockquote>
+<p>包含指令序列和只读数据，没和在创建进程加载可执行二进制映像文件时，将这部分内容映射到进程的用户地址空间形成代码区。进程运行期间，代码区内容不会改变。</p>
+<p>因此，一个可执行映像的多个进程可共享代码区，只需保持一个复制。</p>
+<p>在可执行映像文件中，代码区的内容被保存在文本段中，文本段又称代码段。
+</p>
+</blockquote>
+<p><strong>未初始化数据区</strong></p>
+<blockquote>
+<p>在可执行二进制映像文件中，未初始化数据包括没有初始化的全局变量和静态局部变量，它们在映像文件中不占用储存空间，只保留其地址和大小信息。</p>
+<p>若映像文件中存在未初始化数据段，内核创建进程时，在进程的用户地址空间中为其分配一块区域，用于进程运行过程中对未初始化数据的存取，成为未初始化数据区。
+</p>
+</blockquote>
+<p><strong>初始化数据区</strong></p>
+<blockquote>
+<p>初始化数据区包括已初始化的全局变量和静态局部变量。在映像文件中，初始化数据被组织在数据段中，内核将初始化数据段映射至用户地址空间形成初始化数据区。该区内容运行过程中会发生变化，一个程序的多个进程实体拥有各自的数据区。
+</p>
+</blockquote>
+<p><strong>堆heap</strong></p>
+<blockquote>
+<p>堆位于数据区和栈之间，用于应用程序的动态内存管理。Linux将动态内存的管理通过glibc实现。Linux的进程控制块中记录了虚拟内存各区域的地址信息，它们在进程初始化时由系统设置，其中包含堆的起始地址和结束地址。</p>
+<p>在初始状态下，brk指针指向堆的顶部。堆区大小可以通过brk和sbrk函数调整。
+</p>
+</blockquote>
+<p><strong>栈stack</strong></p>
+<blockquote>
+<p>栈用来存放进程运行过程中的局部变量、函数返回地址、参数和进程上下文环境。
+</p>
+</blockquote>
+<p><strong>环境变量和命令行</strong></p>
+<blockquote>
+<p>环境变量继承自父进程，作用范围是进程本身及其子孙进程。命令行保存执行程序时的输入参数，它们都被保存在栈区域。
+</p>
+</blockquote>
+<p><strong>自由空间</strong></p>
+<blockquote>
+<p>堆栈之间的自由空间，内核可为进程创建新的区域用于加载共享库、映射共享内存和映射文件I/O等，可以通过mmap和munmap函数申请和释放。</p>
+</blockquote>
+<h3>环境变量/命令行参数</h3>
+<blockquote>
+<p>每个进程的环境变量以字符串的形式存放在数组中，数组地址存放在全局变量environ中，可通过getenv和putenv对环境变量进行存取。</p>
+<p>命令行参数保存在用户地址空间的栈区域。</p>
+</blockquote>
+<p><strong>案例：显示当前进程所有环境变量</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">**</span><span class="n">ptr</span><span class="p">;</span>
+    <span class="k">extern</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">environ</span><span class="p">;</span><span class="o">*</span><span class="n">ptr</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span><span class="n">ptr</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<p><strong>案例:使用getenv和putenv存取环境变量</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[],</span><span class="kt">char</span> <span class="o">*</span><span class="n">envp</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">extern</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;form argument envp</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">envp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">puts</span><span class="p">(</span><span class="n">envp</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="n">putenv</span><span class="p">(</span><span class="s">&quot;HONE=/&quot;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">From global variable environ</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">puts</span><span class="p">(</span><span class="n">environ</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<p><strong>案例:显示所有命令行参数</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">argc</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;argv[%d}:%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<h3>动态内存管理</h3>
+<blockquote>
+<p>堆介于栈和全局数据区之间，这部分空间用于进程的动态内存分配，堆采用自下向上生长。相关API函数如下：
+</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span> <span class="o">*</span><span class="nf">malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">free</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+<span class="cm">/*</span>
+<span class="cm">设置堆区域的大小</span>
+<span class="cm">    pend设置数据区域的边界</span>
+<span class="cm">    incr扩展堆区域的字节数</span>
+<span class="cm">对brk,成功返回0，否则-1</span>
+<span class="cm">对sbrk成功返回原来的brk,否则-1</span>
+<span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">brk</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">pend</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">sbrk</span><span class="p">(</span><span class="kt">int</span> <span class="n">incr</span><span class="p">);</span>
+</code></pre></div>
+
+
+<p><strong>案例:使用brk和sbrk调整heap大小</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
+
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">etext</span><span class="p">,</span><span class="n">edata</span><span class="p">,</span><span class="n">end</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">bv</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;text ends at %10p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">etext</span><span class="p">);</span>   
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;initailized data ends at %10p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">edata</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;uninitialized data ends at %10p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">end</span><span class="p">);</span>
+
+    <span class="n">bv</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>       <span class="c1">//当前堆区边界地址</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Current break value is %10p </span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">bv</span><span class="p">);</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">brk</span><span class="p">(</span><span class="n">bv</span><span class="o">+</span><span class="mi">512</span><span class="p">);</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;heap incresed 512bytes&quot;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;brk returned ....%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">ret</span><span class="p">);</span>
+    <span class="n">bv</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>       <span class="c1">//当前堆区边界地址</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Current break value is %10p </span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">bv</span><span class="p">);</span>
+
+    <span class="n">foo</span><span class="p">(</span><span class="mi">64</span><span class="p">);</span>
+    <span class="n">foo</span><span class="p">(</span><span class="o">-</span><span class="mi">1024</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">bv</span><span class="p">;</span> 
+    <span class="n">bv</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;heap increased %dbytes</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">size</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;sbrk returned %10p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">bv</span><span class="p">);</span>
+    <span class="n">bv</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>       <span class="c1">//当前堆区边界地址</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Current break value is %10p </span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">bv</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<p><strong>注</strong></p>
+<blockquote>
+<p>通过brk、sbrk、mmap系统调用会频繁的触发软中断，使程序陷入内核态，比较消耗资源。为了较少系统调用产生的损耗，glibc采用内存池的设计，增加一个代理层，每次内存分配，优先从内存池中寻找一个大小相近的内存块(chunk),若内存池中无法提供，再向内核申请。</p>
+<p>具体参考<a href="https://www.jianshu.com/p/2fedeacfa797">glibc内存管理</a></p>
+</blockquote>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2018/10/08/Linux-C-Process-1/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>
