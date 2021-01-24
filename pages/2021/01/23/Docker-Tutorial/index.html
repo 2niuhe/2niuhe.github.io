@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="docker基本使用"/>
+    <meta property="og:url" content="../../../../../pages/2021/01/23/Docker-Tutorial/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2021/01/23/Docker-Tutorial/" />
+
+    <title>docker基本使用 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li class="active"><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2021/01/23/Docker-Tutorial/" rel="bookmark"
+             title="Permalink to docker基本使用">docker基本使用</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/linux.html">Linux</a>
+
+    on 2021-01-23
+
+        |
+        tags:         <a href="../../../../../tag/docker.html">Docker</a>
+        <a href="../../../../../tag/linux.html">Linux</a>
+
+
+        |
+        <a href="../../../../../pages/2021/01/23/Docker-Tutorial/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h3>CheatSheet</h3>
+<p>Docker核心架构：
+- 客户端Client
+- 服务器Docker daemon
+- 镜像Image
+- Registry
+- 容器Container</p>
+<p>容器基本技术：
+- cgroup 资源限额
+- namespace 资源隔离
+    - Mount
+    - UTS
+    - IPC
+    - PID
+    - Network
+    - User</p>
+<p><img alt="cheatsheet" src="/img/Docker%20commands%20cheat%20sheet%20by%20PhoenixNAP.jpeg"></p>
+<p>Docker采用C/S架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个host上，客户端也可以通过socket或者REST API和远程服务器通信。docker客户端是和服务器通信的命令行工具。服务器负责创建、运行、监控容器，构建、存储镜像。镜像是一个只读模板，通过镜像可以创建容器。容器就是镜像运行的实例。Registry是存放镜像的仓库。</p>
+<h4>构建镜像并启动容器</h4>
+<p><strong>镜像管理</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># pull an image from a registry</span>
+docker pull myimage:1.0
+<span class="c1"># retag a local image with new name and tag</span>
+docker tag myimage:1.0 myrepo/myimage:2.0
+<span class="c1"># push an image to a registry</span>
+docker push myrepo/myimage:2.0
+<span class="c1"># 查看本地镜像</span>
+docker images
+<span class="c1"># list all images locally stored</span>
+docker image ls
+<span class="c1"># delete an image from local image store</span>
+docker image rm alpine:3.4
+</code></pre></div>
+
+
+<p><strong>从镜像启动容器</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 后台从镜像启动容器，并指定Host和容器的端口映射</span>
+docker run -d -p <span class="m">8000</span>:80 &lt;image&gt;
+
+<span class="c1"># 进入容器，附加到前台进程</span>
+docker attach &lt;容器&gt;
+<span class="c1"># 离开容器</span>
+Ctrl+p Ctrl+q
+
+<span class="c1"># 进入容器，新开一个终端</span>
+docker <span class="nb">exec</span> -it &lt;容器&gt; bash
+<span class="c1"># 退出容器</span>
+<span class="nb">exit</span>
+
+<span class="c1"># 启动exit的容器</span>
+docker start &lt;容器&gt;
+<span class="c1"># 停止容器</span>
+docker stop &lt;容器&gt;
+
+<span class="c1"># rum a container from alpine:3.9 image</span>
+<span class="c1"># name the running container &quot;web&quot;</span>
+<span class="c1"># expose port 5000 externally mapped to port 80 inside the container</span>
+docker container run --name web -p <span class="m">5000</span>:80 alpine:3.9
+<span class="c1"># stop a running container through SIGTERM</span>
+docker container stop web
+<span class="c1"># stop a running container through SIGKILL</span>
+docker container <span class="nb">kill</span> web
+
+<span class="c1"># delete all running and stopped containers</span>
+docker container rm -f <span class="k">$(</span>docker ps -aq<span class="k">)</span>
+<span class="c1"># print the last 100 lines of a container&#39;s logs</span>
+docker container logs --tail <span class="m">100</span> web
+</code></pre></div>
+
+
+<p><strong>构建镜像</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看容器</span>
+docker ps -a
+docker container ls -a
+<span class="c1"># 构建镜像</span>
+<span class="c1"># 1.运行容器</span>
+<span class="c1"># 2.修改容器</span>
+<span class="c1"># 3.将容器保存为新镜像</span>
+docker commit &lt;镜像&gt;
+<span class="c1"># 从dockerfile构建镜像</span>
+docker build -t &lt;image_name&gt; -f &lt;Dockerfile路径&gt;
+<span class="c1"># build an image from Dockerfile in the current directory and tag the image</span>
+docker  build -t myimage:1.0 .
+<span class="c1"># 查看镜像分层</span>
+docker <span class="nb">history</span> &lt;image&gt;
+</code></pre></div>
+
+
+<h4>docker网络</h4>
+<p>Docker容器和主机之间网络：
+- bridge
+- host
+- none
+- 自定义</p>
+<p>网络相关的命令：</p>
+<div class="highlight"><pre><span></span><code>brctl show <span class="c1"># 显示网桥</span>
+ip r <span class="c1"># 查看路由表</span>
+iptables-save <span class="c1"># 查看路由</span>
+
+
+<span class="c1"># 查看docker网桥</span>
+docker network inspect bridge
+
+<span class="c1"># 查看docker网络</span>
+docker network ls
+
+<span class="c1"># 以某种网络配置从镜像启动容器</span>
+docker run --network<span class="o">=</span>host -it &lt;镜像&gt; bash 
+</code></pre></div>
+
+
+<h4>镜像的备份与恢复</h4>
+<div class="highlight"><pre><span></span><code>docker save
+导出镜像到本地文件
+
+<span class="c1"># Usage</span>
+$ docker save <span class="o">[</span>OPTIONS<span class="o">]</span> IMAGE <span class="o">[</span>IMAGE...<span class="o">]</span>
+<span class="c1"># 导出golang镜像</span>
+$ sudo docker save --output golang.tar golang:1.2
+docker load
+从本地文件导入文件到镜像库
+
+<span class="c1"># Usage</span>
+$ docker load <span class="o">[</span>OPTIONS<span class="o">]</span>
+<span class="c1"># 导入golang镜像</span>
+$ sudo docker load --input golang.tar
+docker <span class="nb">export</span>
+导出容器快照到本地文件
+
+<span class="c1"># Usage</span>
+$ docker <span class="nb">export</span> <span class="o">[</span>OPTIONS<span class="o">]</span> CONTAINER
+<span class="c1"># 导出hello容器快照</span>
+$ sudo docker <span class="nb">export</span> --output hello.tar
+docker import
+从容器快照文件中再导入为镜像
+
+<span class="c1"># Usage</span>
+$ docker import <span class="o">[</span>OPTIONS<span class="o">]</span> URL<span class="p">|</span>- <span class="o">[</span>REPOSITORY<span class="o">[</span>:TAG<span class="o">]]</span>
+<span class="c1"># 导入hello快照，并制定镜像标签为hello:1.0</span>
+$ cat hello.tar <span class="p">|</span> sudo docker import - hello:1.0
+</code></pre></div>
+
+
+<h4>容器监控</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看所有容器</span>
+docker container ls
+
+<span class="c1"># 查看容器内进程</span>
+docker container top &lt;容器&gt;
+
+<span class="c1"># 查看容器资源状态</span>
+<span class="c1"># 1. 所有容器</span>
+docker container stats
+<span class="c1"># 2. 特定容器</span>
+docker container stats &lt;容器...&gt;
+</code></pre></div>
+
+
+<p><strong>工具</strong></p>
+<ul>
+<li>Sysdig</li>
+<li>Weave Scope</li>
+<li>cAdvisor</li>
+<li>Prometheus</li>
+</ul>
+<h4>容器日志</h4>
+<blockquote>
+<p>docker默认将容器日志发送到STDOUT和STDERR，
+此外，docker还提供了多种logging driver，帮助从容器中提取运行日志，
+默认的logging driver是json-file，将容器日志保存在json file中，
+可以在host目录的/var/lib/docker/containers/<container ID>目录下找到日志的json文件</p>
+<p>一些系统的日志方案
+- ELK
+- Graylog</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c1"># 打印容器所有日志</span>
+docker logs &lt;容器&gt;
+<span class="c1"># 持续打印日志</span>
+docker logs -f &lt;容器&gt;
+</code></pre></div>
+
+
+<h3>参考</h3>
+<p><a href="https://yeasy.gitbook.io/docker_practice/">Docker从入门到实践</a></p>
+<p><a href="https://python-web-guide.readthedocs.io/zh/latest/docker.html">Docker快速入门</a></p>
+<p><a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">Docker入门教程</a></p>
+<p><a href="https://www.google.com/search?q=每天5分钟玩转docker">每天5分钟玩转Docker</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2021/01/23/Docker-Tutorial/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>
