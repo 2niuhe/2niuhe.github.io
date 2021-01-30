@@ -5,14 +5,14 @@
     <meta name="author" content="niuhe" />
     <meta name="robots" content="index, follow"/>
 
-    <meta property="og:title" content="docker基本使用"/>
+    <meta property="og:title" content="docker 基本使用"/>
     <meta property="og:url" content="../../../../../pages/2021/01/23/Docker-Tutorial/"/>
     <meta property="og:site_name" content="Niuhe's Blog"/>
     <meta property="og:type" content="article"/>
 
     <link rel="canonical" href="../../../../../pages/2021/01/23/Docker-Tutorial/" />
 
-    <title>docker基本使用 | Niuhe's Blog</title>
+    <title>docker 基本使用 | Niuhe's Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
@@ -71,7 +71,7 @@
       <header>
         <h1 class="entry-title">
           <a href="../../../../../pages/2021/01/23/Docker-Tutorial/" rel="bookmark"
-             title="Permalink to docker基本使用">docker基本使用</a></h1>
+             title="Permalink to docker 基本使用">docker 基本使用</a></h1>
       </header>
       <div class="entry-content">
 <footer class="post-info">
@@ -95,23 +95,27 @@
 </footer><!-- /.post-info -->
 
         <h3>CheatSheet</h3>
-<p>Docker核心架构：
-- 客户端Client
-- 服务器Docker daemon
-- 镜像Image
-- Registry
-- 容器Container</p>
-<p>容器基本技术：
-- cgroup 资源限额
-- namespace 资源隔离
-    - Mount
-    - UTS
-    - IPC
-    - PID
-    - Network
-    - User</p>
+<p>Docker 核心架构：</p>
+<ul>
+<li>客户端 Client</li>
+<li>服务器 Docker daemon</li>
+<li>镜像 Image</li>
+<li>Registry</li>
+<li>容器 Container</li>
+</ul>
+<p>容器基本技术：</p>
+<ul>
+<li>cgroup 资源限额</li>
+<li>namespace 资源隔离</li>
+<li>Mount</li>
+<li>UTS</li>
+<li>IPC</li>
+<li>PID</li>
+<li>Network</li>
+<li>User</li>
+</ul>
 <p><img alt="cheatsheet" src="/img/Docker%20commands%20cheat%20sheet%20by%20PhoenixNAP.jpeg"></p>
-<p>Docker采用C/S架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个host上，客户端也可以通过socket或者REST API和远程服务器通信。docker客户端是和服务器通信的命令行工具。服务器负责创建、运行、监控容器，构建、存储镜像。镜像是一个只读模板，通过镜像可以创建容器。容器就是镜像运行的实例。Registry是存放镜像的仓库。</p>
+<p>Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个 host 上，客户端也可以通过 socket 或者 REST API 和远程服务器通信。docker 客户端是和服务器通信的命令行工具。服务器负责创建、运行、监控容器，构建、存储镜像。镜像是一个只读模板，通过镜像可以创建容器。容器就是镜像运行的实例。Registry 是存放镜像的仓库。</p>
 <h4>构建镜像并启动容器</h4>
 <p><strong>镜像管理</strong></p>
 <div class="highlight"><pre><span></span><code><span class="c1"># pull an image from a registry</span>
@@ -182,12 +186,14 @@ docker <span class="nb">history</span> &lt;image&gt;
 </code></pre></div>
 
 
-<h4>docker网络</h4>
-<p>Docker容器和主机之间网络：
-- bridge
-- host
-- none
-- 自定义</p>
+<h4>docker 网络</h4>
+<p>Docker 容器和主机之间网络：</p>
+<ul>
+<li>bridge</li>
+<li>host</li>
+<li>none</li>
+<li>自定义</li>
+</ul>
 <p>网络相关的命令：</p>
 <div class="highlight"><pre><span></span><code>brctl show <span class="c1"># 显示网桥</span>
 ip r <span class="c1"># 查看路由表</span>
@@ -201,7 +207,7 @@ docker network inspect bridge
 docker network ls
 
 <span class="c1"># 以某种网络配置从镜像启动容器</span>
-docker run --network<span class="o">=</span>host -it &lt;镜像&gt; bash 
+docker run --network<span class="o">=</span>host -it &lt;镜像&gt; bash
 </code></pre></div>
 
 
@@ -261,13 +267,15 @@ docker container stats &lt;容器...&gt;
 </ul>
 <h4>容器日志</h4>
 <blockquote>
-<p>docker默认将容器日志发送到STDOUT和STDERR，
-此外，docker还提供了多种logging driver，帮助从容器中提取运行日志，
-默认的logging driver是json-file，将容器日志保存在json file中，
-可以在host目录的/var/lib/docker/containers/<container ID>目录下找到日志的json文件</p>
-<p>一些系统的日志方案
-- ELK
-- Graylog</p>
+<p>docker 默认将容器日志发送到 STDOUT 和 STDERR，
+此外，docker 还提供了多种 logging driver，帮助从容器中提取运行日志，
+默认的 logging driver 是 json-file，将容器日志保存在 json file 中，
+可以在 host 目录的/var/lib/docker/containers/<container ID>目录下找到日志的 json 文件</p>
+<p>一些系统的日志方案</p>
+<ul>
+<li>ELK</li>
+<li>Graylog</li>
+</ul>
 </blockquote>
 <div class="highlight"><pre><span></span><code><span class="c1"># 打印容器所有日志</span>
 docker logs &lt;容器&gt;
@@ -277,10 +285,10 @@ docker logs -f &lt;容器&gt;
 
 
 <h3>参考</h3>
-<p><a href="https://yeasy.gitbook.io/docker_practice/">Docker从入门到实践</a></p>
-<p><a href="https://python-web-guide.readthedocs.io/zh/latest/docker.html">Docker快速入门</a></p>
-<p><a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">Docker入门教程</a></p>
-<p><a href="https://www.google.com/search?q=每天5分钟玩转docker">每天5分钟玩转Docker</a></p>
+<p><a href="https://yeasy.gitbook.io/docker_practice/">Docker 从入门到实践</a></p>
+<p><a href="https://python-web-guide.readthedocs.io/zh/latest/docker.html">Docker 快速入门</a></p>
+<p><a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">Docker 入门教程</a></p>
+<p><a href="https://www.google.com/search?q=每天5分钟玩转docker">每天 5 分钟玩转 Docker</a></p>
 
       </div><!-- /.entry-content -->
       <div class="comments">

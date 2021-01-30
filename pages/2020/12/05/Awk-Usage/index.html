@@ -5,14 +5,14 @@
     <meta name="author" content="niuhe" />
     <meta name="robots" content="index, follow"/>
 
-    <meta property="og:title" content="Awk日常使用"/>
+    <meta property="og:title" content="Awk 日常使用"/>
     <meta property="og:url" content="../../../../../pages/2020/12/05/Awk-Usage/"/>
     <meta property="og:site_name" content="Niuhe's Blog"/>
     <meta property="og:type" content="article"/>
 
     <link rel="canonical" href="../../../../../pages/2020/12/05/Awk-Usage/" />
 
-    <title>Awk日常使用 | Niuhe's Blog</title>
+    <title>Awk 日常使用 | Niuhe's Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
@@ -71,7 +71,7 @@
       <header>
         <h1 class="entry-title">
           <a href="../../../../../pages/2020/12/05/Awk-Usage/" rel="bookmark"
-             title="Permalink to Awk日常使用">Awk日常使用</a></h1>
+             title="Permalink to Awk 日常使用">Awk 日常使用</a></h1>
       </header>
       <div class="entry-content">
 <footer class="post-info">
@@ -96,11 +96,13 @@
 
         <h3>快捷键</h3>
 <blockquote>
-<p>awk是linux上用于文本处理的脚本语言，你可以实现：
-- 定义变量
-- 使用字符串和算术运算符
-- 使用控制流程和循环
-- 生成格式化的输出</p>
+<p>awk 是 linux 上用于文本处理的脚本语言，你可以实现：</p>
+<ul>
+<li>定义变量</li>
+<li>使用字符串和算术运算符</li>
+<li>使用控制流程和循环</li>
+<li>生成格式化的输出</li>
+</ul>
 </blockquote>
 <div class="highlight"><pre><span></span><code>用法：awk <span class="o">[</span>POSIX 或 GNU 风格选项<span class="o">]</span> <span class="o">[</span>--<span class="o">]</span> <span class="s1">&#39;程序&#39;</span> 文件 ...
 POSIX 选项：       GNU 长选项：<span class="o">(</span>标准<span class="o">)</span>
@@ -115,11 +117,11 @@ POSIX 选项：       GNU 长选项：<span class="o">(</span>标准<span class=
 <li>$0 整行</li>
 <li>$1 第一列字段</li>
 <li>$2 第二列字段</li>
-<li>$n 第n列字段</li>
+<li>$n 第 n 列字段</li>
 </ul>
 <blockquote>
 <p>空格或者制表符是默认的列分隔符
-可以通过-F指定分隔符</p>
+可以通过-F 指定分隔符</p>
 </blockquote>
 <div class="highlight"><pre><span></span><code>awk -F: <span class="s1">&#39;{print $1}&#39;</span> /etc/passwd
 
@@ -129,7 +131,7 @@ cat /etc/passwd <span class="p">|</span> awk -F: <span class="s1">&#39;{print $1
 
 <h4>使用脚本文件</h4>
 <blockquote>
-<p>将awk脚本保存在testfile文件中</p>
+<p>将 awk 脚本保存在 testfile 文件中</p>
 </blockquote>
 <div class="highlight"><pre><span></span><code><span class="o">{</span>print <span class="nv">$1</span> <span class="s2">&quot; home at &quot;</span> <span class="nv">$6</span><span class="o">}</span>
 </code></pre></div>
@@ -144,7 +146,7 @@ cat /etc/passwd <span class="p">|</span> awk -F: <span class="s1">&#39;{print $1
 
 <h4>预处理和后处理</h4>
 <blockquote>
-<p>保存testfile如下</p>
+<p>保存 testfile 如下</p>
 </blockquote>
 <div class="highlight"><pre><span></span><code>BEGIN <span class="o">{</span>
 print <span class="s2">&quot;Users and thier corresponding home&quot;</span>
@@ -172,12 +174,14 @@ print <span class="s2">&quot;The end&quot;</span>
 
 <h4>内置变量</h4>
 <blockquote>
-<p>一些内置变量如下
-- FS 指定field段分隔符
-- OFS [Output Filed Separator]输出分隔符
-- ORS [Output Record Separator] 输出行分隔符
-- FIELDWIDTHS 按段长度分割
-- RS [Record Separator]记录分隔符，默认是换行符</p>
+<p>一些内置变量如下</p>
+<ul>
+<li>FS 指定 field 段分隔符</li>
+<li>OFS [Output Filed Separator]输出分隔符</li>
+<li>ORS [Output Record Separator] 输出行分隔符</li>
+<li>FIELDWIDTHS 按段长度分割</li>
+<li>RS [Record Separator]记录分隔符，默认是换行符</li>
+</ul>
 </blockquote>
 <p><strong>指定输出分隔符</strong></p>
 <div class="highlight"><pre><span></span><code>awk <span class="s1">&#39;BEGIN{FS=&quot;:&quot;; OFS=&quot;-&quot;} {print $1,$6,$7}&#39;</span> /etc/passwd
@@ -185,7 +189,7 @@ print <span class="s2">&quot;The end&quot;</span>
 
 
 <p><strong>使用长度分割</strong></p>
-<p>素材如下，保存为testrecord：</p>
+<p>素材如下，保存为 testrecord：</p>
 <div class="highlight"><pre><span></span><code><span class="m">1235</span>.96521
 
 <span class="m">927</span>-8.3652
@@ -207,8 +211,8 @@ print <span class="s2">&quot;The end&quot;</span>
 </code></pre></div>
 
 
-<p><strong>使用Record Separator</strong>
-素材如下，保存为testrecord：</p>
+<p><strong>使用 Record Separator</strong>
+素材如下，保存为 testrecord：</p>
 <div class="highlight"><pre><span></span><code>Person Name
 <span class="m">123</span> High Street
 <span class="o">(</span><span class="m">222</span><span class="o">)</span> <span class="m">466</span>-1234

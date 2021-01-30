@@ -5,14 +5,14 @@
     <meta name="author" content="niuhe" />
     <meta name="robots" content="index, follow"/>
 
-    <meta property="og:title" content="Shell编程基础笔记"/>
+    <meta property="og:title" content="Shell 编程基础笔记"/>
     <meta property="og:url" content="../../../../../pages/2018/09/25/Basic-Shell/"/>
     <meta property="og:site_name" content="Niuhe's Blog"/>
     <meta property="og:type" content="article"/>
 
     <link rel="canonical" href="../../../../../pages/2018/09/25/Basic-Shell/" />
 
-    <title>Shell编程基础笔记 | Niuhe's Blog</title>
+    <title>Shell 编程基础笔记 | Niuhe's Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
@@ -71,7 +71,7 @@
       <header>
         <h1 class="entry-title">
           <a href="../../../../../pages/2018/09/25/Basic-Shell/" rel="bookmark"
-             title="Permalink to Shell编程基础笔记">Shell编程基础笔记</a></h1>
+             title="Permalink to Shell 编程基础笔记">Shell 编程基础笔记</a></h1>
       </header>
       <div class="entry-content">
 <footer class="post-info">
@@ -94,8 +94,8 @@
 </footer><!-- /.post-info -->
 
         <blockquote>
-<p>Shell是一种命令行解释器，目前Linux下最常用的是bash解释器。Shell不仅可以解释用户输入的命令，还可以解释执行基于命令的Shell脚本语言。
-Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常Shell脚本结构如下：</p>
+<p>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。
+Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell 对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常 Shell 脚本结构如下：</p>
 </blockquote>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 <span class="nv">var1</span> <span class="o">=</span> <span class="s2">&quot;hello,shell.&quot;</span>
@@ -103,9 +103,9 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </code></pre></div>
 
 
-<h3>Shell变量</h3>
+<h3>Shell 变量</h3>
 <blockquote>
-<p>Shell变量分为四类：</p>
+<p>Shell 变量分为四类：</p>
 <ul>
 <li>用户自定义变量</li>
 <li>环境变量</li>
@@ -127,7 +127,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </blockquote>
 <ol>
 <li>$0:脚本程序名称</li>
-<li>\<span class="math">\(1，\\)</span>2.....:传递给脚本的参数，\$1代表第一个参数</li>
+<li>\<span class="math">\(1，\\)</span>2.....:传递给脚本的参数，\$1 代表第一个参数</li>
 </ol>
 <p><strong>预定义变量:</strong></p>
 <table>
@@ -150,7 +150,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td align="center">$?</td>
 <td></td>
 <td></td>
-<td align="left">命令执行后的返回状态，0成功，其他值表示错误</td>
+<td align="left">命令执行后的返回状态，0 成功，其他值表示错误</td>
 </tr>
 <tr>
 <td align="center">$$</td>
@@ -174,7 +174,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </table>
 <h3>命令替换</h3>
 <blockquote>
-<p>命令替换可以使命令的输出结果赋值给变量，注意语法形式2中是反引号`,不是单引号\'</p>
+<p>命令替换可以使命令的输出结果赋值给变量，注意语法形式 2 中是反引号`,不是单引号\'</p>
 </blockquote>
 <p>语法形式：</p>
 <ul>
@@ -187,7 +187,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 
 
 <h3>输入输出</h3>
-<h4>read命令</h4>
+<h4>read 命令</h4>
 <p>功能：从键盘读取输入，并赋值给变量</p>
 <p>语法： read [选项] 变量名列表</p>
 <p>选项列表：</p>
@@ -211,7 +211,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td align="center">-n num</td>
 <td></td>
 <td></td>
-<td>当read读n个字符后返回</td>
+<td>当 read 读 n 个字符后返回</td>
 </tr>
 <tr>
 <td align="center">-s</td>
@@ -245,7 +245,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </code></pre></div>
 
 
-<h4>echo命令</h4>
+<h4>echo 命令</h4>
 <p>功能：显示字符串或变量的值</p>
 <p>语法：echo [选项] 字符串</p>
 <p>选项列表：</p>
@@ -294,7 +294,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 
 <span class="nv">hour</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">&quot;%H&quot;</span><span class="k">)</span>
 
-<span class="k">case</span> <span class="nv">$hour</span> in 
+<span class="k">case</span> <span class="nv">$hour</span> in
     <span class="m">0</span><span class="o">[</span><span class="m">1</span>-9<span class="o">]</span> <span class="p">|</span> <span class="m">1</span><span class="o">[</span><span class="m">01</span><span class="o">])</span>
         <span class="nb">echo</span> <span class="s2">&quot;Good morning!!&quot;</span>
         <span class="p">;;</span>
@@ -309,7 +309,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 
 
 <blockquote>
-<p>测试条件表达式真假方法如下，真0假1：</p>
+<p>测试条件表达式真假方法如下，真 0 假 1：</p>
 <ul>
 <li>
 <p>test 条件表达式</p>
@@ -345,19 +345,19 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td>string</td>
 <td></td>
 <td></td>
-<td>string非空为真</td>
+<td>string 非空为真</td>
 </tr>
 <tr>
 <td>-n string</td>
 <td></td>
 <td></td>
-<td>string长度大于0为真</td>
+<td>string 长度大于 0 为真</td>
 </tr>
 <tr>
 <td>-z sring</td>
 <td></td>
 <td></td>
-<td>string长度为0为真</td>
+<td>string 长度为 0 为真</td>
 </tr>
 <tr>
 <td>string1=string2</td>
@@ -388,7 +388,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td>n1 -eq n2</td>
 <td></td>
 <td></td>
-<td>n1和n2相等返回0，否则1</td>
+<td>n1 和 n2 相等返回 0，否则 1</td>
 </tr>
 <tr>
 <td>n1 -ne n2</td>
@@ -400,25 +400,25 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td>n1 -lt n2</td>
 <td></td>
 <td></td>
-<td>n1 &lt; n2为真</td>
+<td>n1 &lt; n2 为真</td>
 </tr>
 <tr>
 <td>n1 -gt n2</td>
 <td></td>
 <td></td>
-<td>n1 &gt; n2为真</td>
+<td>n1 &gt; n2 为真</td>
 </tr>
 <tr>
 <td>n1 -le n2</td>
 <td></td>
 <td></td>
-<td>n1 &lt;= n2为真</td>
+<td>n1 &lt;= n2 为真</td>
 </tr>
 <tr>
 <td>n1 -ge n2</td>
 <td></td>
 <td></td>
-<td>n1 &gt;= n2为真</td>
+<td>n1 &gt;= n2 为真</td>
 </tr>
 </tbody>
 </table>
@@ -437,19 +437,19 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td>e1 -a e2</td>
 <td></td>
 <td></td>
-<td>e1和e2两个表达式同时为真返回0，否则1</td>
+<td>e1 和 e2 两个表达式同时为真返回 0，否则 1</td>
 </tr>
 <tr>
 <td>e1 -o e2</td>
 <td></td>
 <td></td>
-<td>e1,e2有一个为真返回0</td>
+<td>e1,e2 有一个为真返回 0</td>
 </tr>
 <tr>
 <td>!e1</td>
 <td></td>
 <td></td>
-<td>e1不为真时返回0</td>
+<td>e1 不为真时返回 0</td>
 </tr>
 </tbody>
 </table>
@@ -471,48 +471,48 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <td>cmd1;cmd2</td>
 <td></td>
 <td></td>
-<td>以独立进程依次运行cmd1和cmd2</td>
+<td>以独立进程依次运行 cmd1 和 cmd2</td>
 </tr>
 <tr>
 <td>(cmd1;cmd2)</td>
 <td></td>
 <td></td>
-<td>在同一进程中依次运行cmd1和cmd2</td>
+<td>在同一进程中依次运行 cmd1 和 cmd2</td>
 </tr>
 <tr>
 <td>cmd1 &amp; cmd2</td>
 <td></td>
 <td></td>
-<td>cmd1和cmd2同时运行，分属不同进程组</td>
+<td>cmd1 和 cmd2 同时运行，分属不同进程组</td>
 </tr>
 <tr>
 <td>cmd1 &amp;&amp; cmd2</td>
 <td></td>
 <td></td>
-<td>当cmd1为真时，才执行cmd2</td>
+<td>当 cmd1 为真时，才执行 cmd2</td>
 </tr>
 <tr>
 <td>cmd1 || cmd2</td>
 <td></td>
 <td></td>
-<td>当cmd1为假时，才执行cmd2</td>
+<td>当 cmd1 为假时，才执行 cmd2</td>
 </tr>
 <tr>
 <td>cmd1 | cmd2</td>
 <td></td>
 <td></td>
-<td>管道符号，cmd1的输出作为cmd2的输入</td>
+<td>管道符号，cmd1 的输出作为 cmd2 的输入</td>
 </tr>
 <tr>
 <td>cmd1 &amp;</td>
 <td></td>
 <td></td>
-<td>cmd1在后台运行</td>
+<td>cmd1 在后台运行</td>
 </tr>
 </tbody>
 </table>
 <h3>判断语句</h3>
-<p>案例1：比较两个数字大小</p>
+<p>案例 1：比较两个数字大小</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 <span class="nb">echo</span> <span class="s2">&quot;Enter the first interger:&quot;</span>
 <span class="nb">read</span> first
@@ -530,12 +530,12 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </code></pre></div>
 
 
-<p>案例2：获取系统时间，判断上午、下午、晚上</p>
+<p>案例 2：获取系统时间，判断上午、下午、晚上</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 
 <span class="nv">hour</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">&quot;%H&quot;</span><span class="k">)</span>
 
-<span class="k">case</span> <span class="nv">$hour</span> in 
+<span class="k">case</span> <span class="nv">$hour</span> in
     <span class="m">0</span><span class="o">[</span><span class="m">1</span>-9<span class="o">]</span> <span class="p">|</span> <span class="m">1</span><span class="o">[</span><span class="m">01</span><span class="o">])</span>
     <span class="nb">echo</span> <span class="s2">&quot;Good morning!!&quot;</span>
     <span class="p">;;</span>
@@ -550,7 +550,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 
 
 <h3>循环语句</h3>
-<p>案例1：for循环打印所有命令行参数</p>
+<p>案例 1：for 循环打印所有命令行参数</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 
 <span class="c1">#you can write this in short:for arg</span>
@@ -561,7 +561,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </code></pre></div>
 
 
-<p>案例2：while计算1-99的和</p>
+<p>案例 2：while 计算 1-99 的和</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 <span class="nv">i</span><span class="o">=</span><span class="m">1</span>
 <span class="nv">sum</span><span class="o">=</span><span class="m">0</span>
@@ -574,7 +574,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 </code></pre></div>
 
 
-<p>案例3：显示1-100之间的整数</p>
+<p>案例 3：显示 1-100 之间的整数</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
 
 <span class="nv">i</span><span class="o">=</span><span class="m">1</span>
@@ -587,7 +587,7 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 
 
 <blockquote>
-<p>break [n] 跳出n重循环，默认为1</p>
+<p>break [n] 跳出 n 重循环，默认为 1</p>
 <p>continue [n]</p>
 <p>exit [n]</p>
 </blockquote>
@@ -608,9 +608,9 @@ Shell脚本是由命令、Shell变量和控制语句灯语法元素构成的文�
 <p><strong>注意：</strong></p>
 <ol>
 <li>调用前，必须先定义</li>
-<li>使用shell位置变量接收参数传递，例如<span class="math">\(0\\)</span>1</li>
-<li>返回值取自函数中return语句或函数中最后一条命令的返回状态，通过$?获得</li>
-<li>使用local声明的局部变量，作用仅限于函数本身</li>
+<li>使用 shell 位置变量接收参数传递，例如<span class="math">\(0\\)</span>1</li>
+<li>返回值取自函数中 return 语句或函数中最后一条命令的返回状态，通过$?获得</li>
+<li>使用 local 声明的局部变量，作用仅限于函数本身</li>
 </ol>
 <p>案例：</p>
 </blockquote>
@@ -624,14 +624,14 @@ get_sum<span class="o">()</span>
         <span class="k">do</span>
         <span class="nv">sum</span><span class="o">=</span><span class="sb">`</span>expr <span class="nv">$sum</span> + <span class="nv">$i</span><span class="sb">`</span>
         <span class="nv">i</span><span class="o">=</span><span class="sb">`</span>expr <span class="nv">$i</span> + <span class="m">1</span><span class="sb">`</span>
-    <span class="k">done</span> 
+    <span class="k">done</span>
     <span class="k">return</span> <span class="nv">$sum</span>
 <span class="o">}</span>
 
 
 get_sum <span class="nv">$2</span> <span class="nv">$3</span>
 <span class="nv">result</span><span class="o">=</span><span class="nv">$?</span>
-<span class="nb">echo</span> <span class="nv">$1</span> 
+<span class="nb">echo</span> <span class="nv">$1</span>
 <span class="nb">echo</span> sum of  <span class="nv">$2</span> to <span class="nv">$3</span> is <span class="nv">$result</span>
 </code></pre></div>
 

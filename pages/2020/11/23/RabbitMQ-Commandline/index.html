@@ -5,14 +5,14 @@
     <meta name="author" content="niuhe" />
     <meta name="robots" content="index, follow"/>
 
-    <meta property="og:title" content="RabbitMQ介绍和命令行"/>
+    <meta property="og:title" content="RabbitMQ 介绍和命令行"/>
     <meta property="og:url" content="../../../../../pages/2020/11/23/RabbitMQ-Commandline/"/>
     <meta property="og:site_name" content="Niuhe's Blog"/>
     <meta property="og:type" content="article"/>
 
     <link rel="canonical" href="../../../../../pages/2020/11/23/RabbitMQ-Commandline/" />
 
-    <title>RabbitMQ介绍和命令行 | Niuhe's Blog</title>
+    <title>RabbitMQ 介绍和命令行 | Niuhe's Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
@@ -71,7 +71,7 @@
       <header>
         <h1 class="entry-title">
           <a href="../../../../../pages/2020/11/23/RabbitMQ-Commandline/" rel="bookmark"
-             title="Permalink to RabbitMQ介绍和命令行">RabbitMQ介绍和命令行</a></h1>
+             title="Permalink to RabbitMQ 介绍和命令行">RabbitMQ 介绍和命令行</a></h1>
       </header>
       <div class="entry-content">
 <footer class="post-info">
@@ -98,7 +98,7 @@
         <p>查看所有队列信息： <code>rabbitmqctl list_queues</code>
 关闭应用（关闭当前启动节点）： <code>rabbitmqctl stop_app</code>
 启动应用，和上述关闭命令配合使用达到清空队列的目的： <code>rabbitmqctl start_app</code>
-从管理数据库中移除所有数据，例如配置过的用户和虚拟宿主, 删除所有持久化的消息（这个命令要在rabbitmqctl stop_app之后使用）： <code>rabbitmqctl reset</code>
+从管理数据库中移除所有数据，例如配置过的用户和虚拟宿主, 删除所有持久化的消息（这个命令要在 rabbitmqctl stop_app 之后使用）： <code>rabbitmqctl reset</code>
 作用和<code>rabbitmqctl reset</code>一样，区别是无条件重置节点，不管当前管理数据库状态以及集群的配置。如果数据库或者集群配置发生错误才使用这个最后的手段： <code>rabbitmqctl force_reset</code>
 节点状态: <code>rabbitmqctl status</code>
 添加用户: <code>rabbitmqctl add_user username password</code>
@@ -115,7 +115,7 @@
 删除虚拟主机： <code>rabbitmqctl delete_vhost vhostpath</code></p>
 <div class="highlight"><pre><span></span><code><span class="err">#rabbitmqctl list_users      列出当前用户</span>
 <span class="err">#rabbitmqctl cluster_status   查看集群状态</span>
-<span class="err">#rabbitmqctl list_queues     查看消息队列 </span>
+<span class="err">#rabbitmqctl list_queues     查看消息队列</span>
 </code></pre></div>
 
       </div><!-- /.entry-content -->

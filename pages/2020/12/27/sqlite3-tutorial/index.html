@@ -5,14 +5,14 @@
     <meta name="author" content="niuhe" />
     <meta name="robots" content="index, follow"/>
 
-    <meta property="og:title" content="sqlite3入门"/>
+    <meta property="og:title" content="sqlite3 入门"/>
     <meta property="og:url" content="../../../../../pages/2020/12/27/sqlite3-tutorial/"/>
     <meta property="og:site_name" content="Niuhe's Blog"/>
     <meta property="og:type" content="article"/>
 
     <link rel="canonical" href="../../../../../pages/2020/12/27/sqlite3-tutorial/" />
 
-    <title>sqlite3入门 | Niuhe's Blog</title>
+    <title>sqlite3 入门 | Niuhe's Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
@@ -71,7 +71,7 @@
       <header>
         <h1 class="entry-title">
           <a href="../../../../../pages/2020/12/27/sqlite3-tutorial/" rel="bookmark"
-             title="Permalink to sqlite3入门">sqlite3入门</a></h1>
+             title="Permalink to sqlite3 入门">sqlite3 入门</a></h1>
       </header>
       <div class="entry-content">
 <footer class="post-info">
@@ -106,26 +106,26 @@ sqlite3 test.db
 sqlite&gt; .mode column
 sqlite&gt; .headers on
 sqlite&gt; SELECT * FROM Friends<span class="p">;</span>
-Id          Name        Sex       
+Id          Name        Sex
 ----------  ----------  ----------
-<span class="m">1</span>           Jane        F         
-<span class="m">2</span>           Thomas      M         
-<span class="m">3</span>           Franklin    M         
-<span class="m">4</span>           Elisabeth   F         
-<span class="m">5</span>           Mary        F         
-<span class="m">6</span>           Lucy        F         
-<span class="m">7</span>           Jack        M 
+<span class="m">1</span>           Jane        F
+<span class="m">2</span>           Thomas      M
+<span class="m">3</span>           Franklin    M
+<span class="m">4</span>           Elisabeth   F
+<span class="m">5</span>           Mary        F
+<span class="m">6</span>           Lucy        F
+<span class="m">7</span>           Jack        M
 
 本示例说明如何在 sqlite 的列模式下格式化数据。 .headers命令也已用于显示列标题。 默认情况下，标题是隐藏的。
 
 .width命令调整列的大小。 （此 meta 命令仅与列模式下的表有关。）
 
 sqlite&gt; SELECT Name, Title FROM Authors NATURAL JOIN Books<span class="p">;</span>
-Name         Title     
+Name         Title
 -----------  ----------
-Jane Austen  Emma      
+Jane Austen  Emma
 Leo Tolstoy  War and Pe
-Joseph Hell  Catch XII 
+Joseph Hell  Catch XII
 Charles Dic  David Copp
 Joseph Hell  Good as Go
 Leo Tolstoy  Anna Karen
@@ -136,14 +136,14 @@ Leo Tolstoy  Anna Karen
 
 sqlite&gt; .width <span class="m">15</span> <span class="m">18</span>
 sqlite&gt; SELECT Name, Title FROM Authors NATURAL JOIN Books<span class="p">;</span>
-Name             Title             
+Name             Title
 ---------------  ------------------
-Jane Austen      Emma              
-Leo Tolstoy      War and Peace     
-Joseph Heller    Catch XII         
-Charles Dickens  David Copperfield 
-Joseph Heller    Good as Gold      
-Leo Tolstoy      Anna Karenia 
+Jane Austen      Emma
+Leo Tolstoy      War and Peace
+Joseph Heller    Catch XII
+Charles Dickens  David Copperfield
+Joseph Heller    Good as Gold
+Leo Tolstoy      Anna Karenia
 SQL
 在这里，我们更改列宽。 第一列为 <span class="m">15</span> 个字符，第二列为 <span class="m">18</span> 个字符。
 
@@ -166,11 +166,11 @@ SQL
 sqlite&gt; .prompt <span class="s2">&quot;&gt; &quot;</span> <span class="s2">&quot;. &quot;</span>
 &gt; SELECT * FROM Cars
 . LIMIT <span class="m">2</span><span class="p">;</span>
-Id          Name        Price     
+Id          Name        Price
 ----------  ----------  ----------
-<span class="m">1</span>           Audi        <span class="m">52642</span>     
-<span class="m">2</span>           Mercedes    <span class="m">57127</span>     
-&gt; 
+<span class="m">1</span>           Audi        <span class="m">52642</span>
+<span class="m">2</span>           Mercedes    <span class="m">57127</span>
+&gt;
 SQL
 有两个提示。 一个是主提示，另一个是继续提示。 默认的主提示是sqlite<span class="p">&amp;</span>gt<span class="p">;</span>，默认的继续提示是...<span class="p">&amp;</span>gt<span class="p">;</span>。
 
@@ -189,30 +189,30 @@ SQL
 
 sqlite&gt; .tables
 Authors       Cars          Friends       Reservations
-Books         Customers     Orders  
+Books         Customers     Orders
 sqlite&gt; DROP TABLE Cars<span class="p">;</span>
 sqlite&gt; .tables
-Authors       Customers     Orders      
+Authors       Customers     Orders
 Books         Friends       Reservations
 sqlite&gt; .read cars.sql
 sqlite&gt; .tables
 Authors       Cars          Friends       Reservations
-Books         Customers     Orders     
+Books         Customers     Orders
 sqlite&gt; SELECT * FROM Cars WHERE <span class="nv">Id</span><span class="o">=</span><span class="m">1</span><span class="p">;</span>
-Id          Name        Price     
+Id          Name        Price
 ----------  ----------  ----------
-<span class="m">1</span>           Audi        <span class="m">52642</span>   
+<span class="m">1</span>           Audi        <span class="m">52642</span>
 </code></pre></div>
 
 
-<p>在这里，我们得到SELECT语句的输出。 默认情况下，输出模式为line，分隔符为|。</p>
+<p>在这里，我们得到 SELECT 语句的输出。 默认情况下，输出模式为 line，分隔符为|。</p>
 <h3>使用案例</h3>
-<p>1、输入" sqlite3 + 数据库名.db " (如：  " sqlite3 collect.db ") 打开数据库</p>
+<p>1、输入" sqlite3 + 数据库名.db " (如： " sqlite3 collect.db ") 打开数据库</p>
 <p>2、可输入 " .table " 查看数据库中存在哪些表</p>
 <p>3、可输入" .schema ' 查看建表语句</p>
-<p>4、通过SQL查询语句 " select * from 表名 " （如：" select * from  Book "）</p>
+<p>4、通过 SQL 查询语句 " select _ from 表名 " （如：" select _ from Book "）</p>
 <h3>参考</h3>
-<p><a href="https://geek-docs.com/sqlite/sqlite-tutorial/sqlite-tutorial.html">sqlite教程</a></p>
+<p><a href="https://geek-docs.com/sqlite/sqlite-tutorial/sqlite-tutorial.html">sqlite 教程</a></p>
 
       </div><!-- /.entry-content -->
       <div class="comments">
