@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="linux 101 Hackers笔记"/>
+    <meta property="og:url" content="../../../../../pages/2020/12/05/Linux-101-Hackers/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2020/12/05/Linux-101-Hackers/" />
+
+    <title>linux 101 Hackers笔记 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/angular.html">Angular</a></li>
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li class="active"><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2020/12/05/Linux-101-Hackers/" rel="bookmark"
+             title="Permalink to linux 101 Hackers笔记">linux 101 Hackers笔记</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/linux.html">Linux</a>
+
+    on 2020-12-05
+
+        |
+        tags:         <a href="../../../../../tag/linux.html">Linux</a>
+
+
+        |
+        <a href="../../../../../pages/2020/12/05/Linux-101-Hackers/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <div class="highlight"><pre><span></span><code><span class="c1"># 创建目录并进入</span>
+<span class="k">function</span> mkdircd <span class="o">()</span> <span class="o">{</span> mkdir -p <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> <span class="nb">eval</span> <span class="nb">cd</span> <span class="s2">&quot;\&quot;\$</span><span class="nv">$#</span><span class="s2">\&quot;&quot;</span><span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+
+<ul>
+<li>查找文件</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 找到大于100M的文件</span>
+find / -type f -size +100M
+<span class="c1"># 找到文件名中含有mail的文件/文件夹</span>
+find /etc -name <span class="s2">&quot;*mail*&quot;</span>
+<span class="c1"># 找到修改时间在60天之前的文件</span>
+find . -mtime +60
+<span class="c1"># 找到修改时间在2天内的文件</span>
+find . -mtime -2
+<span class="c1"># 批量显示TS后缀且大于100M文件的详情</span>
+find . -type f -name <span class="s1">&#39;*.TS&#39;</span> -size +100M -exec ls -l <span class="o">{}</span> <span class="se">\;</span>
+<span class="c1"># 批量删除TS后缀且大于100M的文件</span>
+find . -type f -name <span class="s1">&#39;*.TS&#39;</span> -size +100M -exec rm -f <span class="o">{}</span> <span class="se">\;</span>
+<span class="c1"># 查找修改时间60天前的文件并打包</span>
+find /home/jsmith -type f -mtime +60 <span class="p">|</span> xargs tar -cvf /tmp/<span class="sb">`</span>date <span class="s1">&#39;+%d%m%Y&#39;</span>_archive.tar<span class="sb">`</span>
+</code></pre></div>
+
+
+<ul>
+<li>输出重定向</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 标准输出重定向，只显示error信息</span>
+./shell-script.sh &gt; /dev/null
+<span class="c1"># 标准错误信息重定向</span>
+./shell-script.sh <span class="m">2</span>&gt; /dev/null
+<span class="c1"># 标准错误和输出都重定向</span>
+./shell-script.sh &gt; /dev/null <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code><span class="c1"># 将所有大写转化为小写</span>
+tr A-Z a-z &lt; department.txt
+<span class="c1"># 将所有小写转化为大写</span>
+tr a-z A-Z &lt; employee.txt
+</code></pre></div>
+
+
+<ul>
+<li>xargs基本使用</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 删除log文件</span>
+find ~ -name <span class="s1">&#39;*.log&#39;</span> -print0 <span class="p">|</span> xargs -0 rm -f
+find /etc -name <span class="s2">&quot;*.conf&quot;</span> <span class="p">|</span> xargs ls -l
+cat url-list.txt <span class="p">|</span> xargs wget -c
+find / -name *.jpg -type f -print <span class="p">|</span> xargs tar -cvzf images.tar.gz
+ls *.jpg <span class="p">|</span> xargs -n1 -i cp <span class="o">{}</span> /external-harddrive/directory
+</code></pre></div>
+
+
+<ul>
+<li>文件中截取列</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 以:分割，第一列</span>
+cut -d: -f <span class="m">1</span> /etc/passwd
+<span class="c1"># 以:分割，第1和第3列</span>
+cut -d: -f <span class="m">1</span>,3 /etc/passwd
+<span class="c1"># 截取每行前边1-8个字符</span>
+cut -c <span class="m">1</span>-8 /etc/passwd
+</code></pre></div>
+
+
+<ul>
+<li>后台运行2gua.rainbow-brackets
+Angular.ng-template
+cyrilletuzi.angular-schematics
+davidbabel.vscode-simpler-icons
+dbaeumer.vscode-eslint
+doggy8088.angular-extension-pack
+donjayamanne.githistory
+eamodio.gitlens
+EditorConfig.EditorConfig
+EFanZh.graphviz-preview
+esbenp.prettier-vscode
+formulahendry.auto-rename-tag
+golang.go
+Gruntfuggly.todo-tree
+humao.rest-client
+infinity1207.angular2-switcher
+jebbs.plantuml
+johnpapa.Angular2
+krizzdewizz.refactorix
+MariusAlchimavicius.json-to-ts
+Mikael.Angular-BeastCode
+mikeburgh.xml-format
+ms-azuretools.vscode-docker
+ms-mssql.mssql
+ms-python.python
+ms-toolsai.jupyter
+ms-vscode-remote.remote-containers
+ms-vscode-remote.remote-ssh
+ms-vscode-remote.remote-ssh-edit
+ms-vscode.cpptools
+ms-vscode.typescript-javascript-grammar
+ms-vscode.vscode-typescript-tslint-plugin
+msjsdiag.debugger-for-chrome
+nhoizey.gremlins
+obenjiro.arrr
+oderwat.indent-rainbow
+PKief.material-icon-theme
+quicktype.quicktype
+shd101wyy.markdown-preview-enhanced
+steoates.autoimport
+stringham.move-ts
+tht13.html-preview-vscode
+twxs.cmake
+wayou.vscode-todo-highlight
+xabikos.JavaScriptSnippets</li>
+</ul>
+<div class="highlight"><pre><span></span><code>nohup ./backup.sh <span class="p">&amp;</span>
+screen -S backup
+<span class="c1"># 以特定间隔时间执行命令</span>
+watch df -h
+</code></pre></div>
+
+
+<ul>
+<li>sed基础</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="err"># thegeekstuff.txt</span>
+<span class="err"># Instruction Guides</span>
+<span class="err">1. Linux Sysadmin, Linux Scripting etc.</span>
+<span class="err">2. Databases - Oracle, mySQL etc.</span>
+<span class="err">3. Security (Firewall, Network, Online Security etc)</span>
+<span class="err">4. Storage in Linux</span>
+<span class="err">5. Productivity (Too many technologies to explore, not</span>
+<span class="err">much time available)</span>
+<span class="err"># Additional FAQS</span>
+<span class="err">6. Windows- Sysadmin, reboot etc.</span>
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code><span class="c1"># 将第一个Linux替换为Linux-Unix</span>
+sed <span class="s1">&#39;s/Linux/Linux-Unix/&#39;</span> thegeekstuff.txt
+<span class="c1"># 将所有Linux替换为Linux-Unix</span>
+sed <span class="s1">&#39;s/Linux/Linux-Unix/g&#39;</span> thegeekstuff.txt
+<span class="c1"># 将第2个出现的Linux替换为Linux-Unix</span>
+sed <span class="s1">&#39;s/Linux/Linux-Unix/2&#39;</span> thegeekstuff.txt
+<span class="c1"># 输出修改行并写入指定的output文件</span>
+sed -n <span class="s1">&#39;s/Linux/Linux-Unix/gpw output&#39;</span> thegeekstuff.txt
+<span class="c1"># 行正则匹配到-，则从-到行尾的字符被替换为空</span>
+sed <span class="s1">&#39;/\-/s/\-.*//g&#39;</span> thegeekstuff.txt
+<span class="c1"># 删除每行的后3个字符</span>
+sed <span class="s1">&#39;s/...$//&#39;</span> thegeekstuff.txt
+<span class="c1"># 直接修改源文件，去除#开头的注释</span>
+sed -e <span class="s1">&#39;s/#.*//&#39;</span> thegeekstuff.txt
+<span class="c1"># 直接修改源文件，去除#开头的注释并去除空行</span>
+sed -e <span class="s1">&#39;s/#.*//;/^$/d&#39;</span> thegeekstuff.txt
+<span class="c1"># 去除html的箭头标签</span>
+sed -e <span class="s1">&#39;s/&lt;[^&gt;]*&gt;//g&#39;</span>
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code><span class="c1"># 同时显示多个文件的日志</span>
+tail -f /var/log/syslog -f /var/log/auth.log
+<span class="c1"># 修改命令行提示符号</span>
+<span class="nb">export</span> <span class="nv">PS1</span><span class="o">=</span><span class="s2">&quot;\u@\h \w&gt; &quot;</span>
+
+<span class="c1"># 修改系统时间</span>
+date <span class="o">{</span>mmddhhmiyyyy.ss<span class="o">}</span>
+<span class="c1"># Jan 31st 2009, 10:19 p.m, 53 seconds</span>
+date <span class="m">013122192009</span>.53
+date +%Y%m%d -s <span class="s2">&quot;20090131&quot;</span>
+date +%T -s <span class="s2">&quot;22:19:53&quot;</span>
+date -s <span class="s2">&quot;01/31/2009 22:19:53&quot;</span>
+<span class="c1"># 显示时间</span>
+date +<span class="s2">&quot;%d-%m-%Y&quot;</span>
+<span class="m">01</span>-01-2009
+date +<span class="s2">&quot;%d/%m/%Y&quot;</span>
+<span class="c1"># 01/01/2009</span>
+date +<span class="s2">&quot;%A,%B %d %Y&quot;</span>
+<span class="c1"># Thursday,January 01 2009</span>
+</code></pre></div>
+
+
+<ul>
+<li>压缩和解压</li>
+</ul>
+<div class="highlight"><pre><span></span><code>zip var-log-files.zip /var/log/*
+zip -r var-log-dir.zip /var/log/
+unzip var-log.zip
+unzip -v var-log.zip
+unzip -l var-log.zip
+unzip -t var-log.zip
+
+zip -P mysecurepwd var-log-protected.zip /var/log/*
+unzip var-log-protected.zip
+
+tar <span class="o">[</span>options<span class="o">]</span> <span class="o">[</span>tar-archive-name<span class="o">]</span> <span class="o">[</span>other-file-names<span class="o">]</span>
+<span class="c1"># 压缩文件</span>
+tar cvf /tmp/my_home_directory.tar /home/jsmith
+<span class="c1"># 显示压缩文件目录</span>
+tar tvf /tmp/my_home_directory.tar
+<span class="c1"># 提取压缩文件</span>
+tar xvf /tmp/my_home_directory.tar
+<span class="c1"># 指定提取目录</span>
+tar xvfz /tmp/my_home_directory.tar.gz -C /home/ramesh
+
+<span class="c1"># gzip压缩文件(*.tar.gz)</span>
+tar cvfz /tmp/my_home_directory.tar.gz /home/jsmith
+tar xvfz /tmp/my_home_directory.tar.gz
+tar tvfz /tmp/my_home_directory.tar.gz
+<span class="c1"># bzip压缩文件(*.tar.bz2)</span>
+tar cvfj /tmp/my_home_directory.tar.bz2 /home/jsmith
+tar xvfj /tmp/my_home_directory.tar.bz2
+tar tvfj /tmp/my_home_directory.tar.bz2
+</code></pre></div>
+
+
+<ul>
+<li>命令行历史</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># CTRL+r 查找匹配历史</span>
+<span class="c1"># CTRL+p 上一条命令</span>
+<span class="nb">history</span> -c <span class="c1"># 清除历史</span>
+<span class="c1"># 忽略重复命令</span>
+<span class="nb">export</span> <span class="nv">HISTCONTROL</span><span class="o">=</span>ignoredups
+<span class="c1"># 忽略以空格开头的命令</span>
+<span class="nb">export</span> <span class="nv">HISTCONTROL</span><span class="o">=</span>ignorespace
+<span class="c1"># 不记录历史</span>
+<span class="nb">export</span> <span class="nv">HISTSIZE</span><span class="o">=</span><span class="m">0</span>
+</code></pre></div>
+
+
+<ul>
+<li>系统管理</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 创建swap分区</span>
+dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/home/swap-fs <span class="nv">bs</span><span class="o">=</span>1M <span class="nv">count</span><span class="o">=</span><span class="m">512</span>
+ls -l /home/swap-fs
+mkswap /home/swap-fs
+swapon /home/swap-fs
+<span class="c1"># edit in /etc/fstab</span>
+/home/swap-fs swap swap defaults <span class="m">0</span> <span class="m">0</span>
+
+<span class="c1"># 生成ssh公钥</span>
+ssh-keygen
+ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host
+
+<span class="c1"># 定时任务管理</span>
+crontab -e
+<span class="o">{</span>minute<span class="o">}</span> <span class="o">{</span>hour<span class="o">}</span> <span class="o">{</span>day-of-month<span class="o">}</span> <span class="o">{</span>month<span class="o">}</span> <span class="o">{</span>day-of-week<span class="o">}</span> <span class="o">{</span>full-path-to-shell-script<span class="o">}</span>
+<span class="c1"># run at 00:01am</span>
+<span class="m">1</span> <span class="m">0</span> * * * /root/bin/backup.sh
+<span class="c1"># run at weekday 11:59pm</span>
+<span class="m">59</span> <span class="m">11</span> * * <span class="m">1</span>,2,3,4,5 /root/bin/backup.sh
+<span class="m">59</span> <span class="m">11</span> * * <span class="m">1</span>-5 /root/bin/backup.sh
+<span class="c1"># run every 5 minute</span>
+*/5 * * * * /root/bin/check-status.sh
+<span class="c1"># run at 13:10pm on lst of every month</span>
+<span class="m">10</span> <span class="m">13</span> <span class="m">1</span> * * /root/bin/full-backup.sh
+<span class="c1"># run at 11:00pm every weekday</span>
+<span class="m">0</span> <span class="m">23</span> * * <span class="m">1</span>-5 /root/bin/incremental-backup.sh
+
+<span class="c1"># 同步文件</span>
+rsync options <span class="nb">source</span> destination
+<span class="c1"># sync two directory in a local computer</span>
+<span class="c1"># -z enable compression</span>
+<span class="c1"># -v verbose</span>
+<span class="c1"># -r recursive</span>
+<span class="c1"># -a archive mode:will preserve symbolic link/permission/timestamp/owner/group</span>
+rsync -zvr /var/opt/installation/inventory/ /root/temp
+<span class="c1"># sync one file</span>
+rsync -v /var/lib/rpm/Pubkeys /root/temp/
+<span class="c1"># sync to remote machine</span>
+rsync -avz /root/temp/ thegeekstuff@192.168.200.10:/home/thegeekstuff/temp/
+<span class="c1"># sync from remote to local</span>
+rsync -avz thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp
+
+
+<span class="c1"># netcat命令nc</span>
+<span class="c1"># 从server1拷贝文件到server2</span>
+<span class="c1"># 1. 在server2(102.168.200.27)上监听</span>
+nc -l <span class="m">2222</span> &gt; <span class="m">1234</span>.txt
+<span class="c1"># 2. 在server1上开启传输</span>
+nc -w <span class="m">1</span> <span class="m">102</span>.168.200.27 <span class="m">2222</span> &lt; abc.txt
+
+<span class="c1"># 网络拷贝硬盘</span>
+<span class="c1"># 1. server2(102.168.200.27)监听</span>
+nc -l -p <span class="m">2222</span> <span class="p">|</span> dd <span class="nv">of</span><span class="o">=</span>/dev/sda
+<span class="c1"># 2. server1执行传输</span>
+dd <span class="k">if</span><span class="o">=</span>/dev/sda <span class="p">|</span> nc <span class="m">102</span>.168.200.27 <span class="m">2222</span>
+
+<span class="c1"># nc端口扫描</span>
+<span class="c1"># 扫描20-30端口</span>
+nc -v -w <span class="m">1</span> <span class="m">192</span>.168.200.29 -z <span class="m">20</span>-30
+</code></pre></div>
+
+
+<ul>
+<li>系统性能监控</li>
+</ul>
+<div class="highlight"><pre><span></span><code>ps axl
+ps aux
+ps axuf
+ps U niuhe
+netstat -tap
+netstat --route  <span class="c1"># 路由表</span>
+sar
+lsof
+</code></pre></div>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2020/12/05/Linux-101-Hackers/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>

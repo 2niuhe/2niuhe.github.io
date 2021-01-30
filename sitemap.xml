@@ -5,37 +5,44 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/</loc>
-<lastmod>2021-01-24T04:42:51-00:00</lastmod>
+<lastmod>2021-01-30T17:48:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/tags.html</loc>
-<lastmod>2021-01-24T04:42:51-00:00</lastmod>
+<lastmod>2021-01-30T17:48:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/categories.html</loc>
-<lastmod>2021-01-24T04:42:51-00:00</lastmod>
+<lastmod>2021-01-30T17:48:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/authors.html</loc>
-<lastmod>2021-01-24T04:42:51-00:00</lastmod>
+<lastmod>2021-01-30T17:48:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/archives.html</loc>
-<lastmod>2021-01-24T04:42:51-00:00</lastmod>
+<lastmod>2021-01-30T17:48:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2021/01/29/Typescript-Doc/</loc>
+<lastmod>2021-01-29T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
 </url>
 
 <url>
@@ -48,6 +55,27 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://2niuhe.github.io/pages/2020/12/27/sqlite3-tutorial/</loc>
 <lastmod>2020-12-27T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2020/12/05/Awk-Usage/</loc>
+<lastmod>2020-12-05T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2020/12/05/Linux-101-Hackers/</loc>
+<lastmod>2020-12-05T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2020/12/05/vscode-Shortcut/</loc>
+<lastmod>2020-12-05T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
@@ -389,6 +417,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/category/angular.html</loc>
+<lastmod>2021-01-29T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/category/arduino.html</loc>
 <lastmod>2018-09-01T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
@@ -445,6 +480,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/tag/typescript.html</loc>
+<lastmod>2021-01-29T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/tag/docker.html</loc>
 <lastmod>2021-01-23T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
@@ -461,6 +503,20 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://2niuhe.github.io/tag/db.html</loc>
 <lastmod>2020-12-27T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/awk.html</loc>
+<lastmod>2020-12-05T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/vscode.html</loc>
+<lastmod>2020-12-05T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -642,7 +698,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/author/niuhe.html</loc>
-<lastmod>2021-01-23T00:00:00+08:06</lastmod>
+<lastmod>2021-01-29T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
