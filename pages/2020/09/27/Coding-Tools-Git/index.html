@@ -260,7 +260,58 @@
 <h4>Git 高级操作</h4>
 <ul>
 <li><code>git config</code>: Git 是一个 <a href="https://git-scm.com/docs/git-config">高度可定制的</a> 工具</li>
-<li><code>git clone --shallow</code>: 克隆仓库，但是不包括版本历史信息</li>
+</ul>
+<p>列出所有config文件里的设置项</p>
+<div class="highlight"><pre><span></span><code>git config --system -l <span class="c1"># 系统级的配置  /etc文件加下</span>
+git config --global -l <span class="c1"># 用户级的配置  /home/用户名/的文件下</span>
+git config --local -l <span class="c1"># 仓库/项目级    ./.git/目录下</span>
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code>git config user.name <span class="s1">&#39;你的姓名&#39;</span>
+git config user.email <span class="s1">&#39;你的email&#39;</span>
+</code></pre></div>
+
+
+<p>删除配置文件中的配置项</p>
+<div class="highlight"><pre><span></span><code>git config --unset user.name
+</code></pre></div>
+
+
+<p>查看配置文件中的配置项</p>
+<div class="highlight"><pre><span></span><code>git config --get user.name
+</code></pre></div>
+
+
+<p>定义指令别名</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># git config alias.指令别名  &#39;标准指令&#39;</span>
+git config alias.con <span class="s1">&#39;config -l&#39;</span>
+git con
+git config --unset alias.con
+</code></pre></div>
+
+
+<h4>创建.gitignore文件</h4>
+<div class="highlight"><pre><span></span><code>vi .gitignore
+</code></pre></div>
+
+
+<p>.gitignore文件规定了git系统该忽略哪些文件</p>
+<div class="highlight"><pre><span></span><code>/images
+*.txt
+!requirements.txt
+</code></pre></div>
+
+
+<p>如以上配置规定了git忽略</p>
+<ul>
+<li>/images目录下的所有文件</li>
+<li>
+<p>除了requirements.txt外的所有txt文件</p>
+</li>
+<li>
+<p><code>git clone --shallow</code>: 克隆仓库，但是不包括版本历史信息</p>
+</li>
 <li><code>git add -p</code>: 交互式暂存</li>
 <li><code>git rebase -i</code>: 交互式变基</li>
 <li><code>git blame</code>: 查看最后修改某行的人</li>

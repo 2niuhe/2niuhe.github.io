@@ -5,35 +5,35 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/</loc>
-<lastmod>2021-01-30T18:03:42-00:00</lastmod>
+<lastmod>2021-02-04T16:42:29-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/tags.html</loc>
-<lastmod>2021-01-30T18:03:42-00:00</lastmod>
+<lastmod>2021-02-04T16:42:29-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/categories.html</loc>
-<lastmod>2021-01-30T18:03:42-00:00</lastmod>
+<lastmod>2021-02-04T16:42:29-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/authors.html</loc>
-<lastmod>2021-01-30T18:03:42-00:00</lastmod>
+<lastmod>2021-02-04T16:42:29-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/archives.html</loc>
-<lastmod>2021-01-30T18:03:42-00:00</lastmod>
+<lastmod>2021-02-04T16:42:29-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -146,6 +146,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://2niuhe.github.io/pages/2020/10/12/Python-Advanced-2/</loc>
 <lastmod>2020-10-12T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2020/10/11/Re-Usage/</loc>
+<lastmod>2020-10-11T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
@@ -389,13 +396,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
-<loc>http://2niuhe.github.io/pages/2018/04/11/Git_Tutorial/</loc>
-<lastmod>2018-04-11T00:00:00+08:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-
-<url>
 <loc>http://2niuhe.github.io/pages/2018/04/08/word-cloud-doc-cn/</loc>
 <lastmod>2018-04-08T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
@@ -566,6 +566,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://2niuhe.github.io/tag/gdb.html</loc>
 <lastmod>2020-10-16T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/re.html</loc>
+<lastmod>2020-10-11T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
