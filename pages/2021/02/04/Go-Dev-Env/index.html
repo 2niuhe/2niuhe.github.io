@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="niuhe" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="Go开发环境搭建"/>
+    <meta property="og:url" content="../../../../../pages/2021/02/04/Go-Dev-Env/"/>
+    <meta property="og:site_name" content="Niuhe's Blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="../../../../../pages/2021/02/04/Go-Dev-Env/" />
+
+    <title>Go开发环境搭建 | Niuhe's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../theme/css/main.css" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/2niuhe">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="../../../../../">Niuhe's Blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="../../../../../category/angular.html">Angular</a></li>
+                            <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
+                            <li class="active"><a href="../../../../../category/go.html">Go</a></li>
+                            <li ><a href="../../../../../category/golang.html">Golang</a></li>
+                            <li ><a href="../../../../../category/javascript.html">Javascript</a></li>
+                            <li ><a href="../../../../../category/life.html">Life : )</a></li>
+                            <li ><a href="../../../../../category/linux.html">Linux</a></li>
+                            <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
+                            <li ><a href="../../../../../category/others.html">Others</a></li>
+                            <li ><a href="../../../../../category/python.html">Python</a></li>
+                            <li ><a href="../../../../../category/raspberry.html">Raspberry</a></li>
+                            <li ><a href="../../../../../category/ros.html">ROS</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="../../../../../pages/2021/02/04/Go-Dev-Env/" rel="bookmark"
+             title="Permalink to Go开发环境搭建">Go开发环境搭建</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="../../../../../author/niuhe.html">niuhe</a>
+    </address>
+
+    in <a href="../../../../../category/go.html">Go</a>
+
+    on 2021-02-04
+
+        |
+        tags:         <a href="../../../../../tag/go.html">Go</a>
+
+
+        |
+        <a href="../../../../../pages/2021/02/04/Go-Dev-Env/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <div class="highlight"><pre><span></span><code><span class="c1"># 查看go语言开发环境</span>
+go env
+</code></pre></div>
+
+
+<p>在 GOPATH 指定的工作目录下，代码总是会保存在 $GOPATH/src 目录下。在工程经过 go build、go install 或 go get 等指令后，会将产生的二进制可执行文件放在 $GOPATH/bin 目录下，生成的中间缓存文件会被保存在 $GOPATH/pkg 下。</p>
+<p>如果需要将整个源码添加到版本管理工具（Version Control System，VCS）中时，只需要添加 $GOPATH/src 目录的源码即可。bin 和 pkg 目录的内容都可以由 src 目录生成。</p>
+<div class="highlight"><pre><span></span><code>General-purpose environment variables:
+
+    GCCGO
+        The gccgo <span class="nb">command</span> to run <span class="k">for</span> <span class="s1">&#39;go build -compiler=gccgo&#39;</span>.
+    GOARCH
+        The architecture, or processor, <span class="k">for</span> which to compile code.
+        Examples are amd64, <span class="m">386</span>, arm, ppc64.
+    GOBIN
+        The directory where <span class="s1">&#39;go install&#39;</span> will install a command.
+    GOCACHE
+        The directory where the go <span class="nb">command</span> will store cached
+        information <span class="k">for</span> reuse in future builds.
+    GODEBUG
+        Enable various debugging facilities. See <span class="s1">&#39;go doc runtime&#39;</span>
+        <span class="k">for</span> details.
+    GOENV
+        The location of the Go environment configuration file.
+        Cannot be <span class="nb">set</span> using <span class="s1">&#39;go env -w&#39;</span>.
+    GOFLAGS
+        A space-separated list of -flag<span class="o">=</span>value settings to apply
+        to go commands by default, when the given flag is known by
+        the current command. Each entry must be a standalone flag.
+        Because the entries are space-separated, flag values must
+        not contain spaces. Flags listed on the <span class="nb">command</span> line
+        are applied after this list and therefore override it.
+    GOOS
+        The operating system <span class="k">for</span> which to compile code.
+        Examples are linux, darwin, windows, netbsd.
+    GOPATH
+        For more details see: <span class="s1">&#39;go help gopath&#39;</span>.
+    GOPROXY
+        URL of Go module proxy. See <span class="s1">&#39;go help modules&#39;</span>.
+    GOPRIVATE, GONOPROXY, GONOSUMDB
+        Comma-separated list of glob patterns <span class="o">(</span>in the syntax of Go<span class="s1">&#39;s path.Match)</span>
+<span class="s1">        of module path prefixes that should always be fetched directly</span>
+<span class="s1">        or that should not be compared against the checksum database.</span>
+<span class="s1">        See &#39;</span>go <span class="nb">help</span> module-private<span class="s1">&#39;.</span>
+<span class="s1">    GOROOT</span>
+<span class="s1">        The root of the go tree.</span>
+<span class="s1">    GOSUMDB</span>
+<span class="s1">        The name of checksum database to use and optionally its public key and</span>
+<span class="s1">        URL. See &#39;</span>go <span class="nb">help</span> module-auth<span class="s1">&#39;.</span>
+<span class="s1">    GOTMPDIR</span>
+<span class="s1">        The directory where the go command will write</span>
+<span class="s1">        temporary source files, packages, and binaries.</span>
+
+<span class="s1">Environment variables for use with cgo:</span>
+
+<span class="s1">    AR</span>
+<span class="s1">        The command to use to manipulate library archives when</span>
+<span class="s1">        building with the gccgo compiler.</span>
+<span class="s1">        The default is &#39;</span>ar<span class="s1">&#39;.</span>
+<span class="s1">    CC</span>
+<span class="s1">        The command to use to compile C code.</span>
+<span class="s1">    CGO_ENABLED</span>
+<span class="s1">        Whether the cgo command is supported. Either 0 or 1.</span>
+<span class="s1">    CGO_CFLAGS</span>
+<span class="s1">        Flags that cgo will pass to the compiler when compiling</span>
+<span class="s1">        C code.</span>
+<span class="s1">    CGO_CFLAGS_ALLOW</span>
+<span class="s1">        A regular expression specifying additional flags to allow</span>
+<span class="s1">        to appear in #cgo CFLAGS source code directives.</span>
+<span class="s1">        Does not apply to the CGO_CFLAGS environment variable.</span>
+<span class="s1">    CGO_CFLAGS_DISALLOW</span>
+<span class="s1">        A regular expression specifying flags that must be disallowed</span>
+<span class="s1">        from appearing in #cgo CFLAGS source code directives.</span>
+<span class="s1">        Does not apply to the CGO_CFLAGS environment variable.</span>
+<span class="s1">    CGO_CPPFLAGS, CGO_CPPFLAGS_ALLOW, CGO_CPPFLAGS_DISALLOW</span>
+<span class="s1">        Like CGO_CFLAGS, CGO_CFLAGS_ALLOW, and CGO_CFLAGS_DISALLOW,</span>
+<span class="s1">        but for the C preprocessor.</span>
+<span class="s1">    CGO_CXXFLAGS, CGO_CXXFLAGS_ALLOW, CGO_CXXFLAGS_DISALLOW</span>
+<span class="s1">        Like CGO_CFLAGS, CGO_CFLAGS_ALLOW, and CGO_CFLAGS_DISALLOW,</span>
+<span class="s1">        but for the C++ compiler.</span>
+<span class="s1">    CGO_FFLAGS, CGO_FFLAGS_ALLOW, CGO_FFLAGS_DISALLOW</span>
+<span class="s1">        Like CGO_CFLAGS, CGO_CFLAGS_ALLOW, and CGO_CFLAGS_DISALLOW,</span>
+<span class="s1">        but for the Fortran compiler.</span>
+<span class="s1">    CGO_LDFLAGS, CGO_LDFLAGS_ALLOW, CGO_LDFLAGS_DISALLOW</span>
+<span class="s1">        Like CGO_CFLAGS, CGO_CFLAGS_ALLOW, and CGO_CFLAGS_DISALLOW,</span>
+<span class="s1">        but for the linker.</span>
+<span class="s1">    CXX</span>
+<span class="s1">        The command to use to compile C++ code.</span>
+<span class="s1">    FC</span>
+<span class="s1">        The command to use to compile Fortran code.</span>
+<span class="s1">    PKG_CONFIG</span>
+<span class="s1">        Path to pkg-config tool.</span>
+
+<span class="s1">Architecture-specific environment variables:</span>
+
+<span class="s1">    GOARM</span>
+<span class="s1">        For GOARCH=arm, the ARM architecture for which to compile.</span>
+<span class="s1">        Valid values are 5, 6, 7.</span>
+<span class="s1">    GO386</span>
+<span class="s1">        For GOARCH=386, the floating point instruction set.</span>
+<span class="s1">        Valid values are 387, sse2.</span>
+<span class="s1">    GOMIPS</span>
+<span class="s1">        For GOARCH=mips{,le}, whether to use floating point instructions.</span>
+<span class="s1">        Valid values are hardfloat (default), softfloat.</span>
+<span class="s1">    GOMIPS64</span>
+<span class="s1">        For GOARCH=mips64{,le}, whether to use floating point instructions.</span>
+<span class="s1">        Valid values are hardfloat (default), softfloat.</span>
+<span class="s1">    GOWASM</span>
+<span class="s1">        For GOARCH=wasm, comma-separated list of experimental WebAssembly features to use.</span>
+<span class="s1">        Valid values are satconv, signext.</span>
+
+<span class="s1">Special-purpose environment variables:</span>
+
+<span class="s1">    GCCGOTOOLDIR</span>
+<span class="s1">        If set, where to find gccgo tools, such as cgo.</span>
+<span class="s1">        The default is based on how gccgo was configured.</span>
+<span class="s1">    GOROOT_FINAL</span>
+<span class="s1">        The root of the installed Go tree, when it is</span>
+<span class="s1">        installed in a location other than where it is built.</span>
+<span class="s1">        File names in stack traces are rewritten from GOROOT to</span>
+<span class="s1">        GOROOT_FINAL.</span>
+<span class="s1">    GO_EXTLINK_ENABLED</span>
+<span class="s1">        Whether the linker should use external linking mode</span>
+<span class="s1">        when using -linkmode=auto with code that uses cgo.</span>
+<span class="s1">        Set to 0 to disable external linking mode, 1 to enable it.</span>
+<span class="s1">    GIT_ALLOW_PROTOCOL</span>
+<span class="s1">        Defined by Git. A colon-separated list of schemes that are allowed</span>
+<span class="s1">        to be used with git fetch/clone. If set, any scheme not explicitly</span>
+<span class="s1">        mentioned will be considered insecure by &#39;</span>go get<span class="s1">&#39;.</span>
+<span class="s1">        Because the variable is defined by Git, the default value cannot</span>
+<span class="s1">        be set using &#39;</span>go env -w<span class="s1">&#39;.</span>
+
+<span class="s1">Additional information available from &#39;</span>go env<span class="err">&#39;</span> but not <span class="nb">read</span> from the environment:
+
+    GOEXE
+        The executable file name suffix <span class="o">(</span><span class="s2">&quot;.exe&quot;</span> on Windows, <span class="s2">&quot;&quot;</span> on other systems<span class="o">)</span>.
+    GOGCCFLAGS
+        A space-separated list of arguments supplied to the CC command.
+    GOHOSTARCH
+        The architecture <span class="o">(</span>GOARCH<span class="o">)</span> of the Go toolchain binaries.
+    GOHOSTOS
+        The operating system <span class="o">(</span>GOOS<span class="o">)</span> of the Go toolchain binaries.
+    GOMOD
+        The absolute path to the go.mod of the main module,
+        or the empty string <span class="k">if</span> not using modules.
+    GOTOOLDIR
+        The directory where the go tools <span class="o">(</span>compile, cover, doc, etc...<span class="o">)</span> are installed.
+</code></pre></div>
+
+
+<p>创建GOPATH目录，在目录下创建三个文件夹
+bin:用来存放编译后生成的可执行文件
+pkg:用来存放编译后生成的归档文件
+src:用来存放源码文件</p>
+<p>1.设置代理</p>
+<p>go env -w GOPROXY=https://goproxy.cn,direct
+2.开启go modules</p>
+<p>go env -w GO111MODULE=on
+开启</p>
+<p>go env -w GO111MODULE=auto
+设置为auto模式，项目中有.mod文件就代表开启，没有就不开启</p>
+<p>go env -w GO111MODULE=off
+关闭</p>
+<p>使用go env查询配置</p>
+<p>set GO111MODULE=on
+set GOPROXY=https://goproxy.cn,direct</p>
+<p>阿里云的goproxy:
+http://mirrors.aliyun.com/goproxy/</p>
+<p>默认我们go build的可执行文件都是当前操作系统可执行的文件，如果我想在windows下编译一个linux下可执行文件，那需要怎么做呢？</p>
+<p>只需要指定目标操作系统的平台和处理器架构即可：</p>
+<p>SET CGO_ENABLED=0  // 禁用CGO
+SET GOOS=linux  // 目标平台是linux
+SET GOARCH=amd64  // 目标处理器架构是amd64
+使用了cgo的代码是不支持跨平台编译的</p>
+<p>然后再执行go build命令，得到的就是能够在Linux平台运行的可执行文件了。</p>
+<p>Mac 下编译 Linux 和 Windows平台 64位 可执行程序：</p>
+<p>CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build
+Linux 下编译 Mac 和 Windows 平台64位可执行程序：</p>
+<p>CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build
+Windows下编译Mac平台64位可执行程序：</p>
+<p>SET CGO_ENABLED=0
+SET GOOS=darwin
+SET GOARCH=amd64
+go build
+现在，开启你的Go语言学习之旅吧。人生苦短，let’s Go.</p>
+<p>go env -w GO111MODULE=on</p>
+<p>go mod tidy</p>
+<p>Go模块带来了三个重要的内置功能：</p>
+<p>go.mod文件，它与package.json或Pipfile文件的功能类似。
+机器生成的传递依赖项描述文件 – go.sum。
+不再有GOPATH限制。模块可以位于任何路径中。</p>
+<div class="highlight"><pre><span></span><code><span class="err">$</span><span class="w"> </span><span class="k">go</span><span class="w"> </span><span class="n">help</span><span class="w"> </span><span class="k">mod</span><span class="w"></span>
+<span class="k">Go</span><span class="w"> </span><span class="k">mod</span><span class="w"> </span><span class="n">provides</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">operations</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">modules</span><span class="p">.</span><span class="w"></span>
+
+<span class="n">Note</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">support</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">modules</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">built</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">go</span><span class="w"> </span><span class="n">commands</span><span class="p">,</span><span class="w"></span>
+<span class="ow">not</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="s1">&#39;go mod&#39;</span><span class="p">.</span><span class="w"> </span><span class="k">For</span><span class="w"> </span><span class="n">example</span><span class="p">,</span><span class="w"> </span><span class="nf">day</span><span class="o">-</span><span class="k">to</span><span class="o">-</span><span class="nf">day</span><span class="w"> </span><span class="n">adding</span><span class="p">,</span><span class="w"> </span><span class="n">removing</span><span class="p">,</span><span class="w"> </span><span class="n">upgrading</span><span class="p">,</span><span class="w"></span>
+<span class="ow">and</span><span class="w"> </span><span class="n">downgrading</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">done</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s1">&#39;go get&#39;</span><span class="p">.</span><span class="w"></span>
+<span class="n">See</span><span class="w"> </span><span class="s1">&#39;go help modules&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">overview</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="n">functionality</span><span class="p">.</span><span class="w"></span>
+
+<span class="k">Usage</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">go</span><span class="w"> </span><span class="k">mod</span><span class="w"> </span><span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">arguments</span><span class="o">]</span><span class="w"></span>
+
+<span class="n">The</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">are</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">download</span><span class="w">    </span><span class="n">download</span><span class="w"> </span><span class="n">modules</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">local</span><span class="w"> </span><span class="n">cache</span><span class="w"></span>
+<span class="w">    </span><span class="n">edit</span><span class="w">        </span><span class="n">edit</span><span class="w"> </span><span class="k">go</span><span class="p">.</span><span class="k">mod</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">tools</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">scripts</span><span class="w"></span>
+<span class="w">    </span><span class="n">graph</span><span class="w">       </span><span class="k">print</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="n">requirement</span><span class="w"> </span><span class="n">graph</span><span class="w"></span>
+<span class="w">    </span><span class="n">init</span><span class="w">        </span><span class="k">initialize</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="k">current</span><span class="w"> </span><span class="n">directory</span><span class="w"></span>
+<span class="w">    </span><span class="n">tidy</span><span class="w">        </span><span class="k">add</span><span class="w"> </span><span class="n">missing</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">unused</span><span class="w"> </span><span class="n">modules</span><span class="w"></span>
+<span class="w">    </span><span class="n">vendor</span><span class="w">      </span><span class="n">make</span><span class="w"> </span><span class="n">vendored</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">dependencies</span><span class="w"></span>
+<span class="w">    </span><span class="n">verify</span><span class="w">      </span><span class="n">verify</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="n">content</span><span class="w"></span>
+<span class="w">    </span><span class="n">why</span><span class="w">         </span><span class="n">explain</span><span class="w"> </span><span class="n">why</span><span class="w"> </span><span class="n">packages</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">modules</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">needed</span><span class="w"></span>
+
+<span class="k">Use</span><span class="w"> </span><span class="ss">&quot;go help mod &lt;command&gt;&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="w"> </span><span class="n">about</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">command</span><span class="p">.</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>列出依赖项
+go list -m all 列出当前模块及其所有依赖项。</p>
+<p>$ go list -m all
+github.com/deepsourcelabs/cli
+github.com/certifi/gocertifi v0.0.0-20190410005359-59a85de7f35e
+github.com/getsentry/raven-go v0.2.0
+github.com/pkg/errors v0.0.0-20190227000051-27936f6d90f9
+在go list输出中，当前模块（也称为主模块）始终是第一行，其后是路径排序所有依赖模块。</p>
+<p>列出软件包的可用版本
+go list -m -versions github.com/username/repository 列出软件包的可用版本。</p>
+<p>$ go list -m -versions github.com/getsentry/raven-go
+github.com/getsentry/raven-go v0.1.0 v0.1.1 v0.1.2 v0.2.0
+添加依赖
+添加依赖项是隐式的。在代码中导入依赖项后，运行go build或go test命令将获取模块的最新版本并将其添加到go.mod文件中。如果要显式添加依赖项，请运行go get github.com/username/repository。</p>
+<p>依赖项的升级/降级
+go get github.com/username/repository@vx.x.x下载并设置依赖项和更新go.mod文件的特定版本。</p>
+<p>$ go get github.com/getsentry/raven-go@v0.1.2
+go: finding github.com/getsentry/raven-go v0.1.2
+go: downloading github.com/getsentry/raven-go v0.1.2
+go: extracting github.com/getsentry/raven-go v0.1.2</p>
+<p>$ cat go.mod
+module github.com/deepsourcelabs/marvin-go</p>
+<p>go 1.12</p>
+<p>require (
+    github.com/certifi/gocertifi v0.0.0-20190410005359-59a85de7f35e
+    github.com/getsentry/raven-go v0.1.2
+    github.com/pkg/errors v0.0.0-20190227000051-27936f6d90f9
+)</p>
+<p>$ cat go.sum
+github.com/certifi/gocertifi v0.0.0-20190410005359-59a85de7f35e h1:9574pc8MX6rF/QyO14SPHhM5KKIOo9fkb/1ifuYMTKU=
+github.com/certifi/gocertifi v0.0.0-20190410005359-59a85de7f35e/go.mod h1:GJKEexRPVJrBSOjoqN5VNOIKJ5Q3RViH6eu3puDRwx4=
+github.com/getsentry/raven-go v0.1.2 h1:4V0z512S5mZXiBvmW2RbuZBSIY1sEdMNsPjpx2zwtSE=
+github.com/getsentry/raven-go v0.1.2/go.mod h1:KungGk8q33+aIAZUIVWZDr2OfAEBsO49PX4NzFV5kcQ=
+github.com/getsentry/raven-go v0.2.0 h1:no+xWJRb5ZI7eE8TWgIq1jLulQiIoLG0IfYxv5JYMGs=
+github.com/getsentry/raven-go v0.2.0/go.mod h1:KungGk8q33+aIAZUIVWZDr2OfAEBsO49PX4NzFV5kcQ=
+github.com/pkg/errors v0.0.0-20190227000051-27936f6d90f9 h1:dIsTcVF0w9viTLHXUEkDI7cXITMe+M/MRRM2MwisVow=
+github.com/pkg/errors v0.0.0-20190227000051-27936f6d90f9/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+vendor依赖项
+使用模块时，go命令将完全忽略vendor目录。为了向后兼容旧版Go，或确保将用于构建的所有文件一起存储在单个文件树中，请运行go mod vendor。</p>
+<p>这将在主模块的根目录中创建一个vendor目录，并将依赖模块中的所有软件包存储在该目录中。</p>
+<p>注意：要使用主模块的顶级vendor目录进行构建，请运行’go build -mod=vendor’。</p>
+<p>删除未使用的依赖项
+go mod tidy将删除未使用的依赖项并更新go.mod文件。</p>
+<p>Go modules 是官方推出的依赖管理工具，Go modules 提供了3个重要的功能：</p>
+<p>go.mod 文件，它与 package.json 或 Pipfile 文件的功能类似。
+机器生成的传递依赖项描述文件 ： go.sum。
+不再有 GOPATH 限制。模块可以位于任何路径中。
+要想使用 Go modules 请升级到 1.11 及其以上版本，1.13 版本已经默认开启 Go modules，如果想体验这个功能建议将 Go 版本升级到 1.13。</p>
+<p>另外，这个功能默认并不是开启的，需要手动设置环境变量开开启：</p>
+<p>Copy
+go env -w GO111MODULE=on
+go env -w 是Go 1.13 新增的命令，用于写入环境变量。写入的地方是os.UserCOnfigDir所在的目录。</p>
+<p>GO111MUDULE 变量是 Go modules 的开关。 有以下几个参数：</p>
+<p>auto：如果项目包含了 go.mod 文件，则启用 Go modules 功能。在Go 1.13 中是默认值。
+on：始终开启 Go modules。
+off：禁用 Go modules。</p>
+<p>go.mod 文件是开启 modules 的必备配置文件。它记录了当前项目引用的包数据信息。go.mod 文件中定义了以下关键词：</p>
+<p>module：用于定义当前项目的模块路径
+go：用于设置Go 版本信息
+require：用于设置一个特定的模块版本
+exclude：用于从使用中排除一个特定的模块版本
+replace：用于将一个模块版本替换为另一个模块版本</p>
+<p>自动下载依赖包
+项目不必放在GOPATH/src内了
+项目内会生成一个go.mod文件，列出包依赖
+所以来的第三方包会准确的指定版本号
+对于已经转移的包，可以用replace 申明替换，不需要改代码</p>
+<p>go env用于打印Go语言的环境信息。go run命令可以编译并运行命令源码文件。go get可以根据要求和实际情况从互联网上下载或更新指定的代码包及其依赖包，并对它们进行编译和安装。go build命令用于编译我们指定的源码文件或代码包以及它们的依赖包。go install用于编译并安装指定的代码包及它们的依赖包。go clean命令会删除掉执行其它命令时产生的一些文件和目录。go doc命令可以打印附于Go语言程序实体上的文档。我们可以通过把程序实体的标识符作为该命令的参数来达到查看其文档的目的。go test命令用于对Go语言编写的程序进行测试。go list命令的作用是列出指定的代码包的信息。go fix会把指定代码包的所有Go语言源码文件中的旧版本代码修正为新版本的代码。go vet是一个用于检查Go语言源码中静态错误的简单工具。go tool pprof命令来交互式的访问概要文件的内容。</p>
+<p>作者：荆棘谷青山
+链接：https://www.zhihu.com/question/311207855/answer/1260576768
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<h3>参考</h3>
+<p><a href="https://www.cnblogs.com/rickiyang/p/13874139.html">Go 包管理历史以及 Go mod 使用</a></p>
+
+      </div><!-- /.entry-content -->
+      <div class="comments">
+        <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/2021/02/04/Go-Dev-Env/";
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//niuhemoon.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      </div>
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                        This blog is proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                        <a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                        Special thanks to <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a> and <a href="http://getbootstrap.com/">Twitter Bootstrap</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-116933089-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'niuhemoon';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</body>
+</html>
