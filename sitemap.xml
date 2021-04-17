@@ -5,42 +5,56 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/</loc>
-<lastmod>2021-03-03T17:00:52-00:00</lastmod>
+<lastmod>2021-04-17T04:04:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/tags.html</loc>
-<lastmod>2021-03-03T17:00:52-00:00</lastmod>
+<lastmod>2021-04-17T04:04:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/categories.html</loc>
-<lastmod>2021-03-03T17:00:52-00:00</lastmod>
+<lastmod>2021-04-17T04:04:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/authors.html</loc>
-<lastmod>2021-03-03T17:00:52-00:00</lastmod>
+<lastmod>2021-04-17T04:04:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/archives.html</loc>
-<lastmod>2021-03-03T17:00:52-00:00</lastmod>
+<lastmod>2021-04-17T04:04:26-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/pages/2021/03/25/tinygo-esp32/</loc>
+<lastmod>2021-03-25T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/pages/2021/03/04/Golang-Frequency-Limit/</loc>
 <lastmod>2021-03-04T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2021/02/27/Golang-Makefile/</loc>
+<lastmod>2021-02-27T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
@@ -438,6 +452,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/category/go.html</loc>
+<lastmod>2021-03-25T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/category/golang.html</loc>
 <lastmod>2021-03-04T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
@@ -494,8 +515,36 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/tag/tinygo.html</loc>
+<lastmod>2021-03-25T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/esp32.html</loc>
+<lastmod>2021-03-25T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/tag/golang.html</loc>
 <lastmod>2021-03-04T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/go.html</loc>
+<lastmod>2021-02-27T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/makefile.html</loc>
+<lastmod>2021-02-27T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -726,7 +775,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/author/niuhe.html</loc>
-<lastmod>2021-03-04T00:00:00+08:06</lastmod>
+<lastmod>2021-03-25T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
