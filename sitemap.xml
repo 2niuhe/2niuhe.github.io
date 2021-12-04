@@ -5,37 +5,44 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/</loc>
-<lastmod>2021-04-17T04:09:26-00:00</lastmod>
+<lastmod>2021-12-04T02:56:47-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/tags.html</loc>
-<lastmod>2021-04-17T04:09:26-00:00</lastmod>
+<lastmod>2021-12-04T02:56:47-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/categories.html</loc>
-<lastmod>2021-04-17T04:09:26-00:00</lastmod>
+<lastmod>2021-12-04T02:56:47-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/authors.html</loc>
-<lastmod>2021-04-17T04:09:26-00:00</lastmod>
+<lastmod>2021-12-04T02:56:47-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>http://2niuhe.github.io/archives.html</loc>
-<lastmod>2021-04-17T04:09:26-00:00</lastmod>
+<lastmod>2021-12-04T02:56:47-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2021/12/04/Install-Minikube-On-Manjaro/</loc>
+<lastmod>2021-12-04T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
 </url>
 
 <url>
@@ -230,6 +237,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://2niuhe.github.io/pages/2020/09/27/Coding-Tools-Vim/</loc>
 <lastmod>2020-09-27T00:00:00+08:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/pages/2020/09/26/Angular-DevEnv/</loc>
+<lastmod>2020-09-26T00:00:00+08:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
@@ -466,6 +480,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/category/kubernetes.html</loc>
+<lastmod>2021-12-04T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/category/life.html</loc>
 <lastmod>2018-03-22T00:10:00+08:06</lastmod>
 <changefreq>daily</changefreq>
@@ -510,6 +531,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://2niuhe.github.io/category/ros.html</loc>
 <lastmod>2019-05-06T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/k8s.html</loc>
+<lastmod>2021-12-04T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -683,6 +711,20 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>http://2niuhe.github.io/tag/angular.html</loc>
+<lastmod>2020-09-26T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>http://2niuhe.github.io/tag/nodejs.html</loc>
+<lastmod>2020-09-26T00:00:00+08:06</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>http://2niuhe.github.io/tag/microstack.html</loc>
 <lastmod>2020-09-20T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
@@ -775,7 +817,7 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>http://2niuhe.github.io/author/niuhe.html</loc>
-<lastmod>2021-03-25T00:00:00+08:06</lastmod>
+<lastmod>2021-12-04T00:00:00+08:06</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>

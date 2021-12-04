@@ -49,6 +49,7 @@
                             <li ><a href="../../../../../category/arduino.html">Arduino</a></li>
                             <li class="active"><a href="../../../../../category/go.html">Go</a></li>
                             <li ><a href="../../../../../category/golang.html">Golang</a></li>
+                            <li ><a href="../../../../../category/kubernetes.html">Kubernetes</a></li>
                             <li ><a href="../../../../../category/life.html">Life : )</a></li>
                             <li ><a href="../../../../../category/linux.html">Linux</a></li>
                             <li ><a href="../../../../../category/openstack.html">Openstack</a></li>
@@ -144,6 +145,19 @@ VARIABLE ?<span class="o">=</span> value
 <span class="k">$&lt;</span> <span class="err">：</span> <span class="err">第一个dependencies文件</span>
 <span class="k">$?</span> <span class="err">：</span> <span class="err">所有比target文件更新的dependencies文件</span>
 <span class="err">$^</span> <span class="err">：</span> <span class="err">所有的dependencies文件，不管文件修改时间如何。</span>
+</code></pre></div>
+
+
+<p><strong>跨平台</strong></p>
+<blockquote>
+<p>让makefile支持跨平台，在不同平台作出不同的反应</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="c"># Detect system OS.</span>
+<span class="cp">ifeq ($(OS),Windows_NT)</span>
+    detected_OS :<span class="o">=</span> Windows
+<span class="cp">else</span>
+    detected_OS :<span class="o">=</span> <span class="k">$(</span>shell sh -c <span class="s1">&#39;uname -s 2&gt;/dev/null || echo not&#39;</span><span class="k">)</span>
+<span class="cp">endif</span>
 </code></pre></div>
 
 
@@ -281,6 +295,7 @@ VARIABLE ?<span class="o">=</span> value
 <p><a href="https://www.ruanyifeng.com/blog/2015/02/make.html">Make 命令教程</a></p>
 <p><a href="https://blog.wangjunfeng.com/post/golang-makefile/">一个为go准备的优秀makefile</a></p>
 <p><a href="https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents">GNU make</a></p>
+<p><a href="https://michaelchen.tech/gnu-make/cross-platform-makefile-for-application/">makefile跨平台</a></p>
 
       </div><!-- /.entry-content -->
       <div class="comments">
