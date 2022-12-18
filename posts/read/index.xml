@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>📕 阅读 on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/posts/read/</link>
+    <description>Recent content in 📕 阅读 on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 22 Mar 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/posts/read/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一首小诗</title>
+      <link>https://blog.niuhemoon.win/posts/read/my-first-blog/</link>
+      <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/read/my-first-blog/</guid>
+      <description>This is my first blog 美国诗人纳·斯待尔在87岁那年写过一首诗：《我会采更多的雏菊》，摘取片段于下。 如果我能够从头活过， 我会试着犯更多的错。 我会放松一点</description>
+    </item>
+    
+  </channel>
+</rss>

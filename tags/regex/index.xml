@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Regex on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/regex/</link>
+    <description>Recent content in Regex on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 11 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/regex/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>正则表达式基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/re-usage/</link>
+      <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/re-usage/</guid>
+      <description>正则表达式基本使用</description>
+    </item>
+    
+  </channel>
+</rss>

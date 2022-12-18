@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>wordcloud on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/wordcloud/</link>
+    <description>Recent content in wordcloud on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 17 Apr 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/wordcloud/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>wordcloud源码阅读2——Cython</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</link>
+      <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</guid>
+      <description>wordcloud源码1.2.1版阅读，Cython的用法</description>
+    </item>
+    
+    <item>
+      <title>wordcloud源码阅读1——初探</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</link>
+      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</guid>
+      <description>wordcloud源码1.2.1版阅读笔记（大纲）</description>
+    </item>
+    
+    <item>
+      <title>WordCloud文档中文翻译</title>
+      <link>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</guid>
+      <description>Python WordCloud模块的Api文档中文翻译</description>
+    </item>
+    
+  </channel>
+</rss>

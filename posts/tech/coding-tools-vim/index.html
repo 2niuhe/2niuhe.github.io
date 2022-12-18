@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>编程工具之Vim | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Linux, Vim">
+<meta name="description" content="编程工具之Vim">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/coding-tools-vim/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+
+
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="编程工具之Vim" />
+<meta property="og:description" content="编程工具之Vim" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/coding-tools-vim/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-09-27T19:55:25+08:00" />
+<meta property="article:modified_time" content="2020-09-27T19:55:25+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="编程工具之Vim"/>
+<meta name="twitter:description" content="编程工具之Vim"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "编程工具之Vim",
+      "item": "https://blog.niuhemoon.win/posts/tech/coding-tools-vim/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "编程工具之Vim",
+  "name": "编程工具之Vim",
+  "description": "编程工具之Vim",
+  "keywords": [
+    "Linux", "Vim"
+  ],
+  "articleBody": "Vim编辑器 编辑模式 Vim的设计以大多数时间都花在阅读、浏览和进行少量编辑改动为基础，因此它具有多种操作模式：\n正常模式：在文件中四处移动光标进行修改 插入模式：插入文本 替换模式：替换文本 可视化（一般，行，块）模式：选中文本块 命令模式：用于执行命令 在不同的操作模式下， 键盘敲击的含义也不同。比如，x 在插入模式会插入字母x，但是在正常模式 会删除当前光标所在下的字母，在可视模式下则会删除选中文块。\n在默认设置下，Vim会在左下角显示当前的模式。 Vim启动时的默认模式是正常模式。通常你会把大部分 时间花在正常模式和插入模式。\n你可以按下 （逃脱键） 从任何其他模式返回正常模式。 在正常模式，键入 i 进入插入 模式， R 进入替换模式， v 进入可视（一般）模式， V 进入可视（行）模式， （Ctrl-V, 有时也写作 ^V）进入可视（块）模式， : 进入命令模式。\n因为你会在使用 Vim 时大量使用 键，可以考虑把大小写锁定键重定义成逃脱键 （MacOS 教程 ）。\n基本操作 插入文本 在正常模式， 键入 i 进入插入模式。 现在 Vim 跟很多其他的编辑器一样， 直到你键入 返回正常模式。 你只需要掌握这一点和上面介绍的所有基知识就可以使用 Vim 来编辑文件了 （虽然如果你一直停留在插入模式内不一定高效）。\n缓存， 标签页， 窗口 Vim 会维护一系列打开的文件，称为 “缓存”。 一个 Vim 会话包含一系列标签页，每个标签页包含 一系列窗口 （分隔面板）。每个窗口显示一个缓存。 跟网页浏览器等其他你熟悉的程序不一样的是， 缓存和窗口不是一一对应的关系； 窗口只是视角。 一个缓存可以在 多个 窗口打开，甚至在同一 个标签页内的多个窗口打开。这个功能其实很好用， 比如在查看同一个文件的不同部分的时候。\nVim 默认打开一个标签页，这个标签也包含一个窗口。\n命令行 在正常模式下键入 : 进入命令行模式。 在键入 : 后，你的光标会立即跳到屏幕下方的命令行。 这个模式有很多功能， 包括打开， 保存， 关闭文件， 以及 退出 Vim。\n:q 退出 （关闭窗口） :w 保存 （写） :wq 保存然后退出 :e {文件名} 打开要编辑的文件 :ls 显示打开的缓存 :help {标题} 打开帮助文档 :help :w 打开 :w 命令的帮助文档 :help w 打开 w 移动的帮助文档 Vim 的接口其实是一种编程语言 Vim 最重要的设计思想是 Vim 的界面本身是一个程序语言。 键入操作 （以及他们的助记名） 本身是命令， 这些命令可以组合使用。 这使得移动和编辑更加高效，特别是一旦形成肌肉记忆。\n移动 多数时候你会在正常模式下，使用移动命令在缓存中导航。在 Vim 里面移动也被成为 “名词”， 因为它们指向文字块。\n基本移动: hjkl （左， 下， 上， 右） 词： w （下一个词）， b （词初）， e （词尾） 行： 0 （行初）， ^ （第一个非空格字符）， $ （行尾） 屏幕： H （屏幕首行）， M （屏幕中间）， L （屏幕底部） 翻页： Ctrl-u （上翻）， Ctrl-d （下翻） 文件： gg （文件头）， G （文件尾） 行数： :{行数} 或者 {行数}G ({行数}为行数) 杂项： % （找到配对，比如括号或者 /* */ 之类的注释对） 查找： f{字符}， t{字符}， F{字符}， T{字符} 查找/到 向前/向后 在本行的{字符} , / ; 用于导航匹配 搜索: /{正则表达式}, n / N 用于导航匹配 选择 可视化模式:\n可视化 可视化行 可视化块 可以用移动命令来选中。\n编辑 所有你需要用鼠标做的事， 你现在都可以用键盘：采用编辑命令和移动命令的组合来完成。 这就是 Vim 的界面开始看起来像一个程序语言的时候。Vim 的编辑命令也被称为 “动词”， 因为动词可以施动于名词。\ni 进入插入模式 但是对于操纵/编辑文本，不单想用退格键完成 O / o 在之上/之下插入行 d{移动命令} 删除 {移动命令} 例如， dw 删除词, d$ 删除到行尾, d0 删除到行头。 c{移动命令} 改变 {移动命令} 例如， cw 改变词 比如 d{移动命令} 再 i x 删除字符 （等同于 dl） s 替换字符 （等同于 xi） 可视化模式 + 操作 选中文字, d 删除 或者 c 改变 u 撤销, 重做 y 复制 / “yank” （其他一些命令比如 d 也会复制） p 粘贴 更多值得学习的: 比如 ~ 改变字符的大小写 计数 你可以用一个计数来结合“名词” 和 “动词”， 这会执行指定操作若干次。\n3w 向前移动三个词 5j 向下移动5行 7dw 删除7个词 修饰语 你可以用修饰语改变 “名词” 的意义。修饰语有 i， 表示 “内部” 或者 “在内“， 和 a， 表示 ”周围“。\nci( 改变当前括号内的内容 ci[ 改变当前方括号内的内容 da' 删除一个单引号字符窗， 包括周围的单引号 自定义 Vim Vim 由一个位于 ~/.vimrc 的文本配置文件 （包含 Vim 脚本命令）。 你可能会启用很多基本 设置。\n我们提供一个文档详细的基本设置， 你可以用它当作你的初始设置。 我们推荐使用这个设置因为 它修复了一些 Vim 默认设置奇怪行为。 在 这儿 下载我们的设置， 然后将它保存成 ~/.vimrc.\nVim 能够被重度自定义， 花时间探索自定义选项是值得的。 你可以参考其他人的在 GitHub 上共享的设置文件， 比如， 你的授课人的 Vim 设置 (Anish, Jon (uses neovim), Jose)。 有很多好的博客文章也聊到了这个话题。 尽量不要复制粘贴别人的整个设置文件， 而是阅读和理解它， 然后采用对你有用的部分。\n扩展 Vim Vim 有很多扩展插件。 跟很多互联网上已经过时的建议相反， 你 不 需要在 Vim 使用一个插件 管理器（从 Vim 8.0 开始）。 你可以使用内置的插件管理系统。 只需要创建一个 ~/.vim/pack/vendor/start/ 的文件夹， 然后把插件放到这里 （比如通过 git clone）。\n以下是一些我们最爱的插件：\nctrlp.vim: 模糊文件查找 ack.vim: 代码搜索 nerdtree: 文件浏览器 vim-easymotion: 魔术操作 我们尽量避免在这里提供一份冗长的插件列表。 你可以查看讲师们的开源的配置文件 (Anish, Jon, Jose) 来看看我们使用的其他插件。 浏览 Vim Awesome 来了解一些很棒的插件。 这个话题也有很多博客文章： 搜索 “best Vim plugins”。\nVim 进阶 这里我们提供了一些展示这个编辑器能力的例子。我们无法把所有的这样的事情都教给你， 但是你 可以在使用中学习。 一个好的对策是: 当你在使用你的编辑器的时候感觉 “一定有更好的方法来做这个”， 那么很可能真的有： 上网搜寻一下。\n搜索和替换 :s （替换） 命令 （文档）。\n%s/foo/bar/g 在整个文件中将 foo 全局替换成 bar %s/\\[.*\\](\\(.*\\))/\\1/g 将有命名的 Markdown 链接替换成简单 URLs 多窗口 用 :sp / :vsp 来分割窗口 同一个缓存可以在多个窗口中显示。 宏 q{字符} 来开始在寄存器 {字符} 中录制宏 q 停止录制 @{字符} 重放宏 宏的执行遇错误会停止 {计数}@{字符} 执行一个宏 {计数} 次 宏可以递归 首先用 q{字符}q 清除宏 录制该宏， 用 @{字符} 来递归调用该宏 （在录制完成之前不会有任何操作） 例子： 将 xml 转成 json (file) 一个有 “name” / “email” 键对象的数组 用一个 Python 程序？ 用 sed / 正则表达式 g/people/d %s//{/g %s/\\(.*\\)\u003c\\/name\u003e/\"name\": \"\\1\",/g … Vim 命令 / 宏 Gdd, ggdd 删除第一行和最后一行 格式化最后一个元素的宏 （寄存器 e） 跳转到有 的行 qe^r\"f\u003es\": \"f",
+  "wordCount" : "2771",
+  "inLanguage": "en",
+  "datePublished": "2020-09-27T19:55:25+08:00",
+  "dateModified": "2020-09-27T19:55:25+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/coding-tools-vim/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      编程工具之Vim
+    </h1>
+    <div class="post-description">
+      编程工具之Vim
+    </div>
+    <div class="post-meta"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#vim%e7%bc%96%e8%be%91%e5%99%a8" aria-label="Vim编辑器">Vim编辑器</a><ul>
+                        
+                <li>
+                    <a href="#%e7%bc%96%e8%be%91%e6%a8%a1%e5%bc%8f" aria-label="编辑模式">编辑模式</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c" aria-label="基本操作">基本操作</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8f%92%e5%85%a5%e6%96%87%e6%9c%ac" aria-label="插入文本">插入文本</a></li>
+                <li>
+                    <a href="#%e7%bc%93%e5%ad%98-%e6%a0%87%e7%ad%be%e9%a1%b5-%e7%aa%97%e5%8f%a3" aria-label="缓存， 标签页， 窗口">缓存， 标签页， 窗口</a></li>
+                <li>
+                    <a href="#%e5%91%bd%e4%bb%a4%e8%a1%8c" aria-label="命令行">命令行</a></li></ul>
+                </li>
+                <li>
+                    <a href="#vim-%e7%9a%84%e6%8e%a5%e5%8f%a3%e5%85%b6%e5%ae%9e%e6%98%af%e4%b8%80%e7%a7%8d%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80" aria-label="Vim 的接口其实是一种编程语言">Vim 的接口其实是一种编程语言</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a7%bb%e5%8a%a8" aria-label="移动">移动</a></li>
+                <li>
+                    <a href="#%e9%80%89%e6%8b%a9" aria-label="选择">选择</a></li>
+                <li>
+                    <a href="#%e7%bc%96%e8%be%91" aria-label="编辑">编辑</a></li>
+                <li>
+                    <a href="#%e8%ae%a1%e6%95%b0" aria-label="计数">计数</a></li>
+                <li>
+                    <a href="#%e4%bf%ae%e9%a5%b0%e8%af%ad" aria-label="修饰语">修饰语</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89-vim" aria-label="自定义 Vim">自定义 Vim</a></li>
+                <li>
+                    <a href="#%e6%89%a9%e5%b1%95-vim" aria-label="扩展 Vim">扩展 Vim</a></li>
+                <li>
+                    <a href="#vim-%e8%bf%9b%e9%98%b6" aria-label="Vim 进阶">Vim 进阶</a><ul>
+                        
+                <li>
+                    <a href="#%e6%90%9c%e7%b4%a2%e5%92%8c%e6%9b%bf%e6%8d%a2" aria-label="搜索和替换">搜索和替换</a></li>
+                <li>
+                    <a href="#%e5%a4%9a%e7%aa%97%e5%8f%a3" aria-label="多窗口">多窗口</a></li>
+                <li>
+                    <a href="#%e5%ae%8f" aria-label="宏">宏</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%89%a9%e5%b1%95%e8%b5%84%e6%96%99" aria-label="扩展资料">扩展资料</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="vim编辑器">Vim编辑器<a hidden class="anchor" aria-hidden="true" href="#vim编辑器">#</a></h3>
+<h4 id="编辑模式">编辑模式<a hidden class="anchor" aria-hidden="true" href="#编辑模式">#</a></h4>
+<p>Vim的设计以大多数时间都花在阅读、浏览和进行少量编辑改动为基础，因此它具有多种操作模式：</p>
+<ul>
+<li><em>正常模式</em>：在文件中四处移动光标进行修改</li>
+<li><em>插入模式</em>：插入文本</li>
+<li><em>替换模式</em>：替换文本</li>
+<li><em>可视化（一般，行，块）模式</em>：选中文本块</li>
+<li><em>命令模式</em>：用于执行命令</li>
+</ul>
+<p>在不同的操作模式下， 键盘敲击的含义也不同。比如，<code>x</code> 在插入模式会插入字母<code>x</code>，但是在正常模式 会删除当前光标所在下的字母，在可视模式下则会删除选中文块。</p>
+<p>在默认设置下，Vim会在左下角显示当前的模式。 Vim启动时的默认模式是正常模式。通常你会把大部分 时间花在正常模式和插入模式。</p>
+<p>你可以按下 <code>&lt;ESC&gt;</code> （逃脱键） 从任何其他模式返回正常模式。 在正常模式，键入 <code>i</code> 进入插入 模式， <code>R</code> 进入替换模式， <code>v</code> 进入可视（一般）模式， <code>V</code> 进入可视（行）模式， <code>&lt;C-v&gt;</code> （Ctrl-V, 有时也写作 <code>^V</code>）进入可视（块）模式， <code>:</code> 进入命令模式。</p>
+<p>因为你会在使用 Vim 时大量使用 <code>&lt;ESC&gt;</code> 键，可以考虑把大小写锁定键重定义成逃脱键 （<a href="https://vim.fandom.com/wiki/Map_caps_lock_to_escape_in_macOS">MacOS 教程</a> ）。</p>
+<h4 id="基本操作">基本操作<a hidden class="anchor" aria-hidden="true" href="#基本操作">#</a></h4>
+<h5 id="插入文本">插入文本<a hidden class="anchor" aria-hidden="true" href="#插入文本">#</a></h5>
+<p>在正常模式， 键入 <code>i</code> 进入插入模式。 现在 Vim 跟很多其他的编辑器一样， 直到你键入<code>&lt;ESC&gt;</code> 返回正常模式。 你只需要掌握这一点和上面介绍的所有基知识就可以使用 Vim 来编辑文件了 （虽然如果你一直停留在插入模式内不一定高效）。</p>
+<h5 id="缓存-标签页-窗口">缓存， 标签页， 窗口<a hidden class="anchor" aria-hidden="true" href="#缓存-标签页-窗口">#</a></h5>
+<p>Vim 会维护一系列打开的文件，称为 “缓存”。 一个 Vim 会话包含一系列标签页，每个标签页包含 一系列窗口 （分隔面板）。每个窗口显示一个缓存。 跟网页浏览器等其他你熟悉的程序不一样的是， 缓存和窗口不是一一对应的关系； 窗口只是视角。 一个缓存可以在 <em>多个</em> 窗口打开，甚至在同一 个标签页内的多个窗口打开。这个功能其实很好用， 比如在查看同一个文件的不同部分的时候。</p>
+<p>Vim 默认打开一个标签页，这个标签也包含一个窗口。</p>
+<h5 id="命令行">命令行<a hidden class="anchor" aria-hidden="true" href="#命令行">#</a></h5>
+<p>在正常模式下键入 <code>:</code> 进入命令行模式。 在键入 <code>:</code> 后，你的光标会立即跳到屏幕下方的命令行。 这个模式有很多功能， 包括打开， 保存， 关闭文件， 以及 <a href="https://twitter.com/iamdevloper/status/435555976687923200">退出 Vim</a>。</p>
+<ul>
+<li><code>:q</code> 退出 （关闭窗口）</li>
+<li><code>:w</code> 保存 （写）</li>
+<li><code>:wq</code> 保存然后退出</li>
+<li><code>:e {文件名}</code> 打开要编辑的文件</li>
+<li><code>:ls</code> 显示打开的缓存</li>
+<li><code>:help {标题}</code> 打开帮助文档
+<ul>
+<li><code>:help :w</code> 打开 <code>:w</code> 命令的帮助文档</li>
+<li><code>:help w</code> 打开 <code>w</code> 移动的帮助文档</li>
+</ul>
+</li>
+</ul>
+<h4 id="vim-的接口其实是一种编程语言">Vim 的接口其实是一种编程语言<a hidden class="anchor" aria-hidden="true" href="#vim-的接口其实是一种编程语言">#</a></h4>
+<p>Vim 最重要的设计思想是 Vim 的界面本身是一个程序语言。 键入操作 （以及他们的助记名） 本身是命令， 这些命令可以组合使用。 这使得移动和编辑更加高效，特别是一旦形成肌肉记忆。</p>
+<h5 id="移动">移动<a hidden class="anchor" aria-hidden="true" href="#移动">#</a></h5>
+<p>多数时候你会在正常模式下，使用移动命令在缓存中导航。在 Vim 里面移动也被成为 “名词”， 因为它们指向文字块。</p>
+<ul>
+<li>基本移动: <code>hjkl</code> （左， 下， 上， 右）</li>
+<li>词： <code>w</code> （下一个词）， <code>b</code> （词初）， <code>e</code> （词尾）</li>
+<li>行： <code>0</code> （行初）， <code>^</code> （第一个非空格字符）， <code>$</code> （行尾）</li>
+<li>屏幕： <code>H</code> （屏幕首行）， <code>M</code> （屏幕中间）， <code>L</code> （屏幕底部）</li>
+<li>翻页： <code>Ctrl-u</code> （上翻）， <code>Ctrl-d</code> （下翻）</li>
+<li>文件： <code>gg</code> （文件头）， <code>G</code> （文件尾）</li>
+<li>行数： <code>:{行数}&lt;CR&gt;</code> 或者 <code>{行数}G</code> ({行数}为行数)</li>
+<li>杂项： <code>%</code> （找到配对，比如括号或者 /* */ 之类的注释对）</li>
+<li>查找： <code>f{字符}</code>， <code>t{字符}</code>， <code>F{字符}</code>， <code>T{字符}</code>
+<ul>
+<li>查找/到 向前/向后 在本行的{字符}</li>
+<li><code>,</code> / <code>;</code> 用于导航匹配</li>
+</ul>
+</li>
+<li>搜索: <code>/{正则表达式}</code>, <code>n</code> / <code>N</code> 用于导航匹配</li>
+</ul>
+<h5 id="选择">选择<a hidden class="anchor" aria-hidden="true" href="#选择">#</a></h5>
+<p>可视化模式:</p>
+<ul>
+<li>可视化</li>
+<li>可视化行</li>
+<li>可视化块</li>
+</ul>
+<p>可以用移动命令来选中。</p>
+<h5 id="编辑">编辑<a hidden class="anchor" aria-hidden="true" href="#编辑">#</a></h5>
+<p>所有你需要用鼠标做的事， 你现在都可以用键盘：采用编辑命令和移动命令的组合来完成。 这就是 Vim 的界面开始看起来像一个程序语言的时候。Vim 的编辑命令也被称为 “动词”， 因为动词可以施动于名词。</p>
+<ul>
+<li><code>i</code> 进入插入模式
+<ul>
+<li>但是对于操纵/编辑文本，不单想用退格键完成</li>
+</ul>
+</li>
+<li><code>O</code> / <code>o</code> 在之上/之下插入行</li>
+<li><code>d{移动命令}</code> 删除 {移动命令}
+<ul>
+<li>例如， <code>dw</code> 删除词, <code>d$</code> 删除到行尾, <code>d0</code> 删除到行头。</li>
+</ul>
+</li>
+<li><code>c{移动命令}</code> 改变 {移动命令}
+<ul>
+<li>例如， <code>cw</code> 改变词</li>
+<li>比如 <code>d{移动命令}</code> 再 <code>i</code></li>
+</ul>
+</li>
+<li><code>x</code> 删除字符 （等同于 <code>dl</code>）</li>
+<li><code>s</code> 替换字符 （等同于 <code>xi</code>）</li>
+<li>可视化模式 + 操作
+<ul>
+<li>选中文字, <code>d</code> 删除 或者 <code>c</code> 改变</li>
+</ul>
+</li>
+<li><code>u</code> 撤销, <code>&lt;C-r&gt;</code> 重做</li>
+<li><code>y</code> 复制 / “yank” （其他一些命令比如 <code>d</code> 也会复制）</li>
+<li><code>p</code> 粘贴</li>
+<li>更多值得学习的: 比如 <code>~</code> 改变字符的大小写</li>
+</ul>
+<h5 id="计数">计数<a hidden class="anchor" aria-hidden="true" href="#计数">#</a></h5>
+<p>你可以用一个计数来结合“名词” 和 “动词”， 这会执行指定操作若干次。</p>
+<ul>
+<li><code>3w</code> 向前移动三个词</li>
+<li><code>5j</code> 向下移动5行</li>
+<li><code>7dw</code> 删除7个词</li>
+</ul>
+<h5 id="修饰语">修饰语<a hidden class="anchor" aria-hidden="true" href="#修饰语">#</a></h5>
+<p>你可以用修饰语改变 “名词” 的意义。修饰语有 <code>i</code>， 表示 “内部” 或者 “在内“， 和 <code>a</code>， 表示 ”周围“。</p>
+<ul>
+<li><code>ci(</code> 改变当前括号内的内容</li>
+<li><code>ci[</code> 改变当前方括号内的内容</li>
+<li><code>da'</code> 删除一个单引号字符窗， 包括周围的单引号</li>
+</ul>
+<h4 id="自定义-vim">自定义 Vim<a hidden class="anchor" aria-hidden="true" href="#自定义-vim">#</a></h4>
+<p>Vim 由一个位于 <code>~/.vimrc</code> 的文本配置文件 （包含 Vim 脚本命令）。 你可能会启用很多基本 设置。</p>
+<p>我们提供一个文档详细的基本设置， 你可以用它当作你的初始设置。 我们推荐使用这个设置因为 它修复了一些 Vim 默认设置奇怪行为。 <strong>在 <a href="https://missing-semester-cn.github.io/2020/files/vimrc">这儿</a> 下载我们的设置， 然后将它保存成 <code>~/.vimrc</code>.</strong></p>
+<p>Vim 能够被重度自定义， 花时间探索自定义选项是值得的。 你可以参考其他人的在 GitHub 上共享的设置文件， 比如， 你的授课人的 Vim 设置 (<a href="https://github.com/anishathalye/dotfiles/blob/master/vimrc">Anish</a>, <a href="https://github.com/jonhoo/configs/blob/master/editor/.config/nvim/init.vim">Jon</a> (uses <a href="https://neovim.io/">neovim</a>), <a href="https://github.com/JJGO/dotfiles/blob/master/vim/.vimrc">Jose</a>)。 有很多好的博客文章也聊到了这个话题。 尽量不要复制粘贴别人的整个设置文件， 而是阅读和理解它， 然后采用对你有用的部分。</p>
+<h4 id="扩展-vim">扩展 Vim<a hidden class="anchor" aria-hidden="true" href="#扩展-vim">#</a></h4>
+<p>Vim 有很多扩展插件。 跟很多互联网上已经过时的建议相反， 你 <em>不</em> 需要在 Vim 使用一个插件 管理器（从 Vim 8.0 开始）。 你可以使用内置的插件管理系统。 只需要创建一个 <code>~/.vim/pack/vendor/start/</code> 的文件夹， 然后把插件放到这里 （比如通过 <code>git clone</code>）。</p>
+<p>以下是一些我们最爱的插件：</p>
+<ul>
+<li><a href="https://github.com/ctrlpvim/ctrlp.vim">ctrlp.vim</a>: 模糊文件查找</li>
+<li><a href="https://github.com/mileszs/ack.vim">ack.vim</a>: 代码搜索</li>
+<li><a href="https://github.com/scrooloose/nerdtree">nerdtree</a>: 文件浏览器</li>
+<li><a href="https://github.com/easymotion/vim-easymotion">vim-easymotion</a>: 魔术操作</li>
+</ul>
+<p>我们尽量避免在这里提供一份冗长的插件列表。 你可以查看讲师们的开源的配置文件 (<a href="https://github.com/anishathalye/dotfiles">Anish</a>, <a href="https://github.com/jonhoo/configs">Jon</a>, <a href="https://github.com/JJGO/dotfiles">Jose</a>) 来看看我们使用的其他插件。 浏览 <a href="https://vimawesome.com/">Vim Awesome</a> 来了解一些很棒的插件。 这个话题也有很多博客文章： 搜索 “best Vim plugins”。</p>
+<h4 id="vim-进阶">Vim 进阶<a hidden class="anchor" aria-hidden="true" href="#vim-进阶">#</a></h4>
+<p>这里我们提供了一些展示这个编辑器能力的例子。我们无法把所有的这样的事情都教给你， 但是你 可以在使用中学习。 一个好的对策是: 当你在使用你的编辑器的时候感觉 “一定有更好的方法来做这个”， 那么很可能真的有： 上网搜寻一下。</p>
+<h5 id="搜索和替换">搜索和替换<a hidden class="anchor" aria-hidden="true" href="#搜索和替换">#</a></h5>
+<p><code>:s</code> （替换） 命令 （<a href="http://vim.wikia.com/wiki/Search_and_replace">文档</a>）。</p>
+<ul>
+<li><code>%s/foo/bar/g</code>
+<ul>
+<li>在整个文件中将 foo 全局替换成 bar</li>
+</ul>
+</li>
+<li><code>%s/\[.*\](\(.*\))/\1/g</code>
+<ul>
+<li>将有命名的 Markdown 链接替换成简单 URLs</li>
+</ul>
+</li>
+</ul>
+<h5 id="多窗口">多窗口<a hidden class="anchor" aria-hidden="true" href="#多窗口">#</a></h5>
+<ul>
+<li>用 <code>:sp</code> / <code>:vsp</code> 来分割窗口</li>
+<li>同一个缓存可以在多个窗口中显示。</li>
+</ul>
+<h5 id="宏">宏<a hidden class="anchor" aria-hidden="true" href="#宏">#</a></h5>
+<ul>
+<li><code>q{字符}</code> 来开始在寄存器 <code>{字符}</code> 中录制宏</li>
+<li><code>q</code> 停止录制</li>
+<li><code>@{字符}</code> 重放宏</li>
+<li>宏的执行遇错误会停止</li>
+<li><code>{计数}@{字符}</code> 执行一个宏 {计数} 次</li>
+<li>宏可以递归
+<ul>
+<li>首先用 <code>q{字符}q</code> 清除宏</li>
+<li>录制该宏， 用 <code>@{字符}</code> 来递归调用该宏 （在录制完成之前不会有任何操作）</li>
+</ul>
+</li>
+<li>例子： 将 xml 转成 json (<a href="https://missing-semester-cn.github.io/2020/files/example-data.xml">file</a>)
+<ul>
+<li>一个有 “name” / “email” 键对象的数组</li>
+<li>用一个 Python 程序？</li>
+<li>用 sed / 正则表达式
+<ul>
+<li><code>g/people/d</code></li>
+<li><code>%s/&lt;person&gt;/{/g</code></li>
+<li><code>%s/&lt;name&gt;\(.*\)&lt;\/name&gt;/&quot;name&quot;: &quot;\1&quot;,/g</code></li>
+<li>…</li>
+</ul>
+</li>
+<li>Vim 命令 / 宏
+<ul>
+<li><code>Gdd</code>, <code>ggdd</code> 删除第一行和最后一行</li>
+<li>格式化最后一个元素的宏 （寄存器 <code>e</code>）
+<ul>
+<li>跳转到有 <code>&lt;name&gt;</code> 的行</li>
+<li><code>qe^r&quot;f&gt;s&quot;: &quot;&lt;ESC&gt;f&lt;C&quot;&lt;ESC&gt;q</code></li>
+</ul>
+</li>
+<li>格式化一个人的宏
+<ul>
+<li>跳转到有 <code>&lt;person&gt;</code> 的行</li>
+<li><code>qpS{&lt;ESC&gt;j@eA,&lt;ESC&gt;j@ejS},&lt;ESC&gt;q</code></li>
+</ul>
+</li>
+<li>格式化一个人然后转到另外一个人的宏
+<ul>
+<li>跳转到有 <code>&lt;person&gt;</code> 的行</li>
+<li><code>qq@pjq</code></li>
+</ul>
+</li>
+<li>执行宏到文件尾
+<ul>
+<li><code>999@q</code></li>
+</ul>
+</li>
+<li>手动移除最后的 <code>,</code> 然后加上 <code>[</code> 和 <code>]</code> 分隔符</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="扩展资料">扩展资料<a hidden class="anchor" aria-hidden="true" href="#扩展资料">#</a></h4>
+<ul>
+<li><code>vimtutor</code> 是一个 Vim 安装时自带的教程</li>
+<li><a href="https://vim-adventures.com/">Vim Adventures</a> 是一个学习使用 Vim 的游戏</li>
+<li><a href="http://vim.wikia.com/wiki/Vim_Tips_Wiki">Vim Tips Wiki</a></li>
+<li><a href="https://vimways.org/2019/">Vim Advent Calendar</a> 有很多 Vim 小技巧</li>
+<li><a href="http://www.vimgolf.com/">Vim Golf</a> 是用 Vim 的用户界面作为程序语言的 <a href="https://en.wikipedia.org/wiki/Code_golf">code golf</a></li>
+<li><a href="https://vi.stackexchange.com/">Vi/Vim Stack Exchange</a></li>
+<li><a href="http://vimcasts.org/">Vim Screencasts</a></li>
+<li><a href="https://pragprog.com/book/dnvim2/practical-vim-second-edition">Practical Vim</a> （书）</li>
+</ul>
+<h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+<p><a href="**https://missing-semester-cn.github.io/2020/**">课程列表</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/vim/">Vim</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/coding-tools-git/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>编程工具之Git</span>
+  </a>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/">
+    <span class="title">Next »</span>
+    <br>
+    <span>编程工具之杂烩</span>
+  </a>
+</nav>
+
+
+<div class="share-buttons">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之Vim on twitter"
+        href="https://twitter.com/intent/tweet/?text=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8bVim&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f&amp;hashtags=Linux%2cVim">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-253.927,424.544c135.939,0 210.268,-112.643 210.268,-210.268c0,-3.218 0,-6.437 -0.153,-9.502c14.406,-10.421 26.973,-23.448 36.935,-38.314c-13.18,5.824 -27.433,9.809 -42.452,11.648c15.326,-9.196 26.973,-23.602 32.49,-40.92c-14.252,8.429 -30.038,14.56 -46.896,17.931c-13.487,-14.406 -32.644,-23.295 -53.946,-23.295c-40.767,0 -73.87,33.104 -73.87,73.87c0,5.824 0.613,11.494 1.992,16.858c-61.456,-3.065 -115.862,-32.49 -152.337,-77.241c-6.284,10.881 -9.962,23.601 -9.962,37.088c0,25.594 13.027,48.276 32.95,61.456c-12.107,-0.307 -23.448,-3.678 -33.41,-9.196l0,0.92c0,35.862 25.441,65.594 59.311,72.49c-6.13,1.686 -12.72,2.606 -19.464,2.606c-4.751,0 -9.348,-0.46 -13.946,-1.38c9.349,29.426 36.628,50.728 68.965,51.341c-25.287,19.771 -57.164,31.571 -91.8,31.571c-5.977,0 -11.801,-0.306 -17.625,-1.073c32.337,21.15 71.264,33.41 112.95,33.41Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之Vim on linkedin"
+        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f&amp;title=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8bVim&amp;summary=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8bVim&amp;source=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之Vim on reddit"
+        href="https://reddit.com/submit?url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f&title=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8bVim">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之Vim on facebook"
+        href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之Vim on whatsapp"
+        href="https://api.whatsapp.com/send?text=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8bVim%20-%20https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之Vim on telegram"
+        href="https://telegram.me/share/url?text=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8bVim&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-vim%2f">
+        <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+        </svg>
+    </a>
+</div>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

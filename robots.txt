@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://blog.niuhemoon.win/sitemap.xml

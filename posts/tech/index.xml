@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>👨🏻‍💻 技术 on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/posts/tech/</link>
+    <description>Recent content in 👨🏻‍💻 技术 on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 18 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python实现RSA和ECC</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-asymmetric-encryption/</link>
+      <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-asymmetric-encryption/</guid>
+      <description>Python3实现RSA和ECC非对称加密算法。 公钥密码算法的编写 本实验是使用python来实现RSA和ECC公钥加密算法，并对加密解密过程</description>
+    </item>
+    
+    <item>
+      <title>Manjaro 搭建 minikube 环境</title>
+      <link>https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/</link>
+      <pubDate>Sat, 04 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/</guid>
+      <description>安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装</description>
+    </item>
+    
+    <item>
+      <title>tinygo点亮esp32</title>
+      <link>https://blog.niuhemoon.win/posts/tech/tinygo-esp32/</link>
+      <pubDate>Thu, 25 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/tinygo-esp32/</guid>
+      <description>tinygo 点亮 esp32</description>
+    </item>
+    
+    <item>
+      <title>golang限制函数同时调用次数</title>
+      <link>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</guid>
+      <description>使用select语句和带缓冲区的channel来控制函数并发执行次数 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36</description>
+    </item>
+    
+    <item>
+      <title>Go语言和Makefile</title>
+      <link>https://blog.niuhemoon.win/posts/tech/golang-makefile/</link>
+      <pubDate>Sat, 27 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/golang-makefile/</guid>
+      <description>Makefile基础和Golang的Makefile模板</description>
+    </item>
+    
+    <item>
+      <title>Typescript基础</title>
+      <link>https://blog.niuhemoon.win/posts/tech/typescript-doc/</link>
+      <pubDate>Fri, 29 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/typescript-doc/</guid>
+      <description>Typescript 基础笔记</description>
+    </item>
+    
+    <item>
+      <title>docker基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</link>
+      <pubDate>Sat, 23 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</guid>
+      <description>CheatSheet Docker 核心架构： 客户端 Client 服务器 Docker daemon 镜像 Image Registry 容器 Container 容器基本技术： cgroup 资源限额 namespace 资源隔离 Mount UTS IPC PID Network User Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责</description>
+    </item>
+    
+    <item>
+      <title>sqlite3入门</title>
+      <link>https://blog.niuhemoon.win/posts/tech/sqlite3-tutorial/</link>
+      <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/sqlite3-tutorial/</guid>
+      <description>sqlite3 使用</description>
+    </item>
+    
+    <item>
+      <title>awk基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/awk-usage/</link>
+      <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/awk-usage/</guid>
+      <description>Awk 命令基本使用</description>
+    </item>
+    
+    <item>
+      <title>linux 101 Hackers 笔记</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-101-hackers/</link>
+      <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-101-hackers/</guid>
+      <description>linux 101 Hackers 笔记</description>
+    </item>
+    
+    <item>
+      <title>vscode 快捷键和插件记录</title>
+      <link>https://blog.niuhemoon.win/posts/tech/vscode-shortcut/</link>
+      <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/vscode-shortcut/</guid>
+      <description>vscode 常用快捷键</description>
+    </item>
+    
+    <item>
+      <title>openstack创建虚拟机</title>
+      <link>https://blog.niuhemoon.win/posts/tech/create-instance/</link>
+      <pubDate>Sat, 31 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/create-instance/</guid>
+      <description>创建虚拟机流程图</description>
+    </item>
+    
+    <item>
+      <title>Openstack命令行基础</title>
+      <link>https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/</link>
+      <pubDate>Fri, 23 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/</guid>
+      <description>Openstack命令行基础，汇总常用的命令行，主要是Nova相关的</description>
+    </item>
+    
+    <item>
+      <title>Virsh命令和虚拟机</title>
+      <link>https://blog.niuhemoon.win/posts/tech/virsh-tutorial/</link>
+      <pubDate>Thu, 22 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/virsh-tutorial/</guid>
+      <description>虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容</description>
+    </item>
+    
+    <item>
+      <title>tcpdump的基本使用【译】</title>
+      <link>https://blog.niuhemoon.win/posts/tech/tcpdump-usage/</link>
+      <pubDate>Mon, 19 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/tcpdump-usage/</guid>
+      <description>翻译文，Tcpdump基本使用</description>
+    </item>
+    
+    <item>
+      <title>Linux性能测试</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-peformence-test/</link>
+      <pubDate>Sat, 17 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-peformence-test/</guid>
+      <description>简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、t</description>
+    </item>
+    
+    <item>
+      <title>GDB调试Python代码</title>
+      <link>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</link>
+      <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</guid>
+      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，</description>
+    </item>
+    
+    <item>
+      <title>Python进阶下</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-advanced-3/</link>
+      <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-3/</guid>
+      <description>Python进阶技巧总结,包含多线程和多进程基础</description>
+    </item>
+    
+    <item>
+      <title>Python进阶中</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-advanced-2/</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-2/</guid>
+      <description>Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu20_04上使用ibus中文输入法</title>
+      <link>https://blog.niuhemoon.win/posts/tech/ibus-input/</link>
+      <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/ibus-input/</guid>
+      <description>Ubuntu20.04 上使用 ibus 中文输入法</description>
+    </item>
+    
+    <item>
+      <title>正则表达式基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/re-usage/</link>
+      <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/re-usage/</guid>
+      <description>正则表达式基本使用</description>
+    </item>
+    
+    <item>
+      <title>PlantUML画时序图</title>
+      <link>https://blog.niuhemoon.win/posts/tech/plantuml-sequence/</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/plantuml-sequence/</guid>
+      <description>PlantUML画图环境以及时序图绘制</description>
+    </item>
+    
+    <item>
+      <title>编程工具之Git</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</link>
+      <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</guid>
+      <description>编程工具之Git</description>
+    </item>
+    
+    <item>
+      <title>编程工具之Vim</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-vim/</link>
+      <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-vim/</guid>
+      <description>编程工具之Vim</description>
+    </item>
+    
+    <item>
+      <title>编程工具之杂烩</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/</link>
+      <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/</guid>
+      <description>课程笔记</description>
+    </item>
+    
+    <item>
+      <title>编程工具之问答</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-qa/</link>
+      <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-qa/</guid>
+      <description>课程笔记</description>
+    </item>
+    
+    <item>
+      <title>编程工具之调试和性能分析</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-profile/</link>
+      <pubDate>Sun, 27 Sep 2020 18:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-profile/</guid>
+      <description>课程笔记</description>
+    </item>
+    
+    <item>
+      <title>Angular开发环境搭建</title>
+      <link>https://blog.niuhemoon.win/posts/tech/angular-devenv/</link>
+      <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/angular-devenv/</guid>
+      <description>Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 node -v npm</description>
+    </item>
+    
+    <item>
+      <title>Python进阶上</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-advanced-1/</link>
+      <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-1/</guid>
+      <description>Python进阶技巧总结,包含Python基本书据类型的使用</description>
+    </item>
+    
+    <item>
+      <title>Microstack 基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/microstack-usage/</link>
+      <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/microstack-usage/</guid>
+      <description>Microstack 基本使用</description>
+    </item>
+    
+    <item>
+      <title>Python3操作二维码图片</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python3-qrcode/</link>
+      <pubDate>Sat, 27 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python3-qrcode/</guid>
+      <description>Decode/Encode QRcode Picture use python3</description>
+    </item>
+    
+    <item>
+      <title>Linux进程——进程创建和同步控制</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-2/</link>
+      <pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-process-2/</guid>
+      <description>创建子进程，并进行父子进程同步控制</description>
+    </item>
+    
+    <item>
+      <title>Linux进程——进程环境与加载可执行映像</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-3/</link>
+      <pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-process-3/</guid>
+      <description>介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像</description>
+    </item>
+    
+    <item>
+      <title>Linux进程——地址空间</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-1/</link>
+      <pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-process-1/</guid>
+      <description>Linux进程地址空间和动态内存分配</description>
+    </item>
+    
+    <item>
+      <title>Linux信号处理——发送信号</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/</link>
+      <pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/</guid>
+      <description>学习使用C语言向其他进程发送信号</description>
+    </item>
+    
+    <item>
+      <title>Linux下glic库操作文件和目录</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-io/</link>
+      <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-io/</guid>
+      <description>使用glic操作linux的文件和目录</description>
+    </item>
+    
+    <item>
+      <title>Linux信号处理——自定义信号处理函数</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-signal-1/</link>
+      <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-signal-1/</guid>
+      <description>学习使用C语言控制Linux信号，重定义信号处理函数；信号阻塞</description>
+    </item>
+    
+    <item>
+      <title>Linux下创建和使用C语言函数库</title>
+      <link>https://blog.niuhemoon.win/posts/tech/linux-c-lib/</link>
+      <pubDate>Wed, 26 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/linux-c-lib/</guid>
+      <description>使用C语言的函数库</description>
+    </item>
+    
+    <item>
+      <title>Shell编程基础</title>
+      <link>https://blog.niuhemoon.win/posts/tech/basic-shell/</link>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/basic-shell/</guid>
+      <description>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、</description>
+    </item>
+    
+    <item>
+      <title>Pyserial快速上手</title>
+      <link>https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/</link>
+      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/</guid>
+      <description>python读取串口数据，快速测试</description>
+    </item>
+    
+    <item>
+      <title>LSM303_Doc</title>
+      <link>https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/</link>
+      <pubDate>Mon, 10 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/</guid>
+      <description>LSM303DLHC地磁传感器的使用手册和例程</description>
+    </item>
+    
+    <item>
+      <title>远程ssh连接家中的树莓派</title>
+      <link>https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/</link>
+      <pubDate>Tue, 04 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/</guid>
+      <description>使用腾讯云进行SSH端口转发来访问家中的树莓派</description>
+    </item>
+    
+    <item>
+      <title>Arduino任何引脚产生方波</title>
+      <link>https://blog.niuhemoon.win/posts/tech/arduino-squrewave/</link>
+      <pubDate>Sat, 01 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/arduino-squrewave/</guid>
+      <description>Arduino产生方波信号</description>
+    </item>
+    
+    <item>
+      <title>Arduino简易示波器检测树莓派产生的方波</title>
+      <link>https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/</link>
+      <pubDate>Sat, 01 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/</guid>
+      <description>使用树莓派的PWM产生方波信号；使用Arduino的AD采样&#43;串口绘图器当做示波器</description>
+    </item>
+    
+    <item>
+      <title>树莓派连接LCD1602做一个电子钟</title>
+      <link>https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/</link>
+      <pubDate>Tue, 28 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/</guid>
+      <description>安装ADaFruit库控制LCD1602屏幕；通过LCD1602制作一个电子钟</description>
+    </item>
+    
+    <item>
+      <title>树莓派3启用UART并连接GPS传感器</title>
+      <link>https://blog.niuhemoon.win/posts/tech/activate-serial-uart/</link>
+      <pubDate>Sat, 25 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/activate-serial-uart/</guid>
+      <description>启用树莓派3的串口，使用UART读取GPS模块数据</description>
+    </item>
+    
+    <item>
+      <title>树莓派GPIO入门</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/</link>
+      <pubDate>Sat, 25 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/</guid>
+      <description>树莓派GPIO编号方法;使用shell、c、pyton控制GPIO;wiringpi的安装和使用</description>
+    </item>
+    
+    <item>
+      <title>Python实现MD5和Sha256</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</guid>
+      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并</description>
+    </item>
+    
+    <item>
+      <title>Python对称AES和DES加密算法</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/</guid>
+      <description>Python3实现AES和DES对称加密算法的 对称算法编写 本实验是使用python来实现AES和DES加密和解密过程，并对加密解密过程的正确</description>
+    </item>
+    
+    <item>
+      <title>在Linux终端里浏览知乎日报</title>
+      <link>https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/</guid>
+      <description>可以在终端里浏览知乎日报的每日标题，如果有感兴趣的可以点开链接在浏览器中继续观看。方便使用，节省大家时间</description>
+    </item>
+    
+    <item>
+      <title>wordcloud源码阅读2——Cython</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</link>
+      <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</guid>
+      <description>wordcloud源码1.2.1版阅读，Cython的用法</description>
+    </item>
+    
+    <item>
+      <title>wordcloud源码阅读1——初探</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</link>
+      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</guid>
+      <description>wordcloud源码1.2.1版阅读笔记（大纲）</description>
+    </item>
+    
+    <item>
+      <title>WordCloud文档中文翻译</title>
+      <link>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</guid>
+      <description>Python WordCloud模块的Api文档中文翻译</description>
+    </item>
+    
+    <item>
+      <title>Matlab 基础</title>
+      <link>https://blog.niuhemoon.win/posts/tech/matlab-basic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/matlab-basic/</guid>
+      <description>matlba基础和简单用法</description>
+    </item>
+    
+    <item>
+      <title>Python 生成ankidroid单词表/语音包</title>
+      <link>https://blog.niuhemoon.win/posts/tech/anki-python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/anki-python/</guid>
+      <description>python来制作ankidroid单词包，给ankidroid单词添加发音并导出分享</description>
+    </item>
+    
+    <item>
+      <title>STM32笔记</title>
+      <link>https://blog.niuhemoon.win/posts/tech/stm32-example-1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/stm32-example-1/</guid>
+      <description>基本的GPIO配置和中断、定时器例程</description>
+    </item>
+    
+    <item>
+      <title>Virtualbox虚拟机连接雷达和UART串口</title>
+      <link>https://blog.niuhemoon.win/posts/tech/virual-lidar/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/virual-lidar/</guid>
+      <description>virtualbox获得雷达数据帧</description>
+    </item>
+    
+  </channel>
+</rss>

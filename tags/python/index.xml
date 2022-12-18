@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Python on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/python/</link>
+    <description>Recent content in Python on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 18 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python实现RSA和ECC</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-asymmetric-encryption/</link>
+      <pubDate>Wed, 18 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-asymmetric-encryption/</guid>
+      <description>Python3实现RSA和ECC非对称加密算法。 公钥密码算法的编写 本实验是使用python来实现RSA和ECC公钥加密算法，并对加密解密过程</description>
+    </item>
+    
+    <item>
+      <title>GDB调试Python代码</title>
+      <link>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</link>
+      <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</guid>
+      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，</description>
+    </item>
+    
+    <item>
+      <title>Python进阶下</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-advanced-3/</link>
+      <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-3/</guid>
+      <description>Python进阶技巧总结,包含多线程和多进程基础</description>
+    </item>
+    
+    <item>
+      <title>Python进阶中</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-advanced-2/</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-2/</guid>
+      <description>Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符</description>
+    </item>
+    
+    <item>
+      <title>正则表达式基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/re-usage/</link>
+      <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/re-usage/</guid>
+      <description>正则表达式基本使用</description>
+    </item>
+    
+    <item>
+      <title>编程工具之Git</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</link>
+      <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</guid>
+      <description>编程工具之Git</description>
+    </item>
+    
+    <item>
+      <title>Python进阶上</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-advanced-1/</link>
+      <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-1/</guid>
+      <description>Python进阶技巧总结,包含Python基本书据类型的使用</description>
+    </item>
+    
+    <item>
+      <title>Python3操作二维码图片</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python3-qrcode/</link>
+      <pubDate>Sat, 27 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python3-qrcode/</guid>
+      <description>Decode/Encode QRcode Picture use python3</description>
+    </item>
+    
+    <item>
+      <title>Pyserial快速上手</title>
+      <link>https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/</link>
+      <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/</guid>
+      <description>python读取串口数据，快速测试</description>
+    </item>
+    
+    <item>
+      <title>Python实现MD5和Sha256</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</guid>
+      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并</description>
+    </item>
+    
+    <item>
+      <title>Python对称AES和DES加密算法</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/</guid>
+      <description>Python3实现AES和DES对称加密算法的 对称算法编写 本实验是使用python来实现AES和DES加密和解密过程，并对加密解密过程的正确</description>
+    </item>
+    
+    <item>
+      <title>在Linux终端里浏览知乎日报</title>
+      <link>https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/</guid>
+      <description>可以在终端里浏览知乎日报的每日标题，如果有感兴趣的可以点开链接在浏览器中继续观看。方便使用，节省大家时间</description>
+    </item>
+    
+    <item>
+      <title>wordcloud源码阅读2——Cython</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</link>
+      <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</guid>
+      <description>wordcloud源码1.2.1版阅读，Cython的用法</description>
+    </item>
+    
+    <item>
+      <title>wordcloud源码阅读1——初探</title>
+      <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</link>
+      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</guid>
+      <description>wordcloud源码1.2.1版阅读笔记（大纲）</description>
+    </item>
+    
+    <item>
+      <title>WordCloud文档中文翻译</title>
+      <link>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</link>
+      <pubDate>Sun, 08 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</guid>
+      <description>Python WordCloud模块的Api文档中文翻译</description>
+    </item>
+    
+    <item>
+      <title>Python 生成ankidroid单词表/语音包</title>
+      <link>https://blog.niuhemoon.win/posts/tech/anki-python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/anki-python/</guid>
+      <description>python来制作ankidroid单词包，给ankidroid单词添加发音并导出分享</description>
+    </item>
+    
+  </channel>
+</rss>

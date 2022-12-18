@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>WordCloud文档中文翻译 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Python, wordcloud">
+<meta name="description" content="Python WordCloud模块的Api文档中文翻译">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+
+
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="WordCloud文档中文翻译" />
+<meta property="og:description" content="Python WordCloud模块的Api文档中文翻译" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2018-04-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-04-08T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="WordCloud文档中文翻译"/>
+<meta name="twitter:description" content="Python WordCloud模块的Api文档中文翻译"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "WordCloud文档中文翻译",
+      "item": "https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "WordCloud文档中文翻译",
+  "name": "WordCloud文档中文翻译",
+  "description": "Python WordCloud模块的Api文档中文翻译",
+  "keywords": [
+    "Python", "wordcloud"
+  ],
+  "articleBody": "Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference\nGithub链接：wordcloud\n所有函数均封装在WordCloud类里:\nWordCloud([…]) 生成并绘制WordCloud对象 ImageColorGenerator(image) 词云颜色生成器（基于图片颜色） random_color_func([]) 词云颜色随机生成 wordcloud.WordCloud 1 class wordcloud.WordCloud(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color='black', max_font_size=None, font_step=1, mode='RGB', relative_scaling=0.5, regexp=None, collocations=True, colormap=None, normalize_plurals=True) 参数： font_path : string\n需要使用的字体路径(支持OTF和TTF)。Linux系统上默认指向DroidSansMono路径。若使用其他操作系统或者没有DroidSansMono字体，需要指定字体路径。\nwidth : int (default=400)\n画布的宽度。\nheight : int (default=200)\n画布的高度。\nprefer_horizontal : float (default=0.90)\n尝试水平摆放字体和垂直摆放字体的比例，若prefer_horizontal \u003c 1，当摆放不合适的时候，算法将尝试旋转单词。目前没有内置的方法来获取垂直单词\nmask : nd-array or None (default=None)\n如果不是None，则在哪里绘制单词时给出二进制掩码。 如果mask不是None，那么宽度和高度将被忽略，并且将使用mask的形状。 所有白色（#FF或#FFFFFF）条目将被视为“被遮盖”，而其他条目将被自由绘制。 [这在最新版本中发生了变化！]\nscale : float (default=1)\n计算值和绘图之间的缩放比例。 对于大型文字云图像，使用缩放而不是较大的画布尺寸要快得多，但可能导致较粗糙的文字。\nmin_font_size : int (default=4)\n使用最小的字体大小。 当没有更多的空间时停止绘制。\nfont_step : int (default=1)\n字体的步长。 font_step \u003e 1时可能会加快计算速度，但会导致糟糕的字体适应性布局。\nmax_words : number (default=200)\n单词的最大数目。\nstopwords : set of strings or None\n敏感词集合，这些词将被忽略。 如果没有，则将使用内置的STOPWORDS列表。\nbackground_color : color value (default=”black”)\n词云图像的背景颜色。\nmax_font_size : int or None (default=None)\n使用的最大字体大小。 默认使用图像的高度。\nmode : string (default=”RGB”)\n当模式为“RGBA”且background_color为None时，会生成透明背景。\nrelative_scaling : float (default=.5)\n字体大小的相对单词频率的重要性。 relative_scaling = 0时，只考虑单词等级。 使用relative_scaling = 1时，频繁两倍的单词将具有两倍的大小。 如果你想考虑单词的频率，而不仅仅是他们的等级，那么0.5左右的relative_scaling通常看起来不错。\ncolor_func : callable, default=None\n可用参数关键字font_size, position, orientation, font_path, random_state调用，它为每个单词返回一个PIL颜色。 覆盖\"colormap\"。 请参阅colormap来指定matplotlib的颜色映射。\nregexp : string or None (optional)\n正则表达式将输入文本拆分为待处理文本中的标记。 如果指定None，则使用r“\\ w [\\ w’] +”。\ncollocations : bool, default=True\n是否包含两个词的搭配（bigrams），默认为True。\ncolormap : string or matplotlib colormap, default=”viridis”\nMatplotlib色彩映射表为每个单词随机绘制颜色。 如果指定了“color_func”，则忽略。\nnormalize_plurals : bool, default=True\n是否从文字中删除“尾随”。 如果为真，当出现以’s’结尾的单词，则以’s’结尾的单词将被删除，并将其计数添加到没有’s’结尾的版本\n以’ss’结尾的单词被忽略。\n注意： 较大的画布使代码明显变慢。 如果您需要较大的单词云，请尝试较小的画布大小，然后设置缩放参数。\n根据最大字体大小和缩放启发式算法，相比单词实际出现的频率，算法可能会给单词的等级更多的权重。\n属性： words_\n(dict of string to float) 单词标识对应其出现次数，如{‘hello’:90, ‘good’:30}\n.. versionchanged: 2.0 words_: 现在是一个字典\nlayout_\n(list of tuples (string, int, (int, int), int, color)))\n编码拟合词云，为每个单词编码字符串，字体大小，位置，方向和颜色。\n方法： 1 2 # 初始化实例 __init__(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color='black', max_font_size=None, font_step=1, mode='RGB', relative_scaling=0.5, regexp=None, collocations=True, colormap=None, normalize_plurals=True) fit_words(frequencies)\n根据单词和频率创建一个word_cloud。\n别名为generate_from_frequencies。\n参数:\nfrequencies : array of tuples\n元组包含单词及其频率。Note:最新版已经改为字典了。\n返回值：\nself\ngenerate(text)\n从文本生成wordcloud。\n别名generate_from_text。\n实际调用process_text和generate_from_frequencies。\n返回值：\nself\ngenerate_from_frequencies(frequencies, max_font_size=None)\n根据单词和频率创建词云。\n参数:\nfrequencies : dict from string to float\n字典包含单词及其频率。\nmax_font_size : int\n使用此最大字体大，而不是self.max_font_size\n返回值：\nself\ngenerate_from_text(text)\n从文本生成wordcloud。\n实际调用process_text和generate_from_frequencies。\n..versionchanged:: 1.2.2 process_text（)的返回值不再是generate_from_frequencies（）的参数。\n返回值：\nself\nprocess_text(text)\n将长文本拆分为单词，去除停用词(敏感词)。\n参数:\ntext : string\n待处理的文本\n返回值：\nwords : dict (string, int)\n带有关联频率的词语标记。\n..versionchanged:: 1.2.2 将返回类型从元组列表更改为字典。\nNotes\n有更好的方法做词频分析，在此不做赘述。\nrecolor(random_state=None, color_func=None, colormap=None)\n重新着色现有布局。\n应用新的着色要比生成整个词云快得多。\n参数:\nrandom_state : RandomState, int, or None, default=None\n如果不是None，则使用固定的随机状态。 如果给出了一个int，它将用作random.Random状态的种子。\ncolor_func : function or None, default=None\n根据(word count, font size, position and orientation)字数，字体大小，位置和方向生成新颜色的函数。 如果为None，则使用self.color_func。\ncolormap : string or matplotlib colormap, default=None\n使用此颜色映射表来生成新的颜色。 如果指定了color_func，则忽略。 如果没有，则使用self.color_func（或self.color_map）。\n返回值：\nself\nto_array()\n转换为numpy数组。\n返回值：\nimage : n维数组 (width, height, 3)\n词云图像作为numpy矩阵。\nto_file(filename)\n导出为图像文件。\n参数:\nfilename : string\n要写入的位置。\n返回值：\nself\nwordcloud.ImageColorGenerator 1 class wordcloud.ImageColorGenerator(image) 基于彩色图像的颜色生成器.\n根据RGB图像生成颜色。 一个单词将使用彩色图像中包围矩形的平均颜色进行着色。 构造完成后，该对象充当可调用对象，可以将其作为color_func传递给WordCloud类的构造函数或recolor这个重新着色方法。\n参数:\nimage : n维矩阵, shape (height, width, 3)\n用于生成文字颜色的图像。 Alpha通道被忽略。对于wordcloud实例，这应该和画布大小相同。\n方法\n__call__(word, font_size, font_path, ...)\n使用特定图像为给定单词生成颜色。\n__init__(image)\nwordcloud.random_color_func 1 wordcloud.random_color_func(word=None, font_size=None, position=None, orientation=None, font_path=None, random_state=None) 随机色调颜色生成.\n默认着色方法。 这只是随机选择一个值为80％和光照50％的色调。\n参数:\nword, font_size, position, orientation: ignored.\nrandom_state : random.Random object or None, (default=None)\n如果给定了一个随机对象，则用它来生成随机数。\n",
+  "wordCount" : "2593",
+  "inLanguage": "en",
+  "datePublished": "2018-04-08T00:00:00Z",
+  "dateModified": "2018-04-08T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      WordCloud文档中文翻译
+    </h1>
+    <div class="post-description">
+      Python WordCloud模块的Api文档中文翻译
+    </div>
+    <div class="post-meta"><span title='2018-04-08 00:00:00 +0000 UTC'>2018-04-08</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#python%e6%a8%a1%e5%9d%97wordcloud%e5%8f%82%e8%80%83%e6%96%87%e6%a1%a3%e7%9a%84%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91" aria-label="Python模块wordcloud参考文档的中文翻译">Python模块wordcloud参考文档的中文翻译</a><ul>
+                        
+                <li>
+                    <a href="#wordcloudwordcloud" aria-label="wordcloud.WordCloud">wordcloud.WordCloud</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8f%82%e6%95%b0" aria-label="参数：">参数：</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f" aria-label="注意：">注意：</a></li>
+                <li>
+                    <a href="#%e5%b1%9e%e6%80%a7" aria-label="属性：">属性：</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95" aria-label="方法：">方法：</a></li></ul>
+                </li>
+                <li>
+                    <a href="#wordcloudimagecolorgenerator" aria-label="wordcloud.ImageColorGenerator">wordcloud.ImageColorGenerator</a></li>
+                <li>
+                    <a href="#wordcloudrandom_color_func" aria-label="wordcloud.random_color_func">wordcloud.random_color_func</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="python模块wordcloud参考文档的中文翻译">Python模块wordcloud参考文档的中文翻译<a hidden class="anchor" aria-hidden="true" href="#python模块wordcloud参考文档的中文翻译">#</a></h2>
+<p>官网链接：<a href="https://amueller.github.io/word_cloud/references.html">wordcloud api reference</a><br>
+Github链接：<a href="https://github.com/amueller/word_cloud">wordcloud</a></p>
+<p>所有函数均封装在WordCloud类里:</p>
+<ul>
+<li>WordCloud([&hellip;])      生成并绘制WordCloud对象</li>
+<li>ImageColorGenerator(image)  词云颜色生成器（基于图片颜色）</li>
+<li>random_color_func([])  词云颜色随机生成</li>
+</ul>
+<h3 id="wordcloudwordcloud">wordcloud.WordCloud<a hidden class="anchor" aria-hidden="true" href="#wordcloudwordcloud">#</a></h3>
+<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> wordcloud.WordCloud(font_path=<span style="color:#fff;font-weight:bold">None</span>, width=<span style="color:#ff0;font-weight:bold">400</span>, height=<span style="color:#ff0;font-weight:bold">200</span>, margin=<span style="color:#ff0;font-weight:bold">2</span>, ranks_only=<span style="color:#fff;font-weight:bold">None</span>, prefer_horizontal=<span style="color:#ff0;font-weight:bold">0.9</span>, mask=<span style="color:#fff;font-weight:bold">None</span>, scale=<span style="color:#ff0;font-weight:bold">1</span>, color_func=<span style="color:#fff;font-weight:bold">None</span>, max_words=<span style="color:#ff0;font-weight:bold">200</span>, min_font_size=<span style="color:#ff0;font-weight:bold">4</span>, stopwords=<span style="color:#fff;font-weight:bold">None</span>, random_state=<span style="color:#fff;font-weight:bold">None</span>, background_color=<span style="color:#0ff;font-weight:bold">&#39;black&#39;</span>, max_font_size=<span style="color:#fff;font-weight:bold">None</span>, font_step=<span style="color:#ff0;font-weight:bold">1</span>, mode=<span style="color:#0ff;font-weight:bold">&#39;RGB&#39;</span>, relative_scaling=<span style="color:#ff0;font-weight:bold">0.5</span>, regexp=<span style="color:#fff;font-weight:bold">None</span>, collocations=<span style="color:#fff;font-weight:bold">True</span>, colormap=<span style="color:#fff;font-weight:bold">None</span>, normalize_plurals=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="参数">参数：<a hidden class="anchor" aria-hidden="true" href="#参数">#</a></h4>
+<blockquote>
+<p><strong>font_path</strong> : string</p>
+<blockquote>
+<p>需要使用的字体路径(支持OTF和TTF)。Linux系统上默认指向DroidSansMono路径。若使用其他操作系统或者没有DroidSansMono字体，需要指定字体路径。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>width</strong> : int (default=400)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>画布的宽度。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>height</strong> : int (default=200)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>画布的高度。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>prefer_horizontal</strong> : float (default=0.90)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>尝试水平摆放字体和垂直摆放字体的比例，若prefer_horizontal &lt; 1，当摆放不合适的时候，算法将尝试旋转单词。目前没有内置的方法来获取垂直单词</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>mask</strong> : nd-array or None (default=None)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>如果不是None，则在哪里绘制单词时给出二进制掩码。 如果mask不是None，那么宽度和高度将被忽略，并且将使用mask的形状。 所有白色（#FF或#FFFFFF）条目将被视为“被遮盖”，而其他条目将被自由绘制。 [这在最新版本中发生了变化！]</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>scale</strong> : float (default=1)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>计算值和绘图之间的缩放比例。 对于大型文字云图像，使用缩放而不是较大的画布尺寸要快得多，但可能导致较粗糙的文字。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>min_font_size</strong> : int (default=4)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>使用最小的字体大小。 当没有更多的空间时停止绘制。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>font_step</strong> : int (default=1)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>字体的步长。 font_step &gt; 1时可能会加快计算速度，但会导致糟糕的字体适应性布局。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>max_words</strong> : number (default=200)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>单词的最大数目。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>stopwords</strong> : set of strings or None</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>敏感词集合，这些词将被忽略。 如果没有，则将使用内置的STOPWORDS列表。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>background_color</strong> : color value (default=”black”)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>词云图像的背景颜色。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>max_font_size</strong> : int or None (default=None)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>使用的最大字体大小。 默认使用图像的高度。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>mode</strong> : string (default=”RGB”)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>当模式为“RGBA”且background_color为None时，会生成透明背景。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>relative_scaling</strong> : float (default=.5)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>字体大小的相对单词频率的重要性。 relative_scaling = 0时，只考虑单词等级。 使用relative_scaling = 1时，频繁两倍的单词将具有两倍的大小。 如果你想考虑单词的频率，而不仅仅是他们的等级，那么0.5左右的relative_scaling通常看起来不错。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>color_func</strong> : callable, default=None</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>可用参数关键字<strong>font_size, position, orientation, font_path, random_state</strong>调用，它为每个单词返回一个PIL颜色。 覆盖&quot;colormap&quot;。 请参阅colormap来指定matplotlib的颜色映射。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>regexp</strong> : string or None (optional)</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>正则表达式将输入文本拆分为待处理文本中的标记。 如果指定None，则使用r“\ w [\ w&rsquo;] +”。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>collocations</strong> : bool, default=True</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>是否包含两个词的搭配（bigrams），默认为True。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>colormap</strong> : string or matplotlib colormap, default=”viridis”</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>Matplotlib色彩映射表为每个单词随机绘制颜色。 如果指定了“color_func”，则忽略。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>normalize_plurals</strong> : bool, default=True</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>是否从文字中删除“尾随”。 如果为真，当出现以&rsquo;s&rsquo;结尾的单词，则以&rsquo;s&rsquo;结尾的单词将被删除，并将其计数添加到没有&rsquo;s&rsquo;结尾的版本<br>
+以&rsquo;ss&rsquo;结尾的单词被忽略。</p>
+</blockquote>
+</blockquote>
+<h4 id="注意">注意：<a hidden class="anchor" aria-hidden="true" href="#注意">#</a></h4>
+<blockquote>
+<p>较大的画布使代码明显变慢。 如果您需要较大的单词云，请尝试较小的画布大小，然后设置缩放参数。</p>
+</blockquote>
+<blockquote>
+<p>根据最大字体大小和缩放启发式算法，相比单词实际出现的频率，算法可能会给单词的等级更多的权重。</p>
+</blockquote>
+<h4 id="属性">属性：<a hidden class="anchor" aria-hidden="true" href="#属性">#</a></h4>
+<p><code>words_</code></p>
+<blockquote>
+<p>(dict of string to float) 单词标识对应其出现次数，如{&lsquo;hello&rsquo;:90, &lsquo;good&rsquo;:30}<br>
+<strong>.. versionchanged: 2.0 words_</strong>: 现在是一个字典</p>
+</blockquote>
+<p><code>layout_</code></p>
+<blockquote>
+<p>(list of tuples (string, int, (int, int), int, color)))<br>
+编码拟合词云，为每个单词编码字符串，字体大小，位置，方向和颜色。</p>
+</blockquote>
+<h4 id="方法">方法：<a hidden class="anchor" aria-hidden="true" href="#方法">#</a></h4>
+<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 初始化实例</span>
+</span></span><span style="display:flex;"><span>__init__(font_path=<span style="color:#fff;font-weight:bold">None</span>, width=<span style="color:#ff0;font-weight:bold">400</span>, height=<span style="color:#ff0;font-weight:bold">200</span>, margin=<span style="color:#ff0;font-weight:bold">2</span>, ranks_only=<span style="color:#fff;font-weight:bold">None</span>, prefer_horizontal=<span style="color:#ff0;font-weight:bold">0.9</span>, mask=<span style="color:#fff;font-weight:bold">None</span>, scale=<span style="color:#ff0;font-weight:bold">1</span>, color_func=<span style="color:#fff;font-weight:bold">None</span>, max_words=<span style="color:#ff0;font-weight:bold">200</span>, min_font_size=<span style="color:#ff0;font-weight:bold">4</span>, stopwords=<span style="color:#fff;font-weight:bold">None</span>, random_state=<span style="color:#fff;font-weight:bold">None</span>, background_color=<span style="color:#0ff;font-weight:bold">&#39;black&#39;</span>, max_font_size=<span style="color:#fff;font-weight:bold">None</span>, font_step=<span style="color:#ff0;font-weight:bold">1</span>, mode=<span style="color:#0ff;font-weight:bold">&#39;RGB&#39;</span>, relative_scaling=<span style="color:#ff0;font-weight:bold">0.5</span>, regexp=<span style="color:#fff;font-weight:bold">None</span>, collocations=<span style="color:#fff;font-weight:bold">True</span>, colormap=<span style="color:#fff;font-weight:bold">None</span>, normalize_plurals=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>fit_words(frequencies)</code></p>
+<blockquote>
+<p>根据单词和频率创建一个word_cloud。<br>
+别名为generate_from_frequencies。</p>
+</blockquote>
+<blockquote>
+<p><strong>参数</strong>:</p>
+<blockquote>
+<p>frequencies : array of tuples</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>元组包含单词及其频率。Note:最新版已经改为字典了。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<p><code>generate(text)</code></p>
+<blockquote>
+<p>从文本生成wordcloud。<br>
+别名generate_from_text。<br>
+实际调用process_text和generate_from_frequencies。</p>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>generate_from_frequencies(frequencies, max_font_size=None)</p>
+<blockquote>
+<p>根据单词和频率创建词云。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>参数</strong>:</p>
+<blockquote>
+<p>frequencies : dict from string to float</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>字典包含单词及其频率。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>max_font_size : int</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>使用此最大字体大，而不是self.max_font_size</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<p><code>generate_from_text(text)</code></p>
+<blockquote>
+<p>从文本生成wordcloud。<br>
+实际调用process_text和generate_from_frequencies。</p>
+</blockquote>
+<blockquote>
+<p><em>..versionchanged:: 1.2.2</em> <br>
+process_text（)的返回值不再是generate_from_frequencies（）的参数。<br>
+返回值：</p>
+<blockquote>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p><code>process_text(text)</code></p>
+<blockquote>
+<p>将长文本拆分为单词，去除停用词(敏感词)。<br>
+<strong>参数</strong>:</p>
+<blockquote>
+<p>text : string</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>待处理的文本</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p>words : dict (string, int)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>带有关联频率的词语标记。<br>
+..versionchanged:: 1.2.2 <br>
+将返回类型从元组列表更改为字典。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Notes</strong></p>
+<blockquote>
+<p>有更好的方法做词频分析，在此不做赘述。</p>
+</blockquote>
+</blockquote>
+<p><code>recolor(random_state=None, color_func=None, colormap=None)</code></p>
+<blockquote>
+<p>重新着色现有布局。<br>
+应用新的着色要比生成整个词云快得多。</p>
+</blockquote>
+<blockquote>
+<p><strong>参数</strong>:</p>
+<blockquote>
+<p>random_state : RandomState, int, or None, default=None</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>如果不是None，则使用固定的随机状态。 如果给出了一个int，它将用作random.Random状态的种子。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>color_func : function or None, default=None</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>根据(word count, font size, position and orientation)字数，字体大小，位置和方向生成新颜色的函数。 如果为None，则使用self.color_func。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>colormap : string or matplotlib colormap, default=None</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>使用此颜色映射表来生成新的颜色。 如果指定了color_func，则忽略。 如果没有，则使用self.color_func（或self.color_map）。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<p><code>to_array()</code></p>
+<blockquote>
+<p>转换为numpy数组。</p>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p>image : n维数组 (width, height, 3)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>词云图像作为numpy矩阵。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p><code>to_file(filename)</code></p>
+<blockquote>
+<p>导出为图像文件。</p>
+</blockquote>
+<blockquote>
+<p><strong>参数</strong>:</p>
+<blockquote>
+<p>filename : string</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>要写入的位置。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>返回值</strong>：</p>
+<blockquote>
+<p><code>self</code></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="wordcloudimagecolorgenerator">wordcloud.ImageColorGenerator<a hidden class="anchor" aria-hidden="true" href="#wordcloudimagecolorgenerator">#</a></h3>
+<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> wordcloud.ImageColorGenerator(image)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>基于彩色图像的颜色生成器.</p>
+</blockquote>
+<blockquote>
+<p>根据RGB图像生成颜色。 一个单词将使用彩色图像中包围矩形的平均颜色进行着色。
+构造完成后，该对象充当可调用对象，可以将其作为color_func传递给WordCloud类的构造函数或recolor这个重新着色方法。</p>
+</blockquote>
+<blockquote>
+<p><strong>参数</strong>:</p>
+<blockquote>
+<p>image : n维矩阵, shape (height, width, 3)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>用于生成文字颜色的图像。 <a href="https://baike.baidu.com/item/alpha%E9%80%9A%E9%81%93/3163191?fr=aladdin">Alpha通道</a>被忽略。对于wordcloud实例，这应该和画布大小相同。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>方法</strong></p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><code>__call__(word, font_size, font_path, ...)</code></p>
+<blockquote>
+<p>使用特定图像为给定单词生成颜色。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><code>__init__(image)</code></p>
+</blockquote>
+</blockquote>
+<h3 id="wordcloudrandom_color_func">wordcloud.random_color_func<a hidden class="anchor" aria-hidden="true" href="#wordcloudrandom_color_func">#</a></h3>
+<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>wordcloud.random_color_func(word=<span style="color:#fff;font-weight:bold">None</span>, font_size=<span style="color:#fff;font-weight:bold">None</span>, position=<span style="color:#fff;font-weight:bold">None</span>, orientation=<span style="color:#fff;font-weight:bold">None</span>, font_path=<span style="color:#fff;font-weight:bold">None</span>, random_state=<span style="color:#fff;font-weight:bold">None</span>)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>随机色调颜色生成.</p>
+</blockquote>
+<blockquote>
+<p>默认着色方法。 这只是随机选择一个值为80％和光照50％的色调。</p>
+</blockquote>
+<blockquote>
+<p><strong>参数</strong>:</p>
+<blockquote>
+<p><strong>word, font_size, position, orientation</strong>: ignored.<br>
+<strong>random_state</strong> : random.Random object or None, (default=None)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>如果给定了一个随机对象，则用它来生成随机数。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/wordcloud/">wordcloud</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>wordcloud源码阅读1——初探</span>
+  </a>
+  <a class="next" href="https://blog.niuhemoon.win/posts/read/my-first-blog/">
+    <span class="title">Next »</span>
+    <br>
+    <span>一首小诗</span>
+  </a>
+</nav>
+
+
+<div class="share-buttons">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share WordCloud文档中文翻译 on twitter"
+        href="https://twitter.com/intent/tweet/?text=WordCloud%e6%96%87%e6%a1%a3%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f&amp;hashtags=Python%2cwordcloud">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-253.927,424.544c135.939,0 210.268,-112.643 210.268,-210.268c0,-3.218 0,-6.437 -0.153,-9.502c14.406,-10.421 26.973,-23.448 36.935,-38.314c-13.18,5.824 -27.433,9.809 -42.452,11.648c15.326,-9.196 26.973,-23.602 32.49,-40.92c-14.252,8.429 -30.038,14.56 -46.896,17.931c-13.487,-14.406 -32.644,-23.295 -53.946,-23.295c-40.767,0 -73.87,33.104 -73.87,73.87c0,5.824 0.613,11.494 1.992,16.858c-61.456,-3.065 -115.862,-32.49 -152.337,-77.241c-6.284,10.881 -9.962,23.601 -9.962,37.088c0,25.594 13.027,48.276 32.95,61.456c-12.107,-0.307 -23.448,-3.678 -33.41,-9.196l0,0.92c0,35.862 25.441,65.594 59.311,72.49c-6.13,1.686 -12.72,2.606 -19.464,2.606c-4.751,0 -9.348,-0.46 -13.946,-1.38c9.349,29.426 36.628,50.728 68.965,51.341c-25.287,19.771 -57.164,31.571 -91.8,31.571c-5.977,0 -11.801,-0.306 -17.625,-1.073c32.337,21.15 71.264,33.41 112.95,33.41Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share WordCloud文档中文翻译 on linkedin"
+        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f&amp;title=WordCloud%e6%96%87%e6%a1%a3%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91&amp;summary=WordCloud%e6%96%87%e6%a1%a3%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91&amp;source=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share WordCloud文档中文翻译 on reddit"
+        href="https://reddit.com/submit?url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f&title=WordCloud%e6%96%87%e6%a1%a3%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share WordCloud文档中文翻译 on facebook"
+        href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share WordCloud文档中文翻译 on whatsapp"
+        href="https://api.whatsapp.com/send?text=WordCloud%e6%96%87%e6%a1%a3%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91%20-%20https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share WordCloud文档中文翻译 on telegram"
+        href="https://telegram.me/share/url?text=WordCloud%e6%96%87%e6%a1%a3%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fword-cloud-doc-cn%2f">
+        <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+        </svg>
+    </a>
+</div>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

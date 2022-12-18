@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>编程工具之问答 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Linux">
+<meta name="description" content="课程笔记">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/coding-tools-qa/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+
+
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="编程工具之问答" />
+<meta property="og:description" content="课程笔记" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/coding-tools-qa/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-09-27T19:55:25+08:00" />
+<meta property="article:modified_time" content="2020-09-27T19:55:25+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="编程工具之问答"/>
+<meta name="twitter:description" content="课程笔记"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "编程工具之问答",
+      "item": "https://blog.niuhemoon.win/posts/tech/coding-tools-qa/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "编程工具之问答",
+  "name": "编程工具之问答",
+  "description": "课程笔记",
+  "keywords": [
+    "Linux"
+  ],
+  "articleBody": "最后一节课，我们回答学生提出的问题:\n学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等 你会优先学习的工具有那些？ 使用 Python VS Bash脚本 VS 其他语言? source script.sh 和 ./script.sh 有什么区别? 各种软件包和工具存储在哪里？引用过程是怎样的? /bin 或 /lib 是什么？ 我应该用 apt-get install 还是 pip install 去下载软件包呢? 用于提高代码性能，简单好用的性能分析工具有哪些? 你使用那些浏览器插件? 有哪些有用的数据整理工具？ Docker和虚拟机有什么区别? 不同操作系统的优缺点是什么，我们如何选择（比如选择最适用于我们需求的Linux发行版)? 使用 Vim 编辑器 VS Emacs 编辑器? 机器学习应用的提示或技巧? 还有更多的 Vim 小窍门吗？ 2FA是什么，为什么我需要使用它? 对于不同的 Web 浏览器有什么评价? 参考 学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等 首先，不清楚你是不是真的需要了解这些更底层的话题。 当你开始编写更加底层的代码，比如实现或修改内核的时候，这些内容是很重要的。除了其他课程中简要介绍过的进程和信号量之外，大部分话题都不相关。\n学习资源：\nMIT’s 6.828 class - 研究生阶段的操作系统课程（课程资料是公开的）。 现代操作系统 第四版（Modern Operating Systems 4th ed） - 作者是Andrew S. Tanenbaum 这本书对上述很多概念都有很好的描述。 FreeBSD的设计与实现（The Design and Implementation of the FreeBSD Operating System） - 关于FreeBSD OS 不错的资源(注意，FreeBSD OS 不是 Linux)。 其他的指南例如 用 Rust 写操作系统 这里用不同的语言逐步实现了内核，主要用于教学的目的。 你会优先学习的工具有那些？ 值得优先学习的内容：\n多去使用键盘，少使用鼠标。这一目标可以通过多加利用快捷键，更换界面等来实现。 学好编辑器。作为程序员你大部分时间都是在编辑文件，因此值得学好这些技能。 学习怎样去自动化或简化工作流程中的重复任务。因为这会节省大量的时间。 学习像 Git 之类的版本控制工具并且知道如何与 GitHub 结合，以便在现代的软件项目中协同工作。 使用 Python VS Bash脚本 VS 其他语言? 通常来说，Bash 脚本对于简短的一次性脚本有效，比如当你想要运行一系列的命令的时候。但是Bash 脚本有一些比较奇怪的地方，这使得大型程序或脚本难以用 Bash 实现：\nBash 可以获取简单的用例，但是很难获得全部可能的输入。例如，脚本参数中的空格会导致Bash 脚本出错。 Bash 对于代码重用并不友好。因此，重用你先前已经写好的代码很困难。通常 Bash 中没有软件库的概念。 Bash 依赖于一些像 $? 或 $@ 的特殊字符指代特殊的值。其他的语言却会显式地引用，比如 exitCode 或 sys.args。 因此，对于大型或者更加复杂的脚本我们推荐使用更加成熟的脚本语言例如 Python 和 Ruby。 你可以找到很多用这些语言编写的，用来解决常见问题的在线库。 如果你发现某种语言实现了你所需要的特定功能库，最好的方式就是直接去使用那种语言。\nsource script.sh 和 ./script.sh 有什么区别? 这两种情况 script.sh 都会在bash会话中被读取和执行，不同点在于那个会话执行这个命令。 对于 source 命令来说，命令是在当前的bash会话种执行的，因此当 source 执行完毕，对当前环境的任何更改（例如更改目录或是定义函数）都会留存在当前会话中。 单独运行 ./script.sh 时，当前的bash会话将启动新的bash会话（实例），并在新实例中运行命令 script.sh。 因此，如果 script.sh 更改目录，新的bash会话（实例）会更改目录，但是一旦退出并将控制权返回给父bash会话，父会话仍然留在先前的位置（不会有目录的更改）。 同样，如果 script.sh 定义了要在终端中访问的函数，需要用 source 命令在当前bash会话中定义这个函数。否则，如果你运行 ./script.sh，只有新的bash会话（进程）才能执行定义的函数，而当前的shell不能。\n各种软件包和工具存储在哪里？引用过程是怎样的? /bin 或 /lib 是什么？ 根据你在命令行中运行的程序，这些包和工具会全部在 PATH 环境变量所列出的目录中查找到， 你可以使用 which 命令(或是 type 命令)来检查你的shell在哪里发现了特定的程序。 一般来说，特定种类的文件存储有一定的规范，文件系统，层次结构标准（Filesystem, Hierarchy Standard）可以查到我们讨论内容的详细列表。\n/bin - 基本命令二进制文件 /sbin - 基本的系统二进制文件，通常是root运行的 /dev - 设备文件，通常是硬件设备接口文件 /etc - 主机特定的系统配置文件 /home - 系统用户的家目录 /lib - 系统软件通用库 /opt - 可选的应用软件 /sys - 包含系统的信息和配置(第一堂课介绍的) /tmp - 临时文件( /var/tmp ) 通常在重启之间删除 /usr/ - 只读的用户数据 /usr/bin - 非必须的命令二进制文件 /usr/sbin - 非必须的系统二进制文件，通常是由root运行的 /usr/local/bin - 用户编译程序的二进制文件 /var -变量文件 像日志或缓存 我应该用 apt-get install 还是 pip install 去下载软件包呢? 这个问题没有普遍的答案。这与使用系统程序包管理器还是特定语言的程序包管理器来安装软件这一更笼统的问题相关。需要考虑的几件事：\n常见的软件包都可以通过这两种方法获得，但是小众的软件包或较新的软件包可能不在系统程序包管理器中。在这种情况下，使用特定语言的程序包管理器是更好的选择。 同样，特定语言的程序包管理器相比系统程序包管理器有更多的最新版本的程序包。 当使用系统软件包管理器时，将在系统范围内安装库。如果出于开发目的需要不同版本的库，则系统软件包管理器可能不能满足你的需要。对于这种情况，大多数编程语言都提供了隔离或虚拟环境，因此你可以用特定语言的程序包管理器安装不同版本的库而不会发生冲突。对于 Python，可以使用 virtualenv，对于 Ruby，使用 RVM 。 根据操作系统和硬件架构，其中一些软件包可能会附带二进制文件或者软件包需要被编译。例如，在树莓派（Raspberry Pi）之类的ARM架构计算机中，在软件附带二进制文件和软件包需要被编译的情况下，使用系统包管理器比特定语言包管理器更好。这在很大程度上取决于你的特定设置。 你应该仅使用一种解决方案，而不同时使用两种方法，因为这可能会导致难以解决的冲突。我们的建议是尽可能使用特定语言的程序包管理器，并使用隔离的环境（例如 Python 的 virtualenv）以避免影响全局环境。 用于提高代码性能，简单好用的性能分析工具有哪些? 性能分析方面相当有用和简单工具是print timing。你只需手动计算代码不同部分之间花费的时间。通过重复执行此操作，你可以有效地对代码进行二分法搜索，并找到花费时间最长的代码段。\n对于更高级的工具， Valgrind 的 Callgrind可让你运行程序并计算所有的时间花费以及所有调用堆栈（即哪个函数调用了另一个函数）。然后，它会生成带注释的代码版本，其中包含每行花费的时间。但是，它会使程序运行速度降低一个数量级，并且不支持线程。其他的， perf 工具和其他特定语言的采样性能分析器可以非常快速地输出有用的数据。Flamegraphs 是对采样分析器结果的可视化工具。你还可以使用针对特定编程语言或任务的工具。例如，对于 Web 开发而言，Chrome 和 Firefox 内置的开发工具具有出色的性能分析器。\n有时，代码中最慢的部分是系统等待磁盘读取或网络数据包之类的事件。在这些情况下，需要检查根据硬件性能估算的理论速度是否不偏离实际数值，也有专门的工具来分析系统调用中的等待时间，包括用于用户程序内核跟踪的eBPF 。如果需要低级的性能分析， bpftrace 值得一试。\n你使用那些浏览器插件? 我们钟爱的插件主要与安全性与可用性有关：\nuBlock Origin - 是一个用途广泛（wide-spectrum）的拦截器，它不仅可以拦截广告，还可以拦截第三方的页面，也可以拦截内部脚本和其他种类资源的加载。如果你打算花更多的时间去配置，前往中等模式（medium mode）或者 强力模式（hard mode）。在你调整好设置之前一些网站会停止工作，但是这些配置会显著提高你的网络安全水平。另外， 简易模式（easy mode）作为默认模式已经相当不错了，可以拦截大部分的广告和跟踪，你也可以自定义规则来拦截网站对象。 Stylus - 是Stylish的分支（不要使用Stylish，它会窃取浏览记录)），这个插件可让你将自定义CSS样式加载到网站。使用Stylus，你可以轻松地自定义和修改网站的外观。可以删除侧边框，更改背景颜色，更改文字大小或字体样式。这可以使你经常访问的网站更具可读性。此外，Stylus可以找到其他用户编写并发布在userstyles.org中的样式。大多数常用的网站都有一个或几个深色主题样式。 全页屏幕捕获 - 内置于 Firefox 和 Chrome 扩展程序中。这些插件提供完整的网站截图，通常比打印要好用。 多账户容器 - 该插件使你可以将Cookie分为“容器”，从而允许你以不同的身份浏览web网页并且/或确保网站无法在它们之间共享信息。 密码集成管理器 - 大多数密码管理器都有浏览器插件，这些插件帮你将登录凭据输入网站的过程不仅方便，而且更加安全。与简单复制粘贴用户名和密码相比，这些插件将首先检查网站域是否与列出的条目相匹配，以防止冒充网站的网络钓鱼窃取登录凭据。 有哪些有用的数据整理工具？ 在数据整理那一节课程中，我们没有时间讨论一些数据整理工具，包括分别用于JSON和HTML数据的专用解析器， jq 和 pup。Perl语言是另一个更高级的可以用于数据整理管道的工具。另一个技巧是使用 column -t 命令，可以将空格文本（不一定对齐）转换为对齐的文本。\n一般来说，vim和Python是两个不常规的数据整理工具。对于某些复杂的多行转换，vim宏是非常有用的工具。你可以记录一系列操作，并根据需要重复执行多次，例如，在编辑的讲义(去年 视频)中，有一个示例是使用vim宏将XML格式的文件转换为JSON。\n对于通常以CSV格式显示的表格数据， Python pandas库是一个很棒的工具。不仅因为它能让复杂操作的定义（如分组依据，联接或过滤器）变得非常容易，而且还便于根据不同属性绘制数据。它还支持导出多种表格格式，包括 XLS，HTML 或 LaTeX。另外，R语言(一种有争议的不好的语言）具有很多功能，可以计算数据的统计数字，这在管道的最后一步中非常有用。 ggplot2是R中很棒的绘图库。\nDocker和虚拟机有什么区别? Docker 基于容器这个更为概括的概念。关于容器和虚拟机之间最大的不同是，虚拟机会执行整个的 OS 栈，包括内核（即使这个内核和主机内核相同）。与虚拟机不同，容器避免运行其他内核实例，而是与主机分享内核。在Linux环境中，有LXC机制来实现，并且这能使一系列分离的主机像是在使用自己的硬件启动程序，而实际上是共享主机的硬件和内核。因此容器的开销小于完整的虚拟机。\n另一方面，容器的隔离性较弱而且只有在主机运行相同的内核时才能正常工作。例如，如果你在macOS 上运行 Docker，Docker 需要启动 Linux虚拟机去获取初始的 Linux内核，这样的开销仍然很大。最后，Docker 是容器的特定实现，它是为软件部署而定制的。基于这些，它有一些奇怪之处：例如，默认情况下，Docker 容器在重启之间不会有以任何形式的存储。\n不同操作系统的优缺点是什么，我们如何选择（比如选择最适用于我们需求的Linux发行版)? 关于Linux发行版，尽管有相当多的版本，但大部分发行版在大多数使用情况下的表现是相同的。 可以使用任何发行版去学习 Linux 与 UNIX 的特性和其内部工作原理。 发行版之间的根本区别是发行版如何处理软件包更新。 某些版本，例如 Arch Linux 采用滚动更新策略，用了最前沿的软件包（bleeding-edge），但软件可能并不稳定。另外一些发行版（如Debian，CentOS 或 Ubuntu LTS）其更新策略要保守得多，因此更新的内容会更稳定，但会牺牲一些新功能。我们建议你使用 Debian 或 Ubuntu 来获得简单稳定的台式机和服务器体验。\nMac OS 是介于 Windows 和 Linux 之间的一个操作系统，它有很漂亮的界面。但是，Mac OS 是基于BSD 而不是 Linux，因此系统的某些部分和命令是不同的。 另一种值得体验的是 FreeBSD。虽然某些程序不能在 FreeBSD 上运行，但与 Linux 相比，BSD 生态系统的碎片化程度要低得多，并且说明文档更加友好。 除了开发Windows应用程序或需要使用某些Windows系统更好支持的功能（例如对游戏的驱动程序支持）外，我们不建议使用 Windows。\n对于双系统，我们认为最有效的是 macOS 的 bootcamp，长期来看，任何其他组合都可能会出现问题，尤其是当你结合了其他功能比如磁盘加密。\n使用 Vim 编辑器 VS Emacs 编辑器? 我们三个都使用 vim 作为我们的主要编辑器。但是 Emacs 也是一个不错的选择，你可以两者都尝试，看看那个更适合你。Emacs 不使用 vim 的模式编辑，但是这些功能可以通过 Emacs 插件像Evil 或 Doom Emacs来实现。 Emacs的优点是可以用Lisp语言进行扩展（Lisp比vim默认的脚本语言vimscript要更好用）。\n机器学习应用的提示或技巧? 课程的一些经验可以直接用于机器学习程序。 就像许多科学学科一样，在机器学习中，你需要进行一系列实验，并检查哪些数据有效，哪些无效。 你可以使用 Shell 轻松快速地搜索这些实验结果，并且以合理的方式汇总。这意味着需要在限定时间内或使用特定数据集的情况下，检查所有实验结果。通过使用JSON文件记录实验的所有相关参数，使用我们在本课程中介绍的工具，这件事情可以变得极其简单。 最后，如果你不使用集群提交你的 GPU 作业，那你应该研究如何使该过程自动化，因为这是一项非常耗时的任务，会消耗你的精力。\n还有更多的 Vim 小窍门吗？ 更多的窍门：\n插件 - 花时间去探索插件。有很多不错的插件修复了vim的缺陷或者增加了能够与现有vim工作流结合的新功能。关于这部分内容，资源是VimAwesome 和其他程序员的dotfiles。 标记 - 在vim里你可以使用 m 为字母 X 做标记，之后你可以通过 ' 回到标记位置。这可以让你快速定位到文件内或文件间的特定位置。 导航 - Ctrl+O 和 Ctrl+I 命令可以使你在最近访问位置前后移动。 撤销树 - vim 有不错的更改跟踪机制，不同于其他的编辑器，vim存储变更树，因此即使你撤销后做了一些修改，你仍然可以通过撤销树的导航回到初始状态。一些插件比如 gundo.vim 和 undotree 通过图形化来展示撤销树。 时间撤销 - :earlier 和 :later 命令使得你可以用时间而非某一时刻的更改来定位文件。 持续撤销 - 是一个默认未被开启的vim的内置功能，它在vim启动之间保存撤销历史，需要配置在 .vimrc 目录下的undofile 和 undodir，vim会保存每个文件的修改历史。 热键（Leader Key） - 热键是一个用于用户自定义配置命令的特殊按键。这种模式通常是按下后释放这个按键（通常是空格键）并与其他的按键组合去实现一个特殊的命令。插件也会用这些按键增加它们的功能，例如，插件UndoTree使用 U 去打开撤销树。 高级文本对象 - 文本对象比如搜索也可以用vim命令构成。例如，d/ 会删除下一处匹配 pattern 的字符串，cgn 可以用于更改上次搜索的关键字。 2FA是什么，为什么我需要使用它? 双因子验证（Two Factor Authentication 2FA）在密码之上为帐户增加了一层额外的保护。为了登录，你不仅需要知道密码，还必须以某种方式“证明”可以访问某些硬件设备。最简单的情形是可以通过接收手机的 SMS 来实现（尽管 SMS 2FA 存在 已知问题）。我们推荐使用YubiKey之类的U2F方案。\n对于不同的 Web 浏览器有什么评价? 2020的浏览器现状是，大部分的浏览器都与 Chrome 类似，因为它们都使用同样的引擎(Blink)。 Microsoft Edge 同样基于 Blink，至于 Safari 基于 WebKit(与Blink类似的引擎)，这些浏览器仅仅是更糟糕的 Chorme 版本。不管是在性能还是可用性上，Chorme 都是一款很不错的浏览器。如果你想要替代品，我们推荐 Firefox。Firefox 与 Chorme 的在各方面不相上下，并且在隐私方面更加出色。 有一款目前还没有完成的叫 Flow 的浏览器，它实现了全新的渲染引擎，有望比现有引擎速度更快。\n参考 课程列表\n",
+  "wordCount" : "6349",
+  "inLanguage": "en",
+  "datePublished": "2020-09-27T19:55:25+08:00",
+  "dateModified": "2020-09-27T19:55:25+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/coding-tools-qa/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      编程工具之问答
+    </h1>
+    <div class="post-description">
+      课程笔记
+    </div>
+    <div class="post-meta"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;13 min&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%ad%a6%e4%b9%a0%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%e7%9b%b8%e5%85%b3%e5%86%85%e5%ae%b9%e7%9a%84%e6%8e%a8%e8%8d%90%e6%af%94%e5%a6%82%e8%bf%9b%e7%a8%8b%e8%99%9a%e6%8b%9f%e5%86%85%e5%ad%98%e4%b8%ad%e6%96%ad%e5%86%85%e5%ad%98%e7%ae%a1%e7%90%86%e7%ad%89" aria-label="学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等">学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等</a></li>
+                <li>
+                    <a href="#%e4%bd%a0%e4%bc%9a%e4%bc%98%e5%85%88%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%b7%a5%e5%85%b7%e6%9c%89%e9%82%a3%e4%ba%9b" aria-label="你会优先学习的工具有那些？">你会优先学习的工具有那些？</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8-python-vs-bash%e8%84%9a%e6%9c%ac-vs-%e5%85%b6%e4%bb%96%e8%af%ad%e8%a8%80" aria-label="使用 Python VS Bash脚本 VS 其他语言?">使用 Python VS Bash脚本 VS 其他语言?</a></li>
+                <li>
+                    <a href="#source-scriptsh-%e5%92%8c-scriptsh-%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="source script.sh 和 ./script.sh 有什么区别?"><code>source script.sh</code> 和 <code>./script.sh</code> 有什么区别?</a></li>
+                <li>
+                    <a href="#%e5%90%84%e7%a7%8d%e8%bd%af%e4%bb%b6%e5%8c%85%e5%92%8c%e5%b7%a5%e5%85%b7%e5%ad%98%e5%82%a8%e5%9c%a8%e5%93%aa%e9%87%8c%e5%bc%95%e7%94%a8%e8%bf%87%e7%a8%8b%e6%98%af%e6%80%8e%e6%a0%b7%e7%9a%84-bin-%e6%88%96-lib-%e6%98%af%e4%bb%80%e4%b9%88" aria-label="各种软件包和工具存储在哪里？引用过程是怎样的? /bin 或 /lib 是什么？">各种软件包和工具存储在哪里？引用过程是怎样的? <code>/bin</code> 或 <code>/lib</code> 是什么？</a></li>
+                <li>
+                    <a href="#%e6%88%91%e5%ba%94%e8%af%a5%e7%94%a8-apt-get-install-%e8%bf%98%e6%98%af-pip-install-%e5%8e%bb%e4%b8%8b%e8%bd%bd%e8%bd%af%e4%bb%b6%e5%8c%85%e5%91%a2" aria-label="我应该用 apt-get install 还是 pip install 去下载软件包呢?">我应该用 <code>apt-get install</code> 还是 <code>pip install</code> 去下载软件包呢?</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e4%ba%8e%e6%8f%90%e9%ab%98%e4%bb%a3%e7%a0%81%e6%80%a7%e8%83%bd%e7%ae%80%e5%8d%95%e5%a5%bd%e7%94%a8%e7%9a%84%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90%e5%b7%a5%e5%85%b7%e6%9c%89%e5%93%aa%e4%ba%9b" aria-label="用于提高代码性能，简单好用的性能分析工具有哪些?">用于提高代码性能，简单好用的性能分析工具有哪些?</a></li>
+                <li>
+                    <a href="#%e4%bd%a0%e4%bd%bf%e7%94%a8%e9%82%a3%e4%ba%9b%e6%b5%8f%e8%a7%88%e5%99%a8%e6%8f%92%e4%bb%b6" aria-label="你使用那些浏览器插件?">你使用那些浏览器插件?</a></li>
+                <li>
+                    <a href="#%e6%9c%89%e5%93%aa%e4%ba%9b%e6%9c%89%e7%94%a8%e7%9a%84%e6%95%b0%e6%8d%ae%e6%95%b4%e7%90%86%e5%b7%a5%e5%85%b7" aria-label="有哪些有用的数据整理工具？">有哪些有用的数据整理工具？</a></li>
+                <li>
+                    <a href="#docker%e5%92%8c%e8%99%9a%e6%8b%9f%e6%9c%ba%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab" aria-label="Docker和虚拟机有什么区别?">Docker和虚拟机有什么区别?</a></li>
+                <li>
+                    <a href="#%e4%b8%8d%e5%90%8c%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%e7%9a%84%e4%bc%98%e7%bc%ba%e7%82%b9%e6%98%af%e4%bb%80%e4%b9%88%e6%88%91%e4%bb%ac%e5%a6%82%e4%bd%95%e9%80%89%e6%8b%a9%e6%af%94%e5%a6%82%e9%80%89%e6%8b%a9%e6%9c%80%e9%80%82%e7%94%a8%e4%ba%8e%e6%88%91%e4%bb%ac%e9%9c%80%e6%b1%82%e7%9a%84linux%e5%8f%91%e8%a1%8c%e7%89%88" aria-label="不同操作系统的优缺点是什么，我们如何选择（比如选择最适用于我们需求的Linux发行版)?">不同操作系统的优缺点是什么，我们如何选择（比如选择最适用于我们需求的Linux发行版)?</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8-vim-%e7%bc%96%e8%be%91%e5%99%a8-vs-emacs-%e7%bc%96%e8%be%91%e5%99%a8" aria-label="使用 Vim 编辑器 VS Emacs 编辑器?">使用 Vim 编辑器 VS Emacs 编辑器?</a></li>
+                <li>
+                    <a href="#%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e5%ba%94%e7%94%a8%e7%9a%84%e6%8f%90%e7%a4%ba%e6%88%96%e6%8a%80%e5%b7%a7" aria-label="机器学习应用的提示或技巧?">机器学习应用的提示或技巧?</a></li>
+                <li>
+                    <a href="#%e8%bf%98%e6%9c%89%e6%9b%b4%e5%a4%9a%e7%9a%84-vim-%e5%b0%8f%e7%aa%8d%e9%97%a8%e5%90%97" aria-label="还有更多的 Vim 小窍门吗？">还有更多的 Vim 小窍门吗？</a></li>
+                <li>
+                    <a href="#2fa%e6%98%af%e4%bb%80%e4%b9%88%e4%b8%ba%e4%bb%80%e4%b9%88%e6%88%91%e9%9c%80%e8%a6%81%e4%bd%bf%e7%94%a8%e5%ae%83" aria-label="2FA是什么，为什么我需要使用它?">2FA是什么，为什么我需要使用它?</a></li>
+                <li>
+                    <a href="#%e5%af%b9%e4%ba%8e%e4%b8%8d%e5%90%8c%e7%9a%84-web-%e6%b5%8f%e8%a7%88%e5%99%a8%e6%9c%89%e4%bb%80%e4%b9%88%e8%af%84%e4%bb%b7" aria-label="对于不同的 Web 浏览器有什么评价?">对于不同的 Web 浏览器有什么评价?</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>最后一节课，我们回答学生提出的问题:</p>
+<ul>
+<li><a href="#%E5%AD%A6%E4%B9%A0%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9%E7%9A%84%E6%8E%A8%E8%8D%90%E6%AF%94%E5%A6%82%E8%BF%9B%E7%A8%8B%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E4%B8%AD%E6%96%AD%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E7%AD%89">学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等</a></li>
+<li><a href="#%E4%BD%A0%E4%BC%9A%E4%BC%98%E5%85%88%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%B7%A5%E5%85%B7%E6%9C%89%E9%82%A3%E4%BA%9B">你会优先学习的工具有那些？</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8-python-vs-bash%E8%84%9A%E6%9C%AC-vs-%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80">使用 Python VS Bash脚本 VS 其他语言?</a></li>
+<li><a href="#source-scriptsh-%E5%92%8C-scriptsh-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><code>source script.sh</code> 和 <code>./script.sh</code> 有什么区别?</a></li>
+<li><a href="#%E5%90%84%E7%A7%8D%E8%BD%AF%E4%BB%B6%E5%8C%85%E5%92%8C%E5%B7%A5%E5%85%B7%E5%AD%98%E5%82%A8%E5%9C%A8%E5%93%AA%E9%87%8C%E5%BC%95%E7%94%A8%E8%BF%87%E7%A8%8B%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84-bin-%E6%88%96-lib-%E6%98%AF%E4%BB%80%E4%B9%88">各种软件包和工具存储在哪里？引用过程是怎样的? <code>/bin</code> 或 <code>/lib</code> 是什么？</a></li>
+<li><a href="#%E6%88%91%E5%BA%94%E8%AF%A5%E7%94%A8-apt-get-install-%E8%BF%98%E6%98%AF-pip-install-%E5%8E%BB%E4%B8%8B%E8%BD%BD%E8%BD%AF%E4%BB%B6%E5%8C%85%E5%91%A2">我应该用 <code>apt-get install</code> 还是 <code>pip install</code> 去下载软件包呢?</a></li>
+<li><a href="#%E7%94%A8%E4%BA%8E%E6%8F%90%E9%AB%98%E4%BB%A3%E7%A0%81%E6%80%A7%E8%83%BD%E7%AE%80%E5%8D%95%E5%A5%BD%E7%94%A8%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E6%9C%89%E5%93%AA%E4%BA%9B">用于提高代码性能，简单好用的性能分析工具有哪些?</a></li>
+<li><a href="#%E4%BD%A0%E4%BD%BF%E7%94%A8%E9%82%A3%E4%BA%9B%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6">你使用那些浏览器插件?</a></li>
+<li><a href="#%E6%9C%89%E5%93%AA%E4%BA%9B%E6%9C%89%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E6%95%B4%E7%90%86%E5%B7%A5%E5%85%B7">有哪些有用的数据整理工具？</a></li>
+<li><a href="#docker%E5%92%8C%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB">Docker和虚拟机有什么区别?</a></li>
+<li><a href="#%E4%B8%8D%E5%90%8C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%E6%98%AF%E4%BB%80%E4%B9%88%E6%88%91%E4%BB%AC%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E6%AF%94%E5%A6%82%E9%80%89%E6%8B%A9%E6%9C%80%E9%80%82%E7%94%A8%E4%BA%8E%E6%88%91%E4%BB%AC%E9%9C%80%E6%B1%82%E7%9A%84linux%E5%8F%91%E8%A1%8C%E7%89%88">不同操作系统的优缺点是什么，我们如何选择（比如选择最适用于我们需求的Linux发行版)?</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8-vim-%E7%BC%96%E8%BE%91%E5%99%A8-vs-emacs-%E7%BC%96%E8%BE%91%E5%99%A8">使用 Vim 编辑器 VS Emacs 编辑器?</a></li>
+<li><a href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%BA%94%E7%94%A8%E7%9A%84%E6%8F%90%E7%A4%BA%E6%88%96%E6%8A%80%E5%B7%A7">机器学习应用的提示或技巧?</a></li>
+<li><a href="#%E8%BF%98%E6%9C%89%E6%9B%B4%E5%A4%9A%E7%9A%84-vim-%E5%B0%8F%E7%AA%8D%E9%97%A8%E5%90%97">还有更多的 Vim 小窍门吗？</a></li>
+<li><a href="#2fa%E6%98%AF%E4%BB%80%E4%B9%88%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E9%9C%80%E8%A6%81%E4%BD%BF%E7%94%A8%E5%AE%83">2FA是什么，为什么我需要使用它?</a></li>
+<li><a href="#%E5%AF%B9%E4%BA%8E%E4%B8%8D%E5%90%8C%E7%9A%84-web-%E6%B5%8F%E8%A7%88%E5%99%A8%E6%9C%89%E4%BB%80%E4%B9%88%E8%AF%84%E4%BB%B7">对于不同的 Web 浏览器有什么评价?</a></li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+<h3 id="学习操作系统相关内容的推荐比如进程虚拟内存中断内存管理等">学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等<a hidden class="anchor" aria-hidden="true" href="#学习操作系统相关内容的推荐比如进程虚拟内存中断内存管理等">#</a></h3>
+<p>首先，不清楚你是不是真的需要了解这些更底层的话题。
+当你开始编写更加底层的代码，比如实现或修改内核的时候，这些内容是很重要的。除了其他课程中简要介绍过的进程和信号量之外，大部分话题都不相关。</p>
+<p>学习资源：</p>
+<ul>
+<li><a href="https://pdos.csail.mit.edu/6.828/">MIT&rsquo;s 6.828 class</a> - 研究生阶段的操作系统课程（课程资料是公开的）。</li>
+<li>现代操作系统 第四版（<em>Modern Operating Systems 4th ed</em>） - 作者是Andrew S. Tanenbaum 这本书对上述很多概念都有很好的描述。</li>
+<li>FreeBSD的设计与实现（<em>The Design and Implementation of the FreeBSD Operating System</em>） - 关于FreeBSD OS 不错的资源(注意，FreeBSD OS 不是 Linux)。</li>
+<li>其他的指南例如 <a href="https://os.phil-opp.com/">用 Rust 写操作系统</a> 这里用不同的语言逐步实现了内核，主要用于教学的目的。</li>
+</ul>
+<h3 id="你会优先学习的工具有那些">你会优先学习的工具有那些？<a hidden class="anchor" aria-hidden="true" href="#你会优先学习的工具有那些">#</a></h3>
+<p>值得优先学习的内容：</p>
+<ul>
+<li>多去使用键盘，少使用鼠标。这一目标可以通过多加利用快捷键，更换界面等来实现。</li>
+<li>学好编辑器。作为程序员你大部分时间都是在编辑文件，因此值得学好这些技能。</li>
+<li>学习怎样去自动化或简化工作流程中的重复任务。因为这会节省大量的时间。</li>
+<li>学习像 Git 之类的版本控制工具并且知道如何与 GitHub 结合，以便在现代的软件项目中协同工作。</li>
+</ul>
+<h3 id="使用-python-vs-bash脚本-vs-其他语言">使用 Python VS Bash脚本 VS 其他语言?<a hidden class="anchor" aria-hidden="true" href="#使用-python-vs-bash脚本-vs-其他语言">#</a></h3>
+<p>通常来说，Bash 脚本对于简短的一次性脚本有效，比如当你想要运行一系列的命令的时候。但是Bash 脚本有一些比较奇怪的地方，这使得大型程序或脚本难以用 Bash 实现：</p>
+<ul>
+<li>Bash 可以获取简单的用例，但是很难获得全部可能的输入。例如，脚本参数中的空格会导致Bash 脚本出错。</li>
+<li>Bash 对于代码重用并不友好。因此，重用你先前已经写好的代码很困难。通常 Bash 中没有软件库的概念。</li>
+<li>Bash 依赖于一些像 <code>$?</code> 或 <code>$@</code> 的特殊字符指代特殊的值。其他的语言却会显式地引用，比如  <code>exitCode</code> 或 <code>sys.args</code>。</li>
+</ul>
+<p>因此，对于大型或者更加复杂的脚本我们推荐使用更加成熟的脚本语言例如 Python 和 Ruby。
+你可以找到很多用这些语言编写的，用来解决常见问题的在线库。
+如果你发现某种语言实现了你所需要的特定功能库，最好的方式就是直接去使用那种语言。</p>
+<h3 id="source-scriptsh-和-scriptsh-有什么区别"><code>source script.sh</code> 和 <code>./script.sh</code> 有什么区别?<a hidden class="anchor" aria-hidden="true" href="#source-scriptsh-和-scriptsh-有什么区别">#</a></h3>
+<p>这两种情况 <code>script.sh</code> 都会在bash会话中被读取和执行，不同点在于那个会话执行这个命令。
+对于 <code>source</code> 命令来说，命令是在当前的bash会话种执行的，因此当 <code>source</code> 执行完毕，对当前环境的任何更改（例如更改目录或是定义函数）都会留存在当前会话中。
+单独运行 <code>./script.sh</code> 时，当前的bash会话将启动新的bash会话（实例），并在新实例中运行命令 <code>script.sh</code>。
+因此，如果 <code>script.sh</code> 更改目录，新的bash会话（实例）会更改目录，但是一旦退出并将控制权返回给父bash会话，父会话仍然留在先前的位置（不会有目录的更改）。
+同样，如果 <code>script.sh</code> 定义了要在终端中访问的函数，需要用 <code>source</code> 命令在当前bash会话中定义这个函数。否则，如果你运行 <code>./script.sh</code>，只有新的bash会话（进程）才能执行定义的函数，而当前的shell不能。</p>
+<h3 id="各种软件包和工具存储在哪里引用过程是怎样的-bin-或-lib-是什么">各种软件包和工具存储在哪里？引用过程是怎样的? <code>/bin</code> 或 <code>/lib</code> 是什么？<a hidden class="anchor" aria-hidden="true" href="#各种软件包和工具存储在哪里引用过程是怎样的-bin-或-lib-是什么">#</a></h3>
+<p>根据你在命令行中运行的程序，这些包和工具会全部在 <code>PATH</code> 环境变量所列出的目录中查找到， 你可以使用 <code>which</code> 命令(或是 <code>type</code> 命令)来检查你的shell在哪里发现了特定的程序。
+一般来说，特定种类的文件存储有一定的规范，<a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard">文件系统，层次结构标准（Filesystem, Hierarchy Standard）</a>可以查到我们讨论内容的详细列表。</p>
+<ul>
+<li><code>/bin</code> - 基本命令二进制文件</li>
+<li><code>/sbin</code> - 基本的系统二进制文件，通常是root运行的</li>
+<li><code>/dev</code> - 设备文件，通常是硬件设备接口文件</li>
+<li><code>/etc</code> - 主机特定的系统配置文件</li>
+<li><code>/home</code> - 系统用户的家目录</li>
+<li><code>/lib</code> - 系统软件通用库</li>
+<li><code>/opt</code> - 可选的应用软件</li>
+<li><code>/sys</code> - 包含系统的信息和配置(<a href="/2020/course-shell/">第一堂课</a>介绍的)</li>
+<li><code>/tmp</code> - 临时文件( <code>/var/tmp</code> ) 通常在重启之间删除</li>
+<li><code>/usr/</code> - 只读的用户数据
+<ul>
+<li><code>/usr/bin</code> - 非必须的命令二进制文件</li>
+<li><code>/usr/sbin</code> - 非必须的系统二进制文件，通常是由root运行的</li>
+<li><code>/usr/local/bin</code> - 用户编译程序的二进制文件</li>
+</ul>
+</li>
+<li><code>/var</code> -变量文件 像日志或缓存</li>
+</ul>
+<h3 id="我应该用-apt-get-install-还是-pip-install-去下载软件包呢">我应该用 <code>apt-get install</code> 还是 <code>pip install</code> 去下载软件包呢?<a hidden class="anchor" aria-hidden="true" href="#我应该用-apt-get-install-还是-pip-install-去下载软件包呢">#</a></h3>
+<p>这个问题没有普遍的答案。这与使用系统程序包管理器还是特定语言的程序包管理器来安装软件这一更笼统的问题相关。需要考虑的几件事：</p>
+<ul>
+<li>常见的软件包都可以通过这两种方法获得，但是小众的软件包或较新的软件包可能不在系统程序包管理器中。在这种情况下，使用特定语言的程序包管理器是更好的选择。</li>
+<li>同样，特定语言的程序包管理器相比系统程序包管理器有更多的最新版本的程序包。</li>
+<li>当使用系统软件包管理器时，将在系统范围内安装库。如果出于开发目的需要不同版本的库，则系统软件包管理器可能不能满足你的需要。对于这种情况，大多数编程语言都提供了隔离或虚拟环境，因此你可以用特定语言的程序包管理器安装不同版本的库而不会发生冲突。对于 Python，可以使用  virtualenv，对于 Ruby，使用 RVM 。</li>
+<li>根据操作系统和硬件架构，其中一些软件包可能会附带二进制文件或者软件包需要被编译。例如，在树莓派（Raspberry Pi）之类的ARM架构计算机中，在软件附带二进制文件和软件包需要被编译的情况下，使用系统包管理器比特定语言包管理器更好。这在很大程度上取决于你的特定设置。
+你应该仅使用一种解决方案，而不同时使用两种方法，因为这可能会导致难以解决的冲突。我们的建议是尽可能使用特定语言的程序包管理器，并使用隔离的环境（例如 Python 的 virtualenv）以避免影响全局环境。</li>
+</ul>
+<h3 id="用于提高代码性能简单好用的性能分析工具有哪些">用于提高代码性能，简单好用的性能分析工具有哪些?<a hidden class="anchor" aria-hidden="true" href="#用于提高代码性能简单好用的性能分析工具有哪些">#</a></h3>
+<p>性能分析方面相当有用和简单工具是<a href="/2020/debugging-profiling/#timing">print timing</a>。你只需手动计算代码不同部分之间花费的时间。通过重复执行此操作，你可以有效地对代码进行二分法搜索，并找到花费时间最长的代码段。</p>
+<p>对于更高级的工具， Valgrind 的 <a href="http://valgrind.org/docs/manual/cl-manual.html">Callgrind</a>可让你运行程序并计算所有的时间花费以及所有调用堆栈（即哪个函数调用了另一个函数）。然后，它会生成带注释的代码版本，其中包含每行花费的时间。但是，它会使程序运行速度降低一个数量级，并且不支持线程。其他的，<a href="http://www.brendangregg.com/perf.html"> <code>perf</code> </a>工具和其他特定语言的采样性能分析器可以非常快速地输出有用的数据。<a href="http://www.brendangregg.com/flamegraphs.html">Flamegraphs</a> 是对采样分析器结果的可视化工具。你还可以使用针对特定编程语言或任务的工具。例如，对于 Web 开发而言，Chrome 和 Firefox 内置的开发工具具有出色的性能分析器。</p>
+<p>有时，代码中最慢的部分是系统等待磁盘读取或网络数据包之类的事件。在这些情况下，需要检查根据硬件性能估算的理论速度是否不偏离实际数值，也有专门的工具来分析系统调用中的等待时间，包括用于用户程序内核跟踪的<a href="http://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html">eBPF</a> 。如果需要低级的性能分析，<a href="https://github.com/iovisor/bpftrace"> <code>bpftrace</code> </a> 值得一试。</p>
+<h3 id="你使用那些浏览器插件">你使用那些浏览器插件?<a hidden class="anchor" aria-hidden="true" href="#你使用那些浏览器插件">#</a></h3>
+<p>我们钟爱的插件主要与安全性与可用性有关：</p>
+<ul>
+<li><a href="https://github.com/gorhill/uBlock">uBlock Origin</a> - 是一个<a href="https://github.com/gorhill/uBlock/wiki/Blocking-mode">用途广泛（wide-spectrum）</a>的拦截器，它不仅可以拦截广告，还可以拦截第三方的页面，也可以拦截内部脚本和其他种类资源的加载。如果你打算花更多的时间去配置，前往<a href="https://github.com/gorhill/uBlock/wiki/Blocking-mode:-medium-mode">中等模式（medium mode）</a>或者 <a href="https://github.com/gorhill/uBlock/wiki/Blocking-mode:-hard-mode">强力模式（hard mode）</a>。在你调整好设置之前一些网站会停止工作，但是这些配置会显著提高你的网络安全水平。另外， <a href="https://github.com/gorhill/uBlock/wiki/Blocking-mode:-easy-mode">简易模式（easy mode）</a>作为默认模式已经相当不错了，可以拦截大部分的广告和跟踪，你也可以自定义规则来拦截网站对象。</li>
+<li><a href="https://github.com/openstyles/stylus/">Stylus</a> - 是Stylish的分支（不要使用Stylish，它会<a href="https://www.theregister.co.uk/2018/07/05/browsers_pull_stylish_but_invasive_browser_extension/">窃取浏览记录</a>)），这个插件可让你将自定义CSS样式加载到网站。使用Stylus，你可以轻松地自定义和修改网站的外观。可以删除侧边框，更改背景颜色，更改文字大小或字体样式。这可以使你经常访问的网站更具可读性。此外，Stylus可以找到其他用户编写并发布在<a href="https://userstyles.org/">userstyles.org</a>中的样式。大多数常用的网站都有一个或几个深色主题样式。</li>
+<li>全页屏幕捕获 - 内置于 Firefox 和 <a href="https://chrome.google.com/webstore/detail/full-page-screen-capture/fdpohaocaechififmbbbbbknoalclacl?hl=en"> Chrome 扩展程序</a>中。这些插件提供完整的网站截图，通常比打印要好用。</li>
+<li><a href="https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/">多账户容器</a> - 该插件使你可以将Cookie分为“容器”，从而允许你以不同的身份浏览web网页并且/或确保网站无法在它们之间共享信息。</li>
+<li>密码集成管理器 - 大多数密码管理器都有浏览器插件，这些插件帮你将登录凭据输入网站的过程不仅方便，而且更加安全。与简单复制粘贴用户名和密码相比，这些插件将首先检查网站域是否与列出的条目相匹配，以防止冒充网站的网络钓鱼窃取登录凭据。</li>
+</ul>
+<h3 id="有哪些有用的数据整理工具">有哪些有用的数据整理工具？<a hidden class="anchor" aria-hidden="true" href="#有哪些有用的数据整理工具">#</a></h3>
+<p>在数据整理那一节课程中，我们没有时间讨论一些数据整理工具，包括分别用于JSON和HTML数据的专用解析器， <code>jq</code> 和 <code>pup</code>。Perl语言是另一个更高级的可以用于数据整理管道的工具。另一个技巧是使用 <code>column -t</code> 命令，可以将空格文本（不一定对齐）转换为对齐的文本。</p>
+<p>一般来说，vim和Python是两个不常规的数据整理工具。对于某些复杂的多行转换，vim宏是非常有用的工具。你可以记录一系列操作，并根据需要重复执行多次，例如，在编辑的<a href="/2020/editors/#macros">讲义</a>(去年 <a href="/2019/editors/">视频</a>)中，有一个示例是使用vim宏将XML格式的文件转换为JSON。</p>
+<p>对于通常以CSV格式显示的表格数据， Python <a href="https://pandas.pydata.org/">pandas</a>库是一个很棒的工具。不仅因为它能让复杂操作的定义（如分组依据，联接或过滤器）变得非常容易，而且还便于根据不同属性绘制数据。它还支持导出多种表格格式，包括 XLS，HTML 或 LaTeX。另外，R语言(一种有争议的<a href="http://arrgh.tim-smith.us/">不好</a>的语言）具有很多功能，可以计算数据的统计数字，这在管道的最后一步中非常有用。 <a href="https://ggplot2.tidyverse.org/">ggplot2</a>是R中很棒的绘图库。</p>
+<h3 id="docker和虚拟机有什么区别">Docker和虚拟机有什么区别?<a hidden class="anchor" aria-hidden="true" href="#docker和虚拟机有什么区别">#</a></h3>
+<p>Docker 基于容器这个更为概括的概念。关于容器和虚拟机之间最大的不同是，虚拟机会执行整个的 OS 栈，包括内核（即使这个内核和主机内核相同）。与虚拟机不同，容器避免运行其他内核实例，而是与主机分享内核。在Linux环境中，有LXC机制来实现，并且这能使一系列分离的主机像是在使用自己的硬件启动程序，而实际上是共享主机的硬件和内核。因此容器的开销小于完整的虚拟机。</p>
+<p>另一方面，容器的隔离性较弱而且只有在主机运行相同的内核时才能正常工作。例如，如果你在macOS 上运行 Docker，Docker 需要启动 Linux虚拟机去获取初始的 Linux内核，这样的开销仍然很大。最后，Docker 是容器的特定实现，它是为软件部署而定制的。基于这些，它有一些奇怪之处：例如，默认情况下，Docker 容器在重启之间不会有以任何形式的存储。</p>
+<h3 id="不同操作系统的优缺点是什么我们如何选择比如选择最适用于我们需求的linux发行版">不同操作系统的优缺点是什么，我们如何选择（比如选择最适用于我们需求的Linux发行版)?<a hidden class="anchor" aria-hidden="true" href="#不同操作系统的优缺点是什么我们如何选择比如选择最适用于我们需求的linux发行版">#</a></h3>
+<p>关于Linux发行版，尽管有相当多的版本，但大部分发行版在大多数使用情况下的表现是相同的。
+可以使用任何发行版去学习 Linux 与 UNIX 的特性和其内部工作原理。
+发行版之间的根本区别是发行版如何处理软件包更新。
+某些版本，例如 Arch Linux 采用滚动更新策略，用了最前沿的软件包（bleeding-edge），但软件可能并不稳定。另外一些发行版（如Debian，CentOS 或 Ubuntu LTS）其更新策略要保守得多，因此更新的内容会更稳定，但会牺牲一些新功能。我们建议你使用 Debian 或 Ubuntu 来获得简单稳定的台式机和服务器体验。</p>
+<p>Mac OS 是介于 Windows 和 Linux 之间的一个操作系统，它有很漂亮的界面。但是，Mac OS 是基于BSD 而不是 Linux，因此系统的某些部分和命令是不同的。
+另一种值得体验的是 FreeBSD。虽然某些程序不能在 FreeBSD 上运行，但与 Linux 相比，BSD 生态系统的碎片化程度要低得多，并且说明文档更加友好。
+除了开发Windows应用程序或需要使用某些Windows系统更好支持的功能（例如对游戏的驱动程序支持）外，我们不建议使用 Windows。</p>
+<p>对于双系统，我们认为最有效的是 macOS 的 bootcamp，长期来看，任何其他组合都可能会出现问题，尤其是当你结合了其他功能比如磁盘加密。</p>
+<h3 id="使用-vim-编辑器-vs-emacs-编辑器">使用 Vim 编辑器 VS Emacs 编辑器?<a hidden class="anchor" aria-hidden="true" href="#使用-vim-编辑器-vs-emacs-编辑器">#</a></h3>
+<p>我们三个都使用 vim 作为我们的主要编辑器。但是 Emacs 也是一个不错的选择，你可以两者都尝试，看看那个更适合你。Emacs 不使用 vim 的模式编辑，但是这些功能可以通过 Emacs 插件像<a href="https://github.com/emacs-evil/evil">Evil</a> 或 <a href="https://github.com/hlissner/doom-emacs">Doom Emacs</a>来实现。
+Emacs的优点是可以用Lisp语言进行扩展（Lisp比vim默认的脚本语言vimscript要更好用）。</p>
+<h3 id="机器学习应用的提示或技巧">机器学习应用的提示或技巧?<a hidden class="anchor" aria-hidden="true" href="#机器学习应用的提示或技巧">#</a></h3>
+<p>课程的一些经验可以直接用于机器学习程序。
+就像许多科学学科一样，在机器学习中，你需要进行一系列实验，并检查哪些数据有效，哪些无效。
+你可以使用 Shell 轻松快速地搜索这些实验结果，并且以合理的方式汇总。这意味着需要在限定时间内或使用特定数据集的情况下，检查所有实验结果。通过使用JSON文件记录实验的所有相关参数，使用我们在本课程中介绍的工具，这件事情可以变得极其简单。
+最后，如果你不使用集群提交你的 GPU 作业，那你应该研究如何使该过程自动化，因为这是一项非常耗时的任务，会消耗你的精力。</p>
+<h3 id="还有更多的-vim-小窍门吗">还有更多的 Vim 小窍门吗？<a hidden class="anchor" aria-hidden="true" href="#还有更多的-vim-小窍门吗">#</a></h3>
+<p>更多的窍门：</p>
+<ul>
+<li>插件 - 花时间去探索插件。有很多不错的插件修复了vim的缺陷或者增加了能够与现有vim工作流结合的新功能。关于这部分内容，资源是<a href="https://vimawesome.com/">VimAwesome</a> 和其他程序员的dotfiles。</li>
+<li>标记 - 在vim里你可以使用 <code>m&lt;X&gt;</code> 为字母 <code>X</code> 做标记，之后你可以通过 <code>'&lt;X&gt;</code> 回到标记位置。这可以让你快速定位到文件内或文件间的特定位置。</li>
+<li>导航 - <code>Ctrl+O</code> 和 <code>Ctrl+I</code> 命令可以使你在最近访问位置前后移动。</li>
+<li>撤销树 - vim 有不错的更改跟踪机制，不同于其他的编辑器，vim存储变更树，因此即使你撤销后做了一些修改，你仍然可以通过撤销树的导航回到初始状态。一些插件比如 <a href="https://github.com/sjl/gundo.vim">gundo.vim</a> 和 <a href="https://github.com/mbbill/undotree">undotree</a> 通过图形化来展示撤销树。</li>
+<li>时间撤销 - <code>:earlier</code> 和 <code>:later</code> 命令使得你可以用时间而非某一时刻的更改来定位文件。</li>
+<li><a href="https://vim.fandom.com/wiki/Using_undo_branches#Persistent_undo">持续撤销</a> - 是一个默认未被开启的vim的内置功能，它在vim启动之间保存撤销历史，需要配置在 <code>.vimrc</code> 目录下的<code>undofile</code> 和 <code>undodir</code>，vim会保存每个文件的修改历史。</li>
+<li>热键（Leader Key） - 热键是一个用于用户自定义配置命令的特殊按键。这种模式通常是按下后释放这个按键（通常是空格键）并与其他的按键组合去实现一个特殊的命令。插件也会用这些按键增加它们的功能，例如，插件UndoTree使用 <code>&lt;Leader&gt; U</code> 去打开撤销树。</li>
+<li>高级文本对象 - 文本对象比如搜索也可以用vim命令构成。例如，<code>d/&lt;pattern&gt;</code> 会删除下一处匹配 pattern 的字符串，<code>cgn</code> 可以用于更改上次搜索的关键字。</li>
+</ul>
+<h3 id="2fa是什么为什么我需要使用它">2FA是什么，为什么我需要使用它?<a hidden class="anchor" aria-hidden="true" href="#2fa是什么为什么我需要使用它">#</a></h3>
+<p>双因子验证（Two Factor Authentication 2FA）在密码之上为帐户增加了一层额外的保护。为了登录，你不仅需要知道密码，还必须以某种方式“证明”可以访问某些硬件设备。最简单的情形是可以通过接收手机的 SMS 来实现（尽管 SMS 2FA 存在 <a href="https://www.kaspersky.com/blog/2fa-practical-guide/24219/">已知问题</a>）。我们推荐使用<a href="https://www.yubico.com/">YubiKey</a>之类的<a href="https://en.wikipedia.org/wiki/Universal_2nd_Factor">U2F</a>方案。</p>
+<h3 id="对于不同的-web-浏览器有什么评价">对于不同的 Web 浏览器有什么评价?<a hidden class="anchor" aria-hidden="true" href="#对于不同的-web-浏览器有什么评价">#</a></h3>
+<p>2020的浏览器现状是，大部分的浏览器都与 Chrome 类似，因为它们都使用同样的引擎(Blink)。 Microsoft Edge 同样基于 Blink，至于 Safari 基于 WebKit(与Blink类似的引擎)，这些浏览器仅仅是更糟糕的 Chorme 版本。不管是在性能还是可用性上，Chorme 都是一款很不错的浏览器。如果你想要替代品，我们推荐 Firefox。Firefox 与 Chorme 的在各方面不相上下，并且在隐私方面更加出色。
+有一款目前还没有完成的叫 Flow 的浏览器，它实现了全新的渲染引擎，有望比现有引擎速度更快。</p>
+<h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+<p><a href="**https://missing-semester-cn.github.io/2020/**">课程列表</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>编程工具之杂烩</span>
+  </a>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/coding-tools-profile/">
+    <span class="title">Next »</span>
+    <br>
+    <span>编程工具之调试和性能分析</span>
+  </a>
+</nav>
+
+
+<div class="share-buttons">
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之问答 on twitter"
+        href="https://twitter.com/intent/tweet/?text=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8b%e9%97%ae%e7%ad%94&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f&amp;hashtags=Linux">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-253.927,424.544c135.939,0 210.268,-112.643 210.268,-210.268c0,-3.218 0,-6.437 -0.153,-9.502c14.406,-10.421 26.973,-23.448 36.935,-38.314c-13.18,5.824 -27.433,9.809 -42.452,11.648c15.326,-9.196 26.973,-23.602 32.49,-40.92c-14.252,8.429 -30.038,14.56 -46.896,17.931c-13.487,-14.406 -32.644,-23.295 -53.946,-23.295c-40.767,0 -73.87,33.104 -73.87,73.87c0,5.824 0.613,11.494 1.992,16.858c-61.456,-3.065 -115.862,-32.49 -152.337,-77.241c-6.284,10.881 -9.962,23.601 -9.962,37.088c0,25.594 13.027,48.276 32.95,61.456c-12.107,-0.307 -23.448,-3.678 -33.41,-9.196l0,0.92c0,35.862 25.441,65.594 59.311,72.49c-6.13,1.686 -12.72,2.606 -19.464,2.606c-4.751,0 -9.348,-0.46 -13.946,-1.38c9.349,29.426 36.628,50.728 68.965,51.341c-25.287,19.771 -57.164,31.571 -91.8,31.571c-5.977,0 -11.801,-0.306 -17.625,-1.073c32.337,21.15 71.264,33.41 112.95,33.41Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之问答 on linkedin"
+        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f&amp;title=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8b%e9%97%ae%e7%ad%94&amp;summary=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8b%e9%97%ae%e7%ad%94&amp;source=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之问答 on reddit"
+        href="https://reddit.com/submit?url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f&title=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8b%e9%97%ae%e7%ad%94">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之问答 on facebook"
+        href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之问答 on whatsapp"
+        href="https://api.whatsapp.com/send?text=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8b%e9%97%ae%e7%ad%94%20-%20https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f">
+        <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+        </svg>
+    </a>
+    <a target="_blank" rel="noopener noreferrer" aria-label="share 编程工具之问答 on telegram"
+        href="https://telegram.me/share/url?text=%e7%bc%96%e7%a8%8b%e5%b7%a5%e5%85%b7%e4%b9%8b%e9%97%ae%e7%ad%94&amp;url=https%3a%2f%2fblog.niuhemoon.win%2fposts%2ftech%2fcoding-tools-qa%2f">
+        <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+            <path
+                d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+        </svg>
+    </a>
+</div>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2022 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

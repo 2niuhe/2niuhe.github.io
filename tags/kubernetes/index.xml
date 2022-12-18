@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Kubernetes on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/kubernetes/</link>
+    <description>Recent content in Kubernetes on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 04 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Manjaro 搭建 minikube 环境</title>
+      <link>https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/</link>
+      <pubDate>Sat, 04 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/</guid>
+      <description>安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>GDB on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/gdb/</link>
+    <description>Recent content in GDB on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 16 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/gdb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GDB调试Python代码</title>
+      <link>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</link>
+      <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</guid>
+      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，</description>
+    </item>
+    
+  </channel>
+</rss>

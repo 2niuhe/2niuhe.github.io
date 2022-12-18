@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Go on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/go/</link>
+    <description>Recent content in Go on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 04 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>golang限制函数同时调用次数</title>
+      <link>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</link>
+      <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</guid>
+      <description>使用select语句和带缓冲区的channel来控制函数并发执行次数 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36</description>
+    </item>
+    
+    <item>
+      <title>Go语言和Makefile</title>
+      <link>https://blog.niuhemoon.win/posts/tech/golang-makefile/</link>
+      <pubDate>Sat, 27 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/golang-makefile/</guid>
+      <description>Makefile基础和Golang的Makefile模板</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Vim on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/vim/</link>
+    <description>Recent content in Vim on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 27 Sep 2020 19:55:25 +0800</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/vim/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>编程工具之Vim</title>
+      <link>https://blog.niuhemoon.win/posts/tech/coding-tools-vim/</link>
+      <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-vim/</guid>
+      <description>编程工具之Vim</description>
+    </item>
+    
+  </channel>
+</rss>

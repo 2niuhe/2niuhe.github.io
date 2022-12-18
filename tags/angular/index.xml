@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Angular on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/angular/</link>
+    <description>Recent content in Angular on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 26 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/angular/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Angular开发环境搭建</title>
+      <link>https://blog.niuhemoon.win/posts/tech/angular-devenv/</link>
+      <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/angular-devenv/</guid>
+      <description>Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 node -v npm</description>
+    </item>
+    
+  </channel>
+</rss>
