@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。\nGPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。\nBOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制GPIO的库，它对40个引脚的编号方式如下：\n详细信息参考此网址\nwiringPi 安装方式 应用于C语言和shell 1 2 3 4 5 6 7 git clone git://git.drogon.net/wiringPi cd wiringPi git pull origin ./build # 测试安装成功 gpio -vmake gpio readall 应用于Python 1 sudo pip install wiringpi2 测试example程序 将发光二极管的阳极连接BOARD的pin11,也就是BCM17，wiringPi 0，中间需要串一个100-500欧姆的限流电阻。阴极连接到GND引脚（BOARD 9）。 命令行输入：\ngpio write 0 1\n可观察到发光二极管被点亮\ngpio函数其他用法参见文档\n编译示例C语言程序程序，使led闪烁\n1 2 3 4 5 cd wiringPi/examples/ ./blink.sh # 或者 make blink ./blink 使用Python控制GPIO 树莓派原生系统内置的python已经安装了RPi.GPIO库，通过它可以方便的控制GPIO\n可以参考以下两份文档：\nGeneral-RPIO\nPython-RPIO\nPython实现LED闪烁，引脚依然是BCM-17\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as GPIO from time import sleep GPIO.setmode(GPIO.BCM) GPIO.setwarnings(False) GPIO.setup(17,GPIO.OUT) print(\"All set in Python! Let's blink the LCD on BCM-17\") for i in range(1,10): GPIO.output(17,GPIO.HIGH) sleep(1) GPIO.output(17,GPIO.LOW) sleep(1) GPIO.cleanup() 使用wiringpi库来控制连接BCM-17的led灯闪烁，具体使用说明参看： python-wiringpi使用教程\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/usr/bin/python3 # -*- coding: utf-8 -*- import wiringpi from time import sleep # 设置wiringpi编号0引脚为输出模式 wiringpi.wiringPiSetup() wiringpi.pinMode(0,1) while True: wiringpi.digitalWrite(0,True) sleep(1) wiringpi.digitalWrite(0,False) sleep(1) 以下为wiringpi的三种引脚编号：\nBCM BOARD wiringpi 三种控制模式：\ninput output pwm 设置示范如下：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 # GPIO 引脚号就是BCM编号 import wiringpi wiringpi.wiringPiSetupGpio() wiringpi.pinMode(25, 0) # sets GPIO 25 to input wiringpi.pinMode(24, 1) # sets GPIO 24 to output wiringpi.pinMode(18, 2) # sets GPIO 18 to PWM mode # wiringpi 编号 import wiringpi wiringpi.wiringPiSetup() wiringpi.pinMode(6, 0) # sets WP pin 6 to input wiringpi.pinMode(5, 1) # sets WP pin 5 to output wiringpi.pinMode(1, 2) # sets WP pin 1 to PWM mode # 物理编号 BOARD编号 import wiringpi wiringPiSetupPhys() wiringpi.pinMode(22, 0) # sets P1 pin 22 to input wiringpi.pinMode(18, 1) # sets P1 pin 18 to output wiringpi.pinMode(12, 2) # sets P1 pin 12 to PWM mode ",
   "wordCount" : "830",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-08-25T00:00:00Z",
   "dateModified": "2018-08-25T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       树莓派GPIO入门
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -483,14 +483,14 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>树莓派3启用UART并连接GPS传感器</span>
   </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/">
-    <span class="title">Next »</span>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/">
+    <span class="title">下一页 »</span>
     <br>
-    <span>Python实现MD5和Sha256</span>
+    <span>Python对称AES和DES加密算法</span>
   </a>
 </nav>
 
@@ -617,12 +617,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

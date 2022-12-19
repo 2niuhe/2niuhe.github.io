@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "快捷键 awk 是 linux 上用于文本处理的脚本语言，你可以实现：\n定义变量 使用字符串和算术运算符 使用控制流程和循环 生成格式化的输出 1 2 3 4 5 用法：awk [POSIX 或 GNU 风格选项] [--] '程序' 文件 ... POSIX 选项：\tGNU 长选项：(标准) -f 脚本文件\t--file=脚本文件 -F fs\t--field-separator=fs -v var=val\t--assign=var=val 使用变量 $0 整行 $1 第一列字段 $2 第二列字段 $n 第 n 列字段 空格或者制表符是默认的列分隔符 可以通过-F 指定分隔符\n1 2 3 awk -F: '{print $1}' /etc/passwd cat /etc/passwd | awk -F: '{print $1}' 使用脚本文件 将 awk 脚本保存在 testfile 文件中\n1 {print $1 \" home at \" $6} 然后执行文件\n1 awk -F: -f testfile /etc/passwd 预处理和后处理 保存 testfile 如下\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 BEGIN { print \"Users and thier corresponding home\" print \" UserName \\t HomePath\" print \"___________ \\t __________\" FS=\":\" } { print $1 \" \\t \" $6 } END { print \"The end\" } 执行脚本\n1 awk -f testfile /etc/passwd 内置变量 一些内置变量如下\nFS 指定 field 段分隔符 OFS [Output Filed Separator]输出分隔符 ORS [Output Record Separator] 输出行分隔符 FIELDWIDTHS 按段长度分割 RS [Record Separator]记录分隔符，默认是换行符 指定输出分隔符\n1 awk 'BEGIN{FS=\":\"; OFS=\"-\"} {print $1,$6,$7}' /etc/passwd 使用长度分割\n素材如下，保存为 testrecord：\n1 2 3 4 5 1235.96521 927-8.3652 36257.8157 1 awk 'BEGIN{FIELDWIDTHS=\"3 4 3\"}{print $1,$2,$3}' testrecord 输出如下：\n1 2 3 4 5 123 5.96 521 927 -8.3 652 362 57.8 157 使用 Record Separator 素材如下，保存为 testrecord：\n1 2 3 4 5 6 7 Person Name 123 High Street (222) 466-1234 Another person 487 High Street (523) 643-8754 1 awk 'BEGIN{FS=\"\\n\"; RS=\"\"} {print $1,$3}' testrecord 输出如下：\n1 2 Person Name (222) 466-1234 Another person (523) 643-8754 参考 30 Examples For Awk Command In Text Processing\n",
   "wordCount" : "526",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2020-12-05T00:00:00Z",
   "dateModified": "2020-12-05T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       awk基本使用
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -497,12 +497,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/sqlite3-tutorial/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>sqlite3入门</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-101-hackers/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>linux 101 Hackers 笔记</span>
   </a>
@@ -631,12 +631,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

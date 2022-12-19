@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "安装 Tinygo 在 Ubuntu 上安装开发环境，其他环境见参考\n1 2 3 4 5 6 # x86_64 wget https://github.com/tinygo-org/tinygo/releases/download/v0.17.0/tinygo_0.17.0_amd64.deb sudo dpkg -i tinygo_0.17.0_amd64.deb # arm wget https://github.com/tinygo-org/tinygo/releases/download/v0.17.0/tinygo_0.17.0_arm.deb sudo dpkg -i tinygo_0.17.0_arm.deb 配置环境变量\n1 export PATH=$PATH:/usr/local/tinygo/bin 验证安装成功\n1 tinygo version 安装 esp32 环境 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 # install dep sudo apt-get install git wget make libncurses-dev flex bison gperf pip3 install pyserial # install esp32 toolchain wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz -P ~/ mkdir -p ~/esp cd ~/esp tar -xzf ~/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz # add env path export PATH=\"$PATH:$HOME/esp/xtensa-esp32-elf/bin\" # install esptool pip3 install esptool 烧录 esp32 程序 可以用 usb 连接 esp32，也可以 ttl 转 usb 线，我用的是 ttl-usb，将连接 esp 对应的 RX 和 TX 串口，自己使用串口线烧录时需要同时按住两个板载按键。\n烧录完成后，按 en 使能键，程序开始运行。\n1 2 3 4 5 # chmod /dev/ttyUSB0 sudo chmod 666 /dev/ttyUSB0 # flash example program tinygo flash -target=esp32-mini32 -port=/dev/ttyUSB0 examples/blinky1 example/blinky1 代码在/usr/local/lib/tinygo/src 目录下\n也可以编写自己的程序进行烧录，将下面程序保存在/tmp/blink/blink.go\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package main // This is the most minimal blinky example and should run almost everywhere. import ( \"machine\" \"time\" ) func main() { led := machine.LED led.Configure(machine.PinConfig{Mode: machine.PinOutput}) for { led.Low() time.Sleep(time.Millisecond * 300) led.High() time.Sleep(time.Millisecond * 2000) } } 编译并烧录\n1 tinygo flash -target=esp32-mini32 -port=/dev/ttyUSB0 /tmp/blink/blink.go Tinygo 对 esp32 支持情况\n当前 tinygo 对 esp32 的支持还很不完善，比较鸡肋，不支持 goroutine，不支持网络和蓝牙等。相比 arduino 和 micropython，实用性不强。\nInterface Hardware Supported TinyGo Support GPIO YES YES UART YES YES SPI YES YES I2C YES Not Yet ADC YES Not Yet PWM YES Not Yet WiFi YES Not Yet Bluetooth YES Not Yet 参考 https://tinygo.org/getting-started/linux/\nhttps://docs.espressif.com/projects/esp-idf/en/release-v3.0/get-started/linux-setup.html#standard-setup-of-toolchain-for-linux\n",
   "wordCount" : "491",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2021-03-25T00:00:00Z",
   "dateModified": "2021-03-25T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       tinygo点亮esp32
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -477,7 +477,6 @@ if (!doNotTrack) {
 <p><a href="https://tinygo.org/getting-started/linux/">https://tinygo.org/getting-started/linux/</a></p>
 <p><a href="https://docs.espressif.com/projects/esp-idf/en/release-v3.0/get-started/linux-setup.html#standard-setup-of-toolchain-for-linux">https://docs.espressif.com/projects/esp-idf/en/release-v3.0/get-started/linux-setup.html#standard-setup-of-toolchain-for-linux</a></p>
 
-
   </div>
 
   <footer class="post-footer">
@@ -487,12 +486,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Manjaro 搭建 minikube 环境</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>golang限制函数同时调用次数</span>
   </a>
@@ -621,12 +620,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " 在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。\n产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。\n树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)是树莓派提供的PWM硬件接口，可以产生高频的PWM信号。 由于我只需要产生一个大约50Hz的方波信号。用最简单的GPIO库就可以产生可用的方波。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as GPIO from time import sleep GPIO.setmode(GPIO.BOARD) GPIO.setup(12,GPIO.OUT) GPIO.setwarnings(False) p=GPIO.PWM(12,50) # 12是pin12,50是频率 p.start(30) # 30表示占空比30% input(\"Press Enter key to Stop 50Hz PWM @ 30% duty cycle\") p.stop() GPIO.cleanup() 运行该脚本，就可以在树莓派pin12上产生方波信号。\nArduino和树莓派连线 连线图如下所示： 注意： 要将树莓派和Arduino的地线连接在一起，使它们共地。\nArduino 进行ADC采样 Arduino 有A0-A5共6个模拟输入口，每个模拟口可以进行12位的采样，可以接受0-5V的电压输入，对应着0-1023的采样输出。\n使用A0口进行采样：\n1 2 3 4 5 6 7 8 void setup() { Serial.begin(9600); // Starting Serial Terminal } void loop() { int value = analogRead(A0); Serial.println(value); } 打开Arduino官方的IDE的【工具】-\u003e 【串口绘图器】\n设置波特率为9600,可以观察到：\n注：树莓派GPIO引脚输出电压为3.3V，而Arduino采样范围是0-5V\n还可以使用SerialPlot这个功能更丰富的串口绘图器，当做简易的示波器。 显示的波形如下： Arduino串口绘图器 Arduino串口绘图器可以绘制多个连续图形，如下程序就是在串口绘图器中画出sin和cos函数图像。\n1 2 3 4 5 6 7 8 9 10 11 12 13 double i = 0; void setup() { Serial.begin(9600); } void loop() { double temp = i*3.1415926/10.0; Serial.print(sin(temp)); Serial.print(','); Serial.println(cos(temp)); i+=0.1; delay(5); } 注：\n若只绘制一个图像，使用Serial.println()函数即可 若绘制多个图像，在每个串口值间使用Serial.print(’,’)进行分隔 ",
   "wordCount" : "779",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-09-01T00:00:00Z",
   "dateModified": "2018-09-01T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Arduino简易示波器检测树莓派产生的方波
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -400,15 +400,15 @@ if (!doNotTrack) {
       <li><a href="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">树莓派</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/arduino-squrewave/">
-    <span class="title">« Prev</span>
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>远程ssh连接家中的树莓派</span>
+  </a>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/arduino-squrewave/">
+    <span class="title">下一页 »</span>
     <br>
     <span>Arduino任何引脚产生方波</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/">
-    <span class="title">Next »</span>
-    <br>
-    <span>树莓派连接LCD1602做一个电子钟</span>
   </a>
 </nav>
 
@@ -535,12 +535,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

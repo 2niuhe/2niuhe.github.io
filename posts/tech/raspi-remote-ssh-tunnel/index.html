@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " 在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。\nVPS + SSH远程代理隧道 这是这篇文章重点，需要：\n一个安装了linux的VPS，如一台腾讯云服务器。（如果没有，请看下一种方法：公网IP+路由器端口转发） 连上网络的树莓派,将树莓派ssh公钥放到VPS上 树莓派上使用autossh+crontab 1 2 3 4 5 6 sudo apt install autossh cd ~/ echo \"sleep 20; /usr/bin/autossh -M 5678 -NfR 9999:localhost:22 user@T.T.T.T -i /home/user/.ssh/id_rsa\" \u003e autossh.sh chmod +x autossh.sh crontab -e 在crontab的配置文件中加入\n1 @reboot /home/nh/autossh.sh \u003e\u003e tunnel.log 在服务器上操作 1 ssh -fCNL \"*:11111:localhost:9999\" localhost 远程登录 现在就可以使用服务器作为跳板，连接到家中的树莓派。\n1 ssh -p 11111 user@T.T.T.T 注：user@T.T.T.T,user是树莓派用户名，T.T.T.T是服务器公网IP。-p指定向服务器1111端口发送ssh请求，1111端口转发到9999端口，也就是树莓派的22端口。\n显示效果如下：\n以下树莓派配置方法均不推荐，想折腾的自己玩，服务器配置方法都一样\n树莓派上安装sshpass(可选） 1 sudo apt-get install sshpass 树莓派上编辑shell脚本 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 #!/bin/bash #saved as create_ssh_tunnel.sh createTunnel() { sshpass -p \"Password\" ssh -o \"ServerAliveInterval 300\" -o \"ServerAliveCountMax 2\" -fCNR 9999:localhost:22 user@T.T.T.T if [[ $? -eq 0 ]]; then echo $(date) Tunnel to jumpbox created successfully \u003e\u003e /root/tunnel.log else echo $(date) An error occurred creating a tunnel to jumpbox. RC was $? \u003e\u003e /root/tunnel.log fi } /bin/pidof ssh if [[ $? -ne 0 ]]; then echo $(date) Creating new tunnel connection \u003e\u003e /root/tunnel.log createTunnel fi 注：这种方式非常危险，不推荐这种方式，因为明文存储了服务器密码。\n“Password\"指的是你的服务器密码 user@T.T.T.T是你的服务器用户名和IP地址 9999是将树莓派的22端口绑定到服务器额9999端口 推荐将树莓派上的公钥放到远程服务器上，然后使用如下脚本\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 #saved as create_ssh_tunnel.sh createTunnel() { ssh -o \"ServerAliveInterval 300\" -o \"ServerAliveCountMax 2\" -NR 9999:localhost:22 user@T.T.T.T if [[ $? -eq 0 ]]; then echo $(date) Tunnel to jumpbox created successfully \u003e\u003e ~/tunnel.log else echo $(date) An error occurred creating a tunnel to jumpbox. RC was $? \u003e\u003e ~/tunnel.log fi } /bin/pidof ssh if [[ $? -ne 0 ]]; then echo $(date) Creating new tunnel connection \u003e\u003e ~/tunnel.log createTunnel fi 给脚本添加执行权限\n1 chmod +x creat_ssh_tunnel.sh 树莓派上开启cron定时任务 1 sudo crontab -e 在文件最后一行添加：\n1 */10 * * * * ～/create_ssh_tunnel.sh \u003e\u003e tunnel.log 2\u003e\u00261 意思是每十分钟执行一次刚刚我们编辑的shell脚本\n公网IP + 路由器端口转发 如果用网线将树莓派连接到互联网上，只要获得公网IP，皆可以通过ssh访问。但是我们在家中通常是用wifi连接树莓派，我们获得的公网iP，只是路由器的IP。由于一个路由器上连接很多设备，我们无法通过这个公网IP访问到树莓派。而且由于路由器的公网IP是会变动的。所以我们要解决的问题是：\n找到路由器的公网IP 通过公网IP找到路由器下连接的树莓派 可以在路由器设置里将树莓派分配固定的IP，并绑定固定端口。这样就可以通过访问这个端口访问到局域网下的树莓派。之后不管是将公网IP发送到邮箱还是，使用动态DNS解析服务，通过域名访问树莓派，都可以很容易实现。\n参考 SSH反向代理 外网访问树莓派方法汇总 用DDNS服务通过域名访问树莓派 使用crontab让SSH反向代理更持久 ",
   "wordCount" : "1266",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-09-04T00:00:00Z",
   "dateModified": "2018-09-04T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       远程ssh连接家中的树莓派
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -489,14 +489,14 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>LSM303_Doc</span>
   </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/arduino-squrewave/">
-    <span class="title">Next »</span>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/">
+    <span class="title">下一页 »</span>
     <br>
-    <span>Arduino任何引脚产生方波</span>
+    <span>Arduino简易示波器检测树莓派产生的方波</span>
   </a>
 </nav>
 
@@ -623,12 +623,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

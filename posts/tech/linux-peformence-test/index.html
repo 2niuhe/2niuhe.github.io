@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用\n性能观测工具\n▪ 首先学习的Basic Tool有如下： uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。\n▪ 高级的命令如下： sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl、/proc。\n性能观测工具sar\nsar\n1 2 3 4 5 6 7 8 # install sudo apt install sysstat # usage sar -u 2 3 sar -u -f /var/log/sa/sa05 sar -P ALL 1 1 sar -r 1 3 sar -W 1 3 top\n1 2 3 4 5 6 7 8 9 10 11 交互模式的一些快捷操作: 全局命令: \u003c回车/空格\u003e ?, =, A, B, d, G, h, I, k, q, r, s, W, Z 统计区的命令: l, m, t, 1 任务区的命令： 外观: b, x, y, z 内容: c, f, H, o, S, u 大小: #, i, n 排序: \u003c, \u003e, F, O, R 色彩方案: , a, B, b, H, M, q, S, T, w, z, 0 - 7 窗口命令: -, _, =, +, A, a, G, g, w Press 'h' or '?' for help with Windows, Type 'q' or to continue 如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了！！！！！\n9. netstat - 显示开放的端口和连接 它是Linux管理员使用来显示各种网络信息的工具，如查看什么端口开放和什么网络连接已经建立以及何种进程运行在该连接之上。同时它也显示了不同程序间打开的Unix套接字的信息。作为大多数Linux发行版本的一部分，netstat的许多命令在netstat和它的不同输出中有详细的描述。最为常用的如下：\n1 2 3 4 5 6 7 8 netstat | head -20 netstat -r netstat -rC netstat -i netstat -ie netstat -s netstat -g netstat -tapn vmstat是虚拟内存(virtual memory statistics)的缩写，作为一个内存监控工具，它收集和显示关于内存，进程，终端和分页和I/O阻塞的概括信息。作为一个开源程序，它可以在大部分Linux发行版本中找到，包括Solaris和FreeBSD。它用来诊断大部分的内存性能问题和其他相关问题。\n让我们看下如何了解vmstat提供的信息：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 ----------------------------- procs部分的解释 r 列表示运行和等待cpu时间片的进程数，如果长期大于1，说明cpu不足，需要增加cpu。 b 列表示在等待资源的进程数，比如正在等待I``/O``、或者内存交换等。 ----------------------------- cpu部分的解释 us 列显示了用户方式下所花费 CPU 时间的百分比。us的值比较高时，说明用户进程消耗的cpu时间多，但是如果长期大于50%，需要考虑优化用户的程序。 sy 列显示了内核进程所花费的cpu时间的百分比。这里us + sy的参考值为80%，如果us+sy 大于 80%说明可能存在CPU不足。 wa 列显示了IO等待所占用的CPU时间的百分比。这里wa的参考值为30%，如果wa超过30%，说明IO等待严重，这可能是磁盘大量随机访问造成的，也可能磁盘或者 ``磁盘访问控制器的带宽瓶颈造成的(主要是块操作)。 id` `列显示了cpu处在空闲状态的时间百分比 ----------------------------- system部分的解释 in 列表示在某一时间间隔中观测到的每秒设备中断数。 cs列表示每秒产生的上下文切换次数，如当 cs 比磁盘 I/O 和网络信息包速率高得多，都应进行进一步调查。 ----------------------------- memory部分的解释 swpd 切换到内存交换区的内存数量(k表示)。如果swpd的值不为0，或者比较大，比如超过了100m，只要si、so的值长期为0，系统性能还是正常 free 当前的空闲页面列表中内存数量(k表示) buff 作为buffer cache的内存数量，一般对块设备的读写才需要缓冲。 cache: 作为page cache的内存数量，一般作为文件系统的cache，如果cache较大，说明用到cache的文件较多，如果此时IO中bi比较小，说明文件系统效率比较好。 ----------------------------- swap部分的解释 si 由内存进入内存交换区数量。 so由内存交换区进入内存数量。 ----------------------------- IO部分的解释 bi 从块设备读入数据的总量（读磁盘）（每秒kb）。 bo 块设备写入数据的总量（写磁盘）（每秒kb） Procs procs有 r列和b列。r列代表等待访问CPU的进程数量。而b列意味着睡眠进程的数量。在这些列的下面，是它们的值。从上面的截图中，我门有2个进程正在等待访问CPU，0个睡眠进程。\nMemory memory有swpd、 free、 buff 和 cache 这些列。这些信息和命令free -m相同。swpd列显示了有多少内存已经被交换到了交换文件或者磁盘。free列显示了未分配的可用内存。buff列显示了使用中的内存。cache列显示了有多少内存可以被交换到交换文件或者磁盘上如果一些应用需要他们。\nSwap swap显示了从交换系统上发送或取回了多少内存。si列告诉我们每秒有多少内存被从swap移到真实内存中（In）。so列告诉我们每秒有多少内存被从真实内存移到swap中（Out）。\nI/O io依据块的读写显示了每秒输入输出的活动。bi列告诉我们收到的块数量，bo列告诉我们发送的块数量。\nSystem system显示了每秒的系统操作数量。in列显示了系统每秒被中断的数量。cs列显示了系统为了处理所以任务而上下文切换的数量。\nCPU CPU告诉了我们CPU资源的使用情况。us列显示了处理器在非内核程序消耗的时间。sy列显示了处理器在内核相关任务上消耗的时间。id列显示了处理器的空闲时间。wa列显示了处理器在等待IO操作完成以继续处理任务上的时间。\nss是iproute2包的一部分。iproute2是用来替代一整套标准的Unix网络工具组件，它曾经用来完成网络接口配置，路由表和管理ARP表任务。ss工具用来记录套接字统计信息，它可以显示类似netstat一样的信息，同时也能显示更多TCP和状态信息。一些例子如下：\n1 2 3 4 5 ss -tnap ss -tnap6 ss -tnap ss -s ss -tn -o state established -p lsof命令，意为“list open files”, 用于在许多类Unix系统中显示所有打开的文件及打开它们的进程。在大部分Linux发行版和其他类Linux操作系统中系统管理员用它来检查不同的进程打开了哪些文件。\n1 2 3 4 5 6 # lsof +p process_id # lsof | less # lsof –u username # lsof /etc/passwd # lsof –i TCP:ftp # lsof –i TCP:80 缓冲区与特定的块设备关联，并覆盖文件系统元数据的缓存以及跟踪运行中的页面。缓存仅包含驻留的文件数据。也就是说，缓冲区记住目录中的内容，文件权限是什么，并跟踪从特定块设备写入或读取的内存。缓存仅包含文件本身的内容。\n“缓冲区”表示有多少RAM专用于缓存磁盘块。“缓存”类似于“缓冲区”，只是这次它缓存文件读取中的页面。\n引用答案（供参考）：\n简短答案：高速缓存是页面高速缓存的大小。缓冲区是内存中块I / O缓冲区的大小。缓存的事项；缓冲区在很大程度上无关紧要。\n长答案：缓存是Linux页面缓存的大小减去交换缓存中的内存，它由SwapCached表示（因此总页面缓存大小为Cached + SwapCached）。Linux通过页面缓存执行所有文件I / O。写操作的实现是简单地将页面缓存中的相应页面标记为脏。然后，刷新程序线程会定期将所有脏页写回到磁盘。通过从页面缓存返回数据来实现读取。如果数据尚未在高速缓存中，则首先填充它。在现代Linux系统上，“缓存”可以轻松达到数GB。它只会响应内存压力而缩小。系统将清除页面缓存以及将数据交换到磁盘上，以根据需要提供更多的内存。\n缓冲区是内存中的块I / O缓冲区。他们是相对短暂的。在Linux内核版本2.4之前，Linux具有单独的页面和缓冲区高速缓存。从2.4开始，页面和缓冲区高速缓存是统一的，缓冲区是未在页面高速缓存中表示的原始磁盘块，即不是文件数据。因此，“缓冲区”度量标准的重要性最低。在大多数系统上，缓冲区通常只有几十兆字节。\n它并不像这样简单，但是可能有助于理解：\n缓冲区用于存储文件元数据（权限，位置等）。每个内存页面都在此处跟踪。\n缓存用于存储实际文件内容。\niostat\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 解释说明： avg-cpu: 总体cpu使用情况统计信息，对于多核cpu，这里为所有cpu的平均值 %user: 在用户级别运行所使用的CPU的百分比. %``nice``: ``nice``操作所使用的CPU的百分比. %sys: 在系统级别(kernel)运行所使用CPU的百分比. %iowait: CPU等待硬件I``/O``时,所占用CPU百分比. %idle: CPU空闲时间的百分比. Device段:各磁盘设备的IO统计信息 tps: 每秒钟发送到的I``/O``请求数. Blk_read ``/s``: 每秒读取的block数. Blk_wrtn``/s``: 每秒写入的block数. Blk_read: 读入的block总数. Blk_wrtn: 写入的block总数. iostat -x -k -d 1\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 解释说明： rrqm``/s``: 每秒对该设备的读请求被合并次数，文件系统会对读取同块(block)的请求进行合并 wrqm``/s``: 每秒对该设备的写请求被合并次数 r``/s``: 每秒完成的读次数 w``/s``: 每秒完成的写次数 rkB``/s``: 每秒读数据量(kB为单位) wkB``/s``: 每秒写数据量(kB为单位) avgrq-sz:平均每次IO操作的数据量(扇区数为单位) avgqu-sz: 平均等待处理的IO请求队列长度 await: 平均每次IO请求等待时间(包括等待时间和处理时间，毫秒为单位) svctm: 平均每次IO请求的处理时间(毫秒为单位) %util: 采用周期内用于IO操作的时间比率，即IO队列非空的时间比率 如果 %util 接近 100%，说明产生的I``/O``请求太多，I``/O``系统已经满负荷，该磁盘可能存在瓶颈。 idle小于70% IO压力就较大了,一般读取速度有较多的wait。 同时可以结合vmstat 查看查看b参数(等待资源的进程数)和wa参数(IO等待所占用的CPU时间的百分比,高过30%时IO压力高) 在Linux系统中，为了提高文件系统性能，内核利用一部分物理内存分配出缓冲区，用于缓存系统操作和数据文件，当内核收到读写的请求时，内核先去缓存区找是否有请求的数据，有就直接返回，如果没有则通过驱动程序直接操作磁盘。 缓存机制优点：减少系统调用次数，降低CPU上下文切换和磁盘访问频率。 CPU上下文切换：CPU给每个进程一定的服务时间，当时间片用完后，内核从正在运行的进程中收回处理器，同时把进程当前运行状态保存下来，然后加载下一个任务，这个过程叫做上下文切换。实质上就是被终止运行进程与待运行进程的进程切换。\nSwap用途：Swap意思是交换分区，通常我们说的虚拟内存，是从硬盘中划分出的一个分区。当物理内存不够用的时候，内核就会释放缓存区（buffers/cache）里一些长时间不用的程序，然后将这些程序临时放到Swap中，也就是说如果物理内存和缓存区内存不够用的时候，才会用到Swap。 swap清理：swapoff -a \u0026\u0026 swapon -a 注意：这样清理有个前提条件，空闲的内存必须比已经使用的swap空间大\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 1. 查看内存使用情况，发现swap虚拟内存空间竟然为0 # free -m 2. 建虚拟内存磁盘卷。做法如下： # dd if=/dev/zero of=/opt/swap bs=1024 count=2048000 # mkswap /opt/swap # swapon /opt/swap 再次查看内容，发现swap虚拟内存就有了 # free -m 3. 如果想取消文件虚拟内存，即删除swap，做法如下：（当然根据系统配置，也可以保留swap，以后继续用）。 # swapoff /opt/swap # rm /opt/swap 4. swap开机挂载 # vim /etc/fstab /opt/swap swap swap defaults 0 0 上面挂载参数分别为： 设备文件或伪文件系统 挂载点 文件系统类型 挂载选项 备份频率 开机自检次序 6. 移动虚拟内存空间 如果当前的虚存所在的磁盘空间不够，可以首先关闭虚存服务，将其移动到别的磁盘，再启用即可。 # swapoff -v /swap/swapadd # mv /swap/swapadd /mnt/swap # swapon /swap/swapadd 释放缓存区内存的方法 1）清理pagecache（页面缓存） [root@backup ~]# echo 1 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=1 2）清理dentries（目录缓存）和inodes [root@backup ~]# echo 2 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=2 3）清理pagecache、dentries和inodes [root@backup ~]# echo 3 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=3 上面三种方式都是临时释放缓存的方法，要想永久释放缓存，需要在/etc/sysctl.conf文件中配置：vm.drop_caches=1/2/3，然后sysctl -p生效即可！ 另外，可以使用sync命令来清理文件系统缓存，还会清理僵尸(zombie)对象和它们占用的内存 [root@backup ~]# sync 温馨提示： 上面操作在大多数情况下都不会对系统造成伤害，只会有助于释放不用的内存。 但是如果在执行这些操作时正在写数据，那么实际上在数据到达磁盘之前就将它从文件缓存中清除掉了，这可能会造成很不好的影响。 那么如果避免这种事情发生呢？ 因此，这里不得不提一下/proc/sys/vm/vfs_cache_pressure这个文件，告诉内核，当清理inoe/dentry缓存时应该用什么样的优先级。 [root@backup ~]# cat /proc/sys/vm/vfs_cache_pressure 100 vfs_cache_pressure=100 这个是默认值，内核会尝试重新声明dentries和inodes，并采用一种相对于页面缓存和交换缓存比较\"合理\"的比例。 减少vfs_cache_pressure的值，会导致内核倾向于保留dentry和inode缓存。 增加vfs_cache_pressure的值，（即超过100时），则会导致内核倾向于重新声明dentries和inodes 总之，vfs_cache_pressure的值： 小于100的值不会导致缓存的大量减少 超过100的值则会告诉内核你希望以高优先级来清理缓存。 其实无论vfs_cache_pressure的值采用什么值，内核清理缓存的速度都是比较低的。 如果将此值设置为10000，系统将会将缓存减少到一个合理的水平。 测试硬盘写入速度\n1 2 3 4 5 6 [root@redhat73 ~]# dd if=/dev/zero of=/home/linshi.a bs=1024000000 count=2 2+0 records in 2+0 records out 2048000000 bytes (2.0 GB) copied, 4.67577 s, 438 MB/s 写入一个2GB的文件，用时4.67577秒，平均438 MB/s 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 [root@localhost home]# free -h total used free shared buff/cache available Mem: 974M 56M 818M 580K 99M 787M Swap: 2.0G 37M 2.0G # 参数解释 -m 以MB为单位输出 -g 以GB为单位输出 -h 以人类可读的单位输出，自动转换KB、MB或者GB为单位 -s N 每N秒打印一次 -c N 打印N次后退出 # 输出说明（Mem代表物理内存、Swap代表虚拟内存） total 表示系统的总内存 used 表示应用程序已经使用的内存 free 表示当前还没有被使用的内存 shared 表示共享链接库使用的内存 buff/cache 表示系统的page cache和buffer使用到的内存 available 表示应用程序还可以申请到的内存 怎么判断是否需要加内存： 1.swap使用有多少 2.available剩余是多少，而不是看free cache是Linux系统为了提高系统运行效率而将一些程序或文件写入到cache，可提高程序运行和加载速度，如果程序需要会马上释放。所以判断系统内存是否足够和是否需要增加的时候不能简单的看free Cache Pages: A cache is the part of the memory which transparently stores data so that future requests for that data can be served faster. This memory is utilized by the kernel to cache disk data and improve i/o performance. 系统当前使用到的内存是：used + buff/cache，used中包含了shared。 所以total = used + buff/cache + free = 56 + 99 + 818 = 973 available（787） \u003c= free + buff/cache（818 + 99 = 917），为什么是小于呢？因为系统的一些page或cache是不能回收的。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 查看CPU信息 # 总核数 = 物理CPU个数 X 每颗物理CPU的核数 # 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数 # 查看物理CPU个数 cat /proc/cpuinfo| grep \"physical id\"| sort| uniq| wc -l # 查看每个物理CPU中core的个数(即核数) cat /proc/cpuinfo| grep \"cpu cores\"| uniq # 查看逻辑CPU的个数 cat /proc/cpuinfo| grep \"processor\"| wc -l # 查看CPU信息（型号） cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c 性能测评工具\n性能调优工具\n参考 用十条命令在一分钟内检查Linux服务器性能\n你值得拥有 —— 25 个 Linux 性能监控工具\nTop命令详解\ngglsof命令入门\nLinux缓存机制\n30个实例详解TOP命令\nlsof命令行神器入门\n超全整理！Linux性能分析工具汇总合集\n",
   "wordCount" : "6245",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2020-10-17T00:00:00Z",
   "dateModified": "2020-10-17T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Linux性能测试
     </h1>
@@ -232,7 +232,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -861,12 +861,12 @@ swap清理：swapoff -a &amp;&amp; swapon -a
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/tcpdump-usage/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>tcpdump的基本使用【译】</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/gdb-debug-python/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>GDB调试Python代码</span>
   </a>
@@ -995,12 +995,12 @@ swap清理：swapoff -a &amp;&amp; swapon -a
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

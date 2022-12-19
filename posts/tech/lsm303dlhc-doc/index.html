@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C接口。\n引脚定义 VIN 2.5-5.5V电压供电引脚，SCL和SDA引脚的高电平电压和VIN引脚的电压相同。\nVDD 根据VIN引脚的连接情况，VDD引脚用途不同，若VIN引脚连接了大于3.3V的电源，VDD可以想歪提供3.3V的电压和大约150mA的电流。如果VIN断开连接，可以使用2.5-3.3的电源连接VDD给LSM303DLHC模块供电。 注意：\n不能同时使用VIN和VDD给LSM303DLHC供电，只能选取一个。 不要将VDD连接到大于3.6V的电源上，会损坏LSM303DLHC模块 GND 0V，连接到电源的地。注意和I2C总线共地。\nSCL 时钟线，高电平是VIN，低电平是0V。SCL和SDA都有电平转换电路，可以使得模块可以使用VIN的逻辑电平进行通信。\nSDA 数据线，高电平是VIN，低电平是0V\nDRDY 数据可读指示，3.3V逻辑电平输出，高电平(3.3V)指示磁场数据可读，低电平表示正在向数据寄存器中写入新的数据。此输出没有电平转换。\nINT1 INT2 两个惯性中断，没有电平转换，3.3V输出。\n例程和库 Arduino例程和库参考： https://github.com/pololu/lsm303-arduino\nLinux例程： https://github.com/ControlEverythingCommunity/LSM303DLHC\n参考 产品说明书\n",
   "wordCount" : "535",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-09-10T00:00:00Z",
   "dateModified": "2018-09-10T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       LSM303_Doc
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -335,12 +335,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Pyserial快速上手</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>远程ssh连接家中的树莓派</span>
   </a>
@@ -469,12 +469,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

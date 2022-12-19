@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "wordcloud是python用来生成词云的第三方库，github地址是word_cloud\n下载源码：\n1 git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。\n1 2 git tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下：\nwordcloud项目主要用了以下第三方库：\nNumpy PIL Cython 储备知识：\nHSL和HSV色彩空间 图片RGB 框架大体流程： 可以看出wordcloud类的两个核心方法process_text()和generate_from_frequencies()。\n如果输入是处理后的{string:frequency}字典类型，直接生成词云的layout，若输入是未处理过的字符串，就要先进行process_text()统计词频等工作。\n继续看generate_from_frequencies()的流程：\n就得到了词云的layout，后边可以通过recolor()重新上色。\nmask是一个n维数组（图片），在我的理解是photoshop里的蒙板，也叫遮色片。在wordcloud里mask决定了生成词云的位置。白色#FFFFFF称为mask out，即不在白色区域绘制词云。\nlayout is list of tuple ,格式(string, int, (int, int), int, color)) 定义了每个单词的（字符串，字体大小，（x位置，y位置), 方向， 颜色）\n参考：\nwordcloud的API可以参考wordcloud文档中文翻译 具体使用也可以参考网易云音乐歌手词云\n",
   "wordCount" : "610",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-04-16T00:00:00Z",
   "dateModified": "2018-04-16T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       wordcloud源码阅读1——初探
     </h1>
@@ -300,12 +300,12 @@ wordcloud的API可以参考<a href="http://blog.niuhemoon.xyz/pages/2018/04/08/w
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>wordcloud源码阅读2——Cython</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>WordCloud文档中文翻译</span>
   </a>
@@ -434,12 +434,12 @@ wordcloud的API可以参考<a href="http://blog.niuhemoon.xyz/pages/2018/04/08/w
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

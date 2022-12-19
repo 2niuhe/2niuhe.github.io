@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " 可执行程序是存储在磁盘设备上由代码和数据按某种格式组织的静态实体，而进程是可被调度的代码的动态运行。在Linux系统中，在一个进程的生命周期里，都有各自的运行环境和所需的资源，这些信息储存在各自的进程控制块中。\n进程控制块主要结构如下:\n用户标识 进程和会话标识 虚拟地址管理 文件描述符表 信号 ###进程地址空间\n在32位地址总线的计算机上，每个进程拥有4GB的虚拟地址空间。\n可执行程序被加载至进程的用户虚拟地址空阿金，即将可执行程序中的代码段和数据段的内容复制到用户地址空间。为了执行程序，内核需在用户虚拟地址空间中建立一些辅助区域，例如堆区和栈区等，从而将用户虚拟地址空间划分为若干区域，分别为代码区、未初始化数据区、初始化数据区、环境变量和命令行参数区、堆区、栈区。不同区域中存储了不同的信息，有各自不同的属性。\n代码区\n包含指令序列和只读数据，没和在创建进程加载可执行二进制映像文件时，将这部分内容映射到进程的用户地址空间形成代码区。进程运行期间，代码区内容不会改变。\n因此，一个可执行映像的多个进程可共享代码区，只需保持一个复制。\n在可执行映像文件中，代码区的内容被保存在文本段中，文本段又称代码段。\n未初始化数据区\n在可执行二进制映像文件中，未初始化数据包括没有初始化的全局变量和静态局部变量，它们在映像文件中不占用储存空间，只保留其地址和大小信息。\n若映像文件中存在未初始化数据段，内核创建进程时，在进程的用户地址空间中为其分配一块区域，用于进程运行过程中对未初始化数据的存取，成为未初始化数据区。\n初始化数据区\n初始化数据区包括已初始化的全局变量和静态局部变量。在映像文件中，初始化数据被组织在数据段中，内核将初始化数据段映射至用户地址空间形成初始化数据区。该区内容运行过程中会发生变化，一个程序的多个进程实体拥有各自的数据区。\n堆heap\n堆位于数据区和栈之间，用于应用程序的动态内存管理。Linux将动态内存的管理通过glibc实现。Linux的进程控制块中记录了虚拟内存各区域的地址信息，它们在进程初始化时由系统设置，其中包含堆的起始地址和结束地址。\n在初始状态下，brk指针指向堆的顶部。堆区大小可以通过brk和sbrk函数调整。\n栈stack\n栈用来存放进程运行过程中的局部变量、函数返回地址、参数和进程上下文环境。\n环境变量和命令行\n环境变量继承自父进程，作用范围是进程本身及其子孙进程。命令行保存执行程序时的输入参数，它们都被保存在栈区域。\n自由空间\n堆栈之间的自由空间，内核可为进程创建新的区域用于加载共享库、映射共享内存和映射文件I/O等，可以通过mmap和munmap函数申请和释放。\n###环境变量/命令行参数\n每个进程的环境变量以字符串的形式存放在数组中，数组地址存放在全局变量environ中，可通过getenv和putenv对环境变量进行存取。\n命令行参数保存在用户地址空间的栈区域。\n案例：显示当前进程所有环境变量\n1 2 3 4 5 6 7 8 9 10 11 12 #include int main(int argc,char *argv[]) { int i; char **ptr; extern char **environ; for (ptr = environ;*ptr != NULL;ptr++) printf(\"%s\\n\",*ptr); return 0; } 案例:使用getenv和putenv存取环境变量\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 #include #include int main(int argc,char *argv[],char *envp[]) { int i; extern char **environ; printf(\"form argument envp\\n\"); for(i=0;envp[i];i++) puts(envp[i]); putenv(\"HONE=/\"); printf(\"\\nFrom global variable environ\\n\"); for(i=0;environ[i];i++) puts(environ[i]); return 0; } 案例:显示所有命令行参数\n1 2 3 4 5 6 7 8 9 #include int main(int argc,char *argv[]) { int i; for(i=0;i",
   "wordCount" : "1817",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-10-08T00:00:00Z",
   "dateModified": "2018-10-08T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Linux进程——地址空间
     </h1>
@@ -513,12 +513,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Linux进程——进程环境与加载可执行映像</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Linux信号处理——发送信号</span>
   </a>
@@ -647,12 +647,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

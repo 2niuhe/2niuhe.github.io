@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference\nGithub链接：wordcloud\n所有函数均封装在WordCloud类里:\nWordCloud([…]) 生成并绘制WordCloud对象 ImageColorGenerator(image) 词云颜色生成器（基于图片颜色） random_color_func([]) 词云颜色随机生成 wordcloud.WordCloud 1 class wordcloud.WordCloud(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color='black', max_font_size=None, font_step=1, mode='RGB', relative_scaling=0.5, regexp=None, collocations=True, colormap=None, normalize_plurals=True) 参数： font_path : string\n需要使用的字体路径(支持OTF和TTF)。Linux系统上默认指向DroidSansMono路径。若使用其他操作系统或者没有DroidSansMono字体，需要指定字体路径。\nwidth : int (default=400)\n画布的宽度。\nheight : int (default=200)\n画布的高度。\nprefer_horizontal : float (default=0.90)\n尝试水平摆放字体和垂直摆放字体的比例，若prefer_horizontal \u003c 1，当摆放不合适的时候，算法将尝试旋转单词。目前没有内置的方法来获取垂直单词\nmask : nd-array or None (default=None)\n如果不是None，则在哪里绘制单词时给出二进制掩码。 如果mask不是None，那么宽度和高度将被忽略，并且将使用mask的形状。 所有白色（#FF或#FFFFFF）条目将被视为“被遮盖”，而其他条目将被自由绘制。 [这在最新版本中发生了变化！]\nscale : float (default=1)\n计算值和绘图之间的缩放比例。 对于大型文字云图像，使用缩放而不是较大的画布尺寸要快得多，但可能导致较粗糙的文字。\nmin_font_size : int (default=4)\n使用最小的字体大小。 当没有更多的空间时停止绘制。\nfont_step : int (default=1)\n字体的步长。 font_step \u003e 1时可能会加快计算速度，但会导致糟糕的字体适应性布局。\nmax_words : number (default=200)\n单词的最大数目。\nstopwords : set of strings or None\n敏感词集合，这些词将被忽略。 如果没有，则将使用内置的STOPWORDS列表。\nbackground_color : color value (default=”black”)\n词云图像的背景颜色。\nmax_font_size : int or None (default=None)\n使用的最大字体大小。 默认使用图像的高度。\nmode : string (default=”RGB”)\n当模式为“RGBA”且background_color为None时，会生成透明背景。\nrelative_scaling : float (default=.5)\n字体大小的相对单词频率的重要性。 relative_scaling = 0时，只考虑单词等级。 使用relative_scaling = 1时，频繁两倍的单词将具有两倍的大小。 如果你想考虑单词的频率，而不仅仅是他们的等级，那么0.5左右的relative_scaling通常看起来不错。\ncolor_func : callable, default=None\n可用参数关键字font_size, position, orientation, font_path, random_state调用，它为每个单词返回一个PIL颜色。 覆盖\"colormap\"。 请参阅colormap来指定matplotlib的颜色映射。\nregexp : string or None (optional)\n正则表达式将输入文本拆分为待处理文本中的标记。 如果指定None，则使用r“\\ w [\\ w’] +”。\ncollocations : bool, default=True\n是否包含两个词的搭配（bigrams），默认为True。\ncolormap : string or matplotlib colormap, default=”viridis”\nMatplotlib色彩映射表为每个单词随机绘制颜色。 如果指定了“color_func”，则忽略。\nnormalize_plurals : bool, default=True\n是否从文字中删除“尾随”。 如果为真，当出现以’s’结尾的单词，则以’s’结尾的单词将被删除，并将其计数添加到没有’s’结尾的版本\n以’ss’结尾的单词被忽略。\n注意： 较大的画布使代码明显变慢。 如果您需要较大的单词云，请尝试较小的画布大小，然后设置缩放参数。\n根据最大字体大小和缩放启发式算法，相比单词实际出现的频率，算法可能会给单词的等级更多的权重。\n属性： words_\n(dict of string to float) 单词标识对应其出现次数，如{‘hello’:90, ‘good’:30}\n.. versionchanged: 2.0 words_: 现在是一个字典\nlayout_\n(list of tuples (string, int, (int, int), int, color)))\n编码拟合词云，为每个单词编码字符串，字体大小，位置，方向和颜色。\n方法： 1 2 # 初始化实例 __init__(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color='black', max_font_size=None, font_step=1, mode='RGB', relative_scaling=0.5, regexp=None, collocations=True, colormap=None, normalize_plurals=True) fit_words(frequencies)\n根据单词和频率创建一个word_cloud。\n别名为generate_from_frequencies。\n参数:\nfrequencies : array of tuples\n元组包含单词及其频率。Note:最新版已经改为字典了。\n返回值：\nself\ngenerate(text)\n从文本生成wordcloud。\n别名generate_from_text。\n实际调用process_text和generate_from_frequencies。\n返回值：\nself\ngenerate_from_frequencies(frequencies, max_font_size=None)\n根据单词和频率创建词云。\n参数:\nfrequencies : dict from string to float\n字典包含单词及其频率。\nmax_font_size : int\n使用此最大字体大，而不是self.max_font_size\n返回值：\nself\ngenerate_from_text(text)\n从文本生成wordcloud。\n实际调用process_text和generate_from_frequencies。\n..versionchanged:: 1.2.2 process_text（)的返回值不再是generate_from_frequencies（）的参数。\n返回值：\nself\nprocess_text(text)\n将长文本拆分为单词，去除停用词(敏感词)。\n参数:\ntext : string\n待处理的文本\n返回值：\nwords : dict (string, int)\n带有关联频率的词语标记。\n..versionchanged:: 1.2.2 将返回类型从元组列表更改为字典。\nNotes\n有更好的方法做词频分析，在此不做赘述。\nrecolor(random_state=None, color_func=None, colormap=None)\n重新着色现有布局。\n应用新的着色要比生成整个词云快得多。\n参数:\nrandom_state : RandomState, int, or None, default=None\n如果不是None，则使用固定的随机状态。 如果给出了一个int，它将用作random.Random状态的种子。\ncolor_func : function or None, default=None\n根据(word count, font size, position and orientation)字数，字体大小，位置和方向生成新颜色的函数。 如果为None，则使用self.color_func。\ncolormap : string or matplotlib colormap, default=None\n使用此颜色映射表来生成新的颜色。 如果指定了color_func，则忽略。 如果没有，则使用self.color_func（或self.color_map）。\n返回值：\nself\nto_array()\n转换为numpy数组。\n返回值：\nimage : n维数组 (width, height, 3)\n词云图像作为numpy矩阵。\nto_file(filename)\n导出为图像文件。\n参数:\nfilename : string\n要写入的位置。\n返回值：\nself\nwordcloud.ImageColorGenerator 1 class wordcloud.ImageColorGenerator(image) 基于彩色图像的颜色生成器.\n根据RGB图像生成颜色。 一个单词将使用彩色图像中包围矩形的平均颜色进行着色。 构造完成后，该对象充当可调用对象，可以将其作为color_func传递给WordCloud类的构造函数或recolor这个重新着色方法。\n参数:\nimage : n维矩阵, shape (height, width, 3)\n用于生成文字颜色的图像。 Alpha通道被忽略。对于wordcloud实例，这应该和画布大小相同。\n方法\n__call__(word, font_size, font_path, ...)\n使用特定图像为给定单词生成颜色。\n__init__(image)\nwordcloud.random_color_func 1 wordcloud.random_color_func(word=None, font_size=None, position=None, orientation=None, font_path=None, random_state=None) 随机色调颜色生成.\n默认着色方法。 这只是随机选择一个值为80％和光照50％的色调。\n参数:\nword, font_size, position, orientation: ignored.\nrandom_state : random.Random object or None, (default=None)\n如果给定了一个随机对象，则用它来生成随机数。\n",
   "wordCount" : "2593",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-04-08T00:00:00Z",
   "dateModified": "2018-04-08T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       WordCloud文档中文翻译
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -763,12 +763,12 @@ process_text（)的返回值不再是generate_from_frequencies（）的参数。
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>wordcloud源码阅读1——初探</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/read/my-first-blog/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>一首小诗</span>
   </a>
@@ -897,12 +897,12 @@ process_text（)的返回值不再是generate_from_frequencies（）的参数。
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

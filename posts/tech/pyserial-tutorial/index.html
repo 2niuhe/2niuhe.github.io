@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " 现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍python的串口读写模块Pyserial\n安装 1 sudo pip install pyserial 使用 确定串口设备名 Linux下把串口设备抽象成了文件，通常放在/dev/目录下，先找出串口设备的名称。\n断开串口设备的连接，执行 1 ls /dev/ \u003e /tmp/old.txt 将串口设备连接到计算机，执行 1 ls /dev/ \u003e /tmp/new.txt 最后，比较old.txt和new.txt，new.txt中多出的设备名就是我们的串口设备\n1 diff /tmp/old.txt /tmp/new.txt 例程 以下是我读取超声波测距传感器的例程，传感器返回串口数据,每一帧数据的帧头是0xFF,其后的2byte数据是距离值。\n1 2 3 4 5 6 7 8 9 import serial import time with serial.Serial('/dev/ttyUSB0',9600,stopbits=serial.STOPBITS_ONE,bytesize=serial.EIGHTBITS) as ser: while 1: head = ser.read(1) if head == b'\\xFF': distance = int.from_bytes(ser.read(2),byteorder='big',signed=False) print(str(distance/1000) + 'm') 常用方法 在创建串口对象后，即ser = serial.Serial('/dev/ttyUSB0')，可以操作串口读写。\nser.read(size) ser.readline(size) ser.write(str_data) ser.close() 具体使用参见官方文档API\n参考 API参考\n",
   "wordCount" : "475",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-09-13T00:00:00Z",
   "dateModified": "2018-09-13T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Pyserial快速上手
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -359,12 +359,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/basic-shell/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Shell编程基础</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>LSM303_Doc</span>
   </a>
@@ -493,12 +493,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

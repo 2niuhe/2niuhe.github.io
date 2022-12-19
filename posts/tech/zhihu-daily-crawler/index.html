@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "程序效果图如下：\n程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。\n程序十分简单，只十几行代码。使用python3，需要安装requests包。\n源代码如下，也可以从我的github下载。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 #!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'} def get_daily(): page = requests.get('http://news-at.zhihu.com/api/3/news/latest', headers=headers).text response = json.loads(page) date = response['date'] stories = response['stories'] date = '\\n%s年%s月%s日' % (date[:4], date[4:6], date[6:]) print('%s 共%d条日报\\n' % (date, len(stories))) for index,story in enumerate(stories, 1): print('{0:\u003c2d}：{1:s}\\n url：http://news-at.zhihu.com/story/{2:d}'.format(index, story['title'], story['id'])) if __name__ == '__main__': get_daily() 保存为zhdaily.py文件，然后将文件放到/usr/local/bin/目录下，并给zhdaily.py增加执行权限：\n1 2 3 $ sudo mv zhdaily.py /usr/local/bin/ $ cd /usr/local/bin/ $ sudo chmod +x zhdaily.py 这样，当你下次进入终端，可以直接执行：\n1 $ zhdaily.py 就可以获得图示的效果。\n碎碎念：\n曾经知乎是一个优秀的社区，也确实让我发现了更大的世界。可是，从某个时刻开始，充斥我时间线的内容都是被知乎官方筛选的。整个社区充斥着喧嚣、广告、营销和带节奏。\n我不喜欢：\n被煽动的愤怒\n被策划的欢乐\n最后，我又回到了RSS的怀抱，可以控制我接收到相对有价值的信息。\n不过，浏览知乎日报能了解下当下热点，增加聊天谈资。省的聊天时都不知道《创造101》是啥？赫赫:)\n我基本每天只浏览日报的标题，这个小程序正好满足需求。\n",
   "wordCount" : "632",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-05-18T00:00:00Z",
   "dateModified": "2018-05-18T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       在Linux终端里浏览知乎日报
     </h1>
@@ -331,13 +331,13 @@ if (!doNotTrack) {
       <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/">
-    <span class="title">« Prev</span>
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/">
+    <span class="title">« 上一页</span>
     <br>
-    <span>Python对称AES和DES加密算法</span>
+    <span>Python实现MD5和Sha256</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>wordcloud源码阅读2——Cython</span>
   </a>
@@ -466,12 +466,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

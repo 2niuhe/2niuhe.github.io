@@ -13,7 +13,7 @@
       <pubDate>Sat, 04 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/</guid>
-      <description>安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装</description>
+      <description>&lt;p&gt;在manjaro上搭建minikube测试环境&lt;/p&gt;</description>
     </item>
     
   </channel>

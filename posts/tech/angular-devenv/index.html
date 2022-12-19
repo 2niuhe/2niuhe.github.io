@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 node -v npm -v # npm换源 npm config set registry https://registry.npm.taobao.org # 查看npm的源 npm config get registry # 安装angular npm install -g @angular/cli # 更新所有套件到最新版 ng update --all --force # 创建一个angular项目 ng new testng StackBlitz是一个在线开发环境，可以快速上手开发．\n进入 testng 项目，其目录结构如下\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 ├── angular.json\t# angular配置文件 ├── e2e │ ├── protractor.conf.js │ ├── src │ │ ├── app.e2e-spec.ts\t# e2e 端对端测试目录 │ │ └── app.po.ts │ └── tsconfig.json ├── karma.conf.js\t# 执行自动化测试的 ├── node_modules\t# npm包安装目录，使用npm install安装 ├── package.json\t# npm 工具的配置文件，指明了当前这个应用所要用到的模块，Angular 的依赖包 ├── README.md ├── src │ ├── app │ │ ├── app.component.css\t# 项目主样式 │ │ ├── app.component.html\t# 项目的主模板 │ │ ├── app.component.spec.ts\t# 项目单元测试 │ │ ├── app.component.ts\t# 项目的主组件，定义AppModule，这个根模块会告诉Angular如何组装该应用 │ │ ├── app.module.ts\t# 项目主模块 │ │ └── app-routing.module.ts │ ├── assets\t# 静态资源如图片、翻译语言，构建时自动打包 │ ├── environments │ │ ├── environment.prod.ts\t# 生产环境配置 │ │ └── environment.ts\t# 开发环境配置，默认 │ ├── favicon.ico\t# 图标 │ ├── index.html\t# 宿主页面 │ ├── main.ts\t# 整个web应用的入口点，angular通过该项目来启动整个项目 │ ├── polyfills.ts\t# 导入一些必要的库,使得angular可以在一些老版本的浏览器中运行 │ ├── styles.css\t# 公共样式 │ └── test.ts\t# 单元测试入口点 ├── tsconfig.app.json ├── tsconfig.json\t# TypeScript 编译器的参数 ├── tsconfig.spec.json ├── typings.json\t# 为那些 TypeScript 编译器无法识别的库提供了额外的定义文件。 └── tslint.json\t# 定义 ts 文件质量检查的一些规则 参考 Angular 的 8 个核心概念\nAngular4 教程\n",
   "wordCount" : "730",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2020-09-26T00:00:00Z",
   "dateModified": "2020-09-26T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Angular开发环境搭建
     </h1>
@@ -232,7 +232,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -382,12 +382,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/coding-tools-profile/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>编程工具之调试和性能分析</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Python进阶上</span>
   </a>
@@ -516,12 +516,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

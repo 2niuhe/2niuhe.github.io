@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " Tcpdump是一个linux命令行的抓包工具，可以抓取TCP/IP和其他数据包，如UDP,ARP,ICMP，可以使用过滤器过滤出想要的包。\n抓取特定接口上的包 当使用tcpdump不加任何参数，将分析所有接口上的数据包。\n1 sudo tcpdump 可以使用-i选项指定特定接口\n可以使用-c选项限制数据包的个数\n1 sudo tcpdump -i wlp2s0 -c 10 抓取特定主机的数据包 可以使用-host选项指定和特定主机相关的数据包\n1 sudo tcpdump -i ens160 -c 5 -ttttnnvvS host 14.249.62.219 通过指定端口抓包 可以指定接口的端口进行抓包，也可以抓取特定接口以外的数据包\n1 2 3 4 5 6 # 抓取22端口数据包 sudo tcpdump -i ens160 -c 5 -nn port 22 # 抓取22端口以外数据包 sudo tcpdump -i ens160 -nn not port 22 # 指定端口号的范围 sudo tcpdump -i ens160 -c 3 -nns 0 portrange 20-23 抓取特定代理的数据包 1 sudo tcpdump -i ens160 -c 5 -nn tcp 保存抓包日志 使用-s选项来指定每个数据包保存的长度，默认保存68个字节，剩余字节被忽略，指定0表示完整保存。\n1 sudo tcpdump -i ens160 -c 5 -nn tcp -w packets-record.pcap -s 0 读取tcpdump记录文件 更常用的是使用wireshark软件分析\n1 sudo tcpdump -r packets-record.pcap 过滤特定源头的数据包 使用src选项指定来自特定源IP的数据包\n使用dst选项指定特定目的IP的数据包\n1 2 sudo tcpdump src 100.9.8.40 sudo tcpdump dst 14.249.62.219 抓取特定网段的数据包 使用-net选项指定incoming/outgoing特定网段的数据包\n1 sudu tcpdump net 192.169.0.0/24 指定数据包格式 1 2 3 4 # 16进制格式 sudo tcpdump -X -i eth0 # Ascii码格式 sudo tcpdump -A -i eth0 抓取IPV6包 1 sudo tcpdump -nn ip6 proto 6 过滤Http的User Agent 从http请求头中过滤出user agent和host信息\n1 sudo tcpdump -nn -A -s1500 -l | egrep -i 'User-Agent:|Host:' 过滤cookie信息\n1 sudo tcpdump -nn -A -s0 -l | egrep -i 'Set-Cookie|Host:|Cookie:' 列出可选的接口 1 sudo tcpdump -D 循环写入抓包文件 对于长时间的抓包，为了防止单个文件过大，每30分钟（1800秒）写入一个新文件，文件大小限制为100M，文件个数的24个\n1 sudo tcpdump -i ens160 -w /tmp/network-%H-%M.pcap -W 24 -G 1800 -C 100 Tcpdump选项 -i : 监听特定接口 -n: Don’t resolve hostnames. You can use -nn to don’t resolve hostnames or port names. -t: Print human-readable timestamp on each dump line, -tttt: Give maximally human-readable timestamp output. -X: 以ascii和十六进制两种格式显示数据包内容 -v, -vv, -vvv: 增加获取数据包的数量 -c N: 只获取N个数据包然后停止 -s: Define the snaplength (size) of the capture in bytes. Use -s0 to get everything, unless you are intentionally capturing less. -S: 打印绝对序列号 -q: 显示较少的协议信息 -w : 将原始数据包写入文件 逻辑运算符号 Tcpdump支持更精确的过滤，使用and/or/not这种逻辑运算。\n抓取来自 10.20.0.0/16 网段，并且目的地址是10.30.0.0/16 网段的数据包，使用便于阅读的时间戳， 不求解主机名和端口号，反向输出并使用绝对序号。\nCapture traffic coming from 10.20.0.0/16 and going to the network 10.30.0.0/16 with showing human-readable timestamps (tt), with no resolution of hostnames or port numbers (nn), verbose output (vv) and using absolute sequence numbers (S):\n1 $ sudo -ttnnvvS tcpdump src net 10.20.0.0/16 and dst net 10.30.0.0/16 Display traffic from source 192.168.0.10 which is not UDP protocol:\n1 $ sudo tcpdump src 192.168.0.10 and src net and not udp To capture arp or ping traffic for a specific host and save the output to a file named packetfile.txt:\n1 $ sudo tcpdump -nnti eth0 arp or icmp and host 192.168.0.1 -w packetfile.txt Tcpdump 输出格式 截取一行输出，分析其输出的格式\n1 10:31:13.440803 IP Ubuntu.ssh \u003e 117.6.129.86.50736: Flags [P.], seq 188:400, ack 1, win 501, options [nop,nop,TS val 468736347 ecr 335665367], length 212 其中:\n10:31:13.401128 - 本地数据包被抓取的时间\nIP - 表示数据包是IPV4协议的\nUbuntu.ssh - 标识源IP地址或者主机名 ，.ssh 表示端口，这里时22端口\n117.6.129.86.50376 - 表示数据包的目的IP地址 ，使用.分割端口号\n标志位：\n[P.] - This is TCP flags field.\n[.] - ACK (Acknowledgment).\n[S] - SYN (Start Connection).\n[P] - PSH (Push Data).\n[F] - FIN (Finish Connection).\n[R] - RST (Reset Connection).\n[S.] - SYN-ACK (SynAcK Packet).\nseq 188:400 - 序列号表示该数据包包含序列是188-400字节的数据\nwin 501 - 窗口大小，表示接受缓冲区中可用的字节\noptions [nop,nop,TS val 468736347 ecr 335665367] - These are TCP options such as the MSS (Maximum Segment Size) or Window Scale. You can refer more about TCP protocol options.\nlength 212 - 表示数据包中payload数据的字节\n参考 Tcpdump基本使用\n",
   "wordCount" : "1388",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2020-10-19T00:00:00Z",
   "dateModified": "2020-10-19T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       tcpdump的基本使用【译】
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul><ul>
@@ -565,12 +565,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Virsh命令和虚拟机</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-peformence-test/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Linux性能测试</span>
   </a>
@@ -699,12 +699,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

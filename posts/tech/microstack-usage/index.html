@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "Microstack 简介 Microstack 是在 ubuntu 平台上快速部署 Openstack 环境的工具，其通过 snap 构建，而 snap 安装目录是一个独立的只读文件系统，这就导致难以改动代码进行调试。 因此，Microstack 环境只适用于 Openstack 初学者学习命令行和数据库等等，调试的话可以通告 gdb 调试，而不便于通过 pdb 调试，因为无法修改源文件，并在文件还中加断点。 Microstack 是目前 Ubuntu 上最简洁的 Openstack 配置工具，可以在笔记本上部署单节点环境用于学习，也可以在多台设备上部署多节点环境。\nMicrostack 安装 需要在终端科学上网，否则 snap 镜像很慢,目前支持到 Openstack 上游的 stein 版本．\n1 2 3 4 5 6 7 8 9 10 11 # 配置代理 export https_proxy=http://127.0.0.1:port\u0026\u0026 export http_proxy=http://127.0.0.1:port\" # 安装snap包 sudo snap install --classic --beta microstack # 初始化microstack环境 sudo microstack.init --auto # 初始化完成后会自动启动Openstack进程 # 查看相关进程 systemctl list-units | grep microstack # 可以看到microstack进程的状态 # 如果全部是loaded active running，表示服务正常启动 Microstack 基本使用 Microstack 由于是 Snap 镜像，可以手动关闭和开启 其源代码在/snap/microstack/196/lib/python3.6/site-packages 但由于 snap 只读文件系统，代码无法修改 此外，其命令行 Client 都加上了 Microstack 前缀\n一些常用的命令行\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 # 在.bashrc文件中配置别名 alias openstack=\"microstack.openstack\" source ~/.bashrc # 查看帮助 openstack --help # 数据库操作，查看nova库 sudo microstack.mysql nova # 几个数据库包括: # |cinder | # | glance | # | keystone | # | mysql | # | neutron | # | nova | # | nova_api | # | nova_cell0 # 查看配置文件和数据库地址 cd /var/snap/microstack # 配置文件，可修改配置文件重启进程 cd /var/snap/microstack/common/etc 也可以在浏览器访问 web 界面http://10.20.20.1/ 默认用户名密码是 admin 和 keystone\n总结\nMicrostack 目前不适用于开发者编辑调试代码，只适用于学习者熟悉环境，用于在自己的电脑上快速部署．\n参考 Microstack 文档\n",
   "wordCount" : "705",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2020-09-20T00:00:00Z",
   "dateModified": "2020-09-20T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Microstack 基本使用
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -364,12 +364,12 @@ Microstack 是目前 Ubuntu 上最简洁的 Openstack 配置工具，可以在�
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Python进阶上</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/python3-qrcode/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Python3操作二维码图片</span>
   </a>
@@ -498,12 +498,12 @@ Microstack 是目前 Ubuntu 上最简洁的 Openstack 配置工具，可以在�
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

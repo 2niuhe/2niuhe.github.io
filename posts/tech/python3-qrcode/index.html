@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "python3中如何对二维码QRcode进行编码解码\n通常对于二维码，我们需要进行两种操作：\n将二维码图片扫描后解析成字符串 将字符串编码生成二维码图片 这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在window平台上的安装极其繁琐，有很多坑。\n所以想通过python3处理二维码的过程中，查了很多资料。目前比较好的解决办法如下：\n用pyzbar代替zbar解析二维码 安装：\n1 pip install pyzbar 这是可能的，因为pyzbar是一个围绕zbar库的基于ctypes的包装器，它包含在dll和Windows Python的轮子中。\n使用：\n网络上二维码图片解析 1 2 3 4 5 6 7 8 9 10 11 import requests import array from PIL import Image from io import BytesIO from pyzbar.pyzbar import decode # decode_result的格式是[Decoded(data='****',……)]，列表里包含一个nametuple def decode_qrcode(url) decode_result = decode(Image.open(BytesIO(requests.get(urls, headers=HEADERS).content)) return str(decode_result[0].data, encoding='utf-8') 本地二维码图片解析 1 2 3 4 5 6 7 from PIL import Image from pyzbar.pyzbar import decode def decode_qrcode(url) decode_result = decode(Image.open('filename')) return str(decode_result[0].data, encoding='utf-8') 更详细用法参见release页面\n下载zbar.exe文件并安装，通过系统命令行调用来解码 下载地址：zbar-0.10-setup.exe\n说明：\n使用：\n1 2 3 import os os.system(r'C:\\zbarimg.exe -d d:\\Winapps\\Zbar\\Examples\\barcode.png') Linux平台上qrtools解码 注：这个方法我没用过。\n安装：\n1 sudo apt-get install python-qrtools 使用：\n1 2 3 4 import qrtools qr = qrtools.QR() qr.decode(\"horn.png\") print qr.data 用PyQRCode来生成二维码 安装：\n1 pip install pyqrcode 用法：\n1 2 3 import pyqrcode url = pyqrcode.create('http://uca.edu') url.svg('uca-url.svg', scale=8) 说明： pyqrcode具有完善的帮助文档和强大的功能，可以快速生产二维码图片,细节参考：\nRelease页面 帮助文档 其他值得关注的内容 qreader是一个正在开发中的项目，使用纯Python编写的二维码解析库，不依赖zbar。感兴趣的可以去提交PR。\n免费的二维码编码解码API接口 http://api.qrserver.com/ Send a GET request of following form to our system to decode a QR code graphic (=to read a QR code from the web): http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-to-qrcode-image-file]\nhttp://www.7xiwang.com/Tools/Index 1 2 3 4 5 6 7 8 9 10 11 12 解码api：http://www.7xiwang.com/WebService/QRCodeDecode api参数：base64img api请求类型：HttpPost 参数数据格式（JSON）：{\"base64img\":\"\"} api返回数据格式（JSON）： 请求成功：{\"status\":\"1\",\"text\":\"\"} 请求失败：{\"status\":\"0\",\"Msg\":\"错误信息\"} ",
   "wordCount" : "1057",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2019-04-27T00:00:00Z",
   "dateModified": "2019-04-27T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Python3操作二维码图片
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -467,12 +467,12 @@ http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/microstack-usage/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Microstack 基本使用</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Linux进程——进程创建和同步控制</span>
   </a>
@@ -601,12 +601,12 @@ http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

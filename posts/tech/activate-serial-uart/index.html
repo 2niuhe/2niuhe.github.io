@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " 在树莓派3B+里启用串口，并通过UART读取GPS模块的数据帧。\n树莓派3启用UART #####先更新系统\n1 2 3 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置：\ndisable login shell over serial enable serial hardware port #####然后重启\n1 sudo reboot #####编辑配置文件\n1 sudo nano /boot/config.txt 在最后一段加上：\n1 2 3 4 5 dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt\n1 2 sudo cp boot/cmdline.txt boot/cmdline_backup.txt sudo nano /boot.cmdline.txt 将cmdline.txt的内容替换为： dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles\n#####禁用树莓派Serial Getty服务\n1 2 sudo systemctl stop serial-getty@ttyS0.service sudo systemctl disable serial-getty@ttyS0.service 重启系统\n1 sudo reboot #####激活ttyAMAO 上一步我们禁用了ttyS0,现在我们启用ttyAMA0.\n1 sudo systemctl enable serial-getty@ttyAMA0.service 好了到了现在，我们已经启用了树莓派的串口，并可以通过/dev/ttyAMA0来访问串口设备。\n树莓派的串口引脚 树莓派的引脚定义图如下所示： UART的收发引脚分别为：\nTx ——GPIO14（pin8) Rx ——GPIO15（pin10) 连接串口设备并测试 我们使用GPS串口设备进行测试，GPS模块有如下5个引脚：\nVCC GND TX RX PPS GPS模块和树莓派连接方式如下：\nVCC ——pin01 GND——pin06 TX——pin10 其他引脚可以不连接。\n使用cat或者minicom调试GPS串口：\n1 2 3 cat /dev/ttyAMA0 #或者 minicom -D /dev/ttyAMA0 -b 9600 能够读取到类似下边的串口输出：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 $GPTXT,01,01,01,ANTENNA OK*35 $GNGGA,115810.475,,,,,0,00,25.5,,,,,,*70 $GNGLL,,,,,115810.475,V,M*6D $GPGSA,A,1,,,,,,,,,,,,,25.5,25.5,25.5*02 $BDGSA,A,1,,,,,,,,,,,,,25.5,25.5,25.5*13 $GPGSV,3,1,09,05,05,121,,10,25,314,27,12,14,138,,13,13,058,16*73 $GPGSV,3,2,09,15,49,043,32,20,53,321,18,21,52,249,,24,77,090,*77 $GPGSV,3,3,09,32,11,265,*40 ​``` 参考 树莓派UART文档 Raspberry Pi GPS Module Interfacing Tutorial ",
   "wordCount" : "579",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-08-25T00:00:00Z",
   "dateModified": "2018-08-25T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       树莓派3启用UART并连接GPS传感器
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -458,12 +458,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>树莓派连接LCD1602做一个电子钟</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>树莓派GPIO入门</span>
   </a>
@@ -592,12 +592,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

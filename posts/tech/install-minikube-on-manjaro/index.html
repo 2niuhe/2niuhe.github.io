@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +7,7 @@
 <meta name="robots" content="index, follow">
 <title>Manjaro 搭建 minikube 环境 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Kubernetes">
-<meta name="description" content="安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装">
+<meta name="description" content="在manjaro上搭建minikube测试环境">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
@@ -71,7 +71,7 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script><meta property="og:title" content="Manjaro 搭建 minikube 环境" />
-<meta property="og:description" content="安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装" />
+<meta property="og:description" content="在manjaro上搭建minikube测试环境" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-04T00:00:00+00:00" />
@@ -79,7 +79,7 @@ if (!doNotTrack) {
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Manjaro 搭建 minikube 环境"/>
-<meta name="twitter:description" content="安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装"/>
+<meta name="twitter:description" content="在manjaro上搭建minikube测试环境"/>
 
 
 <script type="application/ld+json">
@@ -114,13 +114,13 @@ if (!doNotTrack) {
   "@type": "BlogPosting",
   "headline": "Manjaro 搭建 minikube 环境",
   "name": "Manjaro 搭建 minikube 环境",
-  "description": "安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装",
+  "description": "在manjaro上搭建minikube测试环境\n",
   "keywords": [
     "Kubernetes"
   ],
-  "articleBody": "安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装minikube 1 2 3 4 5 yay -Sy minikube kubectl-bin minikube version whereis kubectl kubectl -h 装环境 注意关掉 vpn\n1 2 3 4 5 6 minikube start --vm-driver kvm2 --registry-mirror=https://dockerhub.azk8s.cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers minikube status kubectl cluster-info kubectl get nodes 参考 https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/\n",
-  "wordCount" : "123",
-  "inLanguage": "en",
+  "articleBody": "在manjaro上搭建minikube测试环境\n安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装minikube 1 2 3 4 5 yay -Sy minikube kubectl-bin minikube version whereis kubectl kubectl -h 装环境 注意关掉 vpn\n1 2 3 4 5 6 minikube start --vm-driver kvm2 --registry-mirror=https://dockerhub.azk8s.cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers minikube status kubectl cluster-info kubectl get nodes 参考 https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/\n",
+  "wordCount" : "146",
+  "inLanguage": "zh",
   "datePublished": "2021-12-04T00:00:00Z",
   "dateModified": "2021-12-04T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Manjaro 搭建 minikube 环境
     </h1>
@@ -232,7 +232,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -246,7 +246,8 @@ if (!doNotTrack) {
     </details>
 </div>
 
-  <div class="post-content"><h3 id="安装-minikube">安装 minikube<a hidden class="anchor" aria-hidden="true" href="#安装-minikube">#</a></h3>
+  <div class="post-content"><p>在manjaro上搭建minikube测试环境</p>
+<h3 id="安装-minikube">安装 minikube<a hidden class="anchor" aria-hidden="true" href="#安装-minikube">#</a></h3>
 <ol>
 <li>安装依赖</li>
 </ol>
@@ -349,7 +350,6 @@ if (!doNotTrack) {
 </div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
 <p><a href="https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/">https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/</a></p>
 
-
   </div>
 
   <footer class="post-footer">
@@ -357,13 +357,8 @@ if (!doNotTrack) {
       <li><a href="https://blog.niuhemoon.win/tags/kubernetes/">Kubernetes</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python-asymmetric-encryption/">
-    <span class="title">« Prev</span>
-    <br>
-    <span>Python实现RSA和ECC</span>
-  </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/tinygo-esp32/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>tinygo点亮esp32</span>
   </a>
@@ -492,12 +487,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

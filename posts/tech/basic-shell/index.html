@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": " Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell 对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常 Shell 脚本结构如下：\n1 2 3 #!/bin/bash var1 = \"hello,shell.\" echo $var1 ###Shell 变量\nShell 变量分为四类：\n用户自定义变量 环境变量 位置变量 预定义变量 变量的几种操作:\n操作整数赋值：变量名=变量值 引用：$变量名 清除：unset 变量名 查看：set 输出为环境变量：export 用户自定义变量 位置变量:\n-位置变量和传递参数的位置有关\n$0:脚本程序名称 $1，$2…..:传递给脚本的参数，$1 代表第一个参数 预定义变量:\n预定义变量 含义 $* 传递到脚本的所有参数内容 $? 命令执行后的返回状态，0 成功，其他值表示错误 $$ 当前进程的进程号 $! 后台运行的最后一个进程号 $# 传递到脚本的参数的数量 命令替换 命令替换可以使命令的输出结果赋值给变量，注意语法形式 2 中是反引号`,不是单引号'\n语法形式：\nvar = $(command) var = `command` 案例：\n1 echo \"today is\" `date` 输入输出 read 命令 功能：从键盘读取输入，并赋值给变量\n语法： read [选项] 变量名列表\n选项列表：\n选项 含义 -p prompt 设置提示信息 -n num 当 read 读 n 个字符后返回 -s 键盘输入不回显 -t timeout 设置超时时间 -r 取消转义字符的转义作用 -d delim 定义新的换行符 案例：\n1 2 read -s -n 1 -p \"Yes(Y) or not(N)?\" answer echo $answer echo 命令 功能：显示字符串或变量的值\n语法：echo [选项] 字符串\n选项列表：\n选项 -含义 -n 不再最后自动换行 -e 启用反斜线控制字符的转换 -E 不处理转义字符，缺省选项 支持的转义符列表：\\t\\n\\r\\\\b\\a等\n引号 反引号:命令替换\n单引号:单引号中所有字符保留原有字符含义，不能包含单引号。不支持元字符、变量替换、命令替换。\n双引号:不支持元字符，支持变量替换、命令替换。\n条件表达式 条件表达式用力啊判断条件是否满足\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 #!/bin/bash hour=$(date +\"%H\") case $hour in 0[1-9] | 1[01]) echo \"Good morning!!\" ;; 1[2-7]) echo \"Good afternoon\" ;; *) echo \"Good evening\" ;; esac 测试条件表达式真假方法如下，真 0 假 1：\ntest 条件表达式\n[条件表达式]\n条件表达式中常用五类操作符：\n文件状态操作符 字符串操作符 数字操作符 逻辑操作符 文件状态操作符（略）:\n-x filename 文件可执行返回真 字符串操作符:\n操作符 含义 string string 非空为真 -n string string 长度大于 0 为真 -z sring string 长度为 0 为真 string1=string2 相等为真 string1 != string2 不等为真 数字操作符:\n操作符 含义 n1 -eq n2 n1 和 n2 相等返回 0，否则 1 n1 -ne n2 不等为真 n1 -lt n2 n1 \u003c n2 为真 n1 -gt n2 n1 \u003e n2 为真 n1 -le n2 n1 \u003c= n2 为真 n1 -ge n2 n1 \u003e= n2 为真 逻辑操作符:\n操作符 含义 e1 -a e2 e1 和 e2 两个表达式同时为真返回 0，否则 1 e1 -o e2 e1,e2 有一个为真返回 0 !e1 e1 不为真时返回 0 命令分隔符 命令分隔符可以在一行中运行多个命令\n命令分隔符 含义 cmd1;cmd2 以独立进程依次运行 cmd1 和 cmd2 (cmd1;cmd2) 在同一进程中依次运行 cmd1 和 cmd2 cmd1 \u0026 cmd2 cmd1 和 cmd2 同时运行，分属不同进程组 cmd1 \u0026\u0026 cmd2 当 cmd1 为真时，才执行 cmd2 cmd1 || cmd2 当 cmd1 为假时，才执行 cmd2 cmd1 | cmd2 管道符号，cmd1 的输出作为 cmd2 的输入 cmd1 \u0026 cmd1 在后台运行 判断语句 案例 1：比较两个数字大小\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/bin/bash echo \"Enter the first interger:\" read first echo \"Enter the second interger:\" read second if (( first \u003e second )); then echo \"$first is greater than $second\" elif (( first \u003c second ));then echo \"$first is less than $second\" else echo \"$first is equal to $second\" echo \"Done\" fi 案例 2：获取系统时间，判断上午、下午、晚上\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 #!/bin/bash hour=$(date +\"%H\") case $hour in 0[1-9] | 1[01]) echo \"Good morning!!\" ;; 1[2-7]) echo \"Good afternoon\" ;; *) echo \"Good evening\" ;; esac 循环语句 案例 1：for 循环打印所有命令行参数\n1 2 3 4 5 6 7 #!/bin/bash #you can write this in short:for arg for arg in $* do echo $arg done 案例 2：while 计算 1-99 的和\n1 2 3 4 5 6 7 8 9 #!/bin/bash i=1 sum=0 while [ $i -lt 100 ] do sum=`expr $sum + $i` i=`expr $i + 1` done echo The sum is $sum 案例 3：显示 1-100 之间的整数\n1 2 3 4 5 6 7 8 #!/bin/bash i=1 until [ $i -gt 100 ] do echo $i i=`expr $i + 1` done break [n] 跳出 n 重循环，默认为 1\ncontinue [n]\nexit [n]\n函数 语法：\n1 2 3 4 5 函数名() { 命令列表 return } `\n调用方式:\n函数名 参数列表\n注意：\n调用前，必须先定义 使用 shell 位置变量接收参数传递，例如$0$1 返回值取自函数中 return 语句或函数中最后一条命令的返回状态，通过$?获得 使用 local 声明的局部变量，作用仅限于函数本身 案例：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 #!/bin/bash #name:getsum.sh get_sum() { i=$1 sum=0 while [ $i -lt $2 ] do sum=`expr $sum + $i` i=`expr $i + 1` done return $sum } get_sum $2 $3 result=$? echo $1 echo sum of $2 to $3 is $result 运行:\n1 ./getsum.sh \"test\" 5 7 注意事项 变量赋值的=两侧不能有空格 条件表达式 和表达式间必须有空格 expr 算式表达式中每个运算符两侧必须有空格 ",
   "wordCount" : "1725",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "2018-09-25T00:00:00Z",
   "dateModified": "2018-09-25T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       Shell编程基础
     </h1>
@@ -232,7 +232,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -967,12 +967,12 @@ Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的�
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/linux-c-lib/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Linux下创建和使用C语言函数库</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Pyserial快速上手</span>
   </a>
@@ -1101,12 +1101,12 @@ Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的�
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 

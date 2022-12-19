@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="zh" dir="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -120,7 +120,7 @@ if (!doNotTrack) {
   ],
   "articleBody": "STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。\nLED灯实验 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 #include \"stm32f10x.h\" #define LED GPIO_Pin_All\tvoid delay(u32 i) { while(i--); } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,\u0026GPIO_InitStructure);\t//初始化GPIO } void led_display() { GPIO_SetBits(GPIOC,LED); delay(6000000); GPIO_ResetBits(GPIOC,LED); delay(6000000); } int main() { LED_Init(); while(1) { led_display(); } } 蜂鸣器实验 使用无源蜂鸣器\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 #include \"stm32f10x.h\" #define BZ GPIO_Pin_5 //PB5\t定义端口PB5 void delay(u32 i) { while(i--); } void BEEP_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = BZ; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOB,\u0026GPIO_InitStructure);\t//初始化GPIO } void sound(u32 i) // i= 5000救护车，i=1000电动车 { while(i--) { GPIO_SetBits(GPIOB,BZ); delay(i); GPIO_ResetBits(GPIOB,BZ); delay(i); } } int main() {\tBEEP_Init();\t//端口初始化 while(1) { sound(5000);\t}\t} SysTick实验 系统滴答计时器比延时函数更加精确，可移植性更高。systick定时器是24位的定时器，当定时器计数到0时，将自动从RELOAD寄存器中重装定时器初值，如果开启了中断，此时还会产生异常中断信号。\n定时器必须要一个时钟来驱动，systick定时器的时钟来源时系统时钟，不过它的时钟可以选择成直接取自系统时钟，也可以将系统时钟8分频后再赋给systick定时器。\nsystick定时器的操作步骤：\n设置systick定时器的时钟源 设置systick定时器的重装初始值（若使用中断，就将中断使能打开） 清零systick定时器计数器的值 打开systick定时器 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 #include \"stm32f10x.h\" #define LED GPIO_Pin_All void delay_us(u32 i) { u32 temp; SysTick-\u003eLOAD = 9*i;\t//设置重装数值 72MHz时 SysTick-\u003eCTRL = 0x01;\t//使能，减到零时无动作，采用外部时钟源(8分频系统时钟) SysTick-\u003eVAL = 0;\t//清零计数器 do { temp = SysTick-\u003eCTRL;\t//读取当前计数值 } while((temp \u0026 0x01) \u0026\u0026 (!(temp \u0026(1\u003c\u003c16))));\t//与运算取出指定位的数值 //实际上就是CTRL寄存器的第1位为0或第16位为1时，退出循环 SysTick-\u003eCTRL=0;\t//关闭计数器 SysTick-\u003eVAL = 0;\t//清空计数器 } void delay_ms(u32 i) { u32 temp; SysTick-\u003eLOAD=9000*i;\t//设置重装数值, 72MHZ时 SysTick-\u003eCTRL=0x01;\t//使能，减到零是无动作，采用外部时钟源 SysTick-\u003eVAL=0;\t//清零计数器 do { temp=SysTick-\u003eCTRL;\t//读取当前倒计数值 } while((temp\u00260x01)\u0026\u0026(!(temp\u0026(1\u003c\u003c16))));\t//等待时间到达 SysTick-\u003eCTRL=0;\t//关闭计数器 SysTick-\u003eVAL=0;\t//清空计数器 } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,\u0026GPIO_InitStructure);\t//初始化GPIO } int main() { u8 i; LED_Init(); while(1) { for(i=0;i\u003c8;i++) { GPIO_Write(GPIOC,(u16)~(0x01\u003c",
   "wordCount" : "4163",
-  "inLanguage": "en",
+  "inLanguage": "zh",
   "datePublished": "0001-01-01T00:00:00Z",
   "dateModified": "0001-01-01T00:00:00Z",
   "author":{
@@ -222,7 +222,7 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">Home</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
     <h1 class="post-title">
       STM32笔记
     </h1>
@@ -235,7 +235,7 @@ if (!doNotTrack) {
   </header> <div class="toc">
     <details  open>
         <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
+            <span class="details">文章目录</span>
         </summary>
 
         <div class="inner"><ul>
@@ -1448,12 +1448,12 @@ if (!doNotTrack) {
     </ul>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/anki-python/">
-    <span class="title">« Prev</span>
+    <span class="title">« 上一页</span>
     <br>
     <span>Python 生成ankidroid单词表/语音包</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/virual-lidar/">
-    <span class="title">Next »</span>
+    <span class="title">下一页 »</span>
     <br>
     <span>Virtualbox虚拟机连接雷达和UART串口</span>
   </a>
@@ -1582,12 +1582,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = 'copy';
+        copybutton.innerHTML = '📄复制';
 
         function copyingDone() {
-            copybutton.innerHTML = 'copied!';
+            copybutton.innerHTML = '👌🏻已复制!';
             setTimeout(() => {
-                copybutton.innerHTML = 'copy';
+                copybutton.innerHTML = '📄复制';
             }, 2000);
         }
 
