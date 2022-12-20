@@ -8,7 +8,8 @@
 <title>Arduino简易示波器检测树莓派产生的方波 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Arduino, 树莓派">
 <meta name="description" content="使用树莓派的PWM产生方波信号；使用Arduino的AD采样&#43;串口绘图器当做示波器">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Arduino", "树莓派"
   ],
-  "articleBody": " 在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。\n产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。\n树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)是树莓派提供的PWM硬件接口，可以产生高频的PWM信号。 由于我只需要产生一个大约50Hz的方波信号。用最简单的GPIO库就可以产生可用的方波。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as GPIO from time import sleep GPIO.setmode(GPIO.BOARD) GPIO.setup(12,GPIO.OUT) GPIO.setwarnings(False) p=GPIO.PWM(12,50) # 12是pin12,50是频率 p.start(30) # 30表示占空比30% input(\"Press Enter key to Stop 50Hz PWM @ 30% duty cycle\") p.stop() GPIO.cleanup() 运行该脚本，就可以在树莓派pin12上产生方波信号。\nArduino和树莓派连线 连线图如下所示： 注意： 要将树莓派和Arduino的地线连接在一起，使它们共地。\nArduino 进行ADC采样 Arduino 有A0-A5共6个模拟输入口，每个模拟口可以进行12位的采样，可以接受0-5V的电压输入，对应着0-1023的采样输出。\n使用A0口进行采样：\n1 2 3 4 5 6 7 8 void setup() { Serial.begin(9600); // Starting Serial Terminal } void loop() { int value = analogRead(A0); Serial.println(value); } 打开Arduino官方的IDE的【工具】-\u003e 【串口绘图器】\n设置波特率为9600,可以观察到：\n注：树莓派GPIO引脚输出电压为3.3V，而Arduino采样范围是0-5V\n还可以使用SerialPlot这个功能更丰富的串口绘图器，当做简易的示波器。 显示的波形如下： Arduino串口绘图器 Arduino串口绘图器可以绘制多个连续图形，如下程序就是在串口绘图器中画出sin和cos函数图像。\n1 2 3 4 5 6 7 8 9 10 11 12 13 double i = 0; void setup() { Serial.begin(9600); } void loop() { double temp = i*3.1415926/10.0; Serial.print(sin(temp)); Serial.print(','); Serial.println(cos(temp)); i+=0.1; delay(5); } 注：\n若只绘制一个图像，使用Serial.println()函数即可 若绘制多个图像，在每个串口值间使用Serial.print(’,’)进行分隔 ",
-  "wordCount" : "779",
+  "articleBody": " 在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。\n产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。\n树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)是树莓派提供的PWM硬件接口，可以产生高频的PWM信号。 由于我只需要产生一个大约50Hz的方波信号。用最简单的GPIO库就可以产生可用的方波。\n#!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as GPIO from time import sleep GPIO.setmode(GPIO.BOARD) GPIO.setup(12,GPIO.OUT) GPIO.setwarnings(False) p=GPIO.PWM(12,50) # 12是pin12,50是频率 p.start(30) # 30表示占空比30% input(\"Press Enter key to Stop 50Hz PWM @ 30% duty cycle\") p.stop() GPIO.cleanup() 运行该脚本，就可以在树莓派pin12上产生方波信号。\nArduino和树莓派连线 连线图如下所示： 注意： 要将树莓派和Arduino的地线连接在一起，使它们共地。\nArduino 进行ADC采样 Arduino 有A0-A5共6个模拟输入口，每个模拟口可以进行12位的采样，可以接受0-5V的电压输入，对应着0-1023的采样输出。\n使用A0口进行采样：\nvoid setup() { Serial.begin(9600); // Starting Serial Terminal } void loop() { int value = analogRead(A0); Serial.println(value); } 打开Arduino官方的IDE的【工具】-\u003e 【串口绘图器】\n设置波特率为9600,可以观察到：\n注：树莓派GPIO引脚输出电压为3.3V，而Arduino采样范围是0-5V\n还可以使用SerialPlot这个功能更丰富的串口绘图器，当做简易的示波器。 显示的波形如下： Arduino串口绘图器 Arduino串口绘图器可以绘制多个连续图形，如下程序就是在串口绘图器中画出sin和cos函数图像。\ndouble i = 0; void setup() { Serial.begin(9600); } void loop() { double temp = i*3.1415926/10.0; Serial.print(sin(temp)); Serial.print(','); Serial.println(cos(temp)); i+=0.1; delay(5); } 注：\n若只绘制一个图像，使用Serial.println()函数即可 若绘制多个图像，在每个串口值间使用Serial.print(’,’)进行分隔 ",
+  "wordCount" : "744",
   "inLanguage": "zh",
   "datePublished": "2018-09-01T00:00:00Z",
   "dateModified": "2018-09-01T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       使用树莓派的PWM产生方波信号；使用Arduino的AD采样&#43;串口绘图器当做示波器
     </div>
-    <div class="post-meta"><span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-09-01 00:00:00 +0000 UTC'>创建: 2018-09-01</span>&nbsp;|&nbsp;更新:&nbsp;2018-09-01&nbsp;|&nbsp;字数:&nbsp;744字&nbsp;|&nbsp;时长:&nbsp;2分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -266,25 +268,7 @@ if (!doNotTrack) {
 <p>树莓派的pin12、pin33(GPIO_18、GPIO_13)是树莓派提供的PWM硬件接口，可以产生高频的PWM信号。
 由于我只需要产生一个大约50Hz的方波信号。用最简单的GPIO库就可以产生可用的方波。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/python3</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/python3</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># -*- coding: utf-8 -*-</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> RPi.GPIO <span style="color:#fff;font-weight:bold">as</span> GPIO
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> time <span style="color:#fff;font-weight:bold">import</span> sleep
@@ -298,9 +282,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">input</span>(<span style="color:#0ff;font-weight:bold">&#34;Press Enter key to Stop 50Hz PWM @ 30</span><span style="color:#0ff;font-weight:bold">% d</span><span style="color:#0ff;font-weight:bold">uty cycle&#34;</span>)
 </span></span><span style="display:flex;"><span>p.stop()
 </span></span><span style="display:flex;"><span>GPIO.cleanup()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>运行该脚本，就可以在树莓派pin12上产生方波信号。</p>
+</span></span></code></pre></div><p>运行该脚本，就可以在树莓派pin12上产生方波信号。</p>
 <h3 id="arduino和树莓派连线">Arduino和树莓派连线<a hidden class="anchor" aria-hidden="true" href="#arduino和树莓派连线">#</a></h3>
 <p>连线图如下所示：
 <img loading="lazy" src="/img/%e6%96%b9%e6%b3%a2%e8%bf%9e%e7%ba%bf.jpg" alt="连线图"  />
@@ -314,19 +296,7 @@ if (!doNotTrack) {
 <p>Arduino 有A0-A5共6个模拟输入口，每个模拟口可以进行12位的采样，可以接受0-5V的电压输入，对应着0-1023的采样输出。</p>
 </blockquote>
 <p>使用A0口进行采样：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Arduino" data-lang="Arduino"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> setup() {
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> setup() {
 </span></span><span style="display:flex;"><span>   Serial.begin(<span style="color:#ff0;font-weight:bold">9600</span>); <span style="color:#007f7f">// Starting Serial Terminal
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
 </span></span><span style="display:flex;"><span>
@@ -334,9 +304,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">int</span> value = analogRead(A0);
 </span></span><span style="display:flex;"><span>  Serial.println(value);
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>打开Arduino官方的IDE的【工具】-&gt; 【串口绘图器】</p>
+</span></span></code></pre></div><p>打开Arduino官方的IDE的【工具】-&gt; 【串口绘图器】</p>
 <p>设置波特率为9600,可以观察到：</p>
 <p><img loading="lazy" src="/img/%e6%96%b9%e6%b3%a2%e4%bf%a1%e5%8f%b7.jpg" alt="方波信号"  />
 </p>
@@ -351,24 +319,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>Arduino串口绘图器可以绘制多个连续图形，如下程序就是在串口绘图器中画出sin和cos函数图像。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Arduino" data-lang="Arduino"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">double</span> i = <span style="color:#ff0;font-weight:bold">0</span>;
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">double</span> i = <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> setup() {
 </span></span><span style="display:flex;"><span>    Serial.begin(<span style="color:#ff0;font-weight:bold">9600</span>);
 </span></span><span style="display:flex;"><span>}
@@ -381,9 +332,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    i+=<span style="color:#ff0;font-weight:bold">0.1</span>;
 </span></span><span style="display:flex;"><span>    delay(<span style="color:#ff0;font-weight:bold">5</span>);
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>注：</p>
 <ul>
 <li>若只绘制一个图像，使用Serial.println()函数即可</li>
@@ -425,7 +374,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

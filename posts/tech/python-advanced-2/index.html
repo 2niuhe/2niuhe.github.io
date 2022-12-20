@@ -8,7 +8,8 @@
 <title>Python进阶中 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Python">
 <meta name="description" content="Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/python-advanced-2/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Python"
   ],
-  "articleBody": "生成器Generator 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 def countdown(num): print('Starting') while num \u003e 0: yield num num -= 1 # this will not print 'Starting' cd = countdown(3) # this will print 'Starting' and the first value print(next(cd)) # will print the next values print(next(cd)) print(next(cd)) # this will raise a StopIteration print(next(cd)) 迭代器使用方式\n1 2 3 4 5 6 7 8 9 10 11 12 13 # you can iterate over a generator object with a for in loop cd = countdown(3) for x in cd: print(x) # you can use it for functions that take iterables as input cd = countdown(3) sum_cd = sum(cd) print(sum_cd) cd = countdown(3) sorted_cd = sorted(cd) print(sorted_cd) 生成器表达式\n1 2 3 4 5 6 7 8 9 10 # generator expression mygenerator = (i for i in range(1000) if i % 2 == 0) print(sys.getsizeof(mygenerator), \"bytes\") # list comprehension mylist = [i for i in range(1000) if i % 2 == 0] print(sys.getsizeof(mylist), \"bytes\") # 120bytes # 4272 bytes 生成器概念 类可以实现生成器作为一个可迭代对象，它需要实现__iter__方法和__next__方法，使得类对象可迭代。此外，还需要注意记录迭代次数，以及最后raise一个StopIteration异常。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 class firstn: def __init__(self, n): self.n = n self.num = 0 def __iter__(self): return self def __next__(self): if self.num \u003c self.n: cur = self.num self.num += 1 return cur else: raise StopIteration() firstn_object = firstn(1000000) print(sum(firstn_object)) 装饰器Decorators 装饰器的典型使用场景有：\n计算函数执行时间 用于调试，打印出函数的参数和调用信息 作为函数的参数校验 以插件的形式注册函数 降低代码执行速度来测试网络，如使用sleep函数 缓存代码执行结果Memoization 附加信息或者更新状态 装饰器就是一个语法糖，如下装饰器就类似target = somedecorator(target)\n装饰器一个特性就是将被装饰函数替换为其他函数\n1 2 3 @somedecorator def target(): print(\"running target\") 简单装饰器模板\n1 2 3 4 5 6 7 8 9 10 import functools def my_decorator(func): @functools.wraps(func)\t# 保持被装饰函数的属性 def wrapper(*args, **kwargs): # Do something before result = func(*args, **kwargs) # Do something after return result return wrapper 带参数的装饰器函数，可以认为是两层函数，在简单装饰器外部套一个函数来扩展装饰器的行为。\n即两层闭包，一个持有外部环境变量的函数就是闭包。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 def repeat(num_times): def decorator_repeat(func): @functools.wraps(func) def wrapper(*args, **kwargs): for _ in range(num_times): result = func(*args, **kwargs) return result return wrapper return decorator_repeat @repeat(num_times=3) def greet(name): print(f\"Hello {name}\") greet('Alex') # 输出 \"\"\" Hello Alex Hello Alex Hello Alex \"\"\" 层叠装饰器 装饰器的执行顺序是decorator(func)，从外到内执行，如果有多个装饰器堆叠在一起，按照decorator2(docorator1(func))的执行顺序。\n其更清晰的执行顺序是：\nfunc = decorator1(func) func = decorator2(func) func() 多个装饰器装饰函数时，有个规律是从下到上包裹（装饰）函数，在装饰的过程中执行装饰器函数和内部闭包wrapper函数之间代码，闭包函数知识作为一个对象被返回，在装饰过程中并不执行。\n而在执行被装饰函数的过程中，从上到下执行wrapper函数内部的代码。\n如下代码多个装饰器，其装饰的顺序和wrapper执行的顺序相反。\n1 2 3 4 # 装饰过程 say_hello = start_end_decorator_2(start_end_decorator_1(say_hello)) say_hello() 多装饰器实验\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 import functools # a decorator function that prints debug information about the wrapped function def start_end_decorator_2(func): print('Start decorator2') @functools.wraps(func) def wrapper2(*args, **kwargs): print('Exec wrapper 2') result = func(*args, **kwargs) print('End wrapper 2') return result return wrapper2 def start_end_decorator_1(func): print('Start decorator1') @functools.wraps(func) def wrapper1(*args, **kwargs): print('Exec wrapper 1') result = func(*args, **kwargs) print('End wrapper 1') return result return wrapper1 @start_end_decorator_2 @start_end_decorator_1 def say_hello(name): greeting = f'Hello {name}' print(greeting) return greeting \"\"\" 相当于 func = start_end_decorator_1(func) 此时func是下面这个wrapper1函数 def wrapper1(*args, **kwargs): print('Exec wrapper 1') result = func(*args, **kwargs) print('End wrapper 1') return result 再经过下一个装饰器start_end_decorator_2 func再次被替换 func = start_end_decorator_2(start_end_decorator_1(func)) \"\"\" say_hello(name='Alex') # exec result \"\"\" Start decorator1 Start decorator2 Exec wrapper 2 Exec wrapper 1 Hello Alex End wrapper 1 End wrapper 2 \"\"\" 装饰器执行时间 装饰器需要区分导入时和运行时，\n装饰器一个特性就是装饰的过程在import时执行，当import代码时，装饰器立刻执行，将被装饰函数变为另一个函数。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 registry = [] def register(func): print(\"running register(%s)\" % func) registry.append(func) return func @register def f1(): print(\"running f1\") @register def f2(): print(\"running f2\") def f3(): print(\"running f3\") def main(): print(\"running main\") print(\"registry -\u003e\", registry) f1() f2() f3() if __name__ == \"__main__\": main() # import该模块的输出如下 \"\"\" running register() running register() \"\"\" # 执行main函数的输出如下 # 在运行时，被装饰函数才开始执行 \"\"\" running register() running register() running main registry -\u003e [, ] running f1 running f2 running f3 \"\"\" 类装饰器 可以使用类作为装饰器，因此，需要首先实现魔法方法__call__，使得对象是callable可调用的，类装饰器典型用处是保存状态，如函数被调用次数。我们使用functools.update_wrapper()而不是functools.wraps来持久化被装饰器函数信息。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 import functools class CountCalls: # the init needs to have the func as argument and stores it def __init__(self, func): functools.update_wrapper(self, func) self.func = func self.num_calls = 0 # extend functionality, execute function, and return the result def __call__(self, *args, **kwargs): self.num_calls += 1 print(f\"Call {self.num_calls} of {self.func.__name__!r}\") return self.func(*args, **kwargs) @CountCalls def say_hello(num): print(\"Hello!\") say_hello(5) say_hello(5) # result \"\"\" Call 1 of 'say_hello' Hello! Call 2 of 'say_hello' Hello! \"\"\" Context Managers 上下文管理器用于资源管理，允许你方便的分配和释放资源\nPython内置的关键字with用于处理上下文管理器，上下文管理器典型的用途有：\n打开和关闭文件 打开和关闭数据库连接 获得和释放锁 1 2 3 4 5 6 7 8 9 10 11 12 from threading import Lock lock = Lock() # error-prone: lock.acquire() # do stuff # lock should always be released! lock.release() # Better: with lock: # do stuff 实现一个上下文管理器类 为了支持with关键字，需要在类中实现__enter__和__exit__方法，当Python执行到with语句，会执行__enter__方法，此时应该获取资源并返回，而当离开上下文环境时，将执行__exit__方法，此时应该释放资源。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 class ManagedFile: def __init__(self, filename): print('init', filename) self.filename = filename def __enter__(self): print('enter') self.file = open(self.filename, 'w') return self.file def __exit__(self, exc_type, exc_value, exc_traceback): if self.file: self.file.close() print('exit') with ManagedFile('notes.txt') as f: print('doing stuff...') f.write('some todo...') 处理异常 当异常产生时，Python将异常类型、值和traceback信息传递给__exit__方法，它可以处理该异常。如果__exit__方法返回了除True之外的任何值，则由with语句引发异常。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 class ManagedFile: def __init__(self, filename): print('init', filename) self.filename = filename def __enter__(self): print('enter') self.file = open(self.filename, 'w') return self.file def __exit__(self, exc_type, exc_value, exc_traceback): if self.file: self.file.close() print('exc:', exc_type, exc_value) print('exit') # No exception with ManagedFile('notes.txt') as f: print('doing stuff...') f.write('some todo...') print('continuing...') print() # Exception is raised, but the file can still be closed with ManagedFile('notes2.txt') as f: print('doing stuff...') f.write('some todo...') f.do_something() print('continuing...') 也可以在__exit__方法中处理异常，并返回True\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 class ManagedFile: def __init__(self, filename): print('init', filename) self.filename = filename def __enter__(self): print('enter') self.file = open(self.filename, 'w') return self.file def __exit__(self, exc_type, exc_value, exc_traceback): if self.file: self.file.close() if exc_type is not None: print('Exception has been handled') print('exit') return True with ManagedFile('notes2.txt') as f: print('doing stuff...') f.write('some todo...') f.do_something() print('continuing...') 用生成器实现一个上下文管理器 与其写一个类，也可以写一个生成器函数，并用contextlib.contextmanager来装饰它。\n为了实现这个目的，函数必须在try语句段中yield资源，而在finally语句中实现类似__exit__的功能，即释放资源。\n1 2 3 4 5 6 7 8 9 10 11 12 from contextlib import contextmanager @contextmanager def open_managed_file(filename): f = open(filename, 'w') try: yield f finally: f.close() with open_managed_file('notes.txt') as f: f.write('some todo...') 生成器首先获取资源，然后暂时挂起执行流程，并yeild返回资源，资源可以被调用者使用，当调用着离开with上下文，生成器接着执行后续的finally语句，释放资源。\nPython中的解引用 Python中的*号具有多种作用：\nUse *args for variable-length arguments Use **kwargs for variable-length keyword arguments Use *, followed by more function parameters to enforce keyword-only arguments 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 def my_function(*args, **kwargs): for arg in args: print(arg) for key in kwargs: print(key, kwargs[key]) my_function(\"Hey\", 3, [0, 1, 2], name=\"Alex\", age=8) # Parameters after '*' or '*identifier' are keyword-only parameters and may only be passed using keyword arguments. def my_function2(name, *, age): print(name) print(age) # my_function2(\"Michael\", 5) --\u003e this would raise a TypeError my_function2(\"Michael\", age=5) Python函数传参以及深拷贝浅拷贝 在Python中，赋值语句obj_b = obj_a不产生真正的对象拷贝，只创建一个新的变量和obj_a具有相同的引用，因此当你想要产生可变对象的真正的拷贝，并在不影响原来对象的情况下修改拷贝对象时，需要格外小心。\n可以使用copy模块产生真正的拷贝，然而，对于混合/嵌套对象，浅拷贝和深拷贝有重要的区别，\n浅拷贝\n只有一层深，对于比一层深的嵌套对象是源对象的引用，因此修改会导致源对象的更改\n深拷贝\n一份完全独立的拷贝，递归产生源对象中所有嵌套对象的拷贝\n赋值操作 会产生源对象的一个引用，修改会导致源对象的变更\n1 2 3 4 5 6 7 8 9 10 11 list_a = [1, 2, 3, 4, 5] list_b = list_a list_a[0] = -10 print(list_a) print(list_b) \"\"\" [-10, 2, 3, 4, 5] [-10, 2, 3, 4, 5] \"\"\" 浅拷贝 浅拷贝只有一层深度，修改第一层不会影响源对象，使用copy.copy()方法或者对象特定的拷贝方法或者拷贝构造函数\n1 2 3 4 5 6 7 8 import copy list_a = [1, 2, 3, 4, 5] list_b = copy.copy(list_a) # not affects the other list list_b[0] = -10 print(list_a) print(list_b) 但是在嵌套对象中，修改第二层或者更深层次的数据时，会影响到源对象，因为在第二层时拷贝的是引用，而不是值。\n1 2 3 4 5 6 7 8 9 10 11 12 13 import copy list_a = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]] list_b = copy.copy(list_a) # affects the other! list_a[0][0]= -10 print(list_a) print(list_b) \"\"\" [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]] [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]] \"\"\" 对于列表，类似的浅拷贝方法还有\n1 2 3 4 # shallow copies list_b = list(list_a) list_b = list_a[:] list_b = list_a.copy() 深拷贝 深拷贝是一份完全独立的克隆，使用copy.deepcopy方法实现\n1 2 3 4 5 6 7 8 9 10 11 12 13 import copy list_a = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]] list_b = copy.deepcopy(list_a) # not affects the other list_a[0][0]= -10 print(list_a) print(list_b) \"\"\" [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]] [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]] \"\"\" 对象的深拷贝和浅拷贝 可以使用copy模块实现对特定对象的深拷贝或者浅拷贝\n赋值只拷贝对象引用 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 class Person: def __init__(self, name, age): self.name = name self.age = age # Only copies the reference p1 = Person('Alex', 27) p2 = p1 p2.age = 28 print(p1.age) print(p2.age) \"\"\" 28 28 \"\"\" 浅拷贝拷贝一层 1 2 3 4 5 6 7 8 9 10 11 12 # shallow copy import copy p1 = Person('Alex', 27) p2 = copy.copy(p1) p2.age = 28 print(p1.age) print(p2.age) \"\"\" 27 28 \"\"\" 深拷贝可以完整拷贝 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 class Company: def __init__(self, boss, employee): self. boss = boss self.employee = employee # shallow copy will affect nested objects boss = Person('Jane', 55) employee = Person('Joe', 28) company = Company(boss, employee) company_clone = copy.copy(company) company_clone.boss.age = 56 print(company.boss.age) print(company_clone.boss.age) \"\"\" 56 56 \"\"\" # deep copy will not affect nested objects boss = Person('Jane', 55) employee = Person('Joe', 28) company = Company(boss, employee) company_clone = copy.deepcopy(company) company_clone.boss.age = 56 print(company.boss.age) print(company_clone.boss.age) \"\"\" 55 56 \"\"\" 函数传参 在C语言中传参有显式的值传递和地址传递，在Python中也有类似的机制。\nPython中数据类型存在可变和不可变的区别，即mutable和immutable。\n对于可变类型，例如列表，由于传递的是列表的引用，列表可以在一个方法中被修改\n1 2 3 4 5 6 7 8 9 10 11 12 13 # immutable objects -\u003e no change def foo(x): x = 5 # x += 5 also no effect since x is immutable and a new variable must be created var = 10 print('var before foo():', var) foo(var) print('var after foo():', var) \"\"\" var before foo(): 10 var after foo(): 10 \"\"\" 可变对象 1 2 3 4 5 6 7 8 9 10 11 12 # mutable objects -\u003e change def foo(a_list): a_list.append(4) my_list = [1, 2, 3] print('my_list before foo():', my_list) foo(my_list) print('my_list after foo():', my_list) \"\"\" my_list before foo(): [1, 2, 3] my_list after foo(): [1, 2, 3, 4] \"\"\" 重新绑定一个可变对象的引用 1 2 3 4 5 6 7 8 9 10 # Rebind a mutable reference -\u003e no change def foo(a_list): # 赋值操作产生一个新的局部变量 a_list = [50, 60, 70] # a_list is now a new local variable within the function a_list.append(50) my_list = [1, 2, 3] print('my_list before foo():', my_list) foo(my_list) print('my_list after foo():', my_list) 区分+=和= 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 # another example with rebinding references: def foo(a_list): a_list += [4, 5] # this chanches the outer variable def bar(a_list): a_list = a_list + [4, 5] # this rebinds the reference to a new local variable my_list = [1, 2, 3] print('my_list before foo():', my_list) foo(my_list) print('my_list after foo():', my_list) my_list = [1, 2, 3] print('my_list before bar():', my_list) bar(my_list) print('my_list after bar():', my_list) \"\"\" my_list before foo(): [1, 2, 3] my_list after foo(): [1, 2, 3, 4, 5] my_list before bar(): [1, 2, 3] my_list after bar(): [1, 2, 3] \"\"\" 参考 Python-Notebook\nPython中的*号\n闭包概念\nPython装饰器\n",
-  "wordCount" : "4040",
+  "articleBody": "生成器Generator def countdown(num): print('Starting') while num \u003e 0: yield num num -= 1 # this will not print 'Starting' cd = countdown(3) # this will print 'Starting' and the first value print(next(cd)) # will print the next values print(next(cd)) print(next(cd)) # this will raise a StopIteration print(next(cd)) 迭代器使用方式\n# you can iterate over a generator object with a for in loop cd = countdown(3) for x in cd: print(x) # you can use it for functions that take iterables as input cd = countdown(3) sum_cd = sum(cd) print(sum_cd) cd = countdown(3) sorted_cd = sorted(cd) print(sorted_cd) 生成器表达式\n# generator expression mygenerator = (i for i in range(1000) if i % 2 == 0) print(sys.getsizeof(mygenerator), \"bytes\") # list comprehension mylist = [i for i in range(1000) if i % 2 == 0] print(sys.getsizeof(mylist), \"bytes\") # 120bytes # 4272 bytes 生成器概念 类可以实现生成器作为一个可迭代对象，它需要实现__iter__方法和__next__方法，使得类对象可迭代。此外，还需要注意记录迭代次数，以及最后raise一个StopIteration异常。\nclass firstn: def __init__(self, n): self.n = n self.num = 0 def __iter__(self): return self def __next__(self): if self.num \u003c self.n: cur = self.num self.num += 1 return cur else: raise StopIteration() firstn_object = firstn(1000000) print(sum(firstn_object)) 装饰器Decorators 装饰器的典型使用场景有：\n计算函数执行时间 用于调试，打印出函数的参数和调用信息 作为函数的参数校验 以插件的形式注册函数 降低代码执行速度来测试网络，如使用sleep函数 缓存代码执行结果Memoization 附加信息或者更新状态 装饰器就是一个语法糖，如下装饰器就类似target = somedecorator(target)\n装饰器一个特性就是将被装饰函数替换为其他函数\n@somedecorator def target(): print(\"running target\") 简单装饰器模板\nimport functools def my_decorator(func): @functools.wraps(func)\t# 保持被装饰函数的属性 def wrapper(*args, **kwargs): # Do something before result = func(*args, **kwargs) # Do something after return result return wrapper 带参数的装饰器函数，可以认为是两层函数，在简单装饰器外部套一个函数来扩展装饰器的行为。\n即两层闭包，一个持有外部环境变量的函数就是闭包。\ndef repeat(num_times): def decorator_repeat(func): @functools.wraps(func) def wrapper(*args, **kwargs): for _ in range(num_times): result = func(*args, **kwargs) return result return wrapper return decorator_repeat @repeat(num_times=3) def greet(name): print(f\"Hello {name}\") greet('Alex') # 输出 \"\"\" Hello Alex Hello Alex Hello Alex \"\"\" 层叠装饰器 装饰器的执行顺序是decorator(func)，从外到内执行，如果有多个装饰器堆叠在一起，按照decorator2(docorator1(func))的执行顺序。\n其更清晰的执行顺序是：\nfunc = decorator1(func) func = decorator2(func) func() 多个装饰器装饰函数时，有个规律是从下到上包裹（装饰）函数，在装饰的过程中执行装饰器函数和内部闭包wrapper函数之间代码，闭包函数知识作为一个对象被返回，在装饰过程中并不执行。\n而在执行被装饰函数的过程中，从上到下执行wrapper函数内部的代码。\n如下代码多个装饰器，其装饰的顺序和wrapper执行的顺序相反。\n# 装饰过程 say_hello = start_end_decorator_2(start_end_decorator_1(say_hello)) say_hello() 多装饰器实验\nimport functools # a decorator function that prints debug information about the wrapped function def start_end_decorator_2(func): print('Start decorator2') @functools.wraps(func) def wrapper2(*args, **kwargs): print('Exec wrapper 2') result = func(*args, **kwargs) print('End wrapper 2') return result return wrapper2 def start_end_decorator_1(func): print('Start decorator1') @functools.wraps(func) def wrapper1(*args, **kwargs): print('Exec wrapper 1') result = func(*args, **kwargs) print('End wrapper 1') return result return wrapper1 @start_end_decorator_2 @start_end_decorator_1 def say_hello(name): greeting = f'Hello {name}' print(greeting) return greeting \"\"\" 相当于 func = start_end_decorator_1(func) 此时func是下面这个wrapper1函数 def wrapper1(*args, **kwargs): print('Exec wrapper 1') result = func(*args, **kwargs) print('End wrapper 1') return result 再经过下一个装饰器start_end_decorator_2 func再次被替换 func = start_end_decorator_2(start_end_decorator_1(func)) \"\"\" say_hello(name='Alex') # exec result \"\"\" Start decorator1 Start decorator2 Exec wrapper 2 Exec wrapper 1 Hello Alex End wrapper 1 End wrapper 2 \"\"\" 装饰器执行时间 装饰器需要区分导入时和运行时，\n装饰器一个特性就是装饰的过程在import时执行，当import代码时，装饰器立刻执行，将被装饰函数变为另一个函数。\nregistry = [] def register(func): print(\"running register(%s)\" % func) registry.append(func) return func @register def f1(): print(\"running f1\") @register def f2(): print(\"running f2\") def f3(): print(\"running f3\") def main(): print(\"running main\") print(\"registry -\u003e\", registry) f1() f2() f3() if __name__ == \"__main__\": main() # import该模块的输出如下 \"\"\" running register() running register() \"\"\" # 执行main函数的输出如下 # 在运行时，被装饰函数才开始执行 \"\"\" running register() running register() running main registry -\u003e [, ] running f1 running f2 running f3 \"\"\" 类装饰器 可以使用类作为装饰器，因此，需要首先实现魔法方法__call__，使得对象是callable可调用的，类装饰器典型用处是保存状态，如函数被调用次数。我们使用functools.update_wrapper()而不是functools.wraps来持久化被装饰器函数信息。\nimport functools class CountCalls: # the init needs to have the func as argument and stores it def __init__(self, func): functools.update_wrapper(self, func) self.func = func self.num_calls = 0 # extend functionality, execute function, and return the result def __call__(self, *args, **kwargs): self.num_calls += 1 print(f\"Call {self.num_calls} of {self.func.__name__!r}\") return self.func(*args, **kwargs) @CountCalls def say_hello(num): print(\"Hello!\") say_hello(5) say_hello(5) # result \"\"\" Call 1 of 'say_hello' Hello! Call 2 of 'say_hello' Hello! \"\"\" Context Managers 上下文管理器用于资源管理，允许你方便的分配和释放资源\nPython内置的关键字with用于处理上下文管理器，上下文管理器典型的用途有：\n打开和关闭文件 打开和关闭数据库连接 获得和释放锁 from threading import Lock lock = Lock() # error-prone: lock.acquire() # do stuff # lock should always be released! lock.release() # Better: with lock: # do stuff 实现一个上下文管理器类 为了支持with关键字，需要在类中实现__enter__和__exit__方法，当Python执行到with语句，会执行__enter__方法，此时应该获取资源并返回，而当离开上下文环境时，将执行__exit__方法，此时应该释放资源。\nclass ManagedFile: def __init__(self, filename): print('init', filename) self.filename = filename def __enter__(self): print('enter') self.file = open(self.filename, 'w') return self.file def __exit__(self, exc_type, exc_value, exc_traceback): if self.file: self.file.close() print('exit') with ManagedFile('notes.txt') as f: print('doing stuff...') f.write('some todo...') 处理异常 当异常产生时，Python将异常类型、值和traceback信息传递给__exit__方法，它可以处理该异常。如果__exit__方法返回了除True之外的任何值，则由with语句引发异常。\nclass ManagedFile: def __init__(self, filename): print('init', filename) self.filename = filename def __enter__(self): print('enter') self.file = open(self.filename, 'w') return self.file def __exit__(self, exc_type, exc_value, exc_traceback): if self.file: self.file.close() print('exc:', exc_type, exc_value) print('exit') # No exception with ManagedFile('notes.txt') as f: print('doing stuff...') f.write('some todo...') print('continuing...') print() # Exception is raised, but the file can still be closed with ManagedFile('notes2.txt') as f: print('doing stuff...') f.write('some todo...') f.do_something() print('continuing...') 也可以在__exit__方法中处理异常，并返回True\nclass ManagedFile: def __init__(self, filename): print('init', filename) self.filename = filename def __enter__(self): print('enter') self.file = open(self.filename, 'w') return self.file def __exit__(self, exc_type, exc_value, exc_traceback): if self.file: self.file.close() if exc_type is not None: print('Exception has been handled') print('exit') return True with ManagedFile('notes2.txt') as f: print('doing stuff...') f.write('some todo...') f.do_something() print('continuing...') 用生成器实现一个上下文管理器 与其写一个类，也可以写一个生成器函数，并用contextlib.contextmanager来装饰它。\n为了实现这个目的，函数必须在try语句段中yield资源，而在finally语句中实现类似__exit__的功能，即释放资源。\nfrom contextlib import contextmanager @contextmanager def open_managed_file(filename): f = open(filename, 'w') try: yield f finally: f.close() with open_managed_file('notes.txt') as f: f.write('some todo...') 生成器首先获取资源，然后暂时挂起执行流程，并yeild返回资源，资源可以被调用者使用，当调用着离开with上下文，生成器接着执行后续的finally语句，释放资源。\nPython中的解引用 Python中的*号具有多种作用：\nUse *args for variable-length arguments Use **kwargs for variable-length keyword arguments Use *, followed by more function parameters to enforce keyword-only arguments def my_function(*args, **kwargs): for arg in args: print(arg) for key in kwargs: print(key, kwargs[key]) my_function(\"Hey\", 3, [0, 1, 2], name=\"Alex\", age=8) # Parameters after '*' or '*identifier' are keyword-only parameters and may only be passed using keyword arguments. def my_function2(name, *, age): print(name) print(age) # my_function2(\"Michael\", 5) --\u003e this would raise a TypeError my_function2(\"Michael\", age=5) Python函数传参以及深拷贝浅拷贝 在Python中，赋值语句obj_b = obj_a不产生真正的对象拷贝，只创建一个新的变量和obj_a具有相同的引用，因此当你想要产生可变对象的真正的拷贝，并在不影响原来对象的情况下修改拷贝对象时，需要格外小心。\n可以使用copy模块产生真正的拷贝，然而，对于混合/嵌套对象，浅拷贝和深拷贝有重要的区别，\n浅拷贝\n只有一层深，对于比一层深的嵌套对象是源对象的引用，因此修改会导致源对象的更改\n深拷贝\n一份完全独立的拷贝，递归产生源对象中所有嵌套对象的拷贝\n赋值操作 会产生源对象的一个引用，修改会导致源对象的变更\nlist_a = [1, 2, 3, 4, 5] list_b = list_a list_a[0] = -10 print(list_a) print(list_b) \"\"\" [-10, 2, 3, 4, 5] [-10, 2, 3, 4, 5] \"\"\" 浅拷贝 浅拷贝只有一层深度，修改第一层不会影响源对象，使用copy.copy()方法或者对象特定的拷贝方法或者拷贝构造函数\nimport copy list_a = [1, 2, 3, 4, 5] list_b = copy.copy(list_a) # not affects the other list list_b[0] = -10 print(list_a) print(list_b) 但是在嵌套对象中，修改第二层或者更深层次的数据时，会影响到源对象，因为在第二层时拷贝的是引用，而不是值。\nimport copy list_a = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]] list_b = copy.copy(list_a) # affects the other! list_a[0][0]= -10 print(list_a) print(list_b) \"\"\" [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]] [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]] \"\"\" 对于列表，类似的浅拷贝方法还有\n# shallow copies list_b = list(list_a) list_b = list_a[:] list_b = list_a.copy() 深拷贝 深拷贝是一份完全独立的克隆，使用copy.deepcopy方法实现\nimport copy list_a = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]] list_b = copy.deepcopy(list_a) # not affects the other list_a[0][0]= -10 print(list_a) print(list_b) \"\"\" [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]] [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]] \"\"\" 对象的深拷贝和浅拷贝 可以使用copy模块实现对特定对象的深拷贝或者浅拷贝\n赋值只拷贝对象引用 class Person: def __init__(self, name, age): self.name = name self.age = age # Only copies the reference p1 = Person('Alex', 27) p2 = p1 p2.age = 28 print(p1.age) print(p2.age) \"\"\" 28 28 \"\"\" 浅拷贝拷贝一层 # shallow copy import copy p1 = Person('Alex', 27) p2 = copy.copy(p1) p2.age = 28 print(p1.age) print(p2.age) \"\"\" 27 28 \"\"\" 深拷贝可以完整拷贝 class Company: def __init__(self, boss, employee): self. boss = boss self.employee = employee # shallow copy will affect nested objects boss = Person('Jane', 55) employee = Person('Joe', 28) company = Company(boss, employee) company_clone = copy.copy(company) company_clone.boss.age = 56 print(company.boss.age) print(company_clone.boss.age) \"\"\" 56 56 \"\"\" # deep copy will not affect nested objects boss = Person('Jane', 55) employee = Person('Joe', 28) company = Company(boss, employee) company_clone = copy.deepcopy(company) company_clone.boss.age = 56 print(company.boss.age) print(company_clone.boss.age) \"\"\" 55 56 \"\"\" 函数传参 在C语言中传参有显式的值传递和地址传递，在Python中也有类似的机制。\nPython中数据类型存在可变和不可变的区别，即mutable和immutable。\n对于可变类型，例如列表，由于传递的是列表的引用，列表可以在一个方法中被修改\n# immutable objects -\u003e no change def foo(x): x = 5 # x += 5 also no effect since x is immutable and a new variable must be created var = 10 print('var before foo():', var) foo(var) print('var after foo():', var) \"\"\" var before foo(): 10 var after foo(): 10 \"\"\" 可变对象 # mutable objects -\u003e change def foo(a_list): a_list.append(4) my_list = [1, 2, 3] print('my_list before foo():', my_list) foo(my_list) print('my_list after foo():', my_list) \"\"\" my_list before foo(): [1, 2, 3] my_list after foo(): [1, 2, 3, 4] \"\"\" 重新绑定一个可变对象的引用 # Rebind a mutable reference -\u003e no change def foo(a_list): # 赋值操作产生一个新的局部变量 a_list = [50, 60, 70] # a_list is now a new local variable within the function a_list.append(50) my_list = [1, 2, 3] print('my_list before foo():', my_list) foo(my_list) print('my_list after foo():', my_list) 区分+=和= # another example with rebinding references: def foo(a_list): a_list += [4, 5] # this chanches the outer variable def bar(a_list): a_list = a_list + [4, 5] # this rebinds the reference to a new local variable my_list = [1, 2, 3] print('my_list before foo():', my_list) foo(my_list) print('my_list after foo():', my_list) my_list = [1, 2, 3] print('my_list before bar():', my_list) bar(my_list) print('my_list after bar():', my_list) \"\"\" my_list before foo(): [1, 2, 3] my_list after foo(): [1, 2, 3, 4, 5] my_list before bar(): [1, 2, 3] my_list after bar(): [1, 2, 3] \"\"\" 参考 Python-Notebook\nPython中的*号\n闭包概念\nPython装饰器\n",
+  "wordCount" : "3535",
   "inLanguage": "zh",
   "datePublished": "2020-10-12T00:00:00Z",
   "dateModified": "2020-10-12T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符
     </div>
-    <div class="post-meta"><span title='2020-10-12 00:00:00 +0000 UTC'>2020-10-12</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2020-10-12 00:00:00 +0000 UTC'>创建: 2020-10-12</span>&nbsp;|&nbsp;更新:&nbsp;2020-10-12&nbsp;|&nbsp;字数:&nbsp;3535字&nbsp;|&nbsp;时长:&nbsp;8分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -295,29 +297,7 @@ if (!doNotTrack) {
 </div>
 
   <div class="post-content"><h4 id="生成器generator">生成器Generator<a hidden class="anchor" aria-hidden="true" href="#生成器generator">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> countdown(num):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> countdown(num):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Starting&#39;</span>)
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span> num &gt; <span style="color:#ff0;font-weight:bold">0</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">yield</span> num
@@ -335,29 +315,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># this will raise a StopIteration</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#fff;font-weight:bold">next</span>(cd))
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>迭代器使用方式</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># you can iterate over a generator object with a for in loop</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># you can iterate over a generator object with a for in loop</span>
 </span></span><span style="display:flex;"><span>cd = countdown(<span style="color:#ff0;font-weight:bold">3</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> x in cd:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(x)
@@ -370,26 +331,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>cd = countdown(<span style="color:#ff0;font-weight:bold">3</span>)
 </span></span><span style="display:flex;"><span>sorted_cd = <span style="color:#fff;font-weight:bold">sorted</span>(cd)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(sorted_cd)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>生成器表达式</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># generator expression</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># generator expression</span>
 </span></span><span style="display:flex;"><span>mygenerator = (i <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">1000</span>) <span style="color:#fff;font-weight:bold">if</span> i % <span style="color:#ff0;font-weight:bold">2</span> == <span style="color:#ff0;font-weight:bold">0</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(sys.getsizeof(mygenerator), <span style="color:#0ff;font-weight:bold">&#34;bytes&#34;</span>)
 </span></span><span style="display:flex;"><span>
@@ -399,35 +344,11 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 120bytes</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 4272 bytes</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="生成器概念">生成器概念<a hidden class="anchor" aria-hidden="true" href="#生成器概念">#</a></h5>
+</span></span></code></pre></div><h5 id="生成器概念">生成器概念<a hidden class="anchor" aria-hidden="true" href="#生成器概念">#</a></h5>
 <blockquote>
 <p>类可以实现生成器作为一个可迭代对象，它需要实现<code>__iter__</code>方法和<code>__next__</code>方法，使得类对象可迭代。此外，还需要注意记录迭代次数，以及最后raise一个StopIteration异常。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> firstn:
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> firstn:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, n):
 </span></span><span style="display:flex;"><span>        self.n = n
 </span></span><span style="display:flex;"><span>        self.num = <span style="color:#ff0;font-weight:bold">0</span>
@@ -445,9 +366,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>             
 </span></span><span style="display:flex;"><span>firstn_object = firstn(<span style="color:#ff0;font-weight:bold">1000000</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#fff;font-weight:bold">sum</span>(firstn_object))
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="装饰器decorators">装饰器Decorators<a hidden class="anchor" aria-hidden="true" href="#装饰器decorators">#</a></h4>
+</span></span></code></pre></div><h4 id="装饰器decorators">装饰器Decorators<a hidden class="anchor" aria-hidden="true" href="#装饰器decorators">#</a></h4>
 <blockquote>
 <p>装饰器的典型使用场景有：</p>
 <ul>
@@ -462,36 +381,13 @@ if (!doNotTrack) {
 <p><strong>装饰器就是一个语法糖，如下装饰器就类似<code>target = somedecorator(target)</code></strong></p>
 <p><strong>装饰器一个特性就是将被装饰函数替换为其他函数</strong></p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>@somedecorator
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>@somedecorator
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> target():
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;running target&#34;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>简单装饰器模板</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_decorator(func):
 </span></span><span style="display:flex;"><span>    @functools.wraps(func)		<span style="color:#007f7f"># 保持被装饰函数的属性</span>
@@ -501,39 +397,11 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># Do something after</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> result
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> wrapper
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>带参数的装饰器函数，可以认为是两层函数，在简单装饰器外部套一个函数来扩展装饰器的行为。</p>
 <p>即两层闭包，一个持有外部环境变量的函数就是闭包。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> repeat(num_times):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> repeat(num_times):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> decorator_repeat(func):
 </span></span><span style="display:flex;"><span>        @functools.wraps(func)
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">def</span> wrapper(*args, **kwargs):
@@ -555,9 +423,7 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    Hello Alex
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    Hello Alex
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="层叠装饰器">层叠装饰器<a hidden class="anchor" aria-hidden="true" href="#层叠装饰器">#</a></h5>
+</span></span></code></pre></div><h5 id="层叠装饰器">层叠装饰器<a hidden class="anchor" aria-hidden="true" href="#层叠装饰器">#</a></h5>
 <blockquote>
 <p>装饰器的执行顺序是decorator(func)，从外到内执行，如果有多个装饰器堆叠在一起，按照decorator2(docorator1(func))的执行顺序。</p>
 <p>其更清晰的执行顺序是：</p>
@@ -570,84 +436,14 @@ if (!doNotTrack) {
 <p>而在执行被装饰函数的过程中，从上到下执行wrapper函数内部的代码。</p>
 <p>如下代码多个装饰器，其装饰的顺序和wrapper执行的顺序相反。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 装饰过程</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 装饰过程</span>
 </span></span><span style="display:flex;"><span>say_hello = start_end_decorator_2(start_end_decorator_1(say_hello))
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>say_hello()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>多装饰器实验</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">38
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">39
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">40
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">41
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">42
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">43
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">44
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">45
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">46
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">47
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">48
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">49
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">50
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">51
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">52
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">53
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">54
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">55
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">56
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># a decorator function that prints debug information about the wrapped function</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> start_end_decorator_2(func): 
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Start decorator2&#39;</span>)
@@ -703,63 +499,12 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    End wrapper 1
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    End wrapper 2
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="装饰器执行时间">装饰器执行时间<a hidden class="anchor" aria-hidden="true" href="#装饰器执行时间">#</a></h5>
+</span></span></code></pre></div><h5 id="装饰器执行时间">装饰器执行时间<a hidden class="anchor" aria-hidden="true" href="#装饰器执行时间">#</a></h5>
 <blockquote>
 <p>装饰器需要区分导入时和运行时，</p>
 <p>装饰器一个特性就是装饰的过程在import时执行，当import代码时，装饰器立刻执行，将被装饰函数变为另一个函数。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">38
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">39
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">40
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">41
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">42
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">43
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">44
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">45
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>registry = []
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>registry = []
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> register(func):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;running register(</span><span style="color:#0ff;font-weight:bold">%s</span><span style="color:#0ff;font-weight:bold">)&#34;</span> % func)
@@ -804,46 +549,11 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">running f2
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">running f3
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="类装饰器">类装饰器<a hidden class="anchor" aria-hidden="true" href="#类装饰器">#</a></h5>
+</span></span></code></pre></div><h5 id="类装饰器">类装饰器<a hidden class="anchor" aria-hidden="true" href="#类装饰器">#</a></h5>
 <blockquote>
 <p>可以使用类作为装饰器，因此，需要首先实现魔法方法<code>__call__</code>，使得对象是callable可调用的，类装饰器典型用处是保存状态，如函数被调用次数。我们使用<code>functools.update_wrapper()</code>而不是<code>functools.wraps</code>来持久化被装饰器函数信息。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> CountCalls:
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># the init needs to have the func as argument and stores it</span>
@@ -872,9 +582,7 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    Call 2 of &#39;say_hello&#39;
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    Hello!
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="context-managers">Context Managers<a hidden class="anchor" aria-hidden="true" href="#context-managers">#</a></h3>
+</span></span></code></pre></div><h3 id="context-managers">Context Managers<a hidden class="anchor" aria-hidden="true" href="#context-managers">#</a></h3>
 <blockquote>
 <p>上下文管理器用于资源管理，允许你方便的分配和释放资源</p>
 <p>Python内置的关键字with用于处理上下文管理器，上下文管理器典型的用途有：</p>
@@ -884,23 +592,7 @@ if (!doNotTrack) {
 <li>获得和释放锁</li>
 </ul>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> threading <span style="color:#fff;font-weight:bold">import</span> Lock
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> threading <span style="color:#fff;font-weight:bold">import</span> Lock
 </span></span><span style="display:flex;"><span>lock = Lock()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># error-prone:</span>
@@ -912,35 +604,11 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># Better:</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">with</span> lock:
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># do stuff</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="实现一个上下文管理器类">实现一个上下文管理器类<a hidden class="anchor" aria-hidden="true" href="#实现一个上下文管理器类">#</a></h4>
+</span></span></code></pre></div><h4 id="实现一个上下文管理器类">实现一个上下文管理器类<a hidden class="anchor" aria-hidden="true" href="#实现一个上下文管理器类">#</a></h4>
 <blockquote>
 <p>为了支持with关键字，需要在类中实现<code>__enter__</code>和<code>__exit__</code>方法，当Python执行到with语句，会执行<code>__enter__</code>方法，此时应该获取资源并返回，而当离开上下文环境时，将执行<code>__exit__</code>方法，此时应该释放资源。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, filename):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;init&#39;</span>, filename)
 </span></span><span style="display:flex;"><span>        self.filename = filename
@@ -958,47 +626,11 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">with</span> ManagedFile(<span style="color:#0ff;font-weight:bold">&#39;notes.txt&#39;</span>) <span style="color:#fff;font-weight:bold">as</span> f:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;doing stuff...&#39;</span>)
 </span></span><span style="display:flex;"><span>    f.write(<span style="color:#0ff;font-weight:bold">&#39;some todo...&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="处理异常">处理异常<a hidden class="anchor" aria-hidden="true" href="#处理异常">#</a></h5>
+</span></span></code></pre></div><h5 id="处理异常">处理异常<a hidden class="anchor" aria-hidden="true" href="#处理异常">#</a></h5>
 <blockquote>
 <p>当异常产生时，Python将异常类型、值和traceback信息传递给<code>__exit__</code>方法，它可以处理该异常。如果<code>__exit__</code>方法返回了除True之外的任何值，则由with语句引发异常。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, filename):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;init&#39;</span>, filename)
 </span></span><span style="display:flex;"><span>        self.filename = filename
@@ -1028,40 +660,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    f.write(<span style="color:#0ff;font-weight:bold">&#39;some todo...&#39;</span>)
 </span></span><span style="display:flex;"><span>    f.do_something()
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;continuing...&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>也可以在<code>__exit__</code>方法中处理异常，并返回<code>True</code></p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, filename):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;init&#39;</span>, filename)
 </span></span><span style="display:flex;"><span>        self.filename = filename
@@ -1085,30 +687,12 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    f.write(<span style="color:#0ff;font-weight:bold">&#39;some todo...&#39;</span>)
 </span></span><span style="display:flex;"><span>    f.do_something()
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;continuing...&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="用生成器实现一个上下文管理器">用生成器实现一个上下文管理器<a hidden class="anchor" aria-hidden="true" href="#用生成器实现一个上下文管理器">#</a></h4>
+</span></span></code></pre></div><h4 id="用生成器实现一个上下文管理器">用生成器实现一个上下文管理器<a hidden class="anchor" aria-hidden="true" href="#用生成器实现一个上下文管理器">#</a></h4>
 <blockquote>
 <p>与其写一个类，也可以写一个生成器函数，并用<code>contextlib.contextmanager</code>来装饰它。</p>
 <p>为了实现这个目的，函数必须在<code>try</code>语句段中<code>yield</code>资源，而在<code>finally</code>语句中实现类似<code>__exit__</code>的功能，即释放资源。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> contextlib <span style="color:#fff;font-weight:bold">import</span> contextmanager
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> contextlib <span style="color:#fff;font-weight:bold">import</span> contextmanager
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>@contextmanager
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> open_managed_file(filename):
@@ -1120,9 +704,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">with</span> open_managed_file(<span style="color:#0ff;font-weight:bold">&#39;notes.txt&#39;</span>) <span style="color:#fff;font-weight:bold">as</span> f:
 </span></span><span style="display:flex;"><span>    f.write(<span style="color:#0ff;font-weight:bold">&#39;some todo...&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>生成器首先获取资源，然后暂时挂起执行流程，并<code>yeild</code>返回资源，资源可以被调用者使用，当调用着离开with上下文，生成器接着执行后续的<code>finally</code>语句，释放资源。</p>
 </blockquote>
 <h4 id="python中的解引用">Python中的解引用<a hidden class="anchor" aria-hidden="true" href="#python中的解引用">#</a></h4>
@@ -1134,26 +716,7 @@ if (!doNotTrack) {
 <li>Use <code>*,</code> followed by more function parameters to enforce keyword-only arguments</li>
 </ul>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_function(*args, **kwargs):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_function(*args, **kwargs):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> arg in args:
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(arg)
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> key in kwargs:
@@ -1168,9 +731,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># my_function2(&#34;Michael&#34;, 5) --&gt; this would raise a TypeError</span>
 </span></span><span style="display:flex;"><span>my_function2(<span style="color:#0ff;font-weight:bold">&#34;Michael&#34;</span>, age=<span style="color:#ff0;font-weight:bold">5</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="python函数传参以及深拷贝浅拷贝">Python函数传参以及深拷贝浅拷贝<a hidden class="anchor" aria-hidden="true" href="#python函数传参以及深拷贝浅拷贝">#</a></h4>
+</span></span></code></pre></div><h4 id="python函数传参以及深拷贝浅拷贝">Python函数传参以及深拷贝浅拷贝<a hidden class="anchor" aria-hidden="true" href="#python函数传参以及深拷贝浅拷贝">#</a></h4>
 <blockquote>
 <p>在Python中，赋值语句<code>obj_b = obj_a</code>不产生真正的对象拷贝，只创建一个新的变量和obj_a具有相同的引用，因此当你想要产生可变对象的真正的拷贝，并在不影响原来对象的情况下修改拷贝对象时，需要格外小心。</p>
 <p>可以使用copy模块产生真正的拷贝，然而，对于混合/嵌套对象，浅拷贝和深拷贝有重要的区别，</p>
@@ -1193,22 +754,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>会产生源对象的一个引用，修改会导致源对象的变更</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>list_a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>]
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>list_a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>]
 </span></span><span style="display:flex;"><span>list_b = list_a
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>list_a[<span style="color:#ff0;font-weight:bold">0</span>] = -<span style="color:#ff0;font-weight:bold">10</span>
@@ -1219,25 +765,11 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    [-10, 2, 3, 4, 5]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    [-10, 2, 3, 4, 5]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="浅拷贝">浅拷贝<a hidden class="anchor" aria-hidden="true" href="#浅拷贝">#</a></h5>
+</span></span></code></pre></div><h5 id="浅拷贝">浅拷贝<a hidden class="anchor" aria-hidden="true" href="#浅拷贝">#</a></h5>
 <blockquote>
 <p>浅拷贝只有一层深度，修改第一层不会影响源对象，使用<code>copy.copy()</code>方法或者对象特定的拷贝方法或者拷贝构造函数</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>list_a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>]
 </span></span><span style="display:flex;"><span>list_b = copy.copy(list_a)
 </span></span><span style="display:flex;"><span>
@@ -1245,29 +777,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>list_b[<span style="color:#ff0;font-weight:bold">0</span>] = -<span style="color:#ff0;font-weight:bold">10</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(list_a)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(list_b)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>但是在嵌套对象中，修改第二层或者更深层次的数据时，会影响到源对象，因为在第二层时拷贝的是引用，而不是值。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>list_a = [[<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>], [<span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">10</span>]]
 </span></span><span style="display:flex;"><span>list_b = copy.copy(list_a)
 </span></span><span style="display:flex;"><span>
@@ -1280,47 +793,18 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>对于列表，类似的浅拷贝方法还有</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copies</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copies</span>
 </span></span><span style="display:flex;"><span>list_b = <span style="color:#fff;font-weight:bold">list</span>(list_a)
 </span></span><span style="display:flex;"><span>list_b = list_a[:]
 </span></span><span style="display:flex;"><span>list_b = list_a.copy()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="深拷贝">深拷贝<a hidden class="anchor" aria-hidden="true" href="#深拷贝">#</a></h5>
+</span></span></code></pre></div><h5 id="深拷贝">深拷贝<a hidden class="anchor" aria-hidden="true" href="#深拷贝">#</a></h5>
 <blockquote>
 <p>深拷贝是一份完全独立的克隆，使用<code>copy.deepcopy</code>方法实现</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>list_a = [[<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>], [<span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">10</span>]]
 </span></span><span style="display:flex;"><span>list_b = copy.deepcopy(list_a)
 </span></span><span style="display:flex;"><span>
@@ -1333,36 +817,14 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    [[-10, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="对象的深拷贝和浅拷贝">对象的深拷贝和浅拷贝<a hidden class="anchor" aria-hidden="true" href="#对象的深拷贝和浅拷贝">#</a></h5>
+</span></span></code></pre></div><h5 id="对象的深拷贝和浅拷贝">对象的深拷贝和浅拷贝<a hidden class="anchor" aria-hidden="true" href="#对象的深拷贝和浅拷贝">#</a></h5>
 <blockquote>
 <p>可以使用<code>copy</code>模块实现对特定对象的深拷贝或者浅拷贝</p>
 </blockquote>
 <ul>
 <li>赋值只拷贝对象引用</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Person:
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Person:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, name, age):
 </span></span><span style="display:flex;"><span>        self.name = name
 </span></span><span style="display:flex;"><span>        self.age = age
@@ -1378,28 +840,10 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    28
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    28
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li>浅拷贝拷贝一层</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copy</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copy</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>p1 = Person(<span style="color:#0ff;font-weight:bold">&#39;Alex&#39;</span>, <span style="color:#ff0;font-weight:bold">27</span>)
 </span></span><span style="display:flex;"><span>p2 = copy.copy(p1)
@@ -1411,47 +855,10 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    27
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    28
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li>深拷贝可以完整拷贝</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Company:
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Company:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, boss, employee):
 </span></span><span style="display:flex;"><span>        self. boss = boss
 </span></span><span style="display:flex;"><span>        self.employee = employee
@@ -1482,9 +889,7 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    55
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    56
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="函数传参">函数传参<a hidden class="anchor" aria-hidden="true" href="#函数传参">#</a></h5>
+</span></span></code></pre></div><h5 id="函数传参">函数传参<a hidden class="anchor" aria-hidden="true" href="#函数传参">#</a></h5>
 <blockquote>
 <p>在C语言中传参有显式的值传递和地址传递，在Python中也有类似的机制。</p>
 </blockquote>
@@ -1492,24 +897,7 @@ if (!doNotTrack) {
 <p>Python中数据类型存在可变和不可变的区别，即mutable和immutable。</p>
 <p>对于可变类型，例如列表，由于传递的是列表的引用，列表可以在一个方法中被修改</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># immutable objects -&gt; no change</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># immutable objects -&gt; no change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(x):
 </span></span><span style="display:flex;"><span>    x = <span style="color:#ff0;font-weight:bold">5</span> <span style="color:#007f7f"># x += 5 also no effect since x is immutable and a new variable must be created</span>
 </span></span><span style="display:flex;"><span>
@@ -1522,28 +910,10 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    var before foo(): 10
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    var after foo(): 10
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li>可变对象</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># mutable objects -&gt; change</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># mutable objects -&gt; change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(a_list):
 </span></span><span style="display:flex;"><span>    a_list.append(<span style="color:#ff0;font-weight:bold">4</span>)
 </span></span><span style="display:flex;"><span>    
@@ -1555,26 +925,10 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    my_list before foo(): [1, 2, 3]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    my_list after foo(): [1, 2, 3, 4]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li>重新绑定一个可变对象的引用</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># Rebind a mutable reference -&gt; no change</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># Rebind a mutable reference -&gt; no change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(a_list):
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 赋值操作产生一个新的局部变量</span>
 </span></span><span style="display:flex;"><span>    a_list = [<span style="color:#ff0;font-weight:bold">50</span>, <span style="color:#ff0;font-weight:bold">60</span>, <span style="color:#ff0;font-weight:bold">70</span>] <span style="color:#007f7f"># a_list is now a new local variable within the function</span>
@@ -1584,39 +938,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;my_list before foo():&#39;</span>, my_list)
 </span></span><span style="display:flex;"><span>foo(my_list)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;my_list after foo():&#39;</span>, my_list)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li>区分+=和=</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># another example with rebinding references:</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># another example with rebinding references:</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(a_list):
 </span></span><span style="display:flex;"><span>    a_list += [<span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>] <span style="color:#007f7f"># this chanches the outer variable</span>
 </span></span><span style="display:flex;"><span>    
@@ -1639,9 +964,7 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    my_list before bar(): [1, 2, 3]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    my_list after bar(): [1, 2, 3]
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
 <p><a href="https://github.com/python-engineer/python-engineer-notebooks">Python-Notebook</a></p>
 <p><a href="https://www.python-engineer.com/courses/advancedpython/19-asterisk/">Python中的*号</a></p>
 <p><a href="https://zh.wikipedia.org/wiki/%E9%97%AD%E5%8C%85_(%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6)">闭包概念</a></p>
@@ -1678,7 +1001,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

@@ -8,7 +8,8 @@
 <title>Linux进程——地址空间 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Linux, C">
 <meta name="description" content="Linux进程地址空间和动态内存分配">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-1/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Linux", "C"
   ],
-  "articleBody": " 可执行程序是存储在磁盘设备上由代码和数据按某种格式组织的静态实体，而进程是可被调度的代码的动态运行。在Linux系统中，在一个进程的生命周期里，都有各自的运行环境和所需的资源，这些信息储存在各自的进程控制块中。\n进程控制块主要结构如下:\n用户标识 进程和会话标识 虚拟地址管理 文件描述符表 信号 ###进程地址空间\n在32位地址总线的计算机上，每个进程拥有4GB的虚拟地址空间。\n可执行程序被加载至进程的用户虚拟地址空阿金，即将可执行程序中的代码段和数据段的内容复制到用户地址空间。为了执行程序，内核需在用户虚拟地址空间中建立一些辅助区域，例如堆区和栈区等，从而将用户虚拟地址空间划分为若干区域，分别为代码区、未初始化数据区、初始化数据区、环境变量和命令行参数区、堆区、栈区。不同区域中存储了不同的信息，有各自不同的属性。\n代码区\n包含指令序列和只读数据，没和在创建进程加载可执行二进制映像文件时，将这部分内容映射到进程的用户地址空间形成代码区。进程运行期间，代码区内容不会改变。\n因此，一个可执行映像的多个进程可共享代码区，只需保持一个复制。\n在可执行映像文件中，代码区的内容被保存在文本段中，文本段又称代码段。\n未初始化数据区\n在可执行二进制映像文件中，未初始化数据包括没有初始化的全局变量和静态局部变量，它们在映像文件中不占用储存空间，只保留其地址和大小信息。\n若映像文件中存在未初始化数据段，内核创建进程时，在进程的用户地址空间中为其分配一块区域，用于进程运行过程中对未初始化数据的存取，成为未初始化数据区。\n初始化数据区\n初始化数据区包括已初始化的全局变量和静态局部变量。在映像文件中，初始化数据被组织在数据段中，内核将初始化数据段映射至用户地址空间形成初始化数据区。该区内容运行过程中会发生变化，一个程序的多个进程实体拥有各自的数据区。\n堆heap\n堆位于数据区和栈之间，用于应用程序的动态内存管理。Linux将动态内存的管理通过glibc实现。Linux的进程控制块中记录了虚拟内存各区域的地址信息，它们在进程初始化时由系统设置，其中包含堆的起始地址和结束地址。\n在初始状态下，brk指针指向堆的顶部。堆区大小可以通过brk和sbrk函数调整。\n栈stack\n栈用来存放进程运行过程中的局部变量、函数返回地址、参数和进程上下文环境。\n环境变量和命令行\n环境变量继承自父进程，作用范围是进程本身及其子孙进程。命令行保存执行程序时的输入参数，它们都被保存在栈区域。\n自由空间\n堆栈之间的自由空间，内核可为进程创建新的区域用于加载共享库、映射共享内存和映射文件I/O等，可以通过mmap和munmap函数申请和释放。\n###环境变量/命令行参数\n每个进程的环境变量以字符串的形式存放在数组中，数组地址存放在全局变量environ中，可通过getenv和putenv对环境变量进行存取。\n命令行参数保存在用户地址空间的栈区域。\n案例：显示当前进程所有环境变量\n1 2 3 4 5 6 7 8 9 10 11 12 #include int main(int argc,char *argv[]) { int i; char **ptr; extern char **environ; for (ptr = environ;*ptr != NULL;ptr++) printf(\"%s\\n\",*ptr); return 0; } 案例:使用getenv和putenv存取环境变量\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 #include #include int main(int argc,char *argv[],char *envp[]) { int i; extern char **environ; printf(\"form argument envp\\n\"); for(i=0;envp[i];i++) puts(envp[i]); putenv(\"HONE=/\"); printf(\"\\nFrom global variable environ\\n\"); for(i=0;environ[i];i++) puts(environ[i]); return 0; } 案例:显示所有命令行参数\n1 2 3 4 5 6 7 8 9 #include int main(int argc,char *argv[]) { int i; for(i=0;i",
-  "wordCount" : "1817",
+  "articleBody": " 可执行程序是存储在磁盘设备上由代码和数据按某种格式组织的静态实体，而进程是可被调度的代码的动态运行。在Linux系统中，在一个进程的生命周期里，都有各自的运行环境和所需的资源，这些信息储存在各自的进程控制块中。\n进程控制块主要结构如下:\n用户标识 进程和会话标识 虚拟地址管理 文件描述符表 信号 ###进程地址空间\n在32位地址总线的计算机上，每个进程拥有4GB的虚拟地址空间。\n可执行程序被加载至进程的用户虚拟地址空阿金，即将可执行程序中的代码段和数据段的内容复制到用户地址空间。为了执行程序，内核需在用户虚拟地址空间中建立一些辅助区域，例如堆区和栈区等，从而将用户虚拟地址空间划分为若干区域，分别为代码区、未初始化数据区、初始化数据区、环境变量和命令行参数区、堆区、栈区。不同区域中存储了不同的信息，有各自不同的属性。\n代码区\n包含指令序列和只读数据，没和在创建进程加载可执行二进制映像文件时，将这部分内容映射到进程的用户地址空间形成代码区。进程运行期间，代码区内容不会改变。\n因此，一个可执行映像的多个进程可共享代码区，只需保持一个复制。\n在可执行映像文件中，代码区的内容被保存在文本段中，文本段又称代码段。\n未初始化数据区\n在可执行二进制映像文件中，未初始化数据包括没有初始化的全局变量和静态局部变量，它们在映像文件中不占用储存空间，只保留其地址和大小信息。\n若映像文件中存在未初始化数据段，内核创建进程时，在进程的用户地址空间中为其分配一块区域，用于进程运行过程中对未初始化数据的存取，成为未初始化数据区。\n初始化数据区\n初始化数据区包括已初始化的全局变量和静态局部变量。在映像文件中，初始化数据被组织在数据段中，内核将初始化数据段映射至用户地址空间形成初始化数据区。该区内容运行过程中会发生变化，一个程序的多个进程实体拥有各自的数据区。\n堆heap\n堆位于数据区和栈之间，用于应用程序的动态内存管理。Linux将动态内存的管理通过glibc实现。Linux的进程控制块中记录了虚拟内存各区域的地址信息，它们在进程初始化时由系统设置，其中包含堆的起始地址和结束地址。\n在初始状态下，brk指针指向堆的顶部。堆区大小可以通过brk和sbrk函数调整。\n栈stack\n栈用来存放进程运行过程中的局部变量、函数返回地址、参数和进程上下文环境。\n环境变量和命令行\n环境变量继承自父进程，作用范围是进程本身及其子孙进程。命令行保存执行程序时的输入参数，它们都被保存在栈区域。\n自由空间\n堆栈之间的自由空间，内核可为进程创建新的区域用于加载共享库、映射共享内存和映射文件I/O等，可以通过mmap和munmap函数申请和释放。\n###环境变量/命令行参数\n每个进程的环境变量以字符串的形式存放在数组中，数组地址存放在全局变量environ中，可通过getenv和putenv对环境变量进行存取。\n命令行参数保存在用户地址空间的栈区域。\n案例：显示当前进程所有环境变量\n#include int main(int argc,char *argv[]) { int i; char **ptr; extern char **environ; for (ptr = environ;*ptr != NULL;ptr++) printf(\"%s\\n\",*ptr); return 0; } 案例:使用getenv和putenv存取环境变量\n#include #include int main(int argc,char *argv[],char *envp[]) { int i; extern char **environ; printf(\"form argument envp\\n\"); for(i=0;envp[i];i++) puts(envp[i]); putenv(\"HONE=/\"); printf(\"\\nFrom global variable environ\\n\"); for(i=0;environ[i];i++) puts(environ[i]); return 0; } 案例:显示所有命令行参数\n#include int main(int argc,char *argv[]) { int i; for(i=0;i",
+  "wordCount" : "1732",
   "inLanguage": "zh",
   "datePublished": "2018-10-08T00:00:00Z",
   "dateModified": "2018-10-08T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       Linux进程地址空间和动态内存分配
     </div>
-    <div class="post-meta"><span title='2018-10-08 00:00:00 +0000 UTC'>2018-10-08</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-10-08 00:00:00 +0000 UTC'>创建: 2018-10-08</span>&nbsp;|&nbsp;更新:&nbsp;2018-10-08&nbsp;|&nbsp;字数:&nbsp;1732字&nbsp;|&nbsp;时长:&nbsp;4分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -292,23 +294,7 @@ if (!doNotTrack) {
 <p>命令行参数保存在用户地址空间的栈区域。</p>
 </blockquote>
 <p><strong>案例：显示当前进程所有环境变量</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[])
 </span></span><span style="display:flex;"><span>{
@@ -320,30 +306,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;%s</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,*ptr);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例:使用getenv和putenv存取环境变量</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例:使用getenv和putenv存取环境变量</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[],<span style="color:#fff;font-weight:bold">char</span> *envp[])
@@ -359,23 +323,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        puts(environ[i]);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例:显示所有命令行参数</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">9
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例:显示所有命令行参数</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[])
 </span></span><span style="display:flex;"><span>{
@@ -384,28 +333,11 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;argv[%d}:%s</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,i,argv[i]);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###动态内存管理</p>
+</span></span></code></pre></div><p>###动态内存管理</p>
 <blockquote>
 <p>堆介于栈和全局数据区之间，这部分空间用于进程的动态内存分配，堆采用自下向上生长。相关API函数如下：</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> *malloc(<span style="color:#fff;font-weight:bold">size_t</span> size);
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> *malloc(<span style="color:#fff;font-weight:bold">size_t</span> size);
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> free(<span style="color:#fff;font-weight:bold">void</span> *ptr);
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">/*
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">设置堆区域的大小
@@ -416,51 +348,8 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> brk(<span style="color:#fff;font-weight:bold">void</span> *pend);
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> *sbrk(<span style="color:#fff;font-weight:bold">int</span> incr);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例:使用brk和sbrk调整heap大小</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例:使用brk和sbrk调整heap大小</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">extern</span> <span style="color:#fff;font-weight:bold">int</span> etext,edata,end;
@@ -497,9 +386,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    bv = sbrk(<span style="color:#ff0;font-weight:bold">0</span>);       <span style="color:#007f7f">//当前堆区边界地址
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    printf(<span style="color:#0ff;font-weight:bold">&#34;Current break value is %10p </span><span style="color:#0ff;font-weight:bold">\n\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,bv);
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>注</strong></p>
+</span></span></code></pre></div><p><strong>注</strong></p>
 <blockquote>
 <p>通过brk、sbrk、mmap系统调用会频繁的触发软中断，使程序陷入内核态，比较消耗资源。为了较少系统调用产生的损耗，glibc采用内存池的设计，增加一个代理层，每次内存分配，优先从内存池中寻找一个大小相近的内存块(chunk),若内存池中无法提供，再向内核申请。</p>
 <p>具体参考<a href="https://www.jianshu.com/p/2fedeacfa797">glibc内存管理</a></p>
@@ -537,7 +424,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

@@ -8,7 +8,8 @@
 <title>在Linux终端里浏览知乎日报 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Python">
 <meta name="description" content="可以在终端里浏览知乎日报的每日标题，如果有感兴趣的可以点开链接在浏览器中继续观看。方便使用，节省大家时间">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Python"
   ],
-  "articleBody": "程序效果图如下：\n程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。\n程序十分简单，只十几行代码。使用python3，需要安装requests包。\n源代码如下，也可以从我的github下载。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 #!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'} def get_daily(): page = requests.get('http://news-at.zhihu.com/api/3/news/latest', headers=headers).text response = json.loads(page) date = response['date'] stories = response['stories'] date = '\\n%s年%s月%s日' % (date[:4], date[4:6], date[6:]) print('%s 共%d条日报\\n' % (date, len(stories))) for index,story in enumerate(stories, 1): print('{0:\u003c2d}：{1:s}\\n url：http://news-at.zhihu.com/story/{2:d}'.format(index, story['title'], story['id'])) if __name__ == '__main__': get_daily() 保存为zhdaily.py文件，然后将文件放到/usr/local/bin/目录下，并给zhdaily.py增加执行权限：\n1 2 3 $ sudo mv zhdaily.py /usr/local/bin/ $ cd /usr/local/bin/ $ sudo chmod +x zhdaily.py 这样，当你下次进入终端，可以直接执行：\n1 $ zhdaily.py 就可以获得图示的效果。\n碎碎念：\n曾经知乎是一个优秀的社区，也确实让我发现了更大的世界。可是，从某个时刻开始，充斥我时间线的内容都是被知乎官方筛选的。整个社区充斥着喧嚣、广告、营销和带节奏。\n我不喜欢：\n被煽动的愤怒\n被策划的欢乐\n最后，我又回到了RSS的怀抱，可以控制我接收到相对有价值的信息。\n不过，浏览知乎日报能了解下当下热点，增加聊天谈资。省的聊天时都不知道《创造101》是啥？赫赫:)\n我基本每天只浏览日报的标题，这个小程序正好满足需求。\n",
-  "wordCount" : "632",
+  "articleBody": "程序效果图如下：\n程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。\n程序十分简单，只十几行代码。使用python3，需要安装requests包。\n源代码如下，也可以从我的github下载。\n#!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'} def get_daily(): page = requests.get('http://news-at.zhihu.com/api/3/news/latest', headers=headers).text response = json.loads(page) date = response['date'] stories = response['stories'] date = '\\n%s年%s月%s日' % (date[:4], date[4:6], date[6:]) print('%s 共%d条日报\\n' % (date, len(stories))) for index,story in enumerate(stories, 1): print('{0:\u003c2d}：{1:s}\\n url：http://news-at.zhihu.com/story/{2:d}'.format(index, story['title'], story['id'])) if __name__ == '__main__': get_daily() 保存为zhdaily.py文件，然后将文件放到/usr/local/bin/目录下，并给zhdaily.py增加执行权限：\n$ sudo mv zhdaily.py /usr/local/bin/ $ cd /usr/local/bin/ $ sudo chmod +x zhdaily.py 这样，当你下次进入终端，可以直接执行：\n$ zhdaily.py 就可以获得图示的效果。\n碎碎念：\n曾经知乎是一个优秀的社区，也确实让我发现了更大的世界。可是，从某个时刻开始，充斥我时间线的内容都是被知乎官方筛选的。整个社区充斥着喧嚣、广告、营销和带节奏。\n我不喜欢：\n被煽动的愤怒\n被策划的欢乐\n最后，我又回到了RSS的怀抱，可以控制我接收到相对有价值的信息。\n不过，浏览知乎日报能了解下当下热点，增加聊天谈资。省的聊天时都不知道《创造101》是啥？赫赫:)\n我基本每天只浏览日报的标题，这个小程序正好满足需求。\n",
+  "wordCount" : "607",
   "inLanguage": "zh",
   "datePublished": "2018-05-18T00:00:00Z",
   "dateModified": "2018-05-18T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       可以在终端里浏览知乎日报的每日标题，如果有感兴趣的可以点开链接在浏览器中继续观看。方便使用，节省大家时间
     </div>
-    <div class="post-meta"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-05-18 00:00:00 +0000 UTC'>创建: 2018-05-18</span>&nbsp;|&nbsp;更新:&nbsp;2018-05-18&nbsp;|&nbsp;字数:&nbsp;607字&nbsp;|&nbsp;时长:&nbsp;2分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -242,32 +244,7 @@ if (!doNotTrack) {
 <p>程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。</p>
 <p>程序十分简单，只十几行代码。<strong>使用python3，需要安装requests包。</strong></p>
 <p>源代码如下，也可以从<a href="https://github.com/2niuhe/crawl_something/blob/master/zhihudaily.py">我的github</a>下载。</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/python3</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/python3</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">#-*- coding: utf-8 -*-</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> requests
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
@@ -288,31 +265,13 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
 </span></span><span style="display:flex;"><span>    get_daily()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>保存为<code>zhdaily.py</code>文件，然后将文件放到<code>/usr/local/bin/</code>目录下，并给zhdaily.py增加执行权限：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo mv zhdaily.py /usr/local/bin/
+</span></span></code></pre></div><p>保存为<code>zhdaily.py</code>文件，然后将文件放到<code>/usr/local/bin/</code>目录下，并给zhdaily.py增加执行权限：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo mv zhdaily.py /usr/local/bin/
 </span></span><span style="display:flex;"><span>$ <span style="color:#fff;font-weight:bold">cd</span> /usr/local/bin/
 </span></span><span style="display:flex;"><span>$ sudo chmod +x zhdaily.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这样，当你下次进入终端，可以直接执行：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ zhdaily.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>就可以获得图示的效果。</p>
+</span></span></code></pre></div><p>这样，当你下次进入终端，可以直接执行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ zhdaily.py
+</span></span></code></pre></div><p>就可以获得图示的效果。</p>
 <hr>
 <p><em>碎碎念：</em></p>
 <p>曾经知乎是一个优秀的社区，也确实让我发现了更大的世界。可是，从某个时刻开始，充斥我时间线的内容都是被知乎官方筛选的。整个社区充斥着喧嚣、广告、营销和带节奏。</p>
@@ -356,7 +315,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

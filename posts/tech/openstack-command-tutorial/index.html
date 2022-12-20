@@ -8,7 +8,8 @@
 <title>Openstack命令行基础 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Linux, Nova, Openstack">
 <meta name="description" content="Openstack命令行基础，汇总常用的命令行，主要是Nova相关的">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Linux", "Nova", "Openstack"
   ],
-  "articleBody": " 不同命令的功能有重复和交集\nOpenstack篇 Openstack每个组件都有其命令，openstack社区为了方便使用，将所有组件的命令进行了统一，以openstack开头\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 # 查看所有openstack服务 openstack service list # 查看openstack服务状态 openstack-service status # 重启本节点所有openstack服务 openstack-service restart # openstack服务URL列表查询 # endpoint表示一个服务在哪可被访问的URL和端口号列表 openstack endpoint list # 查询domain，domain是一个keystone验证实体 openstack domain list # 查看nova服务列表 openstack compute service list # 查看网络服务列表 openstack network agent list # ======================================================= # 项目（租户）列表查询 openstack project list # 查看租户详情 openstack project show # 创建租户 openstack project create --description 'Admin Project' \u003c租户名\u003e # 删除租户 openstack project delete \u003c租户id/name\u003e # 禁用启用租户 openstack project set \u003c租户id/name\u003e --disable/enable # 更新租户名称 openstack project set \u003c租户id/name\u003e --name # ======================================================== # 查看某一个项目下所有用户user openstack user list --project= # 查看所有用户 openstack user list # 查看用户详情 openstack user show # 创建用户 openstack user create --domain \u003c域名\u003e --project \u003c项目/租户名\u003e --password \u003c密码\u003e \u003c用户名\u003e # 删除用户 openstack user delete \u003c用户名\u003e # 禁用启用某一个用户 openstack user set --disable/enable # 更新用户名称 openstack user set --name # 查询某一用户与项目、角色的关系 openstack role assignment list --user=用户名 # ======================================================= # 角色查询 # 一个角色包括一组权利和特权，角色访问控制提供预定义的用户可操作列表，如开启或停止虚机，重置密码等。在身份验证服务和计算服务中均被支持。 openstack role list # 角色详情查询 opensatck role show # 创建角色 openstack role create # 分配角色，将项目和用户加入到角色中 openstack role add --user \u003c用户名\u003e --project \u003c项目名\u003e \u003c角色名\u003e # 删除角色 openstack role remove --user \u003c用户名\u003e --project \u003c项目名\u003e \u003c角色名\u003e # ====================================================== # 列出所有的镜像 openstack image list # 查看某一个镜像信息 openstack image show # 设置镜像标签 openstack image set --tag \u003c标签名\u003e # 创建镜像 # 格式化类型包括raw、qcow2、vmdk等 openstack image create \u003c镜像名\u003e --file \u003c镜像文件名\u003e --disk-format \u003c格式化类型\u003e --container-format bare --public # openstack image create “test1” --file cirros-0.5.1-x86_64-disk.img --disk-format qcow2 --container-format bare --public # 查看安全组信息 openstack group list # 查看flavor类型 openstack flavor list # 查询网络信息 openstack network list # 查看端口信息（虚拟网络） openstack port list # 创建虚拟机 openstack server create --image --flavor --nic net-id= # 创建虚拟机帮助 openstack server create --help # ================================================== # 查看openstack环境主机列表 openstack host list # 查看某个host主机资源情况 openstack host show # 查看虚拟机列表 openstack server list # 查看虚拟机详情 openstack server show # 虚拟机暂停 openstack server pause # 虚拟机从暂停中恢复 openstack server unpause # 虚拟机重启 openstack server reboot # 虚拟机删除 openstack server delete Nova篇 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 # 查看openstack版本 nova-manage version # 查看命令帮助信息 nova help # 返回nova服务所在的host信息 # 在电子通信领域，host和node的区别在于，host是向外提供某种服务，而node只需要是连接到网络的设备 # 运行有nova服务的主机被认为是host nova host-list # 查看host具体资源信息 nova host-describe # 查看nova服务和状态 nova service-list # ======================================= # 查看计算节点 nova hypervisor-list # 查看计算节点详情 nova hypervisor-show # 查看计算节点上的虚拟机 nova hypervisor-servers # ====================================== # 列出所有flavor(模板) nova flavor-list # 创建flavor，模板ID建议为auto nova flavor-create --is-public true \u003c模板名称\u003e \u003c模板ID\u003e \u003c内存(MB)\u003e \u003c磁盘(GB)\u003e # 显示flavro详情 nova flavor-show \u003c模板ID\u003e # 删除flavor nova flavor-delet \u003c模板ID\u003e # ======================================= # 查看虚拟机列表 nova list nova list --all-te # 查看虚拟机详情 nova show # 查看虚拟机控制台日志 nova console-log # 查看密钥对列表 nova keypair-list # 查看镜像列表 nova image-list # 查看浮动ip列表 nova floating-ip-list # 查看安全组列表 nova secgroup-list # ===================================== # 查看浮动ip列表 nova-manage floating list # 数据库同步 nova-manage db sync nova-manage api_db sync nova-manage placement sync # 查看数据库版本 nova-manage db version # nova组件更新检查 nova-status upgrade check # ==================================== nova suspend nova resume nova start nova stop nova delete nova reboot # 硬重启 nova reboot --hard # 进入救援模式 nova rescue # 使用指定镜像进入救援模式 nova rescue --image # 重启虚拟机，由救援模式进入正常模式 nova unrescue # 重置虚拟机状态 nova reset-state # 指定节点热迁移 nova live-migration # 调整虚拟机资源 nova resize --poll # 确认调整虚拟机资源 nova resize-confirm # 资源调整失败回滚 nova resize-revert # 通过快照创建一个镜像 nova image-create # =================================== # 从镜像创建虚拟机 nova boot --image cirros --flavor 1 --nic net-name=net1 vm1 # 从卷(块设备)创建虚拟机 # 1. 从镜像生成volumn cinder create --image-id --name # 2. 从volumn创建虚拟机 nova boot --flavor source=volumn,,id=卷ID,dest=volume,shutdown=preserve,bootindex=0 虚拟机名称 # ================================== # 挂载云硬盘 nova volume-attach /dev/sdb # 卸载云硬盘 nova volume-detach Neutron篇 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 # 列出当前租户网络 neutron net-list # 列出所有租户网络 neutron net-list --all-te # 查看网络详情 neutron net-show # 删除一个网络 neutron net-delete # 查看所有agent neutron agent-list # 查看所有租户拥有的port # port是虚拟网口，是路由器和虚拟机挂接网络的着附点 neutron port-list # 查看port详情 neutron port-show # 查看安全组 neutron security-group-rule-list Glance篇 1 2 3 4 5 6 7 8 # 列出全部镜像 glance image-list # 查看image具体信息 glance show # 上传镜像 glance image-create --visibility public --container-format docker/bare --disk-format raw/qcow2 --name xxx --file /root/xxx --progress glance image-create --name \"CentOS7.0\" --disk-format qcow2 --container-format bare --progress ",
-  "wordCount" : "2535",
+  "articleBody": " 不同命令的功能有重复和交集\nOpenstack篇 Openstack每个组件都有其命令，openstack社区为了方便使用，将所有组件的命令进行了统一，以openstack开头\n# 查看所有openstack服务 openstack service list # 查看openstack服务状态 openstack-service status # 重启本节点所有openstack服务 openstack-service restart # openstack服务URL列表查询 # endpoint表示一个服务在哪可被访问的URL和端口号列表 openstack endpoint list # 查询domain，domain是一个keystone验证实体 openstack domain list # 查看nova服务列表 openstack compute service list # 查看网络服务列表 openstack network agent list # ======================================================= # 项目（租户）列表查询 openstack project list # 查看租户详情 openstack project show # 创建租户 openstack project create --description 'Admin Project' \u003c租户名\u003e # 删除租户 openstack project delete \u003c租户id/name\u003e # 禁用启用租户 openstack project set \u003c租户id/name\u003e --disable/enable # 更新租户名称 openstack project set \u003c租户id/name\u003e --name # ======================================================== # 查看某一个项目下所有用户user openstack user list --project= # 查看所有用户 openstack user list # 查看用户详情 openstack user show # 创建用户 openstack user create --domain \u003c域名\u003e --project \u003c项目/租户名\u003e --password \u003c密码\u003e \u003c用户名\u003e # 删除用户 openstack user delete \u003c用户名\u003e # 禁用启用某一个用户 openstack user set --disable/enable # 更新用户名称 openstack user set --name # 查询某一用户与项目、角色的关系 openstack role assignment list --user=用户名 # ======================================================= # 角色查询 # 一个角色包括一组权利和特权，角色访问控制提供预定义的用户可操作列表，如开启或停止虚机，重置密码等。在身份验证服务和计算服务中均被支持。 openstack role list # 角色详情查询 opensatck role show # 创建角色 openstack role create # 分配角色，将项目和用户加入到角色中 openstack role add --user \u003c用户名\u003e --project \u003c项目名\u003e \u003c角色名\u003e # 删除角色 openstack role remove --user \u003c用户名\u003e --project \u003c项目名\u003e \u003c角色名\u003e # ====================================================== # 列出所有的镜像 openstack image list # 查看某一个镜像信息 openstack image show # 设置镜像标签 openstack image set --tag \u003c标签名\u003e # 创建镜像 # 格式化类型包括raw、qcow2、vmdk等 openstack image create \u003c镜像名\u003e --file \u003c镜像文件名\u003e --disk-format \u003c格式化类型\u003e --container-format bare --public # openstack image create “test1” --file cirros-0.5.1-x86_64-disk.img --disk-format qcow2 --container-format bare --public # 查看安全组信息 openstack group list # 查看flavor类型 openstack flavor list # 查询网络信息 openstack network list # 查看端口信息（虚拟网络） openstack port list # 创建虚拟机 openstack server create --image --flavor --nic net-id= # 创建虚拟机帮助 openstack server create --help # ================================================== # 查看openstack环境主机列表 openstack host list # 查看某个host主机资源情况 openstack host show # 查看虚拟机列表 openstack server list # 查看虚拟机详情 openstack server show # 虚拟机暂停 openstack server pause # 虚拟机从暂停中恢复 openstack server unpause # 虚拟机重启 openstack server reboot # 虚拟机删除 openstack server delete Nova篇 # 查看openstack版本 nova-manage version # 查看命令帮助信息 nova help # 返回nova服务所在的host信息 # 在电子通信领域，host和node的区别在于，host是向外提供某种服务，而node只需要是连接到网络的设备 # 运行有nova服务的主机被认为是host nova host-list # 查看host具体资源信息 nova host-describe # 查看nova服务和状态 nova service-list # ======================================= # 查看计算节点 nova hypervisor-list # 查看计算节点详情 nova hypervisor-show # 查看计算节点上的虚拟机 nova hypervisor-servers # ====================================== # 列出所有flavor(模板) nova flavor-list # 创建flavor，模板ID建议为auto nova flavor-create --is-public true \u003c模板名称\u003e \u003c模板ID\u003e \u003c内存(MB)\u003e \u003c磁盘(GB)\u003e # 显示flavro详情 nova flavor-show \u003c模板ID\u003e # 删除flavor nova flavor-delet \u003c模板ID\u003e # ======================================= # 查看虚拟机列表 nova list nova list --all-te # 查看虚拟机详情 nova show # 查看虚拟机控制台日志 nova console-log # 查看密钥对列表 nova keypair-list # 查看镜像列表 nova image-list # 查看浮动ip列表 nova floating-ip-list # 查看安全组列表 nova secgroup-list # ===================================== # 查看浮动ip列表 nova-manage floating list # 数据库同步 nova-manage db sync nova-manage api_db sync nova-manage placement sync # 查看数据库版本 nova-manage db version # nova组件更新检查 nova-status upgrade check # ==================================== nova suspend nova resume nova start nova stop nova delete nova reboot # 硬重启 nova reboot --hard # 进入救援模式 nova rescue # 使用指定镜像进入救援模式 nova rescue --image # 重启虚拟机，由救援模式进入正常模式 nova unrescue # 重置虚拟机状态 nova reset-state # 指定节点热迁移 nova live-migration # 调整虚拟机资源 nova resize --poll # 确认调整虚拟机资源 nova resize-confirm # 资源调整失败回滚 nova resize-revert # 通过快照创建一个镜像 nova image-create # =================================== # 从镜像创建虚拟机 nova boot --image cirros --flavor 1 --nic net-name=net1 vm1 # 从卷(块设备)创建虚拟机 # 1. 从镜像生成volumn cinder create --image-id --name # 2. 从volumn创建虚拟机 nova boot --flavor source=volumn,,id=卷ID,dest=volume,shutdown=preserve,bootindex=0 虚拟机名称 # ================================== # 挂载云硬盘 nova volume-attach /dev/sdb # 卸载云硬盘 nova volume-detach Neutron篇 # 列出当前租户网络 neutron net-list # 列出所有租户网络 neutron net-list --all-te # 查看网络详情 neutron net-show # 删除一个网络 neutron net-delete # 查看所有agent neutron agent-list # 查看所有租户拥有的port # port是虚拟网口，是路由器和虚拟机挂接网络的着附点 neutron port-list # 查看port详情 neutron port-show # 查看安全组 neutron security-group-rule-list Glance篇 # 列出全部镜像 glance image-list # 查看image具体信息 glance show # 上传镜像 glance image-create --visibility public --container-format docker/bare --disk-format raw/qcow2 --name xxx --file /root/xxx --progress glance image-create --name \"CentOS7.0\" --disk-format qcow2 --container-format bare --progress ",
+  "wordCount" : "2299",
   "inLanguage": "zh",
   "datePublished": "2020-10-23T00:00:00Z",
   "dateModified": "2020-10-23T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       Openstack命令行基础，汇总常用的命令行，主要是Nova相关的
     </div>
-    <div class="post-meta"><span title='2020-10-23 00:00:00 +0000 UTC'>2020-10-23</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2020-10-23 00:00:00 +0000 UTC'>创建: 2020-10-23</span>&nbsp;|&nbsp;更新:&nbsp;2020-10-23&nbsp;|&nbsp;字数:&nbsp;2299字&nbsp;|&nbsp;时长:&nbsp;5分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -270,108 +272,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>Openstack每个组件都有其命令，openstack社区为了方便使用，将所有组件的命令进行了统一，以openstack开头</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">38
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">39
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">40
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">41
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">42
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">43
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">44
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">45
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">46
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">47
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">48
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">49
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">50
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">51
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">52
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">53
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">54
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">55
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">56
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">57
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">58
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">59
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">60
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">61
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">62
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">63
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">64
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">65
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">66
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">67
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">68
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">69
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">70
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">71
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">72
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">73
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">74
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">75
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">76
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">77
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">78
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">79
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">80
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">81
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">82
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">83
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">84
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">85
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">86
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">87
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">88
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">89
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">90
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">91
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">92
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">93
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">94
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">95
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">96
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">97
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看所有openstack服务</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看所有openstack服务</span>
 </span></span><span style="display:flex;"><span>openstack service list
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看openstack服务状态</span>
 </span></span><span style="display:flex;"><span>openstack-service status
@@ -468,109 +369,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>openstack server reboot &lt;instance_id&gt;
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 虚拟机删除</span>
 </span></span><span style="display:flex;"><span>openstack server delete &lt;instance_id&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="nova篇">Nova篇<a hidden class="anchor" aria-hidden="true" href="#nova篇">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">38
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">39
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">40
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">41
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">42
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">43
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">44
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">45
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">46
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">47
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">48
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">49
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">50
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">51
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">52
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">53
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">54
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">55
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">56
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">57
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">58
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">59
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">60
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">61
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">62
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">63
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">64
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">65
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">66
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">67
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">68
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">69
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">70
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">71
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">72
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">73
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">74
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">75
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">76
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">77
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">78
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">79
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">80
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">81
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">82
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">83
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">84
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">85
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">86
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">87
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">88
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">89
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">90
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">91
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">92
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">93
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">94
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">95
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看openstack版本</span>
+</span></span></code></pre></div><h3 id="nova篇">Nova篇<a hidden class="anchor" aria-hidden="true" href="#nova篇">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看openstack版本</span>
 </span></span><span style="display:flex;"><span>nova-manage version
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看命令帮助信息</span>
 </span></span><span style="display:flex;"><span>nova <span style="color:#fff;font-weight:bold">help</span> &lt;command&gt;
@@ -665,31 +465,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>nova volume-attach &lt;instance_id&gt; &lt;volume_name&gt; /dev/sdb
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 卸载云硬盘</span>
 </span></span><span style="display:flex;"><span>nova volume-detach &lt;instance_id&gt; &lt;volume_name&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="neutron篇">Neutron篇<a hidden class="anchor" aria-hidden="true" href="#neutron篇">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 列出当前租户网络</span>
+</span></span></code></pre></div><h3 id="neutron篇">Neutron篇<a hidden class="anchor" aria-hidden="true" href="#neutron篇">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 列出当前租户网络</span>
 </span></span><span style="display:flex;"><span>neutron net-list
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 列出所有租户网络</span>
 </span></span><span style="display:flex;"><span>neutron  net-list --all-te
@@ -706,22 +483,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>neutron port-show &lt;port_id&gt;
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看安全组</span>
 </span></span><span style="display:flex;"><span>neutron security-group-rule-list
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="glance篇">Glance篇<a hidden class="anchor" aria-hidden="true" href="#glance篇">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 列出全部镜像</span>
+</span></span></code></pre></div><h3 id="glance篇">Glance篇<a hidden class="anchor" aria-hidden="true" href="#glance篇">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 列出全部镜像</span>
 </span></span><span style="display:flex;"><span>glance image-list
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看image具体信息</span>
 </span></span><span style="display:flex;"><span>glance show &lt;image ID&gt;
@@ -729,41 +492,15 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>glance image-create --visibility public --container-format docker/bare --disk-format raw/qcow2 --name xxx --file /root/xxx --progress
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>glance image-create --name <span style="color:#0ff;font-weight:bold">&#34;CentOS7.0&#34;</span> --disk-format qcow2 --container-format bare --progress &lt;/opt/images/centos_7-x86_64_xiandian.qcow2
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="cinder篇">Cinder篇<a hidden class="anchor" aria-hidden="true" href="#cinder篇">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 显示存储列表</span>
+</span></span></code></pre></div><h3 id="cinder篇">Cinder篇<a hidden class="anchor" aria-hidden="true" href="#cinder篇">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 显示存储列表</span>
 </span></span><span style="display:flex;"><span>cinder list
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 显示存储卷类型列表</span>
 </span></span><span style="display:flex;"><span>cinder type-list
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 创建存储卷</span>
 </span></span><span style="display:flex;"><span>cinder create --display-name VOLNAME SIZE（SIZE的单位为GB）
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="ceilmeter篇">Ceilmeter篇<a hidden class="anchor" aria-hidden="true" href="#ceilmeter篇">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看监控资源</span>
+</span></span></code></pre></div><h3 id="ceilmeter篇">Ceilmeter篇<a hidden class="anchor" aria-hidden="true" href="#ceilmeter篇">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看监控资源</span>
 </span></span><span style="display:flex;"><span>ceilometer meter-list
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">#查看告警列表</span>
 </span></span><span style="display:flex;"><span>ceilometer alarm-list
@@ -771,26 +508,13 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>ceilometer alarm-delete -a ALARM_ID
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 获取某一个告警信息</span>
 </span></span><span style="display:flex;"><span>ceilometer alarm-state-get ALARM_ID
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="服务状态">服务状态<a hidden class="anchor" aria-hidden="true" href="#服务状态">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>systemctl list-units | grep openstack
+</span></span></code></pre></div><h3 id="服务状态">服务状态<a hidden class="anchor" aria-hidden="true" href="#服务状态">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>systemctl list-units | grep openstack
 </span></span><span style="display:flex;"><span>systemctl status httpd.service
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看Apache的http服务日志</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> /etc/httpd/logs
 </span></span><span style="display:flex;"><span>tail -f &lt;日志文件&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
 <p><a href="https://www.fcwys.cc/archives/475.html">Openstack常用命令</a></p>
 <p><a href="https://docs.openstack.org/python-openstackclient/latest/cli/command-list.html">Openstack官方常用命令手册</a></p>
 <p><a href="https://www.sdnlab.com/20489.html">Openstack命令行操作虚拟机</a></p>
@@ -830,7 +554,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

@@ -8,7 +8,8 @@
 <title>Linux下glic库操作文件和目录 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Linux, C">
 <meta name="description" content="使用glic操作linux的文件和目录">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-io/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Linux", "C"
   ],
-  "articleBody": "文件系统概述 Linux内核的各种真实文件系统、块设备和字符设备统一在虚拟文件系统的框架中，虚拟文件系统为应用提供了一组抽象的文件输入输出接口。\n虚拟文件系统是对各种真实文件系统的抽象，在虚拟文件系统中定义了抽象的超级块、i节点和目录，它为真实文件系统提供了一种统一的框架接口。真实文件系统通过这些接口与虚拟文件系统相连接，真实文件系统是这些抽象接口的具体实现。\n虚拟文件系统存在于内存中，在系统启动时产生，随着系统关闭而消失。\n文件操作常用的头文件 C POSIX library是C语言的POSIX系统下的标准库。包含了一些在C语言标准库之外的函数。\n1 2 3 4 5 6 7 #include //多种必要的POSIX函数与常量 #include //文件打开、创建、加锁等操作 #include //文件信息(stat (Unix)等) #include //不同的数据类型 #include //打开与列出目录内容 //此外，还有C标注库中的 #include //标准缓存输入输出 文件基本输入输出 文件输入输出涉及到以下函数：\nopen、creat 在中 read、write、lseek、close 在中 案例:复制文件\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 //cp.c #include #include #include #define PMODE 0644\t//权限定义为rw-r--r-- #define BUFSIZE 200 int main(int argc,char *argv[]) { int fdin,fdout,n; char buf[BUFSIZ]; if(argc !=3) { fprintf(stderr,\"Usage:%s filein fileout\\n\",argv[0]); return 1; } if((fdin = open(argv[1],O_RDONLY)) == -1) { perror(argv[1]); return 2; } if((fdout = open(argv[2],O_WRONLY|O_CREAT|O_TRUNC,PMODE)) == -1) { perror(argv[2]); return 3; } while((n = read(fdin,buf,BUFSIZE)) \u003e 0) write(fdout,buf,n); close(fdin); close(fdout); return 0; } ###文件属性操作 文件的属性信息存放在文件对应的i节点中，对于不同类型的物理文件系统，文件属性的组织形式不尽相同，为了获得统一的文件属性格式，Linux定义了struct stat这个数据结构，类型定义如下：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 struct stat { dev_t st_dev; /* 文件设备编号*/ ino_t st_ino; /* i节点号 */ mode_t st_mode; /* 文件类型和存储权限 */ nlink_t st_nlink; /* 硬链接 */ uid_t st_uid; /* 用户ID */ gid_t st_gid; /* 用户组ID */ dev_t st_rdev; /* Device ID (if special file)*/ off_t st_size; /* 文件字节数bytes */ blksize_t st_blksize; /* 块大小 */ blkcnt_t st_blocks; /* 以512bytes为单位的块数 */ struct timespec st_atim; /* 文件最后一次访问时间 */ struct timespec st_mtim; /* 文件最后一次修改时间 */ struct timespec st_ctim; /* 文件属性最后一次改变时间 */ }; 以之前的cp.c为例:\n可以看到cp.c文件实际大小640bytes，在磁盘上占用了一个4096bytes的块，也就是8个512bytes的块。`\n文件属性操作常用函数：\nstat 获取文件属性信息 chmod 设置文件权限 chown 设置文件属主 utime 获取时间 案例：改变文件读写权限\n1 2 3 4 5 6 7 8 9 10 11 12 13 #include #include int main() { mode_t fdmode = (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH); if(chmod(\"cp.c\",fdmode) == -1) { printf(\"error\\n\"); return 1; } return 0; } 编译运行，结果如下，可见文件权限已经被修改。\n1 2 3 4 5 6 7 8 niuhe@niuhe-ubuntu:~/Linux$ gcc -o chmod chmod.c niuhe@niuhe-ubuntu:~/Linux$ ls chmod chmod.c cp cp.c niuhe@niuhe-ubuntu:~/Linux$ ll cp.c -rw-rw-r-- 1 niuhe niuhe 640 10月 6 16:55 cp.c niuhe@niuhe-ubuntu:~/Linux$ ./chmod niuhe@niuhe-ubuntu:~/Linux$ ll cp.c -rw-r--r-- 1 niuhe niuhe 640 10月 6 16:55 cp.c ###目录操作 目录是一种特殊的文件，其内容由若干目录项组成，一个目录项包括文件名和i节点号。为了便于管理，每个目录中都包含当前目录\".“和父目录”..\",当前目录项指向当前目录的i节点编号，父目录项记录了父目录对应的i节点编号。 常用库函数及头文件如下：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 #include //在某目录中创建一个目录项，分配一个i节点和目录项相链接 //分配一个逻辑块用来存放目录内容，并在其中建立当前目录和父目录两个目录项 int mkdir(const char *pathname,mode_t mode); #include //删除空目录 int rmdir(const char *pathname); //改变工作目录；在每个进程的进程控制块中保存着当前工作目录的i节点 //初始工作目录继承自父进程，进程运行过程可以改变工作目录 int chdir(const char *pathname); //获得调用者进程的当前工作目录，buf存放路径，size路径包含字节数 char *getcwd(char *buf, size_t size); #include //打开目录,成功返回目录流（字符串） DIR *opendir(const char *pahtname); //读目录，成功返回下一个目录项 struct dirent *readdir(DIR *dp); //关闭目录 int closedir(DIR *dp); 目录是一种特殊的文件，存放着很多目录项，每一个目录项是一个结构体。\n1 2 3 4 5 6 7 struct dirent { long d_ino;\t//i节点号 char d_name[NAME_MAX+1];\t//文件名 off_t d_off;\t//在目录文件中偏移量 unsigned short d_reclen;\t//文件名长度 } 案例：改变当前进程工作目录\n1 2 3 4 5 6 7 8 9 10 #include #include int main(void) { if(chdir(\"/tmp\") \u003c 0) printf(\"chdir failed\"); printf(\"chdir to /tmp succeeded\\n\"); return 0; } 案例：浏览目录中所有文件名\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 #include #include int main(int argc,char *argv[]) { DIR *dirp; struct dirent *direntp; if((dirp = opendir(argv[1])) == NULL) { printf(\"cannot open the %s directory\",argv[1]); return 1; } while((direntp = readdir(dirp)) != NULL) printf(\"%s\\n\",direntp-\u003ed_name); closedir(dirp); return 0; } ###C标准I/O库\n运用read、write等系统底层函数进行输入输出时，需要在用户态和内核态之间来回切换。若每次读取或写入数据较少，将导致频繁的I/O操作，降低了程序运行效率。 标准I/O库对底层I/O系统调用进行了封装，提供了带格式转换的I/O操作，并在用户空间增加了缓冲管理，可减少程序和输出设备之间I/O次数。函数原型定义在中。 细节略\nI/O重定向 文件描述符 Linux系统中，进程拥有各自打开文件的描述符。文件描述符按生成的顺序存放在文件描述符表中，Linux内核将文件描述符表用一维数组表述，每个打开的文件占用一个单元，用来存放操作文件的必要信息，如读写操作当前位置、文件打开方式、文件操作集等。 进程在打开一个文件时，返回的是文件描述符所在数组的下标，称为文件描述符。 通常，创建子进程时，子进程从父进程继承文件描述符表，前3个描述符0,1,2分别对应标准输入、标准输出、标准错误输出，与进程的控制终端设备对应。通常已经被打开，进行读写操作时无需重新打开。 一个文件可以同时被多个进程打开，它在不同进程中对应的文件描述符以及操作状态也未必相同。\n####I/O重定向\n程序根据打开文件的描述符对文件进行读写操作，真正完成读写操作的是进程描述符表相应位置中的内容。以输出重定向为例，若将进程描述符表中1号单元的内容替换为打开的文件test，则进程在向标准输出文件输出信息时，原本数据应显示在终端显示器上，但现在这些数据将被输出至文件test。 实现I/O重定向可以通过:\nopen close open方法 系统函数调用：dupdup2 #####open close open方法\nLinux在为进程新打开文件分配描述符时，从下表0开始扫描进程文件描述符表，将打开的文件信息放在找到的第一个空闲单元，并将该下表作为打开文件的描述符。 以标准输入0为例，将标准输入关闭，使得文件描述符表第0号单元成为空闲单元，此时，进程新打开另一个文件，内核将文件描述符表0号单元分配给新打开的文件，并返回描述符0，也就实现了输入重定向。\n#####dup和dup2函数\n使用dup和dup2函数，只是复制文件描述符，使两个文件描述符指向同一个file结构体，并且file结构体引用计数是2。此时，打开文件的状态保存在同一个file结构体中。而使用open函数两次打开一个文件会存在两份file结构体，分别有各自的状态。\n1 2 3 4 5 6 7 8 #include //从进程文件描述符表中寻找一个可用的最小描述符,返回此描述符 //并复制oldfd对应的File结构指针到新的最小描述符 int dup(int oldfd); //oldfd需要复制的文件描述符，newfd是复制后oldfd在文件描述符表中新的序号。 //成功返回一个新描述符，否则返回-1 //若newfd已经打开，则先关闭newfd,然后复制oldfd到newfd,使newfd也指向oldfd,此时oldfd和newfd两个描述符共享同一个文件。 int dump2(int oldfd, int newfd); 案例:输出重定向\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 #include #include #include int main() { int fileID; fileID = creat(\"ls.tst\",0640); if(fileID \u003c 0) { fprintf(stderr,\"error creating ls.tst\\n\"); return 1; } dup2(fileID,1); close(fileID); execl(\"/bin/ls\",\"ls\",NULL); return 0; } 参考 库函数列表 C POSIX LIB ",
-  "wordCount" : "3003",
+  "articleBody": "文件系统概述 Linux内核的各种真实文件系统、块设备和字符设备统一在虚拟文件系统的框架中，虚拟文件系统为应用提供了一组抽象的文件输入输出接口。\n虚拟文件系统是对各种真实文件系统的抽象，在虚拟文件系统中定义了抽象的超级块、i节点和目录，它为真实文件系统提供了一种统一的框架接口。真实文件系统通过这些接口与虚拟文件系统相连接，真实文件系统是这些抽象接口的具体实现。\n虚拟文件系统存在于内存中，在系统启动时产生，随着系统关闭而消失。\n文件操作常用的头文件 C POSIX library是C语言的POSIX系统下的标准库。包含了一些在C语言标准库之外的函数。\n#include //多种必要的POSIX函数与常量 #include //文件打开、创建、加锁等操作 #include //文件信息(stat (Unix)等) #include //不同的数据类型 #include //打开与列出目录内容 //此外，还有C标注库中的 #include //标准缓存输入输出 文件基本输入输出 文件输入输出涉及到以下函数：\nopen、creat 在中 read、write、lseek、close 在中 案例:复制文件\n//cp.c #include #include #include #define PMODE 0644\t//权限定义为rw-r--r-- #define BUFSIZE 200 int main(int argc,char *argv[]) { int fdin,fdout,n; char buf[BUFSIZ]; if(argc !=3) { fprintf(stderr,\"Usage:%s filein fileout\\n\",argv[0]); return 1; } if((fdin = open(argv[1],O_RDONLY)) == -1) { perror(argv[1]); return 2; } if((fdout = open(argv[2],O_WRONLY|O_CREAT|O_TRUNC,PMODE)) == -1) { perror(argv[2]); return 3; } while((n = read(fdin,buf,BUFSIZE)) \u003e 0) write(fdout,buf,n); close(fdin); close(fdout); return 0; } ###文件属性操作 文件的属性信息存放在文件对应的i节点中，对于不同类型的物理文件系统，文件属性的组织形式不尽相同，为了获得统一的文件属性格式，Linux定义了struct stat这个数据结构，类型定义如下：\nstruct stat { dev_t st_dev; /* 文件设备编号*/ ino_t st_ino; /* i节点号 */ mode_t st_mode; /* 文件类型和存储权限 */ nlink_t st_nlink; /* 硬链接 */ uid_t st_uid; /* 用户ID */ gid_t st_gid; /* 用户组ID */ dev_t st_rdev; /* Device ID (if special file)*/ off_t st_size; /* 文件字节数bytes */ blksize_t st_blksize; /* 块大小 */ blkcnt_t st_blocks; /* 以512bytes为单位的块数 */ struct timespec st_atim; /* 文件最后一次访问时间 */ struct timespec st_mtim; /* 文件最后一次修改时间 */ struct timespec st_ctim; /* 文件属性最后一次改变时间 */ }; 以之前的cp.c为例:\n可以看到cp.c文件实际大小640bytes，在磁盘上占用了一个4096bytes的块，也就是8个512bytes的块。`\n文件属性操作常用函数：\nstat 获取文件属性信息 chmod 设置文件权限 chown 设置文件属主 utime 获取时间 案例：改变文件读写权限\n#include #include int main() { mode_t fdmode = (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH); if(chmod(\"cp.c\",fdmode) == -1) { printf(\"error\\n\"); return 1; } return 0; } 编译运行，结果如下，可见文件权限已经被修改。\nniuhe@niuhe-ubuntu:~/Linux$ gcc -o chmod chmod.c niuhe@niuhe-ubuntu:~/Linux$ ls chmod chmod.c cp cp.c niuhe@niuhe-ubuntu:~/Linux$ ll cp.c -rw-rw-r-- 1 niuhe niuhe 640 10月 6 16:55 cp.c niuhe@niuhe-ubuntu:~/Linux$ ./chmod niuhe@niuhe-ubuntu:~/Linux$ ll cp.c -rw-r--r-- 1 niuhe niuhe 640 10月 6 16:55 cp.c ###目录操作 目录是一种特殊的文件，其内容由若干目录项组成，一个目录项包括文件名和i节点号。为了便于管理，每个目录中都包含当前目录\".“和父目录”..\",当前目录项指向当前目录的i节点编号，父目录项记录了父目录对应的i节点编号。 常用库函数及头文件如下：\n#include //在某目录中创建一个目录项，分配一个i节点和目录项相链接 //分配一个逻辑块用来存放目录内容，并在其中建立当前目录和父目录两个目录项 int mkdir(const char *pathname,mode_t mode); #include //删除空目录 int rmdir(const char *pathname); //改变工作目录；在每个进程的进程控制块中保存着当前工作目录的i节点 //初始工作目录继承自父进程，进程运行过程可以改变工作目录 int chdir(const char *pathname); //获得调用者进程的当前工作目录，buf存放路径，size路径包含字节数 char *getcwd(char *buf, size_t size); #include //打开目录,成功返回目录流（字符串） DIR *opendir(const char *pahtname); //读目录，成功返回下一个目录项 struct dirent *readdir(DIR *dp); //关闭目录 int closedir(DIR *dp); 目录是一种特殊的文件，存放着很多目录项，每一个目录项是一个结构体。\nstruct dirent { long d_ino;\t//i节点号 char d_name[NAME_MAX+1];\t//文件名 off_t d_off;\t//在目录文件中偏移量 unsigned short d_reclen;\t//文件名长度 } 案例：改变当前进程工作目录\n#include #include int main(void) { if(chdir(\"/tmp\") \u003c 0) printf(\"chdir failed\"); printf(\"chdir to /tmp succeeded\\n\"); return 0; } 案例：浏览目录中所有文件名\n#include #include int main(int argc,char *argv[]) { DIR *dirp; struct dirent *direntp; if((dirp = opendir(argv[1])) == NULL) { printf(\"cannot open the %s directory\",argv[1]); return 1; } while((direntp = readdir(dirp)) != NULL) printf(\"%s\\n\",direntp-\u003ed_name); closedir(dirp); return 0; } ###C标准I/O库\n运用read、write等系统底层函数进行输入输出时，需要在用户态和内核态之间来回切换。若每次读取或写入数据较少，将导致频繁的I/O操作，降低了程序运行效率。 标准I/O库对底层I/O系统调用进行了封装，提供了带格式转换的I/O操作，并在用户空间增加了缓冲管理，可减少程序和输出设备之间I/O次数。函数原型定义在中。 细节略\nI/O重定向 文件描述符 Linux系统中，进程拥有各自打开文件的描述符。文件描述符按生成的顺序存放在文件描述符表中，Linux内核将文件描述符表用一维数组表述，每个打开的文件占用一个单元，用来存放操作文件的必要信息，如读写操作当前位置、文件打开方式、文件操作集等。 进程在打开一个文件时，返回的是文件描述符所在数组的下标，称为文件描述符。 通常，创建子进程时，子进程从父进程继承文件描述符表，前3个描述符0,1,2分别对应标准输入、标准输出、标准错误输出，与进程的控制终端设备对应。通常已经被打开，进行读写操作时无需重新打开。 一个文件可以同时被多个进程打开，它在不同进程中对应的文件描述符以及操作状态也未必相同。\n####I/O重定向\n程序根据打开文件的描述符对文件进行读写操作，真正完成读写操作的是进程描述符表相应位置中的内容。以输出重定向为例，若将进程描述符表中1号单元的内容替换为打开的文件test，则进程在向标准输出文件输出信息时，原本数据应显示在终端显示器上，但现在这些数据将被输出至文件test。 实现I/O重定向可以通过:\nopen close open方法 系统函数调用：dupdup2 #####open close open方法\nLinux在为进程新打开文件分配描述符时，从下表0开始扫描进程文件描述符表，将打开的文件信息放在找到的第一个空闲单元，并将该下表作为打开文件的描述符。 以标准输入0为例，将标准输入关闭，使得文件描述符表第0号单元成为空闲单元，此时，进程新打开另一个文件，内核将文件描述符表0号单元分配给新打开的文件，并返回描述符0，也就实现了输入重定向。\n#####dup和dup2函数\n使用dup和dup2函数，只是复制文件描述符，使两个文件描述符指向同一个file结构体，并且file结构体引用计数是2。此时，打开文件的状态保存在同一个file结构体中。而使用open函数两次打开一个文件会存在两份file结构体，分别有各自的状态。\n#include //从进程文件描述符表中寻找一个可用的最小描述符,返回此描述符 //并复制oldfd对应的File结构指针到新的最小描述符 int dup(int oldfd); //oldfd需要复制的文件描述符，newfd是复制后oldfd在文件描述符表中新的序号。 //成功返回一个新描述符，否则返回-1 //若newfd已经打开，则先关闭newfd,然后复制oldfd到newfd,使newfd也指向oldfd,此时oldfd和newfd两个描述符共享同一个文件。 int dump2(int oldfd, int newfd); 案例:输出重定向\n#include #include #include int main() { int fileID; fileID = creat(\"ls.tst\",0640); if(fileID \u003c 0) { fprintf(stderr,\"error creating ls.tst\\n\"); return 1; } dup2(fileID,1); close(fileID); execl(\"/bin/ls\",\"ls\",NULL); return 0; } 参考 库函数列表 C POSIX LIB ",
+  "wordCount" : "2846",
   "inLanguage": "zh",
   "datePublished": "2018-10-06T00:00:00Z",
   "dateModified": "2018-10-06T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       使用glic操作linux的文件和目录
     </div>
-    <div class="post-meta"><span title='2018-10-06 00:00:00 +0000 UTC'>2018-10-06</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-10-06 00:00:00 +0000 UTC'>创建: 2018-10-06</span>&nbsp;|&nbsp;更新:&nbsp;2018-10-06&nbsp;|&nbsp;字数:&nbsp;2846字&nbsp;|&nbsp;时长:&nbsp;6分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -271,27 +273,14 @@ if (!doNotTrack) {
 <blockquote>
 <p><strong>C POSIX library</strong>是C语言的<a href="https://zh.wikipedia.org/wiki/POSIX">POSIX</a>系统下的标准库。包含了一些在<a href="https://zh.wikipedia.org/wiki/C%E6%A0%87%E5%87%86%E5%BA%93">C语言标准库</a>之外的函数。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;  //多种必要的POSIX函数与常量</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;  //多种必要的POSIX函数与常量</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;fcntl.h&gt;   //文件打开、创建、加锁等操作</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;//文件信息(stat (Unix)等)</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/types.h&gt;//不同的数据类型</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;dirent.h&gt;   //打开与列出目录内容</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span><span style="color:#007f7f">//此外，还有C标注库中的
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;	  //标准缓存输入输出</span><span style="color:#0f0;font-weight:bold">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="文件基本输入输出">文件基本输入输出<a hidden class="anchor" aria-hidden="true" href="#文件基本输入输出">#</a></h3>
+</span></span></span></code></pre></div><h3 id="文件基本输入输出">文件基本输入输出<a hidden class="anchor" aria-hidden="true" href="#文件基本输入输出">#</a></h3>
 <blockquote>
 <p>文件输入输出涉及到以下函数：</p>
 <ul>
@@ -300,46 +289,7 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <p><strong>案例:复制文件</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//cp.c
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//cp.c
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#0f0;font-weight:bold">
@@ -374,30 +324,9 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###文件属性操作
+</span></span></code></pre></div><p>###文件属性操作
 文件的属性信息存放在文件对应的i节点中，对于不同类型的物理文件系统，文件属性的组织形式不尽相同，为了获得统一的文件属性格式，Linux定义了struct stat这个数据结构，类型定义如下：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> stat {
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> stat {
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">dev_t</span>     st_dev;         <span style="color:#007f7f">/* 文件设备编号*/</span>
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">ino_t</span>     st_ino;         <span style="color:#007f7f">/* i节点号 */</span>
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">mode_t</span>    st_mode;        <span style="color:#007f7f">/* 文件类型和存储权限 */</span>
@@ -412,9 +341,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">struct</span> timespec st_mtim;  <span style="color:#007f7f">/* 文件最后一次修改时间 */</span>
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">struct</span> timespec st_ctim;  <span style="color:#007f7f">/* 文件属性最后一次改变时间 */</span>
 </span></span><span style="display:flex;"><span>          };
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>以之前的cp.c为例:</p>
+</span></span></code></pre></div><p>以之前的cp.c为例:</p>
 <p><img loading="lazy" src="/img/cp%e5%91%bd%e4%bb%a4%e7%a4%ba%e4%be%8b.jpg" alt="cp"  />
 </p>
 <blockquote>
@@ -432,24 +359,7 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <p><strong>案例：改变文件读写权限</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
@@ -462,22 +372,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>编译运行，结果如下，可见文件权限已经被修改。</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ gcc -o chmod chmod.c 
+</span></span></code></pre></div><p>编译运行，结果如下，可见文件权限已经被修改。</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ gcc -o chmod chmod.c 
 </span></span><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ ls
 </span></span><span style="display:flex;"><span>chmod  chmod.c  cp  cp.c
 </span></span><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ ll cp.c 
@@ -485,35 +381,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ ./chmod 
 </span></span><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ ll cp.c 
 </span></span><span style="display:flex;"><span>-rw-r--r-- <span style="color:#ff0;font-weight:bold">1</span> niuhe niuhe <span style="color:#ff0;font-weight:bold">640</span> 10月  <span style="color:#ff0;font-weight:bold">6</span> 16:55 cp.c
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###目录操作
+</span></span></code></pre></div><p>###目录操作
 目录是一种特殊的文件，其内容由若干目录项组成，一个目录项包括文件名和i节点号。为了便于管理，每个目录中都包含当前目录&quot;.&ldquo;和父目录&rdquo;..&quot;,当前目录项指向当前目录的i节点编号，父目录项记录了父目录对应的i节点编号。
 常用库函数及头文件如下：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>	<span style="color:#007f7f">//在某目录中创建一个目录项，分配一个i节点和目录项相链接
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//分配一个逻辑块用来存放目录内容，并在其中建立当前目录和父目录两个目录项
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> mkdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname,<span style="color:#fff;font-weight:bold">mode_t</span> mode);
@@ -532,45 +403,16 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">struct</span> dirent *readdir(DIR *dp);
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//关闭目录
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> closedir(DIR *dp);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>目录是一种特殊的文件，存放着很多目录项，每一个目录项是一个结构体。</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> dirent
+</span></span></code></pre></div><p>目录是一种特殊的文件，存放着很多目录项，每一个目录项是一个结构体。</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> dirent
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>  	<span style="color:#fff;font-weight:bold">long</span> d_ino;					<span style="color:#007f7f">//i节点号
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>  	<span style="color:#fff;font-weight:bold">char</span> d_name[NAME_MAX+<span style="color:#ff0;font-weight:bold">1</span>];	<span style="color:#007f7f">//文件名
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>  	<span style="color:#fff;font-weight:bold">off_t</span> d_off;				<span style="color:#007f7f">//在目录文件中偏移量
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>  	<span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">short</span> d_reclen;	<span style="color:#007f7f">//文件名长度
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例：改变当前进程工作目录</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例：改变当前进程工作目录</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">void</span>)
@@ -580,31 +422,8 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;chdir to /tmp succeeded</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例：浏览目录中所有文件名</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例：浏览目录中所有文件名</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;dirent.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[])
@@ -621,9 +440,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    closedir(dirp);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###C标准I/O库</p>
+</span></span></code></pre></div><p>###C标准I/O库</p>
 <blockquote>
 <p>运用read、write等系统底层函数进行输入输出时，需要在用户态和内核态之间来回切换。若每次读取或写入数据较少，将导致频繁的I/O操作，降低了程序运行效率。
 标准I/O库对底层I/O系统调用进行了封装，提供了带格式转换的I/O操作，并在用户空间增加了缓冲管理，可减少程序和输出设备之间I/O次数。函数原型定义在&lt;stdio.h&gt;中。
@@ -655,19 +472,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>使用dup和dup2函数，只是复制文件描述符，使两个文件描述符指向同一个file结构体，并且file结构体引用计数是2。此时，打开文件的状态保存在同一个file结构体中。而使用open函数两次打开一个文件会存在两份file结构体，分别有各自的状态。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>	<span style="color:#007f7f">//从进程文件描述符表中寻找一个可用的最小描述符,返回此描述符
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//并复制oldfd对应的File结构指针到新的最小描述符
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> dup(<span style="color:#fff;font-weight:bold">int</span> oldfd);
@@ -675,32 +480,8 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//成功返回一个新描述符，否则返回-1
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//若newfd已经打开，则先关闭newfd,然后复制oldfd到newfd,使newfd也指向oldfd,此时oldfd和newfd两个描述符共享同一个文件。
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> dump2(<span style="color:#fff;font-weight:bold">int</span> oldfd, <span style="color:#fff;font-weight:bold">int</span> newfd);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例:输出重定向</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例:输出重定向</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
@@ -718,9 +499,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    execl(<span style="color:#0ff;font-weight:bold">&#34;/bin/ls&#34;</span>,<span style="color:#0ff;font-weight:bold">&#34;ls&#34;</span>,<span style="color:#fff;font-weight:bold">NULL</span>);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
 <ul>
 <li><a href="http://pubs.opengroup.org/onlinepubs/9699919799/idx/head.html">库函数列表</a></li>
 <li><a href="https://en.wikipedia.org/wiki/C_POSIX_library">C POSIX LIB</a></li>
@@ -758,7 +537,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

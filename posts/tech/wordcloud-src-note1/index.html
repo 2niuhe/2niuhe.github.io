@@ -8,7 +8,8 @@
 <title>wordcloud源码阅读1——初探 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Python, wordcloud">
 <meta name="description" content="wordcloud源码1.2.1版阅读笔记（大纲）">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Python", "wordcloud"
   ],
-  "articleBody": "wordcloud是python用来生成词云的第三方库，github地址是word_cloud\n下载源码：\n1 git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。\n1 2 git tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下：\nwordcloud项目主要用了以下第三方库：\nNumpy PIL Cython 储备知识：\nHSL和HSV色彩空间 图片RGB 框架大体流程： 可以看出wordcloud类的两个核心方法process_text()和generate_from_frequencies()。\n如果输入是处理后的{string:frequency}字典类型，直接生成词云的layout，若输入是未处理过的字符串，就要先进行process_text()统计词频等工作。\n继续看generate_from_frequencies()的流程：\n就得到了词云的layout，后边可以通过recolor()重新上色。\nmask是一个n维数组（图片），在我的理解是photoshop里的蒙板，也叫遮色片。在wordcloud里mask决定了生成词云的位置。白色#FFFFFF称为mask out，即不在白色区域绘制词云。\nlayout is list of tuple ,格式(string, int, (int, int), int, color)) 定义了每个单词的（字符串，字体大小，（x位置，y位置), 方向， 颜色）\n参考：\nwordcloud的API可以参考wordcloud文档中文翻译 具体使用也可以参考网易云音乐歌手词云\n",
-  "wordCount" : "610",
+  "articleBody": "wordcloud是python用来生成词云的第三方库，github地址是word_cloud\n下载源码：\ngit clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。\ngit tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下：\nwordcloud项目主要用了以下第三方库：\nNumpy PIL Cython 储备知识：\nHSL和HSV色彩空间 图片RGB 框架大体流程： 可以看出wordcloud类的两个核心方法process_text()和generate_from_frequencies()。\n如果输入是处理后的{string:frequency}字典类型，直接生成词云的layout，若输入是未处理过的字符串，就要先进行process_text()统计词频等工作。\n继续看generate_from_frequencies()的流程：\n就得到了词云的layout，后边可以通过recolor()重新上色。\nmask是一个n维数组（图片），在我的理解是photoshop里的蒙板，也叫遮色片。在wordcloud里mask决定了生成词云的位置。白色#FFFFFF称为mask out，即不在白色区域绘制词云。\nlayout is list of tuple ,格式(string, int, (int, int), int, color)) 定义了每个单词的（字符串，字体大小，（x位置，y位置), 方向， 颜色）\n参考：\nwordcloud的API可以参考wordcloud文档中文翻译 具体使用也可以参考网易云音乐歌手词云\n",
+  "wordCount" : "607",
   "inLanguage": "zh",
   "datePublished": "2018-04-16T00:00:00Z",
   "dateModified": "2018-04-16T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       wordcloud源码1.2.1版阅读笔记（大纲）
     </div>
-    <div class="post-meta"><span title='2018-04-16 00:00:00 +0000 UTC'>2018-04-16</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-04-16 00:00:00 +0000 UTC'>创建: 2018-04-16</span>&nbsp;|&nbsp;更新:&nbsp;2018-04-16&nbsp;|&nbsp;字数:&nbsp;607字&nbsp;|&nbsp;时长:&nbsp;2分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -238,26 +240,11 @@ if (!doNotTrack) {
 
   <div class="post-content"><p>wordcloud是python用来生成词云的第三方库，github地址是<a href="https://github.com/amueller/word_cloud">word_cloud</a><br>
 下载源码：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/amueller/word_cloud
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git tag
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/amueller/word_cloud
+</span></span></code></pre></div><p>然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git tag
 </span></span><span style="display:flex;"><span>git checkout 1.2.1
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>现在我们的目录结构如下：
+</span></span></code></pre></div><p>现在我们的目录结构如下：
 <img loading="lazy" src="/img/%e8%af%8d%e4%ba%91%e9%a1%b9%e7%9b%ae%e7%9b%ae%e5%bd%95.jpg" alt="项目目录"  />
 </p>
 <p>可以看到，核心代码都在wordcloud目录下：</p>
@@ -324,7 +311,7 @@ wordcloud的API可以参考<a href="http://blog.niuhemoon.xyz/pages/2018/04/08/w
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

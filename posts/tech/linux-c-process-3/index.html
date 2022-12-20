@@ -8,7 +8,8 @@
 <title>Linux进程——进程环境与加载可执行映像 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Linux, C">
 <meta name="description" content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Linux", "C"
   ],
-  "articleBody": " 进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。\n###用户和用户组\n1 2 3 4 5 6 7 8 //获得当前进程实际用户ID pid_t getuid(void); //获得当前进程有效用户ID pid_t geteuid(void); //获得当前进程实际用户组ID pid_t getgid(void); //获得当前进程有效用户组ID pid_t getegid(void); ###进程和进程组 获得父子进程ID\n1 2 3 4 //获得当前进程ID pid_t getpid(void); //获得父进程ID pid_t getppid(void); 进程组\n有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。\n会话\n会话用于标识用户登录的每一个终端，每个登录终端都有一个会话ID与其对应； 会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。\n如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。\n1 2 3 4 5 6 7 8 9 10 /* 获得进程所属会话ID 成功返回会话ID，错误返回-1 */ pid_t getsid(pid_t pid); /* 创建一个新的会话，使进程组ID等于该会话ID 成功返回新的进程组ID，否则-1 */ pid_t setsid(void); 案例：在子进程中创建新的领头会话\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 #include #include #include int main(void) { int p,pid; printf(\"now session id %d\\n\\n\",getsid(getpid())); p = fork(); if(p) //父进程退出 exit(0); pid = setsid(); printf(\"new session id %d\\n\",pid); return pid; } ###守护进程\n守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭标准输入、标准输出、标准错误输出的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。\n同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。 创建守护进程步骤：\n创建子进程后结束父进程 在子进程中建立新的领头会话 修改工作目录和权限掩码信息 关闭文件描述符0,1,2 案例：创建一个守护进程\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 #include #include #include #include int daemon_init() { pid_t pid; char buf[80]; FILE * fout; if((pid = fork()) \u003c 0) return -1; else if(pid != 0) exit(0); //结束父进程 setsid(); //创建领头会话 system(\"cd /\"); //改变工作目录 umask(0); //清除权限掩码 close(0); //关闭文件描述符 close(1); close(2); getcwd(buf,sizeof(buf)); fout = fopen(\"/tmp/result.txt\",\"w\"); fprintf(fout,\"work dirctory is %s\\n\",buf); fprintf(fout,\"daemon pid is %d\\n\",getpid()); fprintf(fout,\"daemon parent pid is %d\\n\",getppid()); fclose(fout); return 0; } int main() { FILE * fout; printf(\"start init daemon ...\"); daemon_init(); while(1) { fout = fopen(\"/tmp/result.txt\",\"a\"); fputs(\"i am still alive\\n\",fout); fflush(fout); sleep(1); } } ###加载可执行映像\n可执行映像是链接好的可执行的代码。\n通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。\nELF格式\nLinux系统中，采用ELF(Excutable and Linkable Format)，ELF有3中基本格式\n可执行格式 目标文件(.o文件) 共享库（.so文件) 加载可执行文件\nELF的可执行文件的加载是通过系统调用exec完成的，当进程调用exec函数加载ELF可执行文件时，exec将以新加载程序的段替换当前进程的相应的正文、数据、堆和栈段；同时保留大部分的进程属性。例如进程ID、父进程ID、进程组ID、实际用户ID、会话ID、当前目录、文件描述符等。\n但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。 exec相关函数原型：\n1 2 3 4 5 6 7 #include int execl(const char *path,const char *arg,...) int execv(.........)......... int execle(........) int execve(.........) int execlp(.........) int execvp(.........) ",
-  "wordCount" : "1504",
+  "articleBody": " 进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。\n###用户和用户组\n//获得当前进程实际用户ID pid_t getuid(void); //获得当前进程有效用户ID pid_t geteuid(void); //获得当前进程实际用户组ID pid_t getgid(void); //获得当前进程有效用户组ID pid_t getegid(void); ###进程和进程组 获得父子进程ID\n//获得当前进程ID pid_t getpid(void); //获得父进程ID pid_t getppid(void); 进程组\n有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。\n会话\n会话用于标识用户登录的每一个终端，每个登录终端都有一个会话ID与其对应； 会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。\n如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。\n/* 获得进程所属会话ID 成功返回会话ID，错误返回-1 */ pid_t getsid(pid_t pid); /* 创建一个新的会话，使进程组ID等于该会话ID 成功返回新的进程组ID，否则-1 */ pid_t setsid(void); 案例：在子进程中创建新的领头会话\n#include #include #include int main(void) { int p,pid; printf(\"now session id %d\\n\\n\",getsid(getpid())); p = fork(); if(p) //父进程退出 exit(0); pid = setsid(); printf(\"new session id %d\\n\",pid); return pid; } ###守护进程\n守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭标准输入、标准输出、标准错误输出的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。\n同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。 创建守护进程步骤：\n创建子进程后结束父进程 在子进程中建立新的领头会话 修改工作目录和权限掩码信息 关闭文件描述符0,1,2 案例：创建一个守护进程\n#include #include #include #include int daemon_init() { pid_t pid; char buf[80]; FILE * fout; if((pid = fork()) \u003c 0) return -1; else if(pid != 0) exit(0); //结束父进程 setsid(); //创建领头会话 system(\"cd /\"); //改变工作目录 umask(0); //清除权限掩码 close(0); //关闭文件描述符 close(1); close(2); getcwd(buf,sizeof(buf)); fout = fopen(\"/tmp/result.txt\",\"w\"); fprintf(fout,\"work dirctory is %s\\n\",buf); fprintf(fout,\"daemon pid is %d\\n\",getpid()); fprintf(fout,\"daemon parent pid is %d\\n\",getppid()); fclose(fout); return 0; } int main() { FILE * fout; printf(\"start init daemon ...\"); daemon_init(); while(1) { fout = fopen(\"/tmp/result.txt\",\"a\"); fputs(\"i am still alive\\n\",fout); fflush(fout); sleep(1); } } ###加载可执行映像\n可执行映像是链接好的可执行的代码。\n通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。\nELF格式\nLinux系统中，采用ELF(Excutable and Linkable Format)，ELF有3中基本格式\n可执行格式 目标文件(.o文件) 共享库（.so文件) 加载可执行文件\nELF的可执行文件的加载是通过系统调用exec完成的，当进程调用exec函数加载ELF可执行文件时，exec将以新加载程序的段替换当前进程的相应的正文、数据、堆和栈段；同时保留大部分的进程属性。例如进程ID、父进程ID、进程组ID、实际用户ID、会话ID、当前目录、文件描述符等。\n但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。 exec相关函数原型：\n#include int execl(const char *path,const char *arg,...) int execv(.........)......... int execle(........) int execve(.........) int execlp(.........) int execvp(.........) ",
+  "wordCount" : "1417",
   "inLanguage": "zh",
   "datePublished": "2018-10-09T00:00:00Z",
   "dateModified": "2018-10-09T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像
     </div>
-    <div class="post-meta"><span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-10-09 00:00:00 +0000 UTC'>创建: 2018-10-09</span>&nbsp;|&nbsp;更新:&nbsp;2018-10-09&nbsp;|&nbsp;字数:&nbsp;1417字&nbsp;|&nbsp;时长:&nbsp;3分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -240,19 +242,7 @@ if (!doNotTrack) {
 <p>进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。</p>
 </blockquote>
 <p>###用户和用户组</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程实际用户ID
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程实际用户ID
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">pid_t</span> getuid(<span style="color:#fff;font-weight:bold">void</span>);
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程有效用户ID
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">pid_t</span> geteuid(<span style="color:#fff;font-weight:bold">void</span>);
@@ -260,25 +250,13 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">pid_t</span> getgid(<span style="color:#fff;font-weight:bold">void</span>);
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程有效用户组ID
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">pid_t</span> getegid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###进程和进程组
+</span></span></code></pre></div><p>###进程和进程组
 <strong>获得父子进程ID</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程ID
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程ID
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">pid_t</span> getpid(<span style="color:#fff;font-weight:bold">void</span>);
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得父进程ID
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">pid_t</span> getppid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>进程组</strong></p>
+</span></span></code></pre></div><p><strong>进程组</strong></p>
 <blockquote>
 <p>有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。</p>
 </blockquote>
@@ -288,21 +266,7 @@ if (!doNotTrack) {
 会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。</p>
 <p>如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">获得进程所属会话ID
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回会话ID，错误返回-1
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
@@ -312,29 +276,8 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回新的进程组ID，否则-1
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> setsid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>案例：在子进程中创建新的领头会话</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></code></pre></div><p><strong>案例：在子进程中创建新的领头会话</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
@@ -349,9 +292,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;new session id  %d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,pid);
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> pid;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###守护进程</p>
+</span></span></code></pre></div><p>###守护进程</p>
 <blockquote>
 <p>守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭<strong>标准输入、标准输出、标准错误输出</strong>的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。</p>
 <p>同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。
@@ -364,54 +305,7 @@ if (!doNotTrack) {
 </ol>
 </blockquote>
 <p><strong>案例：创建一个守护进程</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">38
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">39
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">40
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">41
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">42
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">43
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
@@ -454,9 +348,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        sleep(<span style="color:#ff0;font-weight:bold">1</span>);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>###加载可执行映像</p>
+</span></span></code></pre></div><p>###加载可执行映像</p>
 <blockquote>
 <p>可执行映像是链接好的可执行的代码。</p>
 <p>通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。</p>
@@ -476,27 +368,14 @@ if (!doNotTrack) {
 <p>但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。
 exec相关函数原型：</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span><span style="color:#fff;font-weight:bold">int</span> execl(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *path,<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *arg,...)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execv(.........).........
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execle(........)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execve(.........)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execlp(.........)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execvp(.........)
-</span></span></code></pre></td></tr></table>
-</div>
-</div>
+</span></span></code></pre></div>
 
   </div>
 
@@ -529,7 +408,7 @@ exec相关函数原型：</p>
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

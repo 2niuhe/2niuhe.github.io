@@ -8,7 +8,8 @@
 <title>Linux性能测试 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Linux">
 <meta name="description" content="简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、t">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-peformence-test/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Linux"
   ],
-  "articleBody": "简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用\n性能观测工具\n▪ 首先学习的Basic Tool有如下： uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。\n▪ 高级的命令如下： sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl、/proc。\n性能观测工具sar\nsar\n1 2 3 4 5 6 7 8 # install sudo apt install sysstat # usage sar -u 2 3 sar -u -f /var/log/sa/sa05 sar -P ALL 1 1 sar -r 1 3 sar -W 1 3 top\n1 2 3 4 5 6 7 8 9 10 11 交互模式的一些快捷操作: 全局命令: \u003c回车/空格\u003e ?, =, A, B, d, G, h, I, k, q, r, s, W, Z 统计区的命令: l, m, t, 1 任务区的命令： 外观: b, x, y, z 内容: c, f, H, o, S, u 大小: #, i, n 排序: \u003c, \u003e, F, O, R 色彩方案: , a, B, b, H, M, q, S, T, w, z, 0 - 7 窗口命令: -, _, =, +, A, a, G, g, w Press 'h' or '?' for help with Windows, Type 'q' or to continue 如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了！！！！！\n9. netstat - 显示开放的端口和连接 它是Linux管理员使用来显示各种网络信息的工具，如查看什么端口开放和什么网络连接已经建立以及何种进程运行在该连接之上。同时它也显示了不同程序间打开的Unix套接字的信息。作为大多数Linux发行版本的一部分，netstat的许多命令在netstat和它的不同输出中有详细的描述。最为常用的如下：\n1 2 3 4 5 6 7 8 netstat | head -20 netstat -r netstat -rC netstat -i netstat -ie netstat -s netstat -g netstat -tapn vmstat是虚拟内存(virtual memory statistics)的缩写，作为一个内存监控工具，它收集和显示关于内存，进程，终端和分页和I/O阻塞的概括信息。作为一个开源程序，它可以在大部分Linux发行版本中找到，包括Solaris和FreeBSD。它用来诊断大部分的内存性能问题和其他相关问题。\n让我们看下如何了解vmstat提供的信息：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 ----------------------------- procs部分的解释 r 列表示运行和等待cpu时间片的进程数，如果长期大于1，说明cpu不足，需要增加cpu。 b 列表示在等待资源的进程数，比如正在等待I``/O``、或者内存交换等。 ----------------------------- cpu部分的解释 us 列显示了用户方式下所花费 CPU 时间的百分比。us的值比较高时，说明用户进程消耗的cpu时间多，但是如果长期大于50%，需要考虑优化用户的程序。 sy 列显示了内核进程所花费的cpu时间的百分比。这里us + sy的参考值为80%，如果us+sy 大于 80%说明可能存在CPU不足。 wa 列显示了IO等待所占用的CPU时间的百分比。这里wa的参考值为30%，如果wa超过30%，说明IO等待严重，这可能是磁盘大量随机访问造成的，也可能磁盘或者 ``磁盘访问控制器的带宽瓶颈造成的(主要是块操作)。 id` `列显示了cpu处在空闲状态的时间百分比 ----------------------------- system部分的解释 in 列表示在某一时间间隔中观测到的每秒设备中断数。 cs列表示每秒产生的上下文切换次数，如当 cs 比磁盘 I/O 和网络信息包速率高得多，都应进行进一步调查。 ----------------------------- memory部分的解释 swpd 切换到内存交换区的内存数量(k表示)。如果swpd的值不为0，或者比较大，比如超过了100m，只要si、so的值长期为0，系统性能还是正常 free 当前的空闲页面列表中内存数量(k表示) buff 作为buffer cache的内存数量，一般对块设备的读写才需要缓冲。 cache: 作为page cache的内存数量，一般作为文件系统的cache，如果cache较大，说明用到cache的文件较多，如果此时IO中bi比较小，说明文件系统效率比较好。 ----------------------------- swap部分的解释 si 由内存进入内存交换区数量。 so由内存交换区进入内存数量。 ----------------------------- IO部分的解释 bi 从块设备读入数据的总量（读磁盘）（每秒kb）。 bo 块设备写入数据的总量（写磁盘）（每秒kb） Procs procs有 r列和b列。r列代表等待访问CPU的进程数量。而b列意味着睡眠进程的数量。在这些列的下面，是它们的值。从上面的截图中，我门有2个进程正在等待访问CPU，0个睡眠进程。\nMemory memory有swpd、 free、 buff 和 cache 这些列。这些信息和命令free -m相同。swpd列显示了有多少内存已经被交换到了交换文件或者磁盘。free列显示了未分配的可用内存。buff列显示了使用中的内存。cache列显示了有多少内存可以被交换到交换文件或者磁盘上如果一些应用需要他们。\nSwap swap显示了从交换系统上发送或取回了多少内存。si列告诉我们每秒有多少内存被从swap移到真实内存中（In）。so列告诉我们每秒有多少内存被从真实内存移到swap中（Out）。\nI/O io依据块的读写显示了每秒输入输出的活动。bi列告诉我们收到的块数量，bo列告诉我们发送的块数量。\nSystem system显示了每秒的系统操作数量。in列显示了系统每秒被中断的数量。cs列显示了系统为了处理所以任务而上下文切换的数量。\nCPU CPU告诉了我们CPU资源的使用情况。us列显示了处理器在非内核程序消耗的时间。sy列显示了处理器在内核相关任务上消耗的时间。id列显示了处理器的空闲时间。wa列显示了处理器在等待IO操作完成以继续处理任务上的时间。\nss是iproute2包的一部分。iproute2是用来替代一整套标准的Unix网络工具组件，它曾经用来完成网络接口配置，路由表和管理ARP表任务。ss工具用来记录套接字统计信息，它可以显示类似netstat一样的信息，同时也能显示更多TCP和状态信息。一些例子如下：\n1 2 3 4 5 ss -tnap ss -tnap6 ss -tnap ss -s ss -tn -o state established -p lsof命令，意为“list open files”, 用于在许多类Unix系统中显示所有打开的文件及打开它们的进程。在大部分Linux发行版和其他类Linux操作系统中系统管理员用它来检查不同的进程打开了哪些文件。\n1 2 3 4 5 6 # lsof +p process_id # lsof | less # lsof –u username # lsof /etc/passwd # lsof –i TCP:ftp # lsof –i TCP:80 缓冲区与特定的块设备关联，并覆盖文件系统元数据的缓存以及跟踪运行中的页面。缓存仅包含驻留的文件数据。也就是说，缓冲区记住目录中的内容，文件权限是什么，并跟踪从特定块设备写入或读取的内存。缓存仅包含文件本身的内容。\n“缓冲区”表示有多少RAM专用于缓存磁盘块。“缓存”类似于“缓冲区”，只是这次它缓存文件读取中的页面。\n引用答案（供参考）：\n简短答案：高速缓存是页面高速缓存的大小。缓冲区是内存中块I / O缓冲区的大小。缓存的事项；缓冲区在很大程度上无关紧要。\n长答案：缓存是Linux页面缓存的大小减去交换缓存中的内存，它由SwapCached表示（因此总页面缓存大小为Cached + SwapCached）。Linux通过页面缓存执行所有文件I / O。写操作的实现是简单地将页面缓存中的相应页面标记为脏。然后，刷新程序线程会定期将所有脏页写回到磁盘。通过从页面缓存返回数据来实现读取。如果数据尚未在高速缓存中，则首先填充它。在现代Linux系统上，“缓存”可以轻松达到数GB。它只会响应内存压力而缩小。系统将清除页面缓存以及将数据交换到磁盘上，以根据需要提供更多的内存。\n缓冲区是内存中的块I / O缓冲区。他们是相对短暂的。在Linux内核版本2.4之前，Linux具有单独的页面和缓冲区高速缓存。从2.4开始，页面和缓冲区高速缓存是统一的，缓冲区是未在页面高速缓存中表示的原始磁盘块，即不是文件数据。因此，“缓冲区”度量标准的重要性最低。在大多数系统上，缓冲区通常只有几十兆字节。\n它并不像这样简单，但是可能有助于理解：\n缓冲区用于存储文件元数据（权限，位置等）。每个内存页面都在此处跟踪。\n缓存用于存储实际文件内容。\niostat\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 解释说明： avg-cpu: 总体cpu使用情况统计信息，对于多核cpu，这里为所有cpu的平均值 %user: 在用户级别运行所使用的CPU的百分比. %``nice``: ``nice``操作所使用的CPU的百分比. %sys: 在系统级别(kernel)运行所使用CPU的百分比. %iowait: CPU等待硬件I``/O``时,所占用CPU百分比. %idle: CPU空闲时间的百分比. Device段:各磁盘设备的IO统计信息 tps: 每秒钟发送到的I``/O``请求数. Blk_read ``/s``: 每秒读取的block数. Blk_wrtn``/s``: 每秒写入的block数. Blk_read: 读入的block总数. Blk_wrtn: 写入的block总数. iostat -x -k -d 1\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 解释说明： rrqm``/s``: 每秒对该设备的读请求被合并次数，文件系统会对读取同块(block)的请求进行合并 wrqm``/s``: 每秒对该设备的写请求被合并次数 r``/s``: 每秒完成的读次数 w``/s``: 每秒完成的写次数 rkB``/s``: 每秒读数据量(kB为单位) wkB``/s``: 每秒写数据量(kB为单位) avgrq-sz:平均每次IO操作的数据量(扇区数为单位) avgqu-sz: 平均等待处理的IO请求队列长度 await: 平均每次IO请求等待时间(包括等待时间和处理时间，毫秒为单位) svctm: 平均每次IO请求的处理时间(毫秒为单位) %util: 采用周期内用于IO操作的时间比率，即IO队列非空的时间比率 如果 %util 接近 100%，说明产生的I``/O``请求太多，I``/O``系统已经满负荷，该磁盘可能存在瓶颈。 idle小于70% IO压力就较大了,一般读取速度有较多的wait。 同时可以结合vmstat 查看查看b参数(等待资源的进程数)和wa参数(IO等待所占用的CPU时间的百分比,高过30%时IO压力高) 在Linux系统中，为了提高文件系统性能，内核利用一部分物理内存分配出缓冲区，用于缓存系统操作和数据文件，当内核收到读写的请求时，内核先去缓存区找是否有请求的数据，有就直接返回，如果没有则通过驱动程序直接操作磁盘。 缓存机制优点：减少系统调用次数，降低CPU上下文切换和磁盘访问频率。 CPU上下文切换：CPU给每个进程一定的服务时间，当时间片用完后，内核从正在运行的进程中收回处理器，同时把进程当前运行状态保存下来，然后加载下一个任务，这个过程叫做上下文切换。实质上就是被终止运行进程与待运行进程的进程切换。\nSwap用途：Swap意思是交换分区，通常我们说的虚拟内存，是从硬盘中划分出的一个分区。当物理内存不够用的时候，内核就会释放缓存区（buffers/cache）里一些长时间不用的程序，然后将这些程序临时放到Swap中，也就是说如果物理内存和缓存区内存不够用的时候，才会用到Swap。 swap清理：swapoff -a \u0026\u0026 swapon -a 注意：这样清理有个前提条件，空闲的内存必须比已经使用的swap空间大\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 1. 查看内存使用情况，发现swap虚拟内存空间竟然为0 # free -m 2. 建虚拟内存磁盘卷。做法如下： # dd if=/dev/zero of=/opt/swap bs=1024 count=2048000 # mkswap /opt/swap # swapon /opt/swap 再次查看内容，发现swap虚拟内存就有了 # free -m 3. 如果想取消文件虚拟内存，即删除swap，做法如下：（当然根据系统配置，也可以保留swap，以后继续用）。 # swapoff /opt/swap # rm /opt/swap 4. swap开机挂载 # vim /etc/fstab /opt/swap swap swap defaults 0 0 上面挂载参数分别为： 设备文件或伪文件系统 挂载点 文件系统类型 挂载选项 备份频率 开机自检次序 6. 移动虚拟内存空间 如果当前的虚存所在的磁盘空间不够，可以首先关闭虚存服务，将其移动到别的磁盘，再启用即可。 # swapoff -v /swap/swapadd # mv /swap/swapadd /mnt/swap # swapon /swap/swapadd 释放缓存区内存的方法 1）清理pagecache（页面缓存） [root@backup ~]# echo 1 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=1 2）清理dentries（目录缓存）和inodes [root@backup ~]# echo 2 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=2 3）清理pagecache、dentries和inodes [root@backup ~]# echo 3 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=3 上面三种方式都是临时释放缓存的方法，要想永久释放缓存，需要在/etc/sysctl.conf文件中配置：vm.drop_caches=1/2/3，然后sysctl -p生效即可！ 另外，可以使用sync命令来清理文件系统缓存，还会清理僵尸(zombie)对象和它们占用的内存 [root@backup ~]# sync 温馨提示： 上面操作在大多数情况下都不会对系统造成伤害，只会有助于释放不用的内存。 但是如果在执行这些操作时正在写数据，那么实际上在数据到达磁盘之前就将它从文件缓存中清除掉了，这可能会造成很不好的影响。 那么如果避免这种事情发生呢？ 因此，这里不得不提一下/proc/sys/vm/vfs_cache_pressure这个文件，告诉内核，当清理inoe/dentry缓存时应该用什么样的优先级。 [root@backup ~]# cat /proc/sys/vm/vfs_cache_pressure 100 vfs_cache_pressure=100 这个是默认值，内核会尝试重新声明dentries和inodes，并采用一种相对于页面缓存和交换缓存比较\"合理\"的比例。 减少vfs_cache_pressure的值，会导致内核倾向于保留dentry和inode缓存。 增加vfs_cache_pressure的值，（即超过100时），则会导致内核倾向于重新声明dentries和inodes 总之，vfs_cache_pressure的值： 小于100的值不会导致缓存的大量减少 超过100的值则会告诉内核你希望以高优先级来清理缓存。 其实无论vfs_cache_pressure的值采用什么值，内核清理缓存的速度都是比较低的。 如果将此值设置为10000，系统将会将缓存减少到一个合理的水平。 测试硬盘写入速度\n1 2 3 4 5 6 [root@redhat73 ~]# dd if=/dev/zero of=/home/linshi.a bs=1024000000 count=2 2+0 records in 2+0 records out 2048000000 bytes (2.0 GB) copied, 4.67577 s, 438 MB/s 写入一个2GB的文件，用时4.67577秒，平均438 MB/s 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 [root@localhost home]# free -h total used free shared buff/cache available Mem: 974M 56M 818M 580K 99M 787M Swap: 2.0G 37M 2.0G # 参数解释 -m 以MB为单位输出 -g 以GB为单位输出 -h 以人类可读的单位输出，自动转换KB、MB或者GB为单位 -s N 每N秒打印一次 -c N 打印N次后退出 # 输出说明（Mem代表物理内存、Swap代表虚拟内存） total 表示系统的总内存 used 表示应用程序已经使用的内存 free 表示当前还没有被使用的内存 shared 表示共享链接库使用的内存 buff/cache 表示系统的page cache和buffer使用到的内存 available 表示应用程序还可以申请到的内存 怎么判断是否需要加内存： 1.swap使用有多少 2.available剩余是多少，而不是看free cache是Linux系统为了提高系统运行效率而将一些程序或文件写入到cache，可提高程序运行和加载速度，如果程序需要会马上释放。所以判断系统内存是否足够和是否需要增加的时候不能简单的看free Cache Pages: A cache is the part of the memory which transparently stores data so that future requests for that data can be served faster. This memory is utilized by the kernel to cache disk data and improve i/o performance. 系统当前使用到的内存是：used + buff/cache，used中包含了shared。 所以total = used + buff/cache + free = 56 + 99 + 818 = 973 available（787） \u003c= free + buff/cache（818 + 99 = 917），为什么是小于呢？因为系统的一些page或cache是不能回收的。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 查看CPU信息 # 总核数 = 物理CPU个数 X 每颗物理CPU的核数 # 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数 # 查看物理CPU个数 cat /proc/cpuinfo| grep \"physical id\"| sort| uniq| wc -l # 查看每个物理CPU中core的个数(即核数) cat /proc/cpuinfo| grep \"cpu cores\"| uniq # 查看逻辑CPU的个数 cat /proc/cpuinfo| grep \"processor\"| wc -l # 查看CPU信息（型号） cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c 性能测评工具\n性能调优工具\n参考 用十条命令在一分钟内检查Linux服务器性能\n你值得拥有 —— 25 个 Linux 性能监控工具\nTop命令详解\ngglsof命令入门\nLinux缓存机制\n30个实例详解TOP命令\nlsof命令行神器入门\n超全整理！Linux性能分析工具汇总合集\n",
-  "wordCount" : "6245",
+  "articleBody": "简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用\n性能观测工具\n▪ 首先学习的Basic Tool有如下： uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。\n▪ 高级的命令如下： sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl、/proc。\n性能观测工具sar\nsar\n# install sudo apt install sysstat # usage sar -u 2 3 sar -u -f /var/log/sa/sa05 sar -P ALL 1 1 sar -r 1 3 sar -W 1 3 top\n交互模式的一些快捷操作: 全局命令: \u003c回车/空格\u003e ?, =, A, B, d, G, h, I, k, q, r, s, W, Z 统计区的命令: l, m, t, 1 任务区的命令： 外观: b, x, y, z 内容: c, f, H, o, S, u 大小: #, i, n 排序: \u003c, \u003e, F, O, R 色彩方案: , a, B, b, H, M, q, S, T, w, z, 0 - 7 窗口命令: -, _, =, +, A, a, G, g, w Press 'h' or '?' for help with Windows, Type 'q' or to continue 如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了！！！！！\n9. netstat - 显示开放的端口和连接 它是Linux管理员使用来显示各种网络信息的工具，如查看什么端口开放和什么网络连接已经建立以及何种进程运行在该连接之上。同时它也显示了不同程序间打开的Unix套接字的信息。作为大多数Linux发行版本的一部分，netstat的许多命令在netstat和它的不同输出中有详细的描述。最为常用的如下：\nnetstat | head -20 netstat -r netstat -rC netstat -i netstat -ie netstat -s netstat -g netstat -tapn vmstat是虚拟内存(virtual memory statistics)的缩写，作为一个内存监控工具，它收集和显示关于内存，进程，终端和分页和I/O阻塞的概括信息。作为一个开源程序，它可以在大部分Linux发行版本中找到，包括Solaris和FreeBSD。它用来诊断大部分的内存性能问题和其他相关问题。\n让我们看下如何了解vmstat提供的信息：\n----------------------------- procs部分的解释 r 列表示运行和等待cpu时间片的进程数，如果长期大于1，说明cpu不足，需要增加cpu。 b 列表示在等待资源的进程数，比如正在等待I``/O``、或者内存交换等。 ----------------------------- cpu部分的解释 us 列显示了用户方式下所花费 CPU 时间的百分比。us的值比较高时，说明用户进程消耗的cpu时间多，但是如果长期大于50%，需要考虑优化用户的程序。 sy 列显示了内核进程所花费的cpu时间的百分比。这里us + sy的参考值为80%，如果us+sy 大于 80%说明可能存在CPU不足。 wa 列显示了IO等待所占用的CPU时间的百分比。这里wa的参考值为30%，如果wa超过30%，说明IO等待严重，这可能是磁盘大量随机访问造成的，也可能磁盘或者 ``磁盘访问控制器的带宽瓶颈造成的(主要是块操作)。 id` `列显示了cpu处在空闲状态的时间百分比 ----------------------------- system部分的解释 in 列表示在某一时间间隔中观测到的每秒设备中断数。 cs列表示每秒产生的上下文切换次数，如当 cs 比磁盘 I/O 和网络信息包速率高得多，都应进行进一步调查。 ----------------------------- memory部分的解释 swpd 切换到内存交换区的内存数量(k表示)。如果swpd的值不为0，或者比较大，比如超过了100m，只要si、so的值长期为0，系统性能还是正常 free 当前的空闲页面列表中内存数量(k表示) buff 作为buffer cache的内存数量，一般对块设备的读写才需要缓冲。 cache: 作为page cache的内存数量，一般作为文件系统的cache，如果cache较大，说明用到cache的文件较多，如果此时IO中bi比较小，说明文件系统效率比较好。 ----------------------------- swap部分的解释 si 由内存进入内存交换区数量。 so由内存交换区进入内存数量。 ----------------------------- IO部分的解释 bi 从块设备读入数据的总量（读磁盘）（每秒kb）。 bo 块设备写入数据的总量（写磁盘）（每秒kb） Procs procs有 r列和b列。r列代表等待访问CPU的进程数量。而b列意味着睡眠进程的数量。在这些列的下面，是它们的值。从上面的截图中，我门有2个进程正在等待访问CPU，0个睡眠进程。\nMemory memory有swpd、 free、 buff 和 cache 这些列。这些信息和命令free -m相同。swpd列显示了有多少内存已经被交换到了交换文件或者磁盘。free列显示了未分配的可用内存。buff列显示了使用中的内存。cache列显示了有多少内存可以被交换到交换文件或者磁盘上如果一些应用需要他们。\nSwap swap显示了从交换系统上发送或取回了多少内存。si列告诉我们每秒有多少内存被从swap移到真实内存中（In）。so列告诉我们每秒有多少内存被从真实内存移到swap中（Out）。\nI/O io依据块的读写显示了每秒输入输出的活动。bi列告诉我们收到的块数量，bo列告诉我们发送的块数量。\nSystem system显示了每秒的系统操作数量。in列显示了系统每秒被中断的数量。cs列显示了系统为了处理所以任务而上下文切换的数量。\nCPU CPU告诉了我们CPU资源的使用情况。us列显示了处理器在非内核程序消耗的时间。sy列显示了处理器在内核相关任务上消耗的时间。id列显示了处理器的空闲时间。wa列显示了处理器在等待IO操作完成以继续处理任务上的时间。\nss是iproute2包的一部分。iproute2是用来替代一整套标准的Unix网络工具组件，它曾经用来完成网络接口配置，路由表和管理ARP表任务。ss工具用来记录套接字统计信息，它可以显示类似netstat一样的信息，同时也能显示更多TCP和状态信息。一些例子如下：\nss -tnap ss -tnap6 ss -tnap ss -s ss -tn -o state established -p lsof命令，意为“list open files”, 用于在许多类Unix系统中显示所有打开的文件及打开它们的进程。在大部分Linux发行版和其他类Linux操作系统中系统管理员用它来检查不同的进程打开了哪些文件。\n# lsof +p process_id # lsof | less # lsof –u username # lsof /etc/passwd # lsof –i TCP:ftp # lsof –i TCP:80 缓冲区与特定的块设备关联，并覆盖文件系统元数据的缓存以及跟踪运行中的页面。缓存仅包含驻留的文件数据。也就是说，缓冲区记住目录中的内容，文件权限是什么，并跟踪从特定块设备写入或读取的内存。缓存仅包含文件本身的内容。\n“缓冲区”表示有多少RAM专用于缓存磁盘块。“缓存”类似于“缓冲区”，只是这次它缓存文件读取中的页面。\n引用答案（供参考）：\n简短答案：高速缓存是页面高速缓存的大小。缓冲区是内存中块I / O缓冲区的大小。缓存的事项；缓冲区在很大程度上无关紧要。\n长答案：缓存是Linux页面缓存的大小减去交换缓存中的内存，它由SwapCached表示（因此总页面缓存大小为Cached + SwapCached）。Linux通过页面缓存执行所有文件I / O。写操作的实现是简单地将页面缓存中的相应页面标记为脏。然后，刷新程序线程会定期将所有脏页写回到磁盘。通过从页面缓存返回数据来实现读取。如果数据尚未在高速缓存中，则首先填充它。在现代Linux系统上，“缓存”可以轻松达到数GB。它只会响应内存压力而缩小。系统将清除页面缓存以及将数据交换到磁盘上，以根据需要提供更多的内存。\n缓冲区是内存中的块I / O缓冲区。他们是相对短暂的。在Linux内核版本2.4之前，Linux具有单独的页面和缓冲区高速缓存。从2.4开始，页面和缓冲区高速缓存是统一的，缓冲区是未在页面高速缓存中表示的原始磁盘块，即不是文件数据。因此，“缓冲区”度量标准的重要性最低。在大多数系统上，缓冲区通常只有几十兆字节。\n它并不像这样简单，但是可能有助于理解：\n缓冲区用于存储文件元数据（权限，位置等）。每个内存页面都在此处跟踪。\n缓存用于存储实际文件内容。\niostat\n解释说明： avg-cpu: 总体cpu使用情况统计信息，对于多核cpu，这里为所有cpu的平均值 %user: 在用户级别运行所使用的CPU的百分比. %``nice``: ``nice``操作所使用的CPU的百分比. %sys: 在系统级别(kernel)运行所使用CPU的百分比. %iowait: CPU等待硬件I``/O``时,所占用CPU百分比. %idle: CPU空闲时间的百分比. Device段:各磁盘设备的IO统计信息 tps: 每秒钟发送到的I``/O``请求数. Blk_read ``/s``: 每秒读取的block数. Blk_wrtn``/s``: 每秒写入的block数. Blk_read: 读入的block总数. Blk_wrtn: 写入的block总数. iostat -x -k -d 1\n解释说明： rrqm``/s``: 每秒对该设备的读请求被合并次数，文件系统会对读取同块(block)的请求进行合并 wrqm``/s``: 每秒对该设备的写请求被合并次数 r``/s``: 每秒完成的读次数 w``/s``: 每秒完成的写次数 rkB``/s``: 每秒读数据量(kB为单位) wkB``/s``: 每秒写数据量(kB为单位) avgrq-sz:平均每次IO操作的数据量(扇区数为单位) avgqu-sz: 平均等待处理的IO请求队列长度 await: 平均每次IO请求等待时间(包括等待时间和处理时间，毫秒为单位) svctm: 平均每次IO请求的处理时间(毫秒为单位) %util: 采用周期内用于IO操作的时间比率，即IO队列非空的时间比率 如果 %util 接近 100%，说明产生的I``/O``请求太多，I``/O``系统已经满负荷，该磁盘可能存在瓶颈。 idle小于70% IO压力就较大了,一般读取速度有较多的wait。 同时可以结合vmstat 查看查看b参数(等待资源的进程数)和wa参数(IO等待所占用的CPU时间的百分比,高过30%时IO压力高) 在Linux系统中，为了提高文件系统性能，内核利用一部分物理内存分配出缓冲区，用于缓存系统操作和数据文件，当内核收到读写的请求时，内核先去缓存区找是否有请求的数据，有就直接返回，如果没有则通过驱动程序直接操作磁盘。 缓存机制优点：减少系统调用次数，降低CPU上下文切换和磁盘访问频率。 CPU上下文切换：CPU给每个进程一定的服务时间，当时间片用完后，内核从正在运行的进程中收回处理器，同时把进程当前运行状态保存下来，然后加载下一个任务，这个过程叫做上下文切换。实质上就是被终止运行进程与待运行进程的进程切换。\nSwap用途：Swap意思是交换分区，通常我们说的虚拟内存，是从硬盘中划分出的一个分区。当物理内存不够用的时候，内核就会释放缓存区（buffers/cache）里一些长时间不用的程序，然后将这些程序临时放到Swap中，也就是说如果物理内存和缓存区内存不够用的时候，才会用到Swap。 swap清理：swapoff -a \u0026\u0026 swapon -a 注意：这样清理有个前提条件，空闲的内存必须比已经使用的swap空间大\n1. 查看内存使用情况，发现swap虚拟内存空间竟然为0 # free -m 2. 建虚拟内存磁盘卷。做法如下： # dd if=/dev/zero of=/opt/swap bs=1024 count=2048000 # mkswap /opt/swap # swapon /opt/swap 再次查看内容，发现swap虚拟内存就有了 # free -m 3. 如果想取消文件虚拟内存，即删除swap，做法如下：（当然根据系统配置，也可以保留swap，以后继续用）。 # swapoff /opt/swap # rm /opt/swap 4. swap开机挂载 # vim /etc/fstab /opt/swap swap swap defaults 0 0 上面挂载参数分别为： 设备文件或伪文件系统 挂载点 文件系统类型 挂载选项 备份频率 开机自检次序 6. 移动虚拟内存空间 如果当前的虚存所在的磁盘空间不够，可以首先关闭虚存服务，将其移动到别的磁盘，再启用即可。 # swapoff -v /swap/swapadd # mv /swap/swapadd /mnt/swap # swapon /swap/swapadd 释放缓存区内存的方法 1）清理pagecache（页面缓存） [root@backup ~]# echo 1 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=1 2）清理dentries（目录缓存）和inodes [root@backup ~]# echo 2 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=2 3）清理pagecache、dentries和inodes [root@backup ~]# echo 3 \u003e /proc/sys/vm/drop_caches 或者 # sysctl -w vm.drop_caches=3 上面三种方式都是临时释放缓存的方法，要想永久释放缓存，需要在/etc/sysctl.conf文件中配置：vm.drop_caches=1/2/3，然后sysctl -p生效即可！ 另外，可以使用sync命令来清理文件系统缓存，还会清理僵尸(zombie)对象和它们占用的内存 [root@backup ~]# sync 温馨提示： 上面操作在大多数情况下都不会对系统造成伤害，只会有助于释放不用的内存。 但是如果在执行这些操作时正在写数据，那么实际上在数据到达磁盘之前就将它从文件缓存中清除掉了，这可能会造成很不好的影响。 那么如果避免这种事情发生呢？ 因此，这里不得不提一下/proc/sys/vm/vfs_cache_pressure这个文件，告诉内核，当清理inoe/dentry缓存时应该用什么样的优先级。 [root@backup ~]# cat /proc/sys/vm/vfs_cache_pressure 100 vfs_cache_pressure=100 这个是默认值，内核会尝试重新声明dentries和inodes，并采用一种相对于页面缓存和交换缓存比较\"合理\"的比例。 减少vfs_cache_pressure的值，会导致内核倾向于保留dentry和inode缓存。 增加vfs_cache_pressure的值，（即超过100时），则会导致内核倾向于重新声明dentries和inodes 总之，vfs_cache_pressure的值： 小于100的值不会导致缓存的大量减少 超过100的值则会告诉内核你希望以高优先级来清理缓存。 其实无论vfs_cache_pressure的值采用什么值，内核清理缓存的速度都是比较低的。 如果将此值设置为10000，系统将会将缓存减少到一个合理的水平。 测试硬盘写入速度\n[root@redhat73 ~]# dd if=/dev/zero of=/home/linshi.a bs=1024000000 count=2 2+0 records in 2+0 records out 2048000000 bytes (2.0 GB) copied, 4.67577 s, 438 MB/s 写入一个2GB的文件，用时4.67577秒，平均438 MB/s [root@localhost home]# free -h total used free shared buff/cache available Mem: 974M 56M 818M 580K 99M 787M Swap: 2.0G 37M 2.0G # 参数解释 -m 以MB为单位输出 -g 以GB为单位输出 -h 以人类可读的单位输出，自动转换KB、MB或者GB为单位 -s N 每N秒打印一次 -c N 打印N次后退出 # 输出说明（Mem代表物理内存、Swap代表虚拟内存） total 表示系统的总内存 used 表示应用程序已经使用的内存 free 表示当前还没有被使用的内存 shared 表示共享链接库使用的内存 buff/cache 表示系统的page cache和buffer使用到的内存 available 表示应用程序还可以申请到的内存 怎么判断是否需要加内存： 1.swap使用有多少 2.available剩余是多少，而不是看free cache是Linux系统为了提高系统运行效率而将一些程序或文件写入到cache，可提高程序运行和加载速度，如果程序需要会马上释放。所以判断系统内存是否足够和是否需要增加的时候不能简单的看free Cache Pages: A cache is the part of the memory which transparently stores data so that future requests for that data can be served faster. This memory is utilized by the kernel to cache disk data and improve i/o performance. 系统当前使用到的内存是：used + buff/cache，used中包含了shared。 所以total = used + buff/cache + free = 56 + 99 + 818 = 973 available（787） \u003c= free + buff/cache（818 + 99 = 917），为什么是小于呢？因为系统的一些page或cache是不能回收的。 # 查看CPU信息 # 总核数 = 物理CPU个数 X 每颗物理CPU的核数 # 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数 # 查看物理CPU个数 cat /proc/cpuinfo| grep \"physical id\"| sort| uniq| wc -l # 查看每个物理CPU中core的个数(即核数) cat /proc/cpuinfo| grep \"cpu cores\"| uniq # 查看逻辑CPU的个数 cat /proc/cpuinfo| grep \"processor\"| wc -l # 查看CPU信息（型号） cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c 性能测评工具\n性能调优工具\n参考 用十条命令在一分钟内检查Linux服务器性能\n你值得拥有 —— 25 个 Linux 性能监控工具\nTop命令详解\ngglsof命令入门\nLinux缓存机制\n30个实例详解TOP命令\nlsof命令行神器入门\n超全整理！Linux性能分析工具汇总合集\n",
+  "wordCount" : "6027",
   "inLanguage": "zh",
   "datePublished": "2020-10-17T00:00:00Z",
   "dateModified": "2020-10-17T00:00:00Z",
@@ -226,8 +227,9 @@ if (!doNotTrack) {
     <h1 class="post-title">
       Linux性能测试
     </h1>
-    <div class="post-meta"><span title='2020-10-17 00:00:00 +0000 UTC'>2020-10-17</span>&nbsp;·&nbsp;13 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2020-10-17 00:00:00 +0000 UTC'>创建: 2020-10-17</span>&nbsp;|&nbsp;更新:&nbsp;2020-10-17&nbsp;|&nbsp;字数:&nbsp;6027字&nbsp;|&nbsp;时长:&nbsp;13分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -281,19 +283,7 @@ sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl
 <p><img loading="lazy" src="img/f_33718c31204bfbe49a13dea6d0f3531f.png" alt="img"  />
 </p>
 <p>sar</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># install</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># install</span>
 </span></span><span style="display:flex;"><span>sudo apt install sysstat
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># usage</span>
 </span></span><span style="display:flex;"><span>sar -u <span style="color:#ff0;font-weight:bold">2</span> <span style="color:#ff0;font-weight:bold">3</span>
@@ -301,25 +291,8 @@ sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl
 </span></span><span style="display:flex;"><span>sar -P ALL <span style="color:#ff0;font-weight:bold">1</span> <span style="color:#ff0;font-weight:bold">1</span>
 </span></span><span style="display:flex;"><span>sar -r <span style="color:#ff0;font-weight:bold">1</span> <span style="color:#ff0;font-weight:bold">3</span>
 </span></span><span style="display:flex;"><span>sar -W <span style="color:#ff0;font-weight:bold">1</span> <span style="color:#ff0;font-weight:bold">3</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>top</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>交互模式的一些快捷操作:
+</span></span></code></pre></div><p>top</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>交互模式的一些快捷操作:
 </span></span><span style="display:flex;"><span> 
 </span></span><span style="display:flex;"><span>    全局命令: &lt;回车/空格&gt; ?, =, A, B, d, G, h, I, k, q, r, s, W, Z
 </span></span><span style="display:flex;"><span>    统计区的命令: l, m, t, <span style="color:#ff0;font-weight:bold">1</span>
@@ -330,30 +303,10 @@ sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    Press <span style="color:#0ff;font-weight:bold">&#39;h&#39;</span> or <span style="color:#0ff;font-weight:bold">&#39;?&#39;</span> <span style="color:#fff;font-weight:bold">for</span> <span style="color:#fff;font-weight:bold">help</span> with Windows,
 </span></span><span style="display:flex;"><span>Type <span style="color:#0ff;font-weight:bold">&#39;q&#39;</span> or &lt;Esc&gt; to <span style="color:#fff;font-weight:bold">continue</span> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
-</div>
-</div><p>如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了！！！！！</p>
+</span></span></code></pre></div><p>如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了！！！！！</p>
 <h4 id="9-netstat---显示开放的端口和连接">9. netstat - 显示开放的端口和连接<a hidden class="anchor" aria-hidden="true" href="#9-netstat---显示开放的端口和连接">#</a></h4>
 <p>它是<strong>Linux管理员</strong>使用来显示各种网络信息的工具，如查看什么端口开放和什么网络连接已经建立以及何种进程运行在该连接之上。同时它也显示了不同程序间打开的<strong>Unix套接字</strong>的信息。作为大多数Linux发行版本的一部分，netstat的许多命令在<a href="http://linux.cn/article-2434-1.html">netstat和它的不同输出</a>中有详细的描述。最为常用的如下：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>netstat | head -20
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>netstat | head -20
 </span></span><span style="display:flex;"><span>netstat -r
 </span></span><span style="display:flex;"><span>netstat -rC
 </span></span><span style="display:flex;"><span>netstat -i
@@ -361,75 +314,38 @@ sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl
 </span></span><span style="display:flex;"><span>netstat -s
 </span></span><span style="display:flex;"><span>netstat -g
 </span></span><span style="display:flex;"><span>netstat -tapn
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>vmstat</strong>是虚拟内存(<strong>virtual memory</strong> statistics)的缩写，作为一个<strong>内存监控</strong>工具，它收集和显示关于<strong>内存</strong>，<strong>进程</strong>，<strong>终端</strong>和<strong>分页</strong>和<strong>I/O阻塞</strong>的概括信息。作为一个开源程序，它可以在大部分Linux发行版本中找到，包括Solaris和FreeBSD。它用来诊断大部分的内存性能问题和其他相关问题。</p>
+</span></span></code></pre></div><p><strong>vmstat</strong>是虚拟内存(<strong>virtual memory</strong> statistics)的缩写，作为一个<strong>内存监控</strong>工具，它收集和显示关于<strong>内存</strong>，<strong>进程</strong>，<strong>终端</strong>和<strong>分页</strong>和<strong>I/O阻塞</strong>的概括信息。作为一个开源程序，它可以在大部分Linux发行版本中找到，包括Solaris和FreeBSD。它用来诊断大部分的内存性能问题和其他相关问题。</p>
 <p>让我们看下如何了解vmstat提供的信息：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>-----------------------------
-</span></span><span style="display:flex;"><span>procs部分的解释
-</span></span><span style="display:flex;"><span>r 列表示运行和等待cpu时间片的进程数，如果长期大于1，说明cpu不足，需要增加cpu。
-</span></span><span style="display:flex;"><span>b 列表示在等待资源的进程数，比如正在等待I``/O``、或者内存交换等。
-</span></span><span style="display:flex;"><span>-----------------------------
-</span></span><span style="display:flex;"><span>cpu部分的解释
-</span></span><span style="display:flex;"><span>us 列显示了用户方式下所花费 CPU 时间的百分比。us的值比较高时，说明用户进程消耗的cpu时间多，但是如果长期大于50%，需要考虑优化用户的程序。
-</span></span><span style="display:flex;"><span>sy 列显示了内核进程所花费的cpu时间的百分比。这里us + sy的参考值为80%，如果us+sy 大于 80%说明可能存在CPU不足。
-</span></span><span style="display:flex;"><span>wa 列显示了IO等待所占用的CPU时间的百分比。这里wa的参考值为30%，如果wa超过30%，说明IO等待严重，这可能是磁盘大量随机访问造成的，也可能磁盘或者
-</span></span><span style="display:flex;"><span>  ``磁盘访问控制器的带宽瓶颈造成的(主要是块操作)。
-</span></span><span style="display:flex;"><span>id` `列显示了cpu处在空闲状态的时间百分比
-</span></span><span style="display:flex;"><span>-----------------------------
-</span></span><span style="display:flex;"><span>system部分的解释
-</span></span><span style="display:flex;"><span>in 列表示在某一时间间隔中观测到的每秒设备中断数。
-</span></span><span style="display:flex;"><span>cs列表示每秒产生的上下文切换次数，如当 cs 比磁盘 I/O 和网络信息包速率高得多，都应进行进一步调查。
-</span></span><span style="display:flex;"><span>-----------------------------
-</span></span><span style="display:flex;"><span>memory部分的解释
-</span></span><span style="display:flex;"><span>swpd 切换到内存交换区的内存数量(k表示)。如果swpd的值不为0，或者比较大，比如超过了100m，只要si、so的值长期为0，系统性能还是正常
-</span></span><span style="display:flex;"><span>free 当前的空闲页面列表中内存数量(k表示)
-</span></span><span style="display:flex;"><span>buff 作为buffer cache的内存数量，一般对块设备的读写才需要缓冲。
-</span></span><span style="display:flex;"><span>cache: 作为page cache的内存数量，一般作为文件系统的cache，如果cache较大，说明用到cache的文件较多，如果此时IO中bi比较小，说明文件系统效率比较好。
-</span></span><span style="display:flex;"><span>-----------------------------
-</span></span><span style="display:flex;"><span>swap部分的解释
-</span></span><span style="display:flex;"><span>si 由内存进入内存交换区数量。
-</span></span><span style="display:flex;"><span>so由内存交换区进入内存数量。
-</span></span><span style="display:flex;"><span>-----------------------------
-</span></span><span style="display:flex;"><span>IO部分的解释
-</span></span><span style="display:flex;"><span>bi 从块设备读入数据的总量（读磁盘）（每秒kb）。
-</span></span><span style="display:flex;"><span>bo 块设备写入数据的总量（写磁盘）（每秒kb）
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="procs">Procs<a hidden class="anchor" aria-hidden="true" href="#procs">#</a></h4>
+<pre tabindex="0"><code>-----------------------------
+procs部分的解释
+r 列表示运行和等待cpu时间片的进程数，如果长期大于1，说明cpu不足，需要增加cpu。
+b 列表示在等待资源的进程数，比如正在等待I``/O``、或者内存交换等。
+-----------------------------
+cpu部分的解释
+us 列显示了用户方式下所花费 CPU 时间的百分比。us的值比较高时，说明用户进程消耗的cpu时间多，但是如果长期大于50%，需要考虑优化用户的程序。
+sy 列显示了内核进程所花费的cpu时间的百分比。这里us + sy的参考值为80%，如果us+sy 大于 80%说明可能存在CPU不足。
+wa 列显示了IO等待所占用的CPU时间的百分比。这里wa的参考值为30%，如果wa超过30%，说明IO等待严重，这可能是磁盘大量随机访问造成的，也可能磁盘或者
+  ``磁盘访问控制器的带宽瓶颈造成的(主要是块操作)。
+id` `列显示了cpu处在空闲状态的时间百分比
+-----------------------------
+system部分的解释
+in 列表示在某一时间间隔中观测到的每秒设备中断数。
+cs列表示每秒产生的上下文切换次数，如当 cs 比磁盘 I/O 和网络信息包速率高得多，都应进行进一步调查。
+-----------------------------
+memory部分的解释
+swpd 切换到内存交换区的内存数量(k表示)。如果swpd的值不为0，或者比较大，比如超过了100m，只要si、so的值长期为0，系统性能还是正常
+free 当前的空闲页面列表中内存数量(k表示)
+buff 作为buffer cache的内存数量，一般对块设备的读写才需要缓冲。
+cache: 作为page cache的内存数量，一般作为文件系统的cache，如果cache较大，说明用到cache的文件较多，如果此时IO中bi比较小，说明文件系统效率比较好。
+-----------------------------
+swap部分的解释
+si 由内存进入内存交换区数量。
+so由内存交换区进入内存数量。
+-----------------------------
+IO部分的解释
+bi 从块设备读入数据的总量（读磁盘）（每秒kb）。
+bo 块设备写入数据的总量（写磁盘）（每秒kb）
+</code></pre><h4 id="procs">Procs<a hidden class="anchor" aria-hidden="true" href="#procs">#</a></h4>
 <p>procs有 <strong>r</strong>列和<strong>b</strong>列。<strong>r</strong>列代表等待访问CPU的进程数量。而b列意味着睡眠进程的数量。在这些列的下面，是它们的值。从上面的截图中，我门有2个进程正在等待访问CPU，0个睡眠进程。</p>
 <h4 id="memory">Memory<a hidden class="anchor" aria-hidden="true" href="#memory">#</a></h4>
 <p>memory有<strong>swpd、 free、 buff</strong> 和 <strong>cache</strong> 这些列。这些信息和命令<strong>free -m</strong>相同。<strong>swpd列</strong>显示了有多少内存已经被交换到了交换文件或者磁盘。<strong>free列</strong>显示了未分配的可用内存。<strong>buff列</strong>显示了使用中的内存。<strong>cache列</strong>显示了有多少内存可以被交换到交换文件或者磁盘上如果一些应用需要他们。</p>
@@ -442,42 +358,19 @@ sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl
 <h4 id="cpu">CPU<a hidden class="anchor" aria-hidden="true" href="#cpu">#</a></h4>
 <p>CPU告诉了我们CPU资源的使用情况。<strong>us列</strong>显示了处理器在非内核程序消耗的时间。<strong>sy列</strong>显示了处理器在内核相关任务上消耗的时间。<strong>id列</strong>显示了处理器的空闲时间。<strong>wa列</strong>显示了处理器在等待IO操作完成以继续处理任务上的时间。</p>
 <p><strong>ss</strong>是<strong>iproute2</strong>包的一部分。iproute2是用来替代一整套标准的<strong>Unix网络</strong>工具组件，它曾经用来完成<a href="http://linux.cn/article-4372-1.html">网络接口配置，路由表和管理ARP表</a>任务。ss工具用来记录套接字统计信息，它可以显示类似netstat一样的信息，同时也能显示更多TCP和状态信息。一些例子如下：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ss -tnap
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ss -tnap
 </span></span><span style="display:flex;"><span>ss -tnap6
 </span></span><span style="display:flex;"><span>ss -tnap
 </span></span><span style="display:flex;"><span>ss -s
 </span></span><span style="display:flex;"><span>ss -tn -o state established -p
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>lsof</strong>命令，意为“<strong>list open files</strong>”, 用于在许多类Unix系统中显示所有打开的文件及打开它们的进程。在大部分Linux发行版和其他类Linux操作系统中系统管理员用它来检查不同的进程打开了哪些文件。</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># lsof +p process_id</span>
+</span></span></code></pre></div><p><strong>lsof</strong>命令，意为“<strong>list open files</strong>”, 用于在许多类Unix系统中显示所有打开的文件及打开它们的进程。在大部分Linux发行版和其他类Linux操作系统中系统管理员用它来检查不同的进程打开了哪些文件。</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># lsof +p process_id</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># lsof | less</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># lsof –u username</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># lsof /etc/passwd</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># lsof –i TCP:ftp</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># lsof –i TCP:80</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>缓冲区与特定的块设备关联，并覆盖文件系统元数据的缓存以及跟踪运行中的页面。缓存仅包含驻留的文件数据。也就是说，缓冲区记住目录中的内容，文件权限是什么，并跟踪从特定块设备写入或读取的内存。缓存仅包含文件本身的内容。</p>
+</span></span></code></pre></div><p>缓冲区与特定的块设备关联，并覆盖文件系统元数据的缓存以及跟踪运行中的页面。缓存仅包含驻留的文件数据。也就是说，缓冲区记住目录中的内容，文件权限是什么，并跟踪从特定块设备写入或读取的内存。缓存仅包含文件本身的内容。</p>
 <p>“缓冲区”表示有多少RAM专用于缓存磁盘块。“缓存”类似于“缓冲区”，只是这次它缓存文件读取中的页面。</p>
 <p><a href="http://www.quora.com/What-is-the-difference-between-Buffers-and-Cached-columns-in-proc-meminfo-output">
 引用答案（供参考）：</a></p>
@@ -490,288 +383,123 @@ sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl
 <p>缓冲区用于存储文件元数据（权限，位置等）。每个内存页面都在此处跟踪。</p>
 <p>缓存用于存储实际文件内容。</p>
 <p>iostat</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#f00">解释说明：</span>
-</span></span><span style="display:flex;"><span>avg-cpu: <span style="color:#f00">总体</span>cpu<span style="color:#f00">使用情况统计信息，对于多核</span>cpu<span style="color:#f00">，这里为所有</span>cpu<span style="color:#f00">的平均值</span>
-</span></span><span style="display:flex;"><span>%<span style="color:#fff;font-weight:bold">user</span>: <span style="color:#f00">在用户级别运行所使用的</span>CPU<span style="color:#f00">的百分比</span>.
-</span></span><span style="display:flex;"><span>%``nice``: ``nice``<span style="color:#f00">操作所使用的</span>CPU<span style="color:#f00">的百分比</span>.
-</span></span><span style="display:flex;"><span>%sys: <span style="color:#f00">在系统级别</span>(kernel)<span style="color:#f00">运行所使用</span>CPU<span style="color:#f00">的百分比</span>.
-</span></span><span style="display:flex;"><span>%iowait: CPU<span style="color:#f00">等待硬件</span>I``/O``<span style="color:#f00">时</span>,<span style="color:#f00">所占用</span>CPU<span style="color:#f00">百分比</span>.
-</span></span><span style="display:flex;"><span>%idle: CPU<span style="color:#f00">空闲时间的百分比</span>.
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>Device<span style="color:#f00">段</span>:<span style="color:#f00">各磁盘设备的</span>IO<span style="color:#f00">统计信息</span>
-</span></span><span style="display:flex;"><span>tps: <span style="color:#f00">每秒钟发送到的</span>I``/O``<span style="color:#f00">请求数</span>.
-</span></span><span style="display:flex;"><span>Blk_read ``/s``: <span style="color:#f00">每秒读取的</span>block<span style="color:#f00">数</span>.
-</span></span><span style="display:flex;"><span>Blk_wrtn``/s``: <span style="color:#f00">每秒写入的</span>block<span style="color:#f00">数</span>.
-</span></span><span style="display:flex;"><span>Blk_read:  <span style="color:#f00">读入的</span>block<span style="color:#f00">总数</span>.
-</span></span><span style="display:flex;"><span>Blk_wrtn: <span style="color:#f00">写入的</span>block<span style="color:#f00">总数</span>.
-</span></span><span style="display:flex;"><span> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>iostat -x -k -d 1</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>解释说明：
-</span></span><span style="display:flex;"><span>rrqm``/s``: 每秒对该设备的读请求被合并次数，文件系统会对读取同块(block)的请求进行合并
-</span></span><span style="display:flex;"><span>wrqm``/s``: 每秒对该设备的写请求被合并次数
-</span></span><span style="display:flex;"><span>r``/s``: 每秒完成的读次数
-</span></span><span style="display:flex;"><span>w``/s``: 每秒完成的写次数
-</span></span><span style="display:flex;"><span>rkB``/s``: 每秒读数据量(kB为单位)
-</span></span><span style="display:flex;"><span>wkB``/s``: 每秒写数据量(kB为单位)
-</span></span><span style="display:flex;"><span>avgrq-sz:平均每次IO操作的数据量(扇区数为单位)
-</span></span><span style="display:flex;"><span>avgqu-sz: 平均等待处理的IO请求队列长度
-</span></span><span style="display:flex;"><span>await: 平均每次IO请求等待时间(包括等待时间和处理时间，毫秒为单位)
-</span></span><span style="display:flex;"><span>svctm: 平均每次IO请求的处理时间(毫秒为单位)
-</span></span><span style="display:flex;"><span>%util: 采用周期内用于IO操作的时间比率，即IO队列非空的时间比率
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>如果 %util 接近 100%，说明产生的I``/O``请求太多，I``/O``系统已经满负荷，该磁盘可能存在瓶颈。
-</span></span><span style="display:flex;"><span>idle小于70% IO压力就较大了,一般读取速度有较多的wait。
-</span></span><span style="display:flex;"><span>同时可以结合vmstat 查看查看b参数(等待资源的进程数)和wa参数(IO等待所占用的CPU时间的百分比,高过30%时IO压力高)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在Linux系统中，为了提高文件系统性能，内核利用一部分物理内存分配出缓冲区，用于缓存系统操作和数据文件，当内核收到读写的请求时，内核先去缓存区找是否有请求的数据，有就直接返回，如果没有则通过驱动程序直接操作磁盘。
+<pre tabindex="0"><code>解释说明：
+avg-cpu: 总体cpu使用情况统计信息，对于多核cpu，这里为所有cpu的平均值
+%user: 在用户级别运行所使用的CPU的百分比.
+%``nice``: ``nice``操作所使用的CPU的百分比.
+%sys: 在系统级别(kernel)运行所使用CPU的百分比.
+%iowait: CPU等待硬件I``/O``时,所占用CPU百分比.
+%idle: CPU空闲时间的百分比.
+ 
+Device段:各磁盘设备的IO统计信息
+tps: 每秒钟发送到的I``/O``请求数.
+Blk_read ``/s``: 每秒读取的block数.
+Blk_wrtn``/s``: 每秒写入的block数.
+Blk_read:  读入的block总数.
+Blk_wrtn: 写入的block总数.
+ 
+</code></pre><p>iostat -x -k -d 1</p>
+<pre tabindex="0"><code>解释说明：
+rrqm``/s``: 每秒对该设备的读请求被合并次数，文件系统会对读取同块(block)的请求进行合并
+wrqm``/s``: 每秒对该设备的写请求被合并次数
+r``/s``: 每秒完成的读次数
+w``/s``: 每秒完成的写次数
+rkB``/s``: 每秒读数据量(kB为单位)
+wkB``/s``: 每秒写数据量(kB为单位)
+avgrq-sz:平均每次IO操作的数据量(扇区数为单位)
+avgqu-sz: 平均等待处理的IO请求队列长度
+await: 平均每次IO请求等待时间(包括等待时间和处理时间，毫秒为单位)
+svctm: 平均每次IO请求的处理时间(毫秒为单位)
+%util: 采用周期内用于IO操作的时间比率，即IO队列非空的时间比率
+ 
+如果 %util 接近 100%，说明产生的I``/O``请求太多，I``/O``系统已经满负荷，该磁盘可能存在瓶颈。
+idle小于70% IO压力就较大了,一般读取速度有较多的wait。
+同时可以结合vmstat 查看查看b参数(等待资源的进程数)和wa参数(IO等待所占用的CPU时间的百分比,高过30%时IO压力高)
+</code></pre><p>在Linux系统中，为了提高文件系统性能，内核利用一部分物理内存分配出缓冲区，用于缓存系统操作和数据文件，当内核收到读写的请求时，内核先去缓存区找是否有请求的数据，有就直接返回，如果没有则通过驱动程序直接操作磁盘。
 缓存机制优点：减少系统调用次数，降低CPU上下文切换和磁盘访问频率。
 CPU上下文切换：CPU给每个进程一定的服务时间，当时间片用完后，内核从正在运行的进程中收回处理器，同时把进程当前运行状态保存下来，然后加载下一个任务，这个过程叫做上下文切换。实质上就是被终止运行进程与待运行进程的进程切换。</p>
 <p>Swap用途：Swap意思是交换分区，通常我们说的虚拟内存，是从硬盘中划分出的一个分区。当物理内存不够用的时候，内核就会释放缓存区（buffers/cache）里一些长时间不用的程序，然后将这些程序临时放到Swap中，也就是说如果物理内存和缓存区内存不够用的时候，才会用到Swap。
 swap清理：swapoff -a &amp;&amp; swapon -a
 注意：这样清理有个前提条件，空闲的内存必须比已经使用的swap空间大</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">35
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">36
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">37
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">38
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">39
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">40
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">41
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">42
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">43
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">44
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">45
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">46
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">47
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">48
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">49
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">50
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">51
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">52
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">53
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">54
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">55
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">56
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">57
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">58
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">59
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">60
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">61
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">62
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">63
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">64
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">65
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">66
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>1. 查看内存使用情况，发现swap虚拟内存空间竟然为0
-</span></span><span style="display:flex;"><span># free -m 
-</span></span><span style="display:flex;"><span>2. 建虚拟内存磁盘卷。做法如下：
-</span></span><span style="display:flex;"><span># dd if=/dev/zero of=/opt/swap bs=1024 count=2048000
-</span></span><span style="display:flex;"><span># mkswap /opt/swap
-</span></span><span style="display:flex;"><span># swapon /opt/swap
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>再次查看内容，发现swap虚拟内存就有了
-</span></span><span style="display:flex;"><span># free -m
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>3. 如果想取消文件虚拟内存，即删除swap，做法如下：（当然根据系统配置，也可以保留swap，以后继续用）。
-</span></span><span style="display:flex;"><span># swapoff /opt/swap
-</span></span><span style="display:flex;"><span># rm /opt/swap
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>4. swap开机挂载
-</span></span><span style="display:flex;"><span># vim /etc/fstab
-</span></span><span style="display:flex;"><span>/opt/swap  swap                    swap    defaults        0 0
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>上面挂载参数分别为：
-</span></span><span style="display:flex;"><span>设备文件或伪文件系统   挂载点  文件系统类型  挂载选项 备份频率 开机自检次序
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>6. 移动虚拟内存空间
-</span></span><span style="display:flex;"><span>如果当前的虚存所在的磁盘空间不够，可以首先关闭虚存服务，将其移动到别的磁盘，再启用即可。
-</span></span><span style="display:flex;"><span># swapoff -v /swap/swapadd
-</span></span><span style="display:flex;"><span># mv /swap/swapadd /mnt/swap
-</span></span><span style="display:flex;"><span># swapon /swap/swapadd
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>释放缓存区内存的方法
-</span></span><span style="display:flex;"><span>1）清理pagecache（页面缓存）
-</span></span><span style="display:flex;"><span>[root@backup ~]# echo 1 &gt; /proc/sys/vm/drop_caches     或者 # sysctl -w vm.drop_caches=1
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>2）清理dentries（目录缓存）和inodes
-</span></span><span style="display:flex;"><span>[root@backup ~]# echo 2 &gt; /proc/sys/vm/drop_caches     或者 # sysctl -w vm.drop_caches=2
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>3）清理pagecache、dentries和inodes
-</span></span><span style="display:flex;"><span>[root@backup ~]# echo 3 &gt; /proc/sys/vm/drop_caches     或者 # sysctl -w vm.drop_caches=3
-</span></span><span style="display:flex;"><span>　
-</span></span><span style="display:flex;"><span>上面三种方式都是临时释放缓存的方法，要想永久释放缓存，需要在/etc/sysctl.conf文件中配置：vm.drop_caches=1/2/3，然后sysctl -p生效即可！
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>另外，可以使用sync命令来清理文件系统缓存，还会清理僵尸(zombie)对象和它们占用的内存
-</span></span><span style="display:flex;"><span>[root@backup ~]# sync
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>温馨提示：
-</span></span><span style="display:flex;"><span>上面操作在大多数情况下都不会对系统造成伤害，只会有助于释放不用的内存。
-</span></span><span style="display:flex;"><span>但是如果在执行这些操作时正在写数据，那么实际上在数据到达磁盘之前就将它从文件缓存中清除掉了，这可能会造成很不好的影响。
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>那么如果避免这种事情发生呢？
-</span></span><span style="display:flex;"><span>因此，这里不得不提一下/proc/sys/vm/vfs_cache_pressure这个文件，告诉内核，当清理inoe/dentry缓存时应该用什么样的优先级。
-</span></span><span style="display:flex;"><span>[root@backup ~]# cat /proc/sys/vm/vfs_cache_pressure
-</span></span><span style="display:flex;"><span>100
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>vfs_cache_pressure=100    这个是默认值，内核会尝试重新声明dentries和inodes，并采用一种相对于页面缓存和交换缓存比较&#34;合理&#34;的比例。
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>减少vfs_cache_pressure的值，会导致内核倾向于保留dentry和inode缓存。
-</span></span><span style="display:flex;"><span>增加vfs_cache_pressure的值，（即超过100时），则会导致内核倾向于重新声明dentries和inodes
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>总之，vfs_cache_pressure的值：
-</span></span><span style="display:flex;"><span>小于100的值不会导致缓存的大量减少
-</span></span><span style="display:flex;"><span>超过100的值则会告诉内核你希望以高优先级来清理缓存。
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>其实无论vfs_cache_pressure的值采用什么值，内核清理缓存的速度都是比较低的。
-</span></span><span style="display:flex;"><span>如果将此值设置为10000，系统将会将缓存减少到一个合理的水平。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>测试硬盘写入速度</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[root@redhat73 ~]# dd if=/dev/zero of=/home/linshi.a bs=1024000000 count=2
+<pre tabindex="0"><code>1. 查看内存使用情况，发现swap虚拟内存空间竟然为0
+# free -m 
+2. 建虚拟内存磁盘卷。做法如下：
+# dd if=/dev/zero of=/opt/swap bs=1024 count=2048000
+# mkswap /opt/swap
+# swapon /opt/swap
+ 
+再次查看内容，发现swap虚拟内存就有了
+# free -m
+ 
+3. 如果想取消文件虚拟内存，即删除swap，做法如下：（当然根据系统配置，也可以保留swap，以后继续用）。
+# swapoff /opt/swap
+# rm /opt/swap
+ 
+4. swap开机挂载
+# vim /etc/fstab
+/opt/swap  swap                    swap    defaults        0 0
+ 
+上面挂载参数分别为：
+设备文件或伪文件系统   挂载点  文件系统类型  挂载选项 备份频率 开机自检次序
+
+ 
+6. 移动虚拟内存空间
+如果当前的虚存所在的磁盘空间不够，可以首先关闭虚存服务，将其移动到别的磁盘，再启用即可。
+# swapoff -v /swap/swapadd
+# mv /swap/swapadd /mnt/swap
+# swapon /swap/swapadd
+
+
+
+释放缓存区内存的方法
+1）清理pagecache（页面缓存）
+[root@backup ~]# echo 1 &gt; /proc/sys/vm/drop_caches     或者 # sysctl -w vm.drop_caches=1
+ 
+2）清理dentries（目录缓存）和inodes
+[root@backup ~]# echo 2 &gt; /proc/sys/vm/drop_caches     或者 # sysctl -w vm.drop_caches=2
+ 
+3）清理pagecache、dentries和inodes
+[root@backup ~]# echo 3 &gt; /proc/sys/vm/drop_caches     或者 # sysctl -w vm.drop_caches=3
+　
+上面三种方式都是临时释放缓存的方法，要想永久释放缓存，需要在/etc/sysctl.conf文件中配置：vm.drop_caches=1/2/3，然后sysctl -p生效即可！
+ 
+另外，可以使用sync命令来清理文件系统缓存，还会清理僵尸(zombie)对象和它们占用的内存
+[root@backup ~]# sync
+ 
+ 
+温馨提示：
+上面操作在大多数情况下都不会对系统造成伤害，只会有助于释放不用的内存。
+但是如果在执行这些操作时正在写数据，那么实际上在数据到达磁盘之前就将它从文件缓存中清除掉了，这可能会造成很不好的影响。
+ 
+那么如果避免这种事情发生呢？
+因此，这里不得不提一下/proc/sys/vm/vfs_cache_pressure这个文件，告诉内核，当清理inoe/dentry缓存时应该用什么样的优先级。
+[root@backup ~]# cat /proc/sys/vm/vfs_cache_pressure
+100
+ 
+vfs_cache_pressure=100    这个是默认值，内核会尝试重新声明dentries和inodes，并采用一种相对于页面缓存和交换缓存比较&#34;合理&#34;的比例。
+ 
+减少vfs_cache_pressure的值，会导致内核倾向于保留dentry和inode缓存。
+增加vfs_cache_pressure的值，（即超过100时），则会导致内核倾向于重新声明dentries和inodes
+  
+总之，vfs_cache_pressure的值：
+小于100的值不会导致缓存的大量减少
+超过100的值则会告诉内核你希望以高优先级来清理缓存。
+  
+其实无论vfs_cache_pressure的值采用什么值，内核清理缓存的速度都是比较低的。
+如果将此值设置为10000，系统将会将缓存减少到一个合理的水平。
+</code></pre><p>测试硬盘写入速度</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>[root@redhat73 ~]<span style="color:#007f7f"># dd if=/dev/zero of=/home/linshi.a bs=1024000000 count=2</span>
 </span></span><span style="display:flex;"><span>2+0 records in
 </span></span><span style="display:flex;"><span>2+0 records out
-</span></span><span style="display:flex;"><span>2048000000 bytes (2.0 GB) copied, 4.67577 s, 438 MB/s
+</span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">2048000000</span> bytes (2.0 GB) copied, 4.67577 s, <span style="color:#ff0;font-weight:bold">438</span> MB/s
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>写入一个2GB的文件，用时4.67577秒，平均438 MB/s
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">33
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">34
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[root@localhost home]# free -h
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>[root@localhost home]<span style="color:#007f7f"># free -h</span>
 </span></span><span style="display:flex;"><span>              total        used        free      shared  buff/cache   available
 </span></span><span style="display:flex;"><span>Mem:           974M         56M        818M        580K         99M        787M
 </span></span><span style="display:flex;"><span>Swap:          2.0G         37M        2.0G
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    # 参数解释
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 参数解释</span>
 </span></span><span style="display:flex;"><span>    -m      以MB为单位输出
 </span></span><span style="display:flex;"><span>    -g      以GB为单位输出
 </span></span><span style="display:flex;"><span>    -h      以人类可读的单位输出，自动转换KB、MB或者GB为单位
@@ -779,7 +507,7 @@ swap清理：swapoff -a &amp;&amp; swapon -a
 </span></span><span style="display:flex;"><span>    -c N    打印N次后退出
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span># 输出说明（Mem代表物理内存、Swap代表虚拟内存）
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 输出说明（Mem代表物理内存、Swap代表虚拟内存）</span>
 </span></span><span style="display:flex;"><span>total       表示系统的总内存
 </span></span><span style="display:flex;"><span>used        表示应用程序已经使用的内存
 </span></span><span style="display:flex;"><span>free        表示当前还没有被使用的内存 
@@ -793,52 +521,29 @@ swap清理：swapoff -a &amp;&amp; swapon -a
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>cache是Linux系统为了提高系统运行效率而将一些程序或文件写入到cache，可提高程序运行和加载速度，如果程序需要会马上释放。所以判断系统内存是否足够和是否需要增加的时候不能简单的看free
 </span></span><span style="display:flex;"><span>Cache Pages:
-</span></span><span style="display:flex;"><span>    A cache is the part of the memory which transparently stores data so that future requests for that data can be served faster. 
+</span></span><span style="display:flex;"><span>    A cache is the part of the memory which transparently stores data so that future requests <span style="color:#fff;font-weight:bold">for</span> that data can be served faster. 
 </span></span><span style="display:flex;"><span>    This memory is utilized by the kernel to cache disk data and improve i/o performance.
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>系统当前使用到的内存是：used + buff/cache，used中包含了shared。
-</span></span><span style="display:flex;"><span>所以total = used + buff/cache + free = 56 + 99 + 818 = 973
+</span></span><span style="display:flex;"><span>所以total = used + buff/cache + free = <span style="color:#ff0;font-weight:bold">56</span> + <span style="color:#ff0;font-weight:bold">99</span> + 818 = <span style="color:#ff0;font-weight:bold">973</span>
 </span></span><span style="display:flex;"><span>available（787） &lt;= free + buff/cache（818 + 99 = 917），为什么是小于呢？因为系统的一些page或cache是不能回收的。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>查看CPU信息
-</span></span><span style="display:flex;"><span># 总核数 = 物理CPU个数 X 每颗物理CPU的核数 
-</span></span><span style="display:flex;"><span># 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看CPU信息</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 总核数 = 物理CPU个数 X 每颗物理CPU的核数 </span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 查看物理CPU个数
-</span></span><span style="display:flex;"><span>cat /proc/cpuinfo| grep &#34;physical id&#34;| sort| uniq| wc -l
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看物理CPU个数</span>
+</span></span><span style="display:flex;"><span>cat /proc/cpuinfo| grep <span style="color:#0ff;font-weight:bold">&#34;physical id&#34;</span>| sort| uniq| wc -l
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 查看每个物理CPU中core的个数(即核数)
-</span></span><span style="display:flex;"><span>cat /proc/cpuinfo| grep &#34;cpu cores&#34;| uniq
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看每个物理CPU中core的个数(即核数)</span>
+</span></span><span style="display:flex;"><span>cat /proc/cpuinfo| grep <span style="color:#0ff;font-weight:bold">&#34;cpu cores&#34;</span>| uniq
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 查看逻辑CPU的个数
-</span></span><span style="display:flex;"><span>cat /proc/cpuinfo| grep &#34;processor&#34;| wc -l
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看逻辑CPU的个数</span>
+</span></span><span style="display:flex;"><span>cat /proc/cpuinfo| grep <span style="color:#0ff;font-weight:bold">&#34;processor&#34;</span>| wc -l
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 查看CPU信息（型号）
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查看CPU信息（型号）</span>
 </span></span><span style="display:flex;"><span>cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>性能测评工具</p>
+</span></span></code></pre></div><p>性能测评工具</p>
 <p><img loading="lazy" src="/img/f_297d3a62fcd5803f272e98a23b4df300.png" alt="img"  />
 </p>
 <p>性能调优工具</p>
@@ -885,7 +590,7 @@ swap清理：swapoff -a &amp;&amp; swapon -a
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

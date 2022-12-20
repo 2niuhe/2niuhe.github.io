@@ -8,7 +8,8 @@
 <title>远程ssh连接家中的树莓派 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="树莓派">
 <meta name="description" content="使用腾讯云进行SSH端口转发来访问家中的树莓派">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "树莓派"
   ],
-  "articleBody": " 在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。\nVPS + SSH远程代理隧道 这是这篇文章重点，需要：\n一个安装了linux的VPS，如一台腾讯云服务器。（如果没有，请看下一种方法：公网IP+路由器端口转发） 连上网络的树莓派,将树莓派ssh公钥放到VPS上 树莓派上使用autossh+crontab 1 2 3 4 5 6 sudo apt install autossh cd ~/ echo \"sleep 20; /usr/bin/autossh -M 5678 -NfR 9999:localhost:22 user@T.T.T.T -i /home/user/.ssh/id_rsa\" \u003e autossh.sh chmod +x autossh.sh crontab -e 在crontab的配置文件中加入\n1 @reboot /home/nh/autossh.sh \u003e\u003e tunnel.log 在服务器上操作 1 ssh -fCNL \"*:11111:localhost:9999\" localhost 远程登录 现在就可以使用服务器作为跳板，连接到家中的树莓派。\n1 ssh -p 11111 user@T.T.T.T 注：user@T.T.T.T,user是树莓派用户名，T.T.T.T是服务器公网IP。-p指定向服务器1111端口发送ssh请求，1111端口转发到9999端口，也就是树莓派的22端口。\n显示效果如下：\n以下树莓派配置方法均不推荐，想折腾的自己玩，服务器配置方法都一样\n树莓派上安装sshpass(可选） 1 sudo apt-get install sshpass 树莓派上编辑shell脚本 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 #!/bin/bash #saved as create_ssh_tunnel.sh createTunnel() { sshpass -p \"Password\" ssh -o \"ServerAliveInterval 300\" -o \"ServerAliveCountMax 2\" -fCNR 9999:localhost:22 user@T.T.T.T if [[ $? -eq 0 ]]; then echo $(date) Tunnel to jumpbox created successfully \u003e\u003e /root/tunnel.log else echo $(date) An error occurred creating a tunnel to jumpbox. RC was $? \u003e\u003e /root/tunnel.log fi } /bin/pidof ssh if [[ $? -ne 0 ]]; then echo $(date) Creating new tunnel connection \u003e\u003e /root/tunnel.log createTunnel fi 注：这种方式非常危险，不推荐这种方式，因为明文存储了服务器密码。\n“Password\"指的是你的服务器密码 user@T.T.T.T是你的服务器用户名和IP地址 9999是将树莓派的22端口绑定到服务器额9999端口 推荐将树莓派上的公钥放到远程服务器上，然后使用如下脚本\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 #saved as create_ssh_tunnel.sh createTunnel() { ssh -o \"ServerAliveInterval 300\" -o \"ServerAliveCountMax 2\" -NR 9999:localhost:22 user@T.T.T.T if [[ $? -eq 0 ]]; then echo $(date) Tunnel to jumpbox created successfully \u003e\u003e ~/tunnel.log else echo $(date) An error occurred creating a tunnel to jumpbox. RC was $? \u003e\u003e ~/tunnel.log fi } /bin/pidof ssh if [[ $? -ne 0 ]]; then echo $(date) Creating new tunnel connection \u003e\u003e ~/tunnel.log createTunnel fi 给脚本添加执行权限\n1 chmod +x creat_ssh_tunnel.sh 树莓派上开启cron定时任务 1 sudo crontab -e 在文件最后一行添加：\n1 */10 * * * * ～/create_ssh_tunnel.sh \u003e\u003e tunnel.log 2\u003e\u00261 意思是每十分钟执行一次刚刚我们编辑的shell脚本\n公网IP + 路由器端口转发 如果用网线将树莓派连接到互联网上，只要获得公网IP，皆可以通过ssh访问。但是我们在家中通常是用wifi连接树莓派，我们获得的公网iP，只是路由器的IP。由于一个路由器上连接很多设备，我们无法通过这个公网IP访问到树莓派。而且由于路由器的公网IP是会变动的。所以我们要解决的问题是：\n找到路由器的公网IP 通过公网IP找到路由器下连接的树莓派 可以在路由器设置里将树莓派分配固定的IP，并绑定固定端口。这样就可以通过访问这个端口访问到局域网下的树莓派。之后不管是将公网IP发送到邮箱还是，使用动态DNS解析服务，通过域名访问树莓派，都可以很容易实现。\n参考 SSH反向代理 外网访问树莓派方法汇总 用DDNS服务通过域名访问树莓派 使用crontab让SSH反向代理更持久 ",
-  "wordCount" : "1266",
+  "articleBody": " 在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。\nVPS + SSH远程代理隧道 这是这篇文章重点，需要：\n一个安装了linux的VPS，如一台腾讯云服务器。（如果没有，请看下一种方法：公网IP+路由器端口转发） 连上网络的树莓派,将树莓派ssh公钥放到VPS上 树莓派上使用autossh+crontab sudo apt install autossh cd ~/ echo \"sleep 20; /usr/bin/autossh -M 5678 -NfR 9999:localhost:22 user@T.T.T.T -i /home/user/.ssh/id_rsa\" \u003e autossh.sh chmod +x autossh.sh crontab -e 在crontab的配置文件中加入\n@reboot /home/nh/autossh.sh \u003e\u003e tunnel.log 在服务器上操作 ssh -fCNL \"*:11111:localhost:9999\" localhost 远程登录 现在就可以使用服务器作为跳板，连接到家中的树莓派。\nssh -p 11111 user@T.T.T.T 注：user@T.T.T.T,user是树莓派用户名，T.T.T.T是服务器公网IP。-p指定向服务器1111端口发送ssh请求，1111端口转发到9999端口，也就是树莓派的22端口。\n显示效果如下：\n以下树莓派配置方法均不推荐，想折腾的自己玩，服务器配置方法都一样\n树莓派上安装sshpass(可选） sudo apt-get install sshpass 树莓派上编辑shell脚本 #!/bin/bash #saved as create_ssh_tunnel.sh createTunnel() { sshpass -p \"Password\" ssh -o \"ServerAliveInterval 300\" -o \"ServerAliveCountMax 2\" -fCNR 9999:localhost:22 user@T.T.T.T if [[ $? -eq 0 ]]; then echo $(date) Tunnel to jumpbox created successfully \u003e\u003e /root/tunnel.log else echo $(date) An error occurred creating a tunnel to jumpbox. RC was $? \u003e\u003e /root/tunnel.log fi } /bin/pidof ssh if [[ $? -ne 0 ]]; then echo $(date) Creating new tunnel connection \u003e\u003e /root/tunnel.log createTunnel fi 注：这种方式非常危险，不推荐这种方式，因为明文存储了服务器密码。\n“Password\"指的是你的服务器密码 user@T.T.T.T是你的服务器用户名和IP地址 9999是将树莓派的22端口绑定到服务器额9999端口 推荐将树莓派上的公钥放到远程服务器上，然后使用如下脚本\n#saved as create_ssh_tunnel.sh createTunnel() { ssh -o \"ServerAliveInterval 300\" -o \"ServerAliveCountMax 2\" -NR 9999:localhost:22 user@T.T.T.T if [[ $? -eq 0 ]]; then echo $(date) Tunnel to jumpbox created successfully \u003e\u003e ~/tunnel.log else echo $(date) An error occurred creating a tunnel to jumpbox. RC was $? \u003e\u003e ~/tunnel.log fi } /bin/pidof ssh if [[ $? -ne 0 ]]; then echo $(date) Creating new tunnel connection \u003e\u003e ~/tunnel.log createTunnel fi 给脚本添加执行权限\nchmod +x creat_ssh_tunnel.sh 树莓派上开启cron定时任务 sudo crontab -e 在文件最后一行添加：\n*/10 * * * * ～/create_ssh_tunnel.sh \u003e\u003e tunnel.log 2\u003e\u00261 意思是每十分钟执行一次刚刚我们编辑的shell脚本\n公网IP + 路由器端口转发 如果用网线将树莓派连接到互联网上，只要获得公网IP，皆可以通过ssh访问。但是我们在家中通常是用wifi连接树莓派，我们获得的公网iP，只是路由器的IP。由于一个路由器上连接很多设备，我们无法通过这个公网IP访问到树莓派。而且由于路由器的公网IP是会变动的。所以我们要解决的问题是：\n找到路由器的公网IP 通过公网IP找到路由器下连接的树莓派 可以在路由器设置里将树莓派分配固定的IP，并绑定固定端口。这样就可以通过访问这个端口访问到局域网下的树莓派。之后不管是将公网IP发送到邮箱还是，使用动态DNS解析服务，通过域名访问树莓派，都可以很容易实现。\n参考 SSH反向代理 外网访问树莓派方法汇总 用DDNS服务通过域名访问树莓派 使用crontab让SSH反向代理更持久 ",
+  "wordCount" : "1224",
   "inLanguage": "zh",
   "datePublished": "2018-09-04T00:00:00Z",
   "dateModified": "2018-09-04T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       使用腾讯云进行SSH端口转发来访问家中的树莓派
     </div>
-    <div class="post-meta"><span title='2018-09-04 00:00:00 +0000 UTC'>2018-09-04</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-09-04 00:00:00 +0000 UTC'>创建: 2018-09-04</span>&nbsp;|&nbsp;更新:&nbsp;2018-09-04&nbsp;|&nbsp;字数:&nbsp;1224字&nbsp;|&nbsp;时长:&nbsp;3分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -282,57 +284,24 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <h4 id="树莓派上使用autosshcrontab"><strong>树莓派上使用autossh+crontab</strong><a hidden class="anchor" aria-hidden="true" href="#树莓派上使用autosshcrontab">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt install autossh
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt install autossh
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> ~/
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">echo</span> <span style="color:#0ff;font-weight:bold">&#34;sleep 20;
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">/usr/bin/autossh -M 5678  -NfR 9999:localhost:22 user@T.T.T.T  -i /home/user/.ssh/id_rsa&#34;</span> &gt; autossh.sh
 </span></span><span style="display:flex;"><span>chmod +x autossh.sh
 </span></span><span style="display:flex;"><span>crontab -e
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>在crontab的配置文件中加入</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>@reboot /home/nh/autossh.sh &gt;&gt; tunnel.log
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="在服务器上操作">在服务器上操作<a hidden class="anchor" aria-hidden="true" href="#在服务器上操作">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ssh -fCNL <span style="color:#0ff;font-weight:bold">&#34;*:11111:localhost:9999&#34;</span> localhost
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="远程登录">远程登录<a hidden class="anchor" aria-hidden="true" href="#远程登录">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>@reboot /home/nh/autossh.sh &gt;&gt; tunnel.log
+</span></span></code></pre></div><h4 id="在服务器上操作">在服务器上操作<a hidden class="anchor" aria-hidden="true" href="#在服务器上操作">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ssh -fCNL <span style="color:#0ff;font-weight:bold">&#34;*:11111:localhost:9999&#34;</span> localhost
+</span></span></code></pre></div><h4 id="远程登录">远程登录<a hidden class="anchor" aria-hidden="true" href="#远程登录">#</a></h4>
 <blockquote>
 <p>现在就可以使用服务器作为跳板，连接到家中的树莓派。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ssh -p <span style="color:#ff0;font-weight:bold">11111</span> user@T.T.T.T
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ssh -p <span style="color:#ff0;font-weight:bold">11111</span> user@T.T.T.T
+</span></span></code></pre></div><blockquote>
 <p>注：user@T.T.T.T,user是树莓派用户名，T.T.T.T是服务器公网IP。-p指定向服务器1111端口发送ssh请求，1111端口转发到9999端口，也就是树莓派的22端口。</p>
 </blockquote>
 <p>显示效果如下：</p>
@@ -341,35 +310,9 @@ if (!doNotTrack) {
 <p><strong>以下树莓派配置方法均不推荐，想折腾的自己玩，服务器配置方法都一样</strong></p>
 <hr>
 <h4 id="树莓派上安装sshpass可选">树莓派上安装sshpass(可选）<a hidden class="anchor" aria-hidden="true" href="#树莓派上安装sshpass可选">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt-get install sshpass
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="树莓派上编辑shell脚本">树莓派上编辑shell脚本<a hidden class="anchor" aria-hidden="true" href="#树莓派上编辑shell脚本">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">15
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#!/bin/bash
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt-get install sshpass
+</span></span></code></pre></div><h4 id="树莓派上编辑shell脚本">树莓派上编辑shell脚本<a hidden class="anchor" aria-hidden="true" href="#树莓派上编辑shell脚本">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#!/bin/bash
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span><span style="color:#007f7f">#saved as create_ssh_tunnel.sh</span>
 </span></span><span style="display:flex;"><span>createTunnel() {
 </span></span><span style="display:flex;"><span>  sshpass -p <span style="color:#0ff;font-weight:bold">&#34;Password&#34;</span> ssh -o <span style="color:#0ff;font-weight:bold">&#34;ServerAliveInterval 300&#34;</span> -o <span style="color:#0ff;font-weight:bold">&#34;ServerAliveCountMax 2&#34;</span> -fCNR 9999:localhost:22 user@T.T.T.T
@@ -384,9 +327,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">echo</span> <span style="color:#fff;font-weight:bold">$(</span>date<span style="color:#fff;font-weight:bold">)</span> Creating new tunnel connection &gt;&gt; /root/tunnel.log
 </span></span><span style="display:flex;"><span>  createTunnel
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">fi</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>注：这种方式非常危险，不推荐这种方式，因为明文存储了服务器密码。</p>
 <ul>
 <li>&ldquo;Password&quot;指的是你的服务器密码</li>
@@ -397,25 +338,7 @@ if (!doNotTrack) {
 <blockquote>
 <p><strong>推荐将树莓派上的公钥放到远程服务器上，然后使用如下脚本</strong></p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f">#saved as create_ssh_tunnel.sh</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f">#saved as create_ssh_tunnel.sh</span>
 </span></span><span style="display:flex;"><span>createTunnel() {
 </span></span><span style="display:flex;"><span>  ssh -o <span style="color:#0ff;font-weight:bold">&#34;ServerAliveInterval 300&#34;</span> -o <span style="color:#0ff;font-weight:bold">&#34;ServerAliveCountMax 2&#34;</span> -NR 9999:localhost:22 user@T.T.T.T
 </span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">if</span> [[ $? -eq <span style="color:#ff0;font-weight:bold">0</span> ]]; <span style="color:#fff;font-weight:bold">then</span>    
@@ -429,38 +352,15 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">echo</span> <span style="color:#fff;font-weight:bold">$(</span>date<span style="color:#fff;font-weight:bold">)</span> Creating new tunnel connection &gt;&gt; ~/tunnel.log
 </span></span><span style="display:flex;"><span>  createTunnel
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">fi</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>给脚本添加执行权限</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>chmod +x creat_ssh_tunnel.sh
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="树莓派上开启cron定时任务">树莓派上开启cron定时任务<a hidden class="anchor" aria-hidden="true" href="#树莓派上开启cron定时任务">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo crontab -e
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在文件最后一行添加：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>*/10 * * * * ～/create_ssh_tunnel.sh &gt;&gt; tunnel.log 2&gt;&amp;<span style="color:#ff0;font-weight:bold">1</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>chmod +x creat_ssh_tunnel.sh
+</span></span></code></pre></div><h4 id="树莓派上开启cron定时任务">树莓派上开启cron定时任务<a hidden class="anchor" aria-hidden="true" href="#树莓派上开启cron定时任务">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo crontab -e
+</span></span></code></pre></div><p>在文件最后一行添加：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>*/10 * * * * ～/create_ssh_tunnel.sh &gt;&gt; tunnel.log 2&gt;&amp;<span style="color:#ff0;font-weight:bold">1</span>
+</span></span></code></pre></div><blockquote>
 <p>意思是每十分钟执行一次刚刚我们编辑的shell脚本</p>
 </blockquote>
 <h3 id="公网ip--路由器端口转发">公网IP + 路由器端口转发<a hidden class="anchor" aria-hidden="true" href="#公网ip--路由器端口转发">#</a></h3>
@@ -513,7 +413,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

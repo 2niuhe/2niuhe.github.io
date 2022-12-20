@@ -8,7 +8,8 @@
 <title>Manjaro 搭建 minikube 环境 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Kubernetes">
 <meta name="description" content="在manjaro上搭建minikube测试环境">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Kubernetes"
   ],
-  "articleBody": "在manjaro上搭建minikube测试环境\n安装 minikube 安装依赖 1 sudo pacman -Sy libvirt qemu ebtables dnsmasq 1 2 sudo usermod -a -G libvirt $(whoami) newgrp libvirt 1 2 3 4 5 sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 1 sudo pacman -Sy docker-machine 1 yaourt -Sy docker-machine-driver-kvm2 装minikube 1 2 3 4 5 yay -Sy minikube kubectl-bin minikube version whereis kubectl kubectl -h 装环境 注意关掉 vpn\n1 2 3 4 5 6 minikube start --vm-driver kvm2 --registry-mirror=https://dockerhub.azk8s.cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers minikube status kubectl cluster-info kubectl get nodes 参考 https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/\n",
-  "wordCount" : "146",
+  "articleBody": "在manjaro上搭建minikube测试环境\n安装 minikube 安装依赖 sudo pacman -Sy libvirt qemu ebtables dnsmasq sudo usermod -a -G libvirt $(whoami) newgrp libvirt sudo systemctl start libvirtd.service sudo systemctl enable libvirtd.service sudo systemctl start virtlogd.service sudo systemctl enable virtlogd.service 装docker和kvm2 驱动 sudo pacman -Sy docker-machine yaourt -Sy docker-machine-driver-kvm2 装minikube yay -Sy minikube kubectl-bin minikube version whereis kubectl kubectl -h 装环境 注意关掉 vpn\nminikube start --vm-driver kvm2 --registry-mirror=https://dockerhub.azk8s.cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers minikube status kubectl cluster-info kubectl get nodes 参考 https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/\n",
+  "wordCount" : "125",
   "inLanguage": "zh",
   "datePublished": "2021-12-04T00:00:00Z",
   "dateModified": "2021-12-04T00:00:00Z",
@@ -226,8 +227,9 @@ if (!doNotTrack) {
     <h1 class="post-title">
       Manjaro 搭建 minikube 环境
     </h1>
-    <div class="post-meta"><span title='2021-12-04 00:00:00 +0000 UTC'>2021-12-04</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2021-12-04 00:00:00 +0000 UTC'>创建: 2021-12-04</span>&nbsp;|&nbsp;更新:&nbsp;2021-12-04&nbsp;|&nbsp;字数:&nbsp;125字&nbsp;|&nbsp;时长:&nbsp;1分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -253,103 +255,40 @@ if (!doNotTrack) {
 <ol>
 <li>安装依赖</li>
 </ol>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo pacman -Sy libvirt qemu ebtables dnsmasq
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo usermod -a -G libvirt $(whoami)
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo pacman -Sy libvirt qemu ebtables dnsmasq
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo usermod -a -G libvirt <span style="color:#fff;font-weight:bold">$(</span>whoami<span style="color:#fff;font-weight:bold">)</span>
 </span></span><span style="display:flex;"><span>newgrp libvirt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo systemctl start libvirtd.service
-</span></span><span style="display:flex;"><span>sudo systemctl enable libvirtd.service
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo systemctl start libvirtd.service
+</span></span><span style="display:flex;"><span>sudo systemctl <span style="color:#fff;font-weight:bold">enable</span> libvirtd.service
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>sudo systemctl start virtlogd.service
-</span></span><span style="display:flex;"><span>sudo systemctl enable virtlogd.service
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="2">
+</span></span><span style="display:flex;"><span>sudo systemctl <span style="color:#fff;font-weight:bold">enable</span> virtlogd.service
+</span></span></code></pre></div><ol start="2">
 <li>装docker和kvm2 驱动</li>
 </ol>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo pacman -Sy docker-machine
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>yaourt -Sy docker-machine-driver-kvm2
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo pacman -Sy docker-machine
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>yaourt -Sy docker-machine-driver-kvm2
+</span></span></code></pre></div><ol start="3">
 <li>装minikube</li>
 </ol>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>yay -Sy minikube kubectl-bin
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>yay -Sy minikube kubectl-bin
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>minikube version
 </span></span><span style="display:flex;"><span>whereis kubectl
 </span></span><span style="display:flex;"><span>kubectl -h
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol start="4">
+</span></span></code></pre></div><ol start="4">
 <li>装环境</li>
 </ol>
 <blockquote>
 <p>注意关掉 vpn</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>minikube start --vm-driver kvm2 --registry-mirror=https://dockerhub.azk8s.cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>minikube start --vm-driver kvm2 --registry-mirror=https://dockerhub.azk8s.cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>minikube status
 </span></span><span style="display:flex;"><span>kubectl cluster-info
 </span></span><span style="display:flex;"><span>kubectl get nodes
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
 <p><a href="https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/">https://www.howtoforge.com/learning-kubernetes-locally-via-minikube-on-linux-manjaro-archlinux/</a></p>
 
   </div>
@@ -377,7 +316,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

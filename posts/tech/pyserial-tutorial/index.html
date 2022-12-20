@@ -8,7 +8,8 @@
 <title>Pyserial快速上手 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Python">
 <meta name="description" content="python读取串口数据，快速测试">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Python"
   ],
-  "articleBody": " 现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍python的串口读写模块Pyserial\n安装 1 sudo pip install pyserial 使用 确定串口设备名 Linux下把串口设备抽象成了文件，通常放在/dev/目录下，先找出串口设备的名称。\n断开串口设备的连接，执行 1 ls /dev/ \u003e /tmp/old.txt 将串口设备连接到计算机，执行 1 ls /dev/ \u003e /tmp/new.txt 最后，比较old.txt和new.txt，new.txt中多出的设备名就是我们的串口设备\n1 diff /tmp/old.txt /tmp/new.txt 例程 以下是我读取超声波测距传感器的例程，传感器返回串口数据,每一帧数据的帧头是0xFF,其后的2byte数据是距离值。\n1 2 3 4 5 6 7 8 9 import serial import time with serial.Serial('/dev/ttyUSB0',9600,stopbits=serial.STOPBITS_ONE,bytesize=serial.EIGHTBITS) as ser: while 1: head = ser.read(1) if head == b'\\xFF': distance = int.from_bytes(ser.read(2),byteorder='big',signed=False) print(str(distance/1000) + 'm') 常用方法 在创建串口对象后，即ser = serial.Serial('/dev/ttyUSB0')，可以操作串口读写。\nser.read(size) ser.readline(size) ser.write(str_data) ser.close() 具体使用参见官方文档API\n参考 API参考\n",
-  "wordCount" : "475",
+  "articleBody": " 现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍python的串口读写模块Pyserial\n安装 sudo pip install pyserial 使用 确定串口设备名 Linux下把串口设备抽象成了文件，通常放在/dev/目录下，先找出串口设备的名称。\n断开串口设备的连接，执行 ls /dev/ \u003e /tmp/old.txt 将串口设备连接到计算机，执行 ls /dev/ \u003e /tmp/new.txt 最后，比较old.txt和new.txt，new.txt中多出的设备名就是我们的串口设备\ndiff /tmp/old.txt /tmp/new.txt 例程 以下是我读取超声波测距传感器的例程，传感器返回串口数据,每一帧数据的帧头是0xFF,其后的2byte数据是距离值。\nimport serial import time with serial.Serial('/dev/ttyUSB0',9600,stopbits=serial.STOPBITS_ONE,bytesize=serial.EIGHTBITS) as ser: while 1: head = ser.read(1) if head == b'\\xFF': distance = int.from_bytes(ser.read(2),byteorder='big',signed=False) print(str(distance/1000) + 'm') 常用方法 在创建串口对象后，即ser = serial.Serial('/dev/ttyUSB0')，可以操作串口读写。\nser.read(size) ser.readline(size) ser.write(str_data) ser.close() 具体使用参见官方文档API\n参考 API参考\n",
+  "wordCount" : "462",
   "inLanguage": "zh",
   "datePublished": "2018-09-13T00:00:00Z",
   "dateModified": "2018-09-13T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       python读取串口数据，快速测试
     </div>
-    <div class="post-meta"><span title='2018-09-13 00:00:00 +0000 UTC'>2018-09-13</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2018-09-13 00:00:00 +0000 UTC'>创建: 2018-09-13</span>&nbsp;|&nbsp;更新:&nbsp;2018-09-13&nbsp;|&nbsp;字数:&nbsp;462字&nbsp;|&nbsp;时长:&nbsp;1分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -266,15 +268,8 @@ if (!doNotTrack) {
 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍python的串口读写模块Pyserial</p>
 </blockquote>
 <h3 id="安装">安装<a hidden class="anchor" aria-hidden="true" href="#安装">#</a></h3>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo pip install pyserial
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="使用">使用<a hidden class="anchor" aria-hidden="true" href="#使用">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo pip install pyserial
+</span></span></code></pre></div><h3 id="使用">使用<a hidden class="anchor" aria-hidden="true" href="#使用">#</a></h3>
 <h4 id="确定串口设备名">确定串口设备名<a hidden class="anchor" aria-hidden="true" href="#确定串口设备名">#</a></h4>
 <blockquote>
 <p>Linux下把串口设备抽象成了文件，通常放在<code>/dev/</code>目录下，先找出串口设备的名称。</p>
@@ -282,52 +277,18 @@ if (!doNotTrack) {
 <ul>
 <li>断开串口设备的连接，执行</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ls /dev/ &gt; /tmp/old.txt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ls /dev/ &gt; /tmp/old.txt
+</span></span></code></pre></div><ul>
 <li>将串口设备连接到计算机，执行</li>
 </ul>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ls /dev/ &gt; /tmp/new.txt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>最后，比较old.txt和new.txt，new.txt中多出的设备名就是我们的串口设备</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>diff /tmp/old.txt /tmp/new.txt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="例程">例程<a hidden class="anchor" aria-hidden="true" href="#例程">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ls /dev/ &gt; /tmp/new.txt
+</span></span></code></pre></div><p>最后，比较old.txt和new.txt，new.txt中多出的设备名就是我们的串口设备</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>diff /tmp/old.txt /tmp/new.txt
+</span></span></code></pre></div><h4 id="例程">例程<a hidden class="anchor" aria-hidden="true" href="#例程">#</a></h4>
 <blockquote>
 <p>以下是我读取超声波测距传感器的例程，传感器返回串口数据,每一帧数据的帧头是0xFF,其后的2byte数据是距离值。</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">9
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> serial
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> serial
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> time
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">with</span> serial.Serial(<span style="color:#0ff;font-weight:bold">&#39;/dev/ttyUSB0&#39;</span>,<span style="color:#ff0;font-weight:bold">9600</span>,stopbits=serial.STOPBITS_ONE,bytesize=serial.EIGHTBITS) <span style="color:#fff;font-weight:bold">as</span> ser:
@@ -336,9 +297,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> head == <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\xFF</span><span style="color:#0ff;font-weight:bold">&#39;</span>:
 </span></span><span style="display:flex;"><span>           distance = <span style="color:#fff;font-weight:bold">int</span>.from_bytes(ser.read(<span style="color:#ff0;font-weight:bold">2</span>),byteorder=<span style="color:#0ff;font-weight:bold">&#39;big&#39;</span>,signed=<span style="color:#fff;font-weight:bold">False</span>)
 </span></span><span style="display:flex;"><span>           <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#fff;font-weight:bold">str</span>(distance/<span style="color:#ff0;font-weight:bold">1000</span>) + <span style="color:#0ff;font-weight:bold">&#39;m&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="常用方法">常用方法<a hidden class="anchor" aria-hidden="true" href="#常用方法">#</a></h4>
+</span></span></code></pre></div><h4 id="常用方法">常用方法<a hidden class="anchor" aria-hidden="true" href="#常用方法">#</a></h4>
 <blockquote>
 <p>在创建串口对象后，即<code>ser = serial.Serial('/dev/ttyUSB0')</code>，可以操作串口读写。</p>
 </blockquote>
@@ -383,7 +342,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

@@ -8,7 +8,8 @@
 <title>awk基本使用 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Linux, Awk">
 <meta name="description" content="Awk 命令基本使用">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/awk-usage/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Linux", "Awk"
   ],
-  "articleBody": "快捷键 awk 是 linux 上用于文本处理的脚本语言，你可以实现：\n定义变量 使用字符串和算术运算符 使用控制流程和循环 生成格式化的输出 1 2 3 4 5 用法：awk [POSIX 或 GNU 风格选项] [--] '程序' 文件 ... POSIX 选项：\tGNU 长选项：(标准) -f 脚本文件\t--file=脚本文件 -F fs\t--field-separator=fs -v var=val\t--assign=var=val 使用变量 $0 整行 $1 第一列字段 $2 第二列字段 $n 第 n 列字段 空格或者制表符是默认的列分隔符 可以通过-F 指定分隔符\n1 2 3 awk -F: '{print $1}' /etc/passwd cat /etc/passwd | awk -F: '{print $1}' 使用脚本文件 将 awk 脚本保存在 testfile 文件中\n1 {print $1 \" home at \" $6} 然后执行文件\n1 awk -F: -f testfile /etc/passwd 预处理和后处理 保存 testfile 如下\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 BEGIN { print \"Users and thier corresponding home\" print \" UserName \\t HomePath\" print \"___________ \\t __________\" FS=\":\" } { print $1 \" \\t \" $6 } END { print \"The end\" } 执行脚本\n1 awk -f testfile /etc/passwd 内置变量 一些内置变量如下\nFS 指定 field 段分隔符 OFS [Output Filed Separator]输出分隔符 ORS [Output Record Separator] 输出行分隔符 FIELDWIDTHS 按段长度分割 RS [Record Separator]记录分隔符，默认是换行符 指定输出分隔符\n1 awk 'BEGIN{FS=\":\"; OFS=\"-\"} {print $1,$6,$7}' /etc/passwd 使用长度分割\n素材如下，保存为 testrecord：\n1 2 3 4 5 1235.96521 927-8.3652 36257.8157 1 awk 'BEGIN{FIELDWIDTHS=\"3 4 3\"}{print $1,$2,$3}' testrecord 输出如下：\n1 2 3 4 5 123 5.96 521 927 -8.3 652 362 57.8 157 使用 Record Separator 素材如下，保存为 testrecord：\n1 2 3 4 5 6 7 Person Name 123 High Street (222) 466-1234 Another person 487 High Street (523) 643-8754 1 awk 'BEGIN{FS=\"\\n\"; RS=\"\"} {print $1,$3}' testrecord 输出如下：\n1 2 Person Name (222) 466-1234 Another person (523) 643-8754 参考 30 Examples For Awk Command In Text Processing\n",
-  "wordCount" : "526",
+  "articleBody": "快捷键 awk 是 linux 上用于文本处理的脚本语言，你可以实现：\n定义变量 使用字符串和算术运算符 使用控制流程和循环 生成格式化的输出 用法：awk [POSIX 或 GNU 风格选项] [--] '程序' 文件 ... POSIX 选项：\tGNU 长选项：(标准) -f 脚本文件\t--file=脚本文件 -F fs\t--field-separator=fs -v var=val\t--assign=var=val 使用变量 $0 整行 $1 第一列字段 $2 第二列字段 $n 第 n 列字段 空格或者制表符是默认的列分隔符 可以通过-F 指定分隔符\nawk -F: '{print $1}' /etc/passwd cat /etc/passwd | awk -F: '{print $1}' 使用脚本文件 将 awk 脚本保存在 testfile 文件中\n{print $1 \" home at \" $6} 然后执行文件\nawk -F: -f testfile /etc/passwd 预处理和后处理 保存 testfile 如下\nBEGIN { print \"Users and thier corresponding home\" print \" UserName \\t HomePath\" print \"___________ \\t __________\" FS=\":\" } { print $1 \" \\t \" $6 } END { print \"The end\" } 执行脚本\nawk -f testfile /etc/passwd 内置变量 一些内置变量如下\nFS 指定 field 段分隔符 OFS [Output Filed Separator]输出分隔符 ORS [Output Record Separator] 输出行分隔符 FIELDWIDTHS 按段长度分割 RS [Record Separator]记录分隔符，默认是换行符 指定输出分隔符\nawk 'BEGIN{FS=\":\"; OFS=\"-\"} {print $1,$6,$7}' /etc/passwd 使用长度分割\n素材如下，保存为 testrecord：\n1235.96521 927-8.3652 36257.8157 awk 'BEGIN{FIELDWIDTHS=\"3 4 3\"}{print $1,$2,$3}' testrecord 输出如下：\n123 5.96 521 927 -8.3 652 362 57.8 157 使用 Record Separator 素材如下，保存为 testrecord：\nPerson Name 123 High Street (222) 466-1234 Another person 487 High Street (523) 643-8754 awk 'BEGIN{FS=\"\\n\"; RS=\"\"} {print $1,$3}' testrecord 输出如下：\nPerson Name (222) 466-1234 Another person (523) 643-8754 参考 30 Examples For Awk Command In Text Processing\n",
+  "wordCount" : "479",
   "inLanguage": "zh",
   "datePublished": "2020-12-05T00:00:00Z",
   "dateModified": "2020-12-05T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       Awk 命令基本使用
     </div>
-    <div class="post-meta"><span title='2020-12-05 00:00:00 +0000 UTC'>2020-12-05</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2020-12-05 00:00:00 +0000 UTC'>创建: 2020-12-05</span>&nbsp;|&nbsp;更新:&nbsp;2020-12-05&nbsp;|&nbsp;字数:&nbsp;479字&nbsp;|&nbsp;时长:&nbsp;1分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -271,23 +273,12 @@ if (!doNotTrack) {
 <li>生成格式化的输出</li>
 </ul>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>用法：awk [POSIX 或 GNU 风格选项] [--] <span style="color:#0ff;font-weight:bold">&#39;程序&#39;</span> 文件 ...
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>用法：awk [POSIX 或 GNU 风格选项] [--] <span style="color:#0ff;font-weight:bold">&#39;程序&#39;</span> 文件 ...
 </span></span><span style="display:flex;"><span>POSIX 选项：		GNU 长选项：(标准)
 </span></span><span style="display:flex;"><span>	-f 脚本文件		--file=脚本文件
 </span></span><span style="display:flex;"><span>	-F fs			--field-separator=fs
 </span></span><span style="display:flex;"><span>	-v var=val		--assign=var=val
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="使用变量">使用变量<a hidden class="anchor" aria-hidden="true" href="#使用变量">#</a></h4>
+</span></span></code></pre></div><h4 id="使用变量">使用变量<a hidden class="anchor" aria-hidden="true" href="#使用变量">#</a></h4>
 <ul>
 <li>$0 整行</li>
 <li>$1 第一列字段</li>
@@ -298,64 +289,23 @@ if (!doNotTrack) {
 <p>空格或者制表符是默认的列分隔符
 可以通过-F 指定分隔符</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk -F: <span style="color:#0ff;font-weight:bold">&#39;{print $1}&#39;</span> /etc/passwd
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk -F: <span style="color:#0ff;font-weight:bold">&#39;{print $1}&#39;</span> /etc/passwd
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>cat /etc/passwd | awk -F: <span style="color:#0ff;font-weight:bold">&#39;{print $1}&#39;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="使用脚本文件">使用脚本文件<a hidden class="anchor" aria-hidden="true" href="#使用脚本文件">#</a></h4>
+</span></span></code></pre></div><h4 id="使用脚本文件">使用脚本文件<a hidden class="anchor" aria-hidden="true" href="#使用脚本文件">#</a></h4>
 <blockquote>
 <p>将 awk 脚本保存在 testfile 文件中</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>{print $1 <span style="color:#0ff;font-weight:bold">&#34; home at &#34;</span> $6}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>{print $1 <span style="color:#0ff;font-weight:bold">&#34; home at &#34;</span> $6}
+</span></span></code></pre></div><blockquote>
 <p>然后执行文件</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk -F: -f testfile /etc/passwd
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="预处理和后处理">预处理和后处理<a hidden class="anchor" aria-hidden="true" href="#预处理和后处理">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk -F: -f testfile /etc/passwd
+</span></span></code></pre></div><h4 id="预处理和后处理">预处理和后处理<a hidden class="anchor" aria-hidden="true" href="#预处理和后处理">#</a></h4>
 <blockquote>
 <p>保存 testfile 如下</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">14
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>BEGIN {
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>BEGIN {
 </span></span><span style="display:flex;"><span>print <span style="color:#0ff;font-weight:bold">&#34;Users and thier corresponding home&#34;</span>
 </span></span><span style="display:flex;"><span>print <span style="color:#0ff;font-weight:bold">&#34; UserName \t HomePath&#34;</span>
 </span></span><span style="display:flex;"><span>print <span style="color:#0ff;font-weight:bold">&#34;___________ \t __________&#34;</span>
@@ -369,20 +319,11 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>END {
 </span></span><span style="display:flex;"><span>print <span style="color:#0ff;font-weight:bold">&#34;The end&#34;</span>
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+</span></span></code></pre></div><blockquote>
 <p>执行脚本</p>
 </blockquote>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk -f testfile /etc/passwd
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="内置变量">内置变量<a hidden class="anchor" aria-hidden="true" href="#内置变量">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk -f testfile /etc/passwd
+</span></span></code></pre></div><h4 id="内置变量">内置变量<a hidden class="anchor" aria-hidden="true" href="#内置变量">#</a></h4>
 <blockquote>
 <p>一些内置变量如下</p>
 <ul>
@@ -394,99 +335,35 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <p><strong>指定输出分隔符</strong></p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk <span style="color:#0ff;font-weight:bold">&#39;BEGIN{FS=&#34;:&#34;; OFS=&#34;-&#34;} {print $1,$6,$7}&#39;</span> /etc/passwd
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>使用长度分割</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk <span style="color:#0ff;font-weight:bold">&#39;BEGIN{FS=&#34;:&#34;; OFS=&#34;-&#34;} {print $1,$6,$7}&#39;</span> /etc/passwd
+</span></span></code></pre></div><p><strong>使用长度分割</strong></p>
 <p>素材如下，保存为 testrecord：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>1235.96521
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>1235.96521
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>927-8.3652
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>36257.8157
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk <span style="color:#0ff;font-weight:bold">&#39;BEGIN{FIELDWIDTHS=&#34;3 4 3&#34;}{print $1,$2,$3}&#39;</span> testrecord
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">123</span> 5.96 <span style="color:#ff0;font-weight:bold">521</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk <span style="color:#0ff;font-weight:bold">&#39;BEGIN{FIELDWIDTHS=&#34;3 4 3&#34;}{print $1,$2,$3}&#39;</span> testrecord
+</span></span></code></pre></div><p>输出如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">123</span> 5.96 <span style="color:#ff0;font-weight:bold">521</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">927</span> -8.3 <span style="color:#ff0;font-weight:bold">652</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">362</span> 57.8 <span style="color:#ff0;font-weight:bold">157</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>使用 Record Separator</strong>
+</span></span></code></pre></div><p><strong>使用 Record Separator</strong>
 素材如下，保存为 testrecord：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Person Name
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Person Name
 </span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">123</span> High Street
 </span></span><span style="display:flex;"><span>(222) 466-1234
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>Another person
 </span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">487</span> High Street
 </span></span><span style="display:flex;"><span>(523) 643-8754
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk <span style="color:#0ff;font-weight:bold">&#39;BEGIN{FS=&#34;\n&#34;; RS=&#34;&#34;} {print $1,$3}&#39;</span> testrecord
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Person Name (222) 466-1234
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>awk <span style="color:#0ff;font-weight:bold">&#39;BEGIN{FS=&#34;\n&#34;; RS=&#34;&#34;} {print $1,$3}&#39;</span> testrecord
+</span></span></code></pre></div><p>输出如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Person Name (222) 466-1234
 </span></span><span style="display:flex;"><span>Another person (523) 643-8754
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
 <p><a href="https://likegeeks.com/awk-command/">30 Examples For Awk Command In Text Processing</a></p>
 
 
@@ -521,7 +398,7 @@ if (!doNotTrack) {
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({

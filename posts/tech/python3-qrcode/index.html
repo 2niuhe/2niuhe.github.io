@@ -8,7 +8,8 @@
 <title>Python3操作二维码图片 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Python">
 <meta name="description" content="Decode/Encode QRcode Picture use python3">
-<meta name="author" content="Niuhe">
+<meta name="author" content="
+作者:&nbsp;Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/python3-qrcode/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css" integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
@@ -118,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Python"
   ],
-  "articleBody": "python3中如何对二维码QRcode进行编码解码\n通常对于二维码，我们需要进行两种操作：\n将二维码图片扫描后解析成字符串 将字符串编码生成二维码图片 这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在window平台上的安装极其繁琐，有很多坑。\n所以想通过python3处理二维码的过程中，查了很多资料。目前比较好的解决办法如下：\n用pyzbar代替zbar解析二维码 安装：\n1 pip install pyzbar 这是可能的，因为pyzbar是一个围绕zbar库的基于ctypes的包装器，它包含在dll和Windows Python的轮子中。\n使用：\n网络上二维码图片解析 1 2 3 4 5 6 7 8 9 10 11 import requests import array from PIL import Image from io import BytesIO from pyzbar.pyzbar import decode # decode_result的格式是[Decoded(data='****',……)]，列表里包含一个nametuple def decode_qrcode(url) decode_result = decode(Image.open(BytesIO(requests.get(urls, headers=HEADERS).content)) return str(decode_result[0].data, encoding='utf-8') 本地二维码图片解析 1 2 3 4 5 6 7 from PIL import Image from pyzbar.pyzbar import decode def decode_qrcode(url) decode_result = decode(Image.open('filename')) return str(decode_result[0].data, encoding='utf-8') 更详细用法参见release页面\n下载zbar.exe文件并安装，通过系统命令行调用来解码 下载地址：zbar-0.10-setup.exe\n说明：\n使用：\n1 2 3 import os os.system(r'C:\\zbarimg.exe -d d:\\Winapps\\Zbar\\Examples\\barcode.png') Linux平台上qrtools解码 注：这个方法我没用过。\n安装：\n1 sudo apt-get install python-qrtools 使用：\n1 2 3 4 import qrtools qr = qrtools.QR() qr.decode(\"horn.png\") print qr.data 用PyQRCode来生成二维码 安装：\n1 pip install pyqrcode 用法：\n1 2 3 import pyqrcode url = pyqrcode.create('http://uca.edu') url.svg('uca-url.svg', scale=8) 说明： pyqrcode具有完善的帮助文档和强大的功能，可以快速生产二维码图片,细节参考：\nRelease页面 帮助文档 其他值得关注的内容 qreader是一个正在开发中的项目，使用纯Python编写的二维码解析库，不依赖zbar。感兴趣的可以去提交PR。\n免费的二维码编码解码API接口 http://api.qrserver.com/ Send a GET request of following form to our system to decode a QR code graphic (=to read a QR code from the web): http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-to-qrcode-image-file]\nhttp://www.7xiwang.com/Tools/Index 1 2 3 4 5 6 7 8 9 10 11 12 解码api：http://www.7xiwang.com/WebService/QRCodeDecode api参数：base64img api请求类型：HttpPost 参数数据格式（JSON）：{\"base64img\":\"\"} api返回数据格式（JSON）： 请求成功：{\"status\":\"1\",\"text\":\"\"} 请求失败：{\"status\":\"0\",\"Msg\":\"错误信息\"} ",
-  "wordCount" : "1057",
+  "articleBody": "python3中如何对二维码QRcode进行编码解码\n通常对于二维码，我们需要进行两种操作：\n将二维码图片扫描后解析成字符串 将字符串编码生成二维码图片 这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在window平台上的安装极其繁琐，有很多坑。\n所以想通过python3处理二维码的过程中，查了很多资料。目前比较好的解决办法如下：\n用pyzbar代替zbar解析二维码 安装：\npip install pyzbar 这是可能的，因为pyzbar是一个围绕zbar库的基于ctypes的包装器，它包含在dll和Windows Python的轮子中。\n使用：\n网络上二维码图片解析 import requests import array from PIL import Image from io import BytesIO from pyzbar.pyzbar import decode # decode_result的格式是[Decoded(data='****',……)]，列表里包含一个nametuple def decode_qrcode(url) decode_result = decode(Image.open(BytesIO(requests.get(urls, headers=HEADERS).content)) return str(decode_result[0].data, encoding='utf-8') 本地二维码图片解析 from PIL import Image from pyzbar.pyzbar import decode def decode_qrcode(url) decode_result = decode(Image.open('filename')) return str(decode_result[0].data, encoding='utf-8') 更详细用法参见release页面\n下载zbar.exe文件并安装，通过系统命令行调用来解码 下载地址：zbar-0.10-setup.exe\n说明：\n使用：\nimport os os.system(r'C:\\zbarimg.exe -d d:\\Winapps\\Zbar\\Examples\\barcode.png') Linux平台上qrtools解码 注：这个方法我没用过。\n安装：\nsudo apt-get install python-qrtools 使用：\nimport qrtools qr = qrtools.QR() qr.decode(\"horn.png\") print qr.data 用PyQRCode来生成二维码 安装：\npip install pyqrcode 用法：\nimport pyqrcode url = pyqrcode.create('http://uca.edu') url.svg('uca-url.svg', scale=8) 说明： pyqrcode具有完善的帮助文档和强大的功能，可以快速生产二维码图片,细节参考：\nRelease页面 帮助文档 其他值得关注的内容 qreader是一个正在开发中的项目，使用纯Python编写的二维码解析库，不依赖zbar。感兴趣的可以去提交PR。\n免费的二维码编码解码API接口 http://api.qrserver.com/ Send a GET request of following form to our system to decode a QR code graphic (=to read a QR code from the web): http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-to-qrcode-image-file]\nhttp://www.7xiwang.com/Tools/Index 解码api：http://www.7xiwang.com/WebService/QRCodeDecode api参数：base64img api请求类型：HttpPost 参数数据格式（JSON）：{\"base64img\":\"\"} api返回数据格式（JSON）： 请求成功：{\"status\":\"1\",\"text\":\"\"} 请求失败：{\"status\":\"0\",\"Msg\":\"错误信息\"} ",
+  "wordCount" : "1014",
   "inLanguage": "zh",
   "datePublished": "2019-04-27T00:00:00Z",
   "dateModified": "2019-04-27T00:00:00Z",
@@ -229,8 +230,9 @@ if (!doNotTrack) {
     <div class="post-description">
       Decode/Encode QRcode Picture use python3
     </div>
-    <div class="post-meta"><span title='2019-04-27 00:00:00 +0000 UTC'>2019-04-27</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;Niuhe<span id="busuanzi_container_page_pv">
-    &nbsp;·&nbsp;本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+    <div class="post-meta"><span title='2019-04-27 00:00:00 +0000 UTC'>创建: 2019-04-27</span>&nbsp;|&nbsp;更新:&nbsp;2019-04-27&nbsp;|&nbsp;字数:&nbsp;1014字&nbsp;|&nbsp;时长:&nbsp;3分钟&nbsp;|&nbsp;
+作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
+    &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
 
 </div>
@@ -284,35 +286,13 @@ if (!doNotTrack) {
 <p>所以想通过python3处理二维码的过程中，查了很多资料。目前比较好的解决办法如下：</p>
 <h3 id="用pyzbarhttpsgithubcomnaturalhistorymuseumpyzbar代替zbar解析二维码">用<a href="https://github.com/NaturalHistoryMuseum/pyzbar/">pyzbar</a>代替zbar解析二维码<a hidden class="anchor" aria-hidden="true" href="#用pyzbarhttpsgithubcomnaturalhistorymuseumpyzbar代替zbar解析二维码">#</a></h3>
 <p>安装：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install pyzbar
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install pyzbar
+</span></span></code></pre></div><blockquote>
 <p>这是可能的，因为pyzbar是一个围绕zbar库的基于ctypes的包装器，它包含在dll和Windows Python的轮子中。</p>
 </blockquote>
 <p><strong>使用</strong>：</p>
 <h5 id="网络上二维码图片解析">网络上二维码图片解析<a hidden class="anchor" aria-hidden="true" href="#网络上二维码图片解析">#</a></h5>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> requests
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> requests
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> array
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> PIL <span style="color:#fff;font-weight:bold">import</span> Image
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> io <span style="color:#fff;font-weight:bold">import</span> BytesIO
@@ -323,98 +303,41 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> decode_qrcode(url)
 </span></span><span style="display:flex;"><span>    decode_result = decode(Image.open(BytesIO(requests.get(urls, headers=HEADERS).content))
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">str</span>(decode_result[<span style="color:#ff0;font-weight:bold">0</span>].data, encoding=<span style="color:#0ff;font-weight:bold">&#39;utf-8&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="本地二维码图片解析">本地二维码图片解析<a hidden class="anchor" aria-hidden="true" href="#本地二维码图片解析">#</a></h5>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> PIL <span style="color:#fff;font-weight:bold">import</span> Image
+</span></span></code></pre></div><h5 id="本地二维码图片解析">本地二维码图片解析<a hidden class="anchor" aria-hidden="true" href="#本地二维码图片解析">#</a></h5>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> PIL <span style="color:#fff;font-weight:bold">import</span> Image
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> pyzbar.pyzbar <span style="color:#fff;font-weight:bold">import</span> decode
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> decode_qrcode(url)
 </span></span><span style="display:flex;"><span>    decode_result = decode(Image.open(<span style="color:#0ff;font-weight:bold">&#39;filename&#39;</span>))
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">str</span>(decode_result[<span style="color:#ff0;font-weight:bold">0</span>].data, encoding=<span style="color:#0ff;font-weight:bold">&#39;utf-8&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>更详细用法参见<a href="https://pypi.org/project/pyzbar/">release页面</a></p>
+</span></span></code></pre></div><p>更详细用法参见<a href="https://pypi.org/project/pyzbar/">release页面</a></p>
 <h3 id="下载zbarexe文件并安装通过系统命令行调用来解码">下载zbar.exe文件并安装，通过系统命令行调用来解码<a hidden class="anchor" aria-hidden="true" href="#下载zbarexe文件并安装通过系统命令行调用来解码">#</a></h3>
 <p>下载地址：<a href="https://versaweb.dl.sourceforge.net/project/zbar/zbar/0.10/zbar-0.10-setup.exe">zbar-0.10-setup.exe</a></p>
 <p>说明：</p>
 <p><img loading="lazy" src="/img/zbar%e8%af%b4%e6%98%8e.jpg" alt="zbar说明"  />
 </p>
 <p>使用：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>os.system(<span style="color:#0ff;font-weight:bold">r</span><span style="color:#0ff;font-weight:bold">&#39;C:\zbarimg.exe -d d:\Winapps\Zbar\Examples\barcode.png&#39;</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="linux平台上qrtoolshttpslaunchpadnetqr-tools解码">Linux平台上<a href="https://launchpad.net/qr-tools">qrtools</a>解码<a hidden class="anchor" aria-hidden="true" href="#linux平台上qrtoolshttpslaunchpadnetqr-tools解码">#</a></h3>
+</span></span></code></pre></div><h3 id="linux平台上qrtoolshttpslaunchpadnetqr-tools解码">Linux平台上<a href="https://launchpad.net/qr-tools">qrtools</a>解码<a hidden class="anchor" aria-hidden="true" href="#linux平台上qrtoolshttpslaunchpadnetqr-tools解码">#</a></h3>
 <p><em>注：这个方法我没用过。</em></p>
 <p>安装：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install python-qrtools
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>使用：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">4
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> qrtools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install python-qrtools
+</span></span></code></pre></div><p>使用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> qrtools
 </span></span><span style="display:flex;"><span>qr = qrtools.QR()
 </span></span><span style="display:flex;"><span>qr.decode(<span style="color:#0ff;font-weight:bold">&#34;horn.png&#34;</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span> qr.data
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="用pyqrcode来生成二维码">用PyQRCode来生成二维码<a hidden class="anchor" aria-hidden="true" href="#用pyqrcode来生成二维码">#</a></h3>
+</span></span></code></pre></div><h3 id="用pyqrcode来生成二维码">用PyQRCode来生成二维码<a hidden class="anchor" aria-hidden="true" href="#用pyqrcode来生成二维码">#</a></h3>
 <p>安装：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install pyqrcode
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>用法：</p>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">3
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> pyqrcode
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install pyqrcode
+</span></span></code></pre></div><p>用法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> pyqrcode
 </span></span><span style="display:flex;"><span>url = pyqrcode.create(<span style="color:#0ff;font-weight:bold">&#39;http://uca.edu&#39;</span>)
 </span></span><span style="display:flex;"><span>url.svg(<span style="color:#0ff;font-weight:bold">&#39;uca-url.svg&#39;</span>, scale=<span style="color:#ff0;font-weight:bold">8</span>)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>说明：
+</span></span></code></pre></div><p>说明：
 pyqrcode具有完善的帮助文档和强大的功能，可以快速生产二维码图片,细节参考：</p>
 <ul>
 <li><a href="https://pypi.org/project/PyQRCode/">Release页面</a></li>
@@ -429,37 +352,19 @@ pyqrcode具有完善的帮助文档和强大的功能，可以快速生产二维
 http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-to-qrcode-image-file]</p>
 </blockquote>
 <h4 id="httpwww7xiwangcomtoolsindexhttpwww7xiwangcomtoolsindex"><a href="http://www.7xiwang.com/Tools/Index">http://www.7xiwang.com/Tools/Index</a><a hidden class="anchor" aria-hidden="true" href="#httpwww7xiwangcomtoolsindexhttpwww7xiwangcomtoolsindex">#</a></h4>
-<div class="highlight"><div style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#727272">12
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>解码api：http://www.7xiwang.com/WebService/QRCodeDecode
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>api参数：base64img
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>api请求类型：HttpPost
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>参数数据格式（JSON）：{&#34;base64img&#34;:&#34;&#34;}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>api返回数据格式（JSON）：
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>请求成功：{&#34;status&#34;:&#34;1&#34;,&#34;text&#34;:&#34;&#34;}
-</span></span><span style="display:flex;"><span>请求失败：{&#34;status&#34;:&#34;0&#34;,&#34;Msg&#34;:&#34;错误信息&#34;}
-</span></span></code></pre></td></tr></table>
-</div>
-</div>
+<pre tabindex="0"><code>解码api：http://www.7xiwang.com/WebService/QRCodeDecode
+
+api参数：base64img
+
+api请求类型：HttpPost
+
+参数数据格式（JSON）：{&#34;base64img&#34;:&#34;&#34;}
+
+api返回数据格式（JSON）：
+
+请求成功：{&#34;status&#34;:&#34;1&#34;,&#34;text&#34;:&#34;&#34;}
+请求失败：{&#34;status&#34;:&#34;0&#34;,&#34;Msg&#34;:&#34;错误信息&#34;}
+</code></pre>
 
   </div>
 
@@ -491,7 +396,7 @@ http(s)://api.qrserver.com/v1/read-qr-code/?fileurl=[URL-encoded-webaddress-url-
   <body>
     
     <div style="margin-top: 30px;" id="waline"></div>
-    <script type="module">
+    <script async type="module">
       import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
   
       init({
