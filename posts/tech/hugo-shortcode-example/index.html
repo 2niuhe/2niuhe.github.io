@@ -119,8 +119,8 @@ if (!doNotTrack) {
   "keywords": [
     "Hugo"
   ],
-  "articleBody": "记录hugo 一些常用的shortcode\nplantuml Grpahvizo DOT Language (GraphViz) Example Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ 陪安东尼度过漫长岁月 Music 基于网易云外链\n基于meeting js\nDouban 支持豆瓣图书和电影\n\u003c!DOCTYPE HTML\u003e \u003c!DOCTYPE HTML\u003e Notice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube ",
-  "wordCount" : "147",
+  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nPlantuml Grpahvizo DOT Language (GraphViz) Example Chart Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ 陪安东尼度过漫长岁月 Music 基于网易云外链\n基于meeting js\nDouban 支持豆瓣图书和电影\n\u003c!DOCTYPE HTML\u003e \u003c!DOCTYPE HTML\u003e Notice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
+  "wordCount" : "172",
   "inLanguage": "zh",
   "datePublished": "2022-12-21T00:00:00Z",
   "dateModified": "2022-12-21T00:00:00Z",
@@ -227,7 +227,7 @@ if (!doNotTrack) {
     <h1 class="post-title">
       hugo shortcode example
     </h1>
-    <div class="post-meta"><span title='2022-12-21 00:00:00 +0000 UTC'>创建: 2022-12-21</span>&nbsp;|&nbsp;更新:&nbsp;2022-12-21&nbsp;|&nbsp;字数:&nbsp;147字&nbsp;|&nbsp;时长:&nbsp;1分钟&nbsp;|&nbsp;
+    <div class="post-meta"><span title='2022-12-21 00:00:00 +0000 UTC'>创建: 2022-12-21</span>&nbsp;|&nbsp;更新:&nbsp;2022-12-21&nbsp;|&nbsp;字数:&nbsp;172字&nbsp;|&nbsp;时长:&nbsp;1分钟&nbsp;|&nbsp;
 作者:&nbsp;Niuhe<span id="busuanzi_container_page_pv">
     &nbsp;|&nbsp;本文访问量: <span id="busuanzi_value_page_pv"></span>次
 </span>
@@ -241,9 +241,13 @@ if (!doNotTrack) {
 
         <div class="inner"><ul>
                 <li>
-                    <a href="#plantuml" aria-label="plantuml">plantuml</a></li>
+                    <a href="#raw" aria-label="Raw">Raw</a></li>
+                <li>
+                    <a href="#plantuml" aria-label="Plantuml">Plantuml</a></li>
                 <li>
                     <a href="#grpahvizo" aria-label="Grpahvizo">Grpahvizo</a></li>
+                <li>
+                    <a href="#chart" aria-label="Chart">Chart</a></li>
                 <li>
                     <a href="#blockquote" aria-label="Blockquote">Blockquote</a></li>
                 <li>
@@ -261,7 +265,9 @@ if (!doNotTrack) {
                 <li>
                     <a href="#codepen" aria-label="Codepen">Codepen</a></li>
                 <li>
-                    <a href="#youtube" aria-label="Youtube">Youtube</a>
+                    <a href="#youtube" aria-label="Youtube">Youtube</a></li>
+                <li>
+                    <a href="#ref" aria-label="Ref">Ref</a>
                 </li>
             </ul>
         </div>
@@ -269,7 +275,88 @@ if (!doNotTrack) {
 </div>
 
   <div class="post-content"><p>记录hugo 一些常用的shortcode</p>
-<h3 id="plantuml">plantuml<a hidden class="anchor" aria-hidden="true" href="#plantuml">#</a></h3>
+<h3 id="raw">Raw<a hidden class="anchor" aria-hidden="true" href="#raw">#</a></h3>
+<blockquote>
+<p>如下是一个使用svg绘制的钟表</p>
+</blockquote>
+
+<svg version="1.1" class="iconic-clock" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="384px" height="384px" viewBox="0 0 384 384" enable-background="new 0 0 384 384" xml:space="preserve">
+  <path class="iconic-clock-frame"    d="M192,0C85.961,0,0,85.961,0,192s85.961,192,192,192s192-85.961,192-192S298.039,0,192,0zM315.037,315.037c-9.454,9.454-19.809,17.679-30.864,24.609l-14.976-25.939l-10.396,6l14.989,25.964c-23.156,12.363-48.947,19.312-75.792,20.216V336h-12v29.887c-26.845-0.903-52.636-7.854-75.793-20.217l14.989-25.963l-10.393-6l-14.976,25.938c-11.055-6.931-21.41-15.154-30.864-24.608s-17.679-19.809-24.61-30.864l25.939-14.976l-6-10.396l-25.961,14.99C25.966,250.637,19.017,224.846,18.113,198H48v-12H18.113c0.904-26.844,7.853-52.634,20.216-75.791l25.96,14.988l6.004-10.395L44.354,99.827c6.931-11.055,15.156-21.41,24.61-30.864s19.809-17.679,30.864-24.61l14.976,25.939l10.395-6L110.208,38.33C133.365,25.966,159.155,19.017,186,18.113V48h12V18.113c26.846,0.904,52.635,7.853,75.792,20.216l-14.991,25.965l10.395,6l14.978-25.942c11.056,6.931,21.41,15.156,30.865,24.611c9.454,9.454,17.679,19.808,24.608,30.863l-25.94,14.976l6,10.396l25.965-14.99c12.363,23.157,19.312,48.948,20.218,75.792H336v12h29.887c-0.904,26.845-7.853,52.636-20.216,75.792l-25.964-14.989l-6.002,10.396l25.941,14.978C332.715,295.229,324.491,305.583,315.037,315.037z" />
+  <line class="iconic-clock-hour-hand" id="foo" fill="none" stroke="#000000" stroke-width="18" stroke-miterlimit="10" x1="192" y1="192" x2="192" y2="87.5"/>
+  <line class="iconic-clock-minute-hand" id="iconic-anim-clock-minute-hand" fill="none" stroke="#000000" stroke-width="12" stroke-miterlimit="10" x1="192" y1="192" x2="192" y2="54"/>
+  <circle class="iconic-clock-axis" cx="192" cy="192" r="9"/>
+  <g class="iconic-clock-second-hand" id="iconic-anim-clock-second-hand">
+      <line class="iconic-clock-second-hand-arm" fill="none" stroke="#D53A1F" stroke-width="4" stroke-miterlimit="10" x1="192" y1="192" x2="192" y2="28.5"/>
+      <circle class="iconic-clock-second-hand-axis" fill="#D53A1F" cx="192" cy="192" r="4.5"/>
+  </g>
+  <defs>
+    <animateTransform
+          type="rotate"
+          fill="remove"
+          restart="always"
+          calcMode="linear"
+          accumulate="none"
+          additive="sum"
+          xlink:href="#iconic-anim-clock-hour-hand"
+          repeatCount="indefinite"
+          dur="43200s"
+          to="360 192 192"
+          from="0 192 192"
+          attributeName="transform"
+          attributeType="xml">
+    </animateTransform>
+
+    <animateTransform
+          type="rotate"
+          fill="remove"
+          restart="always"
+          calcMode="linear"
+          accumulate="none"
+          additive="sum"
+          xlink:href="#iconic-anim-clock-minute-hand"
+          repeatCount="indefinite"
+          dur="3600s"
+          to="360 192 192"
+          from="0 192 192"
+          attributeName="transform"
+          attributeType="xml">
+    </animateTransform>
+
+    <animateTransform
+          type="rotate"
+          fill="remove"
+          restart="always"
+          calcMode="linear"
+          accumulate="none"
+          additive="sum"
+          xlink:href="#iconic-anim-clock-second-hand"
+          repeatCount="indefinite"
+          dur="60s"
+          to="360 192 192"
+          from="0 192 192"
+          attributeName="transform"
+          attributeType="xml">
+    </animateTransform>
+  </defs>
+  <script  type="text/javascript">
+  <![CDATA[
+      var date = new Date;
+      var seconds = date.getSeconds();
+      var minutes = date.getMinutes();
+      var hours = date.getHours();
+      hours = (hours > 12) ? hours - 12 : hours;
+
+      minutes = (minutes * 60) + seconds;
+      hours = (hours * 3600) + minutes;
+
+      document.querySelector('.iconic-clock-second-hand').setAttribute('transform', 'rotate('+360*(seconds/60)+',192,192)');
+      document.querySelector('.iconic-clock-minute-hand').setAttribute('transform', 'rotate('+360*(minutes/3600)+',192,192)');
+      document.querySelector('.iconic-clock-hour-hand').setAttribute('transform', 'rotate('+360*(hours/43200)+',192,192)');
+  ]]>
+  </script>
+</svg>
+
+<h3 id="plantuml">Plantuml<a hidden class="anchor" aria-hidden="true" href="#plantuml">#</a></h3>
  
 
 
@@ -400,6 +487,59 @@ if (!doNotTrack) {
     />
     <figcaption>DOT Language (GraphViz) Example</figcaption>
 </figure>
+<h3 id="chart">Chart<a hidden class="anchor" aria-hidden="true" href="#chart">#</a></h3>
+
+
+
+
+
+
+
+<div style="width: 100%;height: 300px;margin: 0 auto">
+    <canvas id="5dccedc4cdc5a24adc4f1ebf868f8b4c"></canvas>
+</div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+<script type="text/javascript">
+    let options = 
+{
+    type: 'bar',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+            label: 'Bar Chart',
+            data: [12, 19, 18, 16, 13, 14],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+};
+    new Chart(document.getElementById('5dccedc4cdc5a24adc4f1ebf868f8b4c').getContext('2d'), options);
+</script>
 <h3 id="blockquote">Blockquote<a hidden class="anchor" aria-hidden="true" href="#blockquote">#</a></h3>
 
 
@@ -1014,6 +1154,9 @@ if (!doNotTrack) {
   <iframe src="https://www.youtube-nocookie.com/embed/w7Ft2ymGmfc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
 </div>
 
+<h3 id="ref">Ref<a hidden class="anchor" aria-hidden="true" href="#ref">#</a></h3>
+<p><a href="https://hugoloveit.com/theme-documentation-extended-shortcodes/#6-echarts">Theme Documentation - Extended Shortcodes - LoveIt</a></p>
+
   </div>
 
   <footer class="post-footer">
@@ -1021,6 +1164,11 @@ if (!doNotTrack) {
       <li><a href="https://blog.niuhemoon.win/tags/hugo/">Hugo</a></li>
     </ul>
 <nav class="paginav">
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/tmux-usage/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>tmux-usage</span>
+  </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/install-minikube-on-manjaro/">
     <span class="title">下一页 »</span>
     <br>
