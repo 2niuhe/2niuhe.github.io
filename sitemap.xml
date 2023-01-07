@@ -2,20 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://blog.niuhemoon.win/tags/linux/</loc>
+    <lastmod>2023-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/</loc>
+    <lastmod>2023-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/</loc>
+    <lastmod>2023-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/read/%E5%A5%88%E9%A3%9E%E6%96%87%E5%8C%96%E6%89%8B%E5%86%8C/</loc>
+    <lastmod>2023-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/read/%E4%B8%96%E7%95%8C%E8%A7%82/</loc>
+    <lastmod>2023-01-07T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.niuhemoon.win/tags/calibre/</loc>
     <lastmod>2023-01-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/read/calibre-usage/</loc>
     <lastmod>2023-01-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/</loc>
-    <lastmod>2023-01-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/</loc>
-    <lastmod>2023-01-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/linux/</loc>
-    <lastmod>2022-12-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/tmux/</loc>
     <lastmod>2022-12-26T00:00:00+00:00</lastmod>
