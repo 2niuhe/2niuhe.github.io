@@ -157,13 +157,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -183,11 +183,23 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>Virsh命令和虚拟机
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>环境搭建和准备 # 查看cpu是否支持硬件虚拟化 grep -E -c &#34;vmx|svm&#34; /proc/cpuinfo sudo apt install -y qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst # if centos # yum install -y kvm virt-manager libvirt libvirt-python python-virtinst virt-install qemu-kvm lsmod | grep -i kvm sudo systemctl status libvirtd.service # 如果服务未启动 sudo systemctl enable libvirtd --now # 配置网桥使得libvirt可以从外部访问 cat /etc/netplan/00-installer-config.yaml # 可选，GUI管理工具 sudo apt-get install virt-manager python-spice-client-gtk 下载调试镜像： 从官方地址下载cirros镜像，用来调试虚...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-10-22 00:00:00 +0000 UTC'>2020-10-22</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;4338 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to Virsh命令和虚拟机" href="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>tcpdump的基本使用【译】
     </h2>
   </header>
   <div class="entry-content">
-    <p>Tcpdump是一个linux命令行的抓包工具，可以抓取TCP/IP和其他数据包，如UDP,ARP,ICMP，可以使用过滤器过滤出想要的包。...</p>
+    <p>Tcpdump是一个linux命令行的抓包工具，可以抓取TCP/IP和其他数据包，如UDP,ARP,ICMP，可以使用过滤器过滤出想要的包。 抓取特定接口上的包 当使用tcpdump不加任何参数，将分析所有接口上的数据包。 sudo tcpdump 可以使用-i选项指定特定接口 可以使用-c选项限制数据包的个...</p>
   </div>
   <footer class="entry-footer"><span title='2020-10-19 00:00:00 +0000 UTC'>2020-10-19</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1360 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to tcpdump的基本使用【译】" href="https://blog.niuhemoon.win/posts/tech/tcpdump-usage/"></a>
@@ -199,7 +211,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、t...</p>
+    <p>简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。 ▪ 高级的命令如下： sar、net...</p>
   </div>
   <footer class="entry-footer"><span title='2020-10-17 00:00:00 +0000 UTC'>2020-10-17</span>&nbsp;·&nbsp;13 min&nbsp;·&nbsp;6027 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux性能测试" href="https://blog.niuhemoon.win/posts/tech/linux-peformence-test/"></a>
@@ -211,7 +223,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，...</p>
+    <p>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。 Gdb可以附着在特定进程上调试，但...</p>
   </div>
   <footer class="entry-footer"><span title='2020-10-16 00:00:00 +0000 UTC'>2020-10-16</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;946 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to GDB调试Python代码" href="https://blog.niuhemoon.win/posts/tech/gdb-debug-python/"></a>
@@ -223,9 +235,9 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>有两种常用的方法可以使得代码并行执行，多线程和多进程 。因为Cython解释器的实现不是线程安全的，具有GIL锁，同一时刻，只有一个线程可以获...</p>
+    <p>有两种常用的方法可以使得代码并行执行，多线程和多进程 。因为Cython解释器的实现不是线程安全的，具有GIL锁，同一时刻，只有一个线程可以获得解释器的锁。因此，Python利用多核心的CPU只能通过多进程，而多线程只适用于IO密集型的程序。 多进程基础 创建并开启进程 可以使用mult...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-10-13 00:00:00 +0000 UTC'>2020-10-13</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2279 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer"><span title='2020-10-13 00:00:00 +0000 UTC'>2020-10-13</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2417 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Python进阶下" href="https://blog.niuhemoon.win/posts/tech/python-advanced-3/"></a>
 </article>
 
@@ -235,7 +247,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>生成器Generator def countdown(num): print(&#39;Starting&#39;) while num &gt; 0: yield num num -= 1 # this will not print &#39;Starting&#39; cd = countdown(3) # this will print &#39;Starting&#39; and the first value print(next(cd)) # will print the next values print(next(cd)) print(next(cd)) # this will raise a StopIteration print(next(cd)) 迭代器使用方式 # you can iterate over...</p>
+    <p>生成器Generator def countdown(num): print(&#39;Starting&#39;) while num &gt; 0: yield num num -= 1 # this will not print &#39;Starting&#39; cd = countdown(3) # this will print &#39;Starting&#39; and the first value print(next(cd)) # will print the next values print(next(cd)) print(next(cd)) # this will raise a StopIteration print(next(cd)) 迭代器使用方式 # you can iterate over a generator object with a for in loop cd = countdown(3) for x in cd: print(x) # you can use it for functions that take iterables as input cd = countdown(3) sum_cd = sum(cd) print(sum_cd) cd = countdown(3) sorted_cd = sorted(cd) print(sorted_cd) 生成器表达式 # generator expression mygenerator = (i for i in range(1000) if i % 2 == 0) print(sys.getsizeof(mygenerator), &#34;bytes&#34;) # list comprehension mylist...</p>
   </div>
   <footer class="entry-footer"><span title='2020-10-12 00:00:00 +0000 UTC'>2020-10-12</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3535 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Python进阶中" href="https://blog.niuhemoon.win/posts/tech/python-advanced-2/"></a>
@@ -247,7 +259,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Ubuntn 上一直以来对中文输入法的支持都不是很完善，在升级到 20.04 版本之后，系统默认自带的是 ibus 输入法，刚刚上手使用之后不是很好用。在尝试安装 fcitx 和搜狗输入...</p>
+    <p>Ubuntn 上一直以来对中文输入法的支持都不是很完善，在升级到 20.04 版本之后，系统默认自带的是 ibus 输入法，刚刚上手使用之后不是很好用。在尝试安装 fcitx 和搜狗输入法之后，因为搜狗输入法和 Pycharm 等 IDE 冲突，会导致软件卡死，而且资源占用较高。还是切换回了 ibus 输入法。 在简单调教之后，发现 ibus 还是很好用的。 打开 Ibus 首选项...</p>
   </div>
   <footer class="entry-footer"><span title='2020-10-11 00:00:00 +0000 UTC'>2020-10-11</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;277 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Ubuntu20_04上使用ibus中文输入法" href="https://blog.niuhemoon.win/posts/tech/ibus-input/"></a>
@@ -259,7 +271,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>基础 1.1 字符匹配 字符 说明 \ 转义符 \d [0-9]。表示是一位数字。 \D [^0-9]。表示除数字外的任意字符。 \w [0-9a-zA-Z_]。表示数字、大...</p>
+    <p>基础 1.1 字符匹配 字符 说明 \ 转义符 \d [0-9]。表示是一位数字。 \D [^0-9]。表示除数字外的任意字符。 \w [0-9a-zA-Z_]。表示数字、大小写字母和下划线。 \W [^0-9a-za-z_]。非单词字符。 \s [\t\v\n\r\f]。表示空白符，包括空格、水平制表符、 垂直制表符、换行符...</p>
   </div>
   <footer class="entry-footer"><span title='2020-10-11 00:00:00 +0000 UTC'>2020-10-11</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;5265 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 正则表达式基本使用" href="https://blog.niuhemoon.win/posts/tech/re-usage/"></a>
@@ -284,7 +296,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Git版本控制 尽管 Git 的接口有些丑陋，但是它的底层设计和思想却是非常优雅的。丑陋的接口只能靠死记硬背，而优雅的底层设计则非常容易被人理解。因此...</p>
+    <p>Git版本控制 尽管 Git 的接口有些丑陋，但是它的底层设计和思想却是非常优雅的。丑陋的接口只能靠死记硬背，而优雅的底层设计则非常容易被人理解。因此，我们将通过一种自底向上的方式像您介绍 Git。我们会从数据模型开始，最后再学习它的接口。一旦您搞懂了 Git 的数据模型，再学习其接口并理解这些接口...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3786 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 编程工具之Git" href="https://blog.niuhemoon.win/posts/tech/coding-tools-git/"></a>
@@ -296,7 +308,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Vim编辑器 编辑模式 Vim的设计以大多数时间都花在阅读、浏览和进行少量编辑改动为基础，因此它具有多种操作模式： 正常模式：在文件中四处移动光标...</p>
+    <p>Vim编辑器 编辑模式 Vim的设计以大多数时间都花在阅读、浏览和进行少量编辑改动为基础，因此它具有多种操作模式： 正常模式：在文件中四处移动光标进行修改 插入模式：插入文本 替换模式：替换文本 可视化（一般，行，块）模式：选中文本块 命令模式：用于执行命令 在不同的操作模式下， 键盘敲击的含义也...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2771 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 编程工具之Vim" href="https://blog.niuhemoon.win/posts/tech/coding-tools-vim/"></a>
@@ -308,7 +320,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>最后一节课，我们回答学生提出的问题: 学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等 你会优先学习的工具有那些？ 使用 Python VS Bas...</p>
+    <p>最后一节课，我们回答学生提出的问题: 学习操作系统相关内容的推荐，比如进程，虚拟内存，中断，内存管理等 你会优先学习的工具有那些？ 使用 Python VS Bash脚本 VS 其他语言? source script.sh 和 ./script.sh 有什么区别? 各种软件包和工具存储在哪里？引用过程是怎样的? /bin 或 /lib 是什么？ 我应该用 apt-get install 还是 pip install 去下载软件包呢? 用于提...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;13 min&nbsp;·&nbsp;6349 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 编程工具之问答" href="https://blog.niuhemoon.win/posts/tech/coding-tools-qa/"></a>
@@ -320,7 +332,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>安全和密码 熵(Entropy) 度量了不确定性并可以用来决定密码的强度。 熵的单位是 比特。对于一个均匀分布的随机离散变量，熵等于log_2(所有...</p>
+    <p>安全和密码 熵(Entropy) 度量了不确定性并可以用来决定密码的强度。 熵的单位是 比特。对于一个均匀分布的随机离散变量，熵等于log_2(所有可能的个数，即n)。 扔一次硬币的熵是1比特。掷一次（六面）骰子的熵大约为2.58比特。 对称加密与非对称加密 当你运行ssh-keygen命令，...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;16 min&nbsp;·&nbsp;7784 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 编程工具之杂烩" href="https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/"></a>
@@ -332,7 +344,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>代码不能完全按照您的想法运行，它只能完全按照您的写法运行，这是编程界的一条金科玉律。 让您的写法符合您的想法是非常困难的。在这节课中，我们会传...</p>
+    <p>代码不能完全按照您的想法运行，它只能完全按照您的写法运行，这是编程界的一条金科玉律。 让您的写法符合您的想法是非常困难的。在这节课中，我们会传授给您一些非常有用技术，帮您处理代码中的 bug 和程序性能问题。 调试代码 打印调试法与日志 “最有效的 debug 工具就是细致的分析，配合恰当位置的...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-27 18:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;16 min&nbsp;·&nbsp;7736 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 编程工具之调试和性能分析" href="https://blog.niuhemoon.win/posts/tech/coding-tools-profile/"></a>
@@ -344,22 +356,10 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖 node -v npm -v # npm换源 npm config set registry https://registry.npm.taobao.org # 查看n...</p>
+    <p>Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖 node -v npm -v # npm换源 npm config set registry https://registry.npm.taobao.org # 查看npm的源 npm config get registry # 安装angular npm install -g @angular/cli # 更新所有套件到最新版 ng update --all --force # 创建一个angular项目 ng new testng StackBlitz是一个在线开...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;680 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Angular开发环境搭建" href="https://blog.niuhemoon.win/posts/tech/angular-devenv/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Python进阶上
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Python种基本类型的比较： List is a collection which is ordered and mutable. Allows duplicate members. Tuple is a collection which is ordered and immutable. Allows duplicate members. Set is a collection which is unordered and unindexed. No duplicate members. Dictionary is a collection which is unordered, mutable and indexed. No duplicate members. Strings are immutable sequences of Unicode...</p>
-  </div>
-  <footer class="entry-footer"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;3404 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Python进阶上" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

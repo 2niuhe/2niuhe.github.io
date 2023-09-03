@@ -116,8 +116,8 @@ if (!doNotTrack) {
   "keywords": [
     "Hugo"
   ],
-  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nPlantuml Grpahvizo DOT Language (GraphViz) Example Chart Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ Tmux基本概念 Music 基于meeting js\nNotice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
-  "wordCount" : "149",
+  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nPlantuml Grpahvizo DOT Language (GraphViz) Example Chart Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ Tmux基本概念 不带标题的图片 折叠内容 测试折叠内容 测试折叠内容\nprint('hello') RawHTML \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e Everyday Italian Giada De Laurentiis 2005 30.00 Harry Potter J K. Rowling 2005 29.99 XQuery Kick Start James McGovern Per Bothner Kurt Cagle James Linn Vaidyanathan Nagarajan 2003 49.99 Learning XML Erik T. Ray 2003 39.95 Music 基于meeting js\nNotice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
+  "wordCount" : "213",
   "inLanguage": "zh",
   "datePublished": "2022-12-21T00:00:00Z",
   "dateModified": "2022-12-21T00:00:00Z",
@@ -199,13 +199,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -224,7 +224,7 @@ if (!doNotTrack) {
     <h1 class="post-title">
       hugo shortcode example
     </h1>
-    <div class="post-meta"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;149 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;213 字&nbsp;·&nbsp;Niuhe
 
 </div>
   </header> <div class="toc">
@@ -246,6 +246,10 @@ if (!doNotTrack) {
                     <a href="#blockquote" aria-label="Blockquote">Blockquote</a></li>
                 <li>
                     <a href="#imagecap" aria-label="Imagecap">Imagecap</a></li>
+                <li>
+                    <a href="#%e6%8a%98%e5%8f%a0%e5%86%85%e5%ae%b9" aria-label="折叠内容">折叠内容</a></li>
+                <li>
+                    <a href="#rawhtml" aria-label="RawHTML">RawHTML</a></li>
                 <li>
                     <a href="#music" aria-label="Music">Music</a></li>
                 <li>
@@ -416,7 +420,7 @@ if (!doNotTrack) {
       .trim();
   }
 
-  const normalizedCode = normalizeCode("\n\n```plantuml\n@startuml\n用户 -\u003e 认证中心: 登录操作\n认证中心 -\u003e 缓存: 存放(key=token\u002bip,value=token)token\n\n用户 \u003c- 认证中心 : 认证成功返回token\n用户 -\u003e 认证中心: 下次访问头部携带token认证\n认证中心 \u003c- 缓存: key=token\u002bip获取token\n其他服务 \u003c- 认证中心: 存在且校验成功则跳转到用户请求的其他服务\n其他服务 -\u003e 用户: 信息\n@enduml\n```\n")
+  const normalizedCode = normalizeCode("\n\n\u0060\u0060\u0060plantuml\n@startuml\n用户 -\u003e 认证中心: 登录操作\n认证中心 -\u003e 缓存: 存放(key=token\u002bip,value=token)token\n\n用户 \u003c- 认证中心 : 认证成功返回token\n用户 -\u003e 认证中心: 下次访问头部携带token认证\n认证中心 \u003c- 缓存: key=token\u002bip获取token\n其他服务 \u003c- 认证中心: 存在且校验成功则跳转到用户请求的其他服务\n其他服务 -\u003e 用户: 信息\n@enduml\n\u0060\u0060\u0060\n")
 
   let deflater = window.SharedWorker && new SharedWorker('/js/rawdeflate.js');
   if (deflater) {
@@ -488,7 +492,7 @@ if (!doNotTrack) {
 
 
 <div style="width: 100%;height: 300px;margin: 0 auto">
-    <canvas id="8dcefa4c45c2d51d8feb4fc4dcaccb68"></canvas>
+    <canvas id="fcdc44d6eecdfad5421ac8fcb8c45c8b"></canvas>
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
 <script type="text/javascript">
@@ -530,7 +534,7 @@ if (!doNotTrack) {
         }
     }
 };
-    new Chart(document.getElementById('8dcefa4c45c2d51d8feb4fc4dcaccb68').getContext('2d'), options);
+    new Chart(document.getElementById('fcdc44d6eecdfad5421ac8fcb8c45c8b').getContext('2d'), options);
 </script>
 <h3 id="blockquote">Blockquote<a hidden class="anchor" aria-hidden="true" href="#blockquote">#</a></h3>
 
@@ -583,6 +587,53 @@ if (!doNotTrack) {
     <img style="display: block;width: 90%; margin: auto;" src="/img/tmux.png" title="Tmux基本概念" alt="Tmux基本概念">
     <span style="display:block;text-align: center;font-size: 90%;;">◎ Tmux基本概念</span>
   </span></p>
+<p>不带标题的图片
+<figure class="align-center ">
+    <img loading="lazy" src="/img/tmux.png#center"/> 
+</figure>
+</p>
+<h3 id="折叠内容">折叠内容<a hidden class="anchor" aria-hidden="true" href="#折叠内容">#</a></h3>
+
+
+<p><details >
+  <summary markdown="span">测试折叠内容</summary>
+  <p><strong>测试折叠内容</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;hello&#39;</span>)
+</span></span></code></pre></div>
+</details></p>
+
+<h3 id="rawhtml">RawHTML<a hidden class="anchor" aria-hidden="true" href="#rawhtml">#</a></h3>
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore>
+<book category="cooking">
+  <title lang="en">Everyday Italian</title>
+  <author>Giada De Laurentiis</author>
+  <year>2005</year>
+  <price>30.00</price>
+</book>
+<book category="children">
+  <title lang="en">Harry Potter</title>
+  <author>J K. Rowling</author>
+  <year>2005</year>
+  <price>29.99</price>
+</book>
+<book category="web">
+  <title lang="en">XQuery Kick Start</title>
+  <author>James McGovern</author>
+  <author>Per Bothner</author>
+  <author>Kurt Cagle</author>
+  <author>James Linn</author>
+  <author>Vaidyanathan Nagarajan</author>
+  <year>2003</year>
+  <price>49.99</price>
+</book>
+<book category="web">
+  <title lang="en">Learning XML</title>
+  <author>Erik T. Ray</author>
+  <year>2003</year>
+  <price>39.95</price>
+</book>
+</bookstore>
 <h3 id="music">Music<a hidden class="anchor" aria-hidden="true" href="#music">#</a></h3>
 <blockquote>
 <p>基于meeting js</p>

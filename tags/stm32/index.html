@@ -136,13 +136,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -166,7 +166,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。 LED灯实验 #include &#34;stm32f10x.h&#34; #define LED GPIO_Pin_All void delay(u32 i)...</p>
+    <p>STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。 LED灯实验 #include &#34;stm32f10x.h&#34; #define LED GPIO_Pin_All void delay(u32 i) { while(i--); } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,&amp;GPIO_InitStructure); //初始化...</p>
   </div>
   <footer class="entry-footer">8 min&nbsp;·&nbsp;3645 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to STM32笔记" href="https://blog.niuhemoon.win/posts/tech/stm32-example-1/"></a>

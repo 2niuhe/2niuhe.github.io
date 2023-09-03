@@ -136,13 +136,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -166,7 +166,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C...</p>
+    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C接口。 引脚定义 VIN 2.5-5.5V电压供电引脚，SCL和SDA引脚的高电平电压和VIN引脚的电压相同。 VDD 根据VIN引脚的连接情况，VDD引脚用...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-10 00:00:00 +0000 UTC'>2018-09-10</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;535 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to LSM303_Doc" href="https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/"></a>
@@ -178,7 +178,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果...</p>
+    <p>在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。 VPS &#43; SSH远程...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-04 00:00:00 +0000 UTC'>2018-09-04</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1224 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 远程ssh连接家中的树莓派" href="https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/"></a>
@@ -190,7 +190,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。 产生方波信号后，如果手边没有示波器，...</p>
+    <p>在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。 产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。 树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;744 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Arduino简易示波器检测树莓派产生的方波" href="https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/"></a>
@@ -202,7 +202,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。 通过源码安装： git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py...</p>
+    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。 通过源码安装： git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py install 将树莓派和LCD1602连接 连接的图如下所示： LCD电子钟程序 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as gpio #to add the LCD library import Adafruit_CharLCD as LCD import time gpio.setmode(gpio.BCM) #声明 LCD pins（对应BCM引脚...</p>
   </div>
   <footer class="entry-footer"><span title='2018-08-28 00:00:00 +0000 UTC'>2018-08-28</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;232 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派连接LCD1602做一个电子钟" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/"></a>
@@ -214,7 +214,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。 树莓派3启用UART #####先更新系统 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-con...</p>
+    <p>在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。 树莓派3启用UART #####先更新系统 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置： disable login shell over serial enable serial hardware port #####然后重启 sudo reboot #####编辑配置文件 sudo nano /boot/config.txt 在最后一段加上： dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt sudo...</p>
   </div>
   <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;539 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派3启用UART并连接GPS传感器" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/"></a>
@@ -226,7 +226,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入...</p>
+    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。 BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制G...</p>
   </div>
   <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;766 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派GPIO入门" href="https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/"></a>

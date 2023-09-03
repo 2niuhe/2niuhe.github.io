@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Xpath on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/xpath/</link>
+    <description>Recent content in Xpath on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Sun, 03 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/xpath/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>xpath基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/xpath-cheetsheet/</link>
+      <pubDate>Sun, 03 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/xpath-cheetsheet/</guid>
+      <description>记录常用的xpath匹配方式</description>
+    </item>
+    
+  </channel>
+</rss>

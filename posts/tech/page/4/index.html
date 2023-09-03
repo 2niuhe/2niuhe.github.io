@@ -157,13 +157,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -183,11 +183,23 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>Arduino任何引脚产生方波
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Arduino可以使用PWM产生方波信号，在我的Arduino UNO R3上，支持PWM的输出口是pin 3,5,6,9,10,11这几个引脚，支持大约980Hz的PWM输出。这方面不再赘述。 本文介绍另一种产生方波的方法，可以使用任何引脚产生方波信号。功能： 固定频率，占空比，偏移量的方波...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;631 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to Arduino任何引脚产生方波" href="https://blog.niuhemoon.win/posts/tech/arduino-squrewave/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>树莓派连接LCD1602做一个电子钟
     </h2>
   </header>
   <div class="entry-content">
-    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。 通过源码安装： git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py...</p>
+    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。 通过源码安装： git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py install 将树莓派和LCD1602连接 连接的图如下所示： LCD电子钟程序 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as gpio #to add the LCD library import Adafruit_CharLCD as LCD import time gpio.setmode(gpio.BCM) #声明 LCD pins（对应BCM引脚...</p>
   </div>
   <footer class="entry-footer"><span title='2018-08-28 00:00:00 +0000 UTC'>2018-08-28</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;232 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派连接LCD1602做一个电子钟" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/"></a>
@@ -199,7 +211,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。 树莓派3启用UART #####先更新系统 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-con...</p>
+    <p>在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。 树莓派3启用UART #####先更新系统 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置： disable login shell over serial enable serial hardware port #####然后重启 sudo reboot #####编辑配置文件 sudo nano /boot/config.txt 在最后一段加上： dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt sudo...</p>
   </div>
   <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;539 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派3启用UART并连接GPS传感器" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/"></a>
@@ -211,7 +223,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入...</p>
+    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。 BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制G...</p>
   </div>
   <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;766 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派GPIO入门" href="https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/"></a>
@@ -236,7 +248,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并...</p>
+    <p>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。 1.实验目的 熟悉MD5和SHA25...</p>
   </div>
   <footer class="entry-footer"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2646 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Python实现MD5和Sha256" href="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"></a>
@@ -248,7 +260,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>程序效果图如下： 程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。 程序十分简单，只十几行...</p>
+    <p>程序效果图如下： 程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。 程序十分简单，只十几行代码。使用python3，需要安装requests包。 源代码如下，也可以从我的github下载。 #!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {&#39;User-Agent&#39; : &#39;Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)&#39;} def get_daily(): page...</p>
   </div>
   <footer class="entry-footer"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;607 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 在Linux终端里浏览知乎日报" href="https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/"></a>
@@ -260,7 +272,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>上一节中，IntegralOccupancyMap()函数用来确定单词位置，其中调用了query_integral_image()方法。而q...</p>
+    <p>上一节中，IntegralOccupancyMap()函数用来确定单词位置，其中调用了query_integral_image()方法。而query_integral_image是用来Cython。下边介绍Cython。 Cython介绍 Cython 的本质可以总结如下：Cython 是包含C 数...</p>
   </div>
   <footer class="entry-footer"><span title='2018-04-17 00:00:00 +0000 UTC'>2018-04-17</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;958 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to wordcloud源码阅读2——Cython" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/"></a>
@@ -272,7 +284,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>wordcloud是python用来生成词云的第三方库，github地址是word_cloud 下载源码： git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力...</p>
+    <p>wordcloud是python用来生成词云的第三方库，github地址是word_cloud 下载源码： git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。 git tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下： wordcloud项目...</p>
   </div>
   <footer class="entry-footer"><span title='2018-04-16 00:00:00 +0000 UTC'>2018-04-16</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;607 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to wordcloud源码阅读1——初探" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/"></a>
@@ -284,7 +296,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference Github链接：wordcloud 所有函数均封装在Wo...</p>
+    <p>Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference Github链接：wordcloud 所有函数均封装在WordCloud类里: WordCloud([…]) 生成并绘制WordCloud对象 ImageColorGenerator(image) 词云颜色生成器（基于图片颜色） random_color_func([]) 词云颜色随机生成 wordcloud.WordCloud class wordcloud.WordCloud(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color=&#39;black&#39;, max_font_size=None, font_step=1,...</p>
   </div>
   <footer class="entry-footer"><span title='2018-04-08 00:00:00 +0000 UTC'>2018-04-08</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2588 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to WordCloud文档中文翻译" href="https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/"></a>
@@ -309,7 +321,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Ankidroid和插件 ankidroid下载网址https://apps.ankiweb.net/ 目前还是推荐下载anki2.0旧版，2....</p>
+    <p>Ankidroid和插件 ankidroid下载网址https://apps.ankiweb.net/ 目前还是推荐下载anki2.0旧版，2.1版插件支持的不全。 必装插件列表： Awesome TTS:301952613 Review Heatmap:1771074083 Night Mode:1496166067 词库分享 anki-deck 从网络抓取单词/例句文本 示例从轻松背单词网站抓取，网站上涵盖了从小学到GRE以及各个...</p>
   </div>
   <footer class="entry-footer">1 min&nbsp;·&nbsp;369 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Python 生成ankidroid单词表/语音包" href="https://blog.niuhemoon.win/posts/tech/anki-python/"></a>
@@ -321,7 +333,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。 LED灯实验 #include &#34;stm32f10x.h&#34; #define LED GPIO_Pin_All void delay(u32 i)...</p>
+    <p>STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。 LED灯实验 #include &#34;stm32f10x.h&#34; #define LED GPIO_Pin_All void delay(u32 i) { while(i--); } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,&amp;GPIO_InitStructure); //初始化...</p>
   </div>
   <footer class="entry-footer">8 min&nbsp;·&nbsp;3645 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to STM32笔记" href="https://blog.niuhemoon.win/posts/tech/stm32-example-1/"></a>
@@ -333,7 +345,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>目前ROS只支持Linux版，如果不方便装Linux主机，可以通过以太网桥接的方式获得雷达的数据帧；对一些串口传感器，也可以通过Serial...</p>
+    <p>目前ROS只支持Linux版，如果不方便装Linux主机，可以通过以太网桥接的方式获得雷达的数据帧；对一些串口传感器，也可以通过Serial to USB，然后在virtualbox里选择对应的USB设备进行调试。 本方法适用于通过以太网/WLAN来传送数据包的雷达。 使用Virtualb...</p>
   </div>
   <footer class="entry-footer">1 min&nbsp;·&nbsp;203 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Virtualbox虚拟机连接雷达和UART串口" href="https://blog.niuhemoon.win/posts/tech/virual-lidar/"></a>

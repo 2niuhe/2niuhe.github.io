@@ -7,7 +7,7 @@
 <meta name="robots" content="index, follow">
 <title>golang限制函数同时调用次数 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Go">
-<meta name="description" content="使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10;">
+<meta name="description" content="使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10; i&#43;&#43; { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan &lt;- true: f() &lt;-jobChan default: fmt.Println(&#34;job channel is full. pass &#34;, i) } fmt.Println(&#34;jobs&#34;, i, &#34;exit&#34;) } func do() { time.Sleep(3e9) fmt.Println(&#34;job done&#34;) }">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
@@ -69,7 +69,7 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script><meta property="og:title" content="golang限制函数同时调用次数" />
-<meta property="og:description" content="使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10;" />
+<meta property="og:description" content="使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10; i&#43;&#43; { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan &lt;- true: f() &lt;-jobChan default: fmt.Println(&#34;job channel is full. pass &#34;, i) } fmt.Println(&#34;jobs&#34;, i, &#34;exit&#34;) } func do() { time.Sleep(3e9) fmt.Println(&#34;job done&#34;) }" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-03-04T00:00:00+00:00" />
@@ -77,7 +77,7 @@ if (!doNotTrack) {
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="golang限制函数同时调用次数"/>
-<meta name="twitter:description" content="使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10;"/>
+<meta name="twitter:description" content="使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10; i&#43;&#43; { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan &lt;- true: f() &lt;-jobChan default: fmt.Println(&#34;job channel is full. pass &#34;, i) } fmt.Println(&#34;jobs&#34;, i, &#34;exit&#34;) } func do() { time.Sleep(3e9) fmt.Println(&#34;job done&#34;) }"/>
 
 
 <script type="application/ld+json">
@@ -112,7 +112,7 @@ if (!doNotTrack) {
   "@type": "BlogPosting",
   "headline": "golang限制函数同时调用次数",
   "name": "golang限制函数同时调用次数",
-  "description": "使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( \u0026#34;fmt\u0026#34; \u0026#34;time\u0026#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i \u0026lt; 10;",
+  "description": "使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( \u0026#34;fmt\u0026#34; \u0026#34;time\u0026#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i \u0026lt; 10; i++ { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan \u0026lt;- true: f() \u0026lt;-jobChan default: fmt.Println(\u0026#34;job channel is full. pass \u0026#34;, i) } fmt.Println(\u0026#34;jobs\u0026#34;, i, \u0026#34;exit\u0026#34;) } func do() { time.Sleep(3e9) fmt.Println(\u0026#34;job done\u0026#34;) }",
   "keywords": [
     "Go"
   ],
@@ -199,13 +199,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>

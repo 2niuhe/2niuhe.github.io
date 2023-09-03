@@ -157,13 +157,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -183,11 +183,23 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>Python进阶上
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Python种基本类型的比较： List is a collection which is ordered and mutable. Allows duplicate members. Tuple is a collection which is ordered and immutable. Allows duplicate members. Set is a collection which is unordered and unindexed. No duplicate members. Dictionary is a collection which is unordered, mutable and indexed. No duplicate members. Strings are immutable sequences of Unicode code points. List Python中的list是一个有序容器，容纳不同类型的数据（但推荐列表内数据类型相同)，同时其是可变类型的． 创建列表 list_1 = [&#34;banana&#34;, &#34;cherry&#34;, &#34;apple&#34;] print(list_1) # Or create...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;3404 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to Python进阶上" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>Microstack 基本使用
     </h2>
   </header>
   <div class="entry-content">
-    <p>Microstack 简介 Microstack 是在 ubuntu 平台上快速部署 Openstack 环境的工具，其通过 snap 构建，而 snap 安装目录是一个独立的只读文件系统，这就导致难以改动代码进行调试。 因此，Micro...</p>
+    <p>Microstack 简介 Microstack 是在 ubuntu 平台上快速部署 Openstack 环境的工具，其通过 snap 构建，而 snap 安装目录是一个独立的只读文件系统，这就导致难以改动代码进行调试。 因此，Microstack 环境只适用于 Openstack 初学者学习命令行和数据库等等，调试的话可以通告 gdb 调试，而不便于通过 pdb 调试，因为无法修改源文件，并在文件还中加断点。 Microstack...</p>
   </div>
   <footer class="entry-footer"><span title='2020-09-20 00:00:00 +0000 UTC'>2020-09-20</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;674 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Microstack 基本使用" href="https://blog.niuhemoon.win/posts/tech/microstack-usage/"></a>
@@ -199,7 +211,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>python3中如何对二维码QRcode进行编码解码 通常对于二维码，我们需要进行两种操作： 将二维码图片扫描后解析成字符串 将字符串编码生成二维...</p>
+    <p>python3中如何对二维码QRcode进行编码解码 通常对于二维码，我们需要进行两种操作： 将二维码图片扫描后解析成字符串 将字符串编码生成二维码图片 这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在...</p>
   </div>
   <footer class="entry-footer"><span title='2019-04-27 00:00:00 +0000 UTC'>2019-04-27</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1014 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Python3操作二维码图片" href="https://blog.niuhemoon.win/posts/tech/python3-qrcode/"></a>
@@ -211,7 +223,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使...</p>
+    <p>Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使用内核资源时，通过系统调用进入内核态，系统调用结束后，重新返回用户态。 ###创建进程 可通过fork函数创建子进程，理论上，父子进程拥有各自独...</p>
   </div>
   <footer class="entry-footer"><span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1919 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux进程——进程创建和同步控制" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"></a>
@@ -223,7 +235,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话...</p>
+    <p>进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。 ###用户和用户组 //获得当前进程实际用户ID pid_t getuid(void); //获得当前进程有效用户ID pid_t geteuid(void); //获得当前进程实际用户组ID pid_t getgid(void); //获得当前进程有效...</p>
   </div>
   <footer class="entry-footer"><span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1417 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux进程——进程环境与加载可执行映像" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/"></a>
@@ -235,7 +247,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>可执行程序是存储在磁盘设备上由代码和数据按某种格式组织的静态实体，而进程是可被调度的代码的动态运行。在Linux系统中，在一个进程的生命周期...</p>
+    <p>可执行程序是存储在磁盘设备上由代码和数据按某种格式组织的静态实体，而进程是可被调度的代码的动态运行。在Linux系统中，在一个进程的生命周期里，都有各自的运行环境和所需的资源，这些信息储存在各自的进程控制块中。 进程控制块主要结构如下: 用户标识 进程和会话标识 虚拟地址管理 文件描述符表...</p>
   </div>
   <footer class="entry-footer"><span title='2018-10-08 00:00:00 +0000 UTC'>2018-10-08</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1732 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux进程——地址空间" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-1/"></a>
@@ -247,7 +259,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进...</p>
+    <p>Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进程智能向属于同一个回话或同一个用户的进程发送信号。 ###发送信号 常用的函数原型如下 /* 向进程发送信号 pid&gt;0 进程ID为pid的进程 pid=0 同一进程组的进程...</p>
   </div>
   <footer class="entry-footer"><span title='2018-10-07 00:00:00 +0000 UTC'>2018-10-07</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1401 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux信号处理——发送信号" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/"></a>
@@ -259,7 +271,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>文件系统概述 Linux内核的各种真实文件系统、块设备和字符设备统一在虚拟文件系统的框架中，虚拟文件系统为应用提供了一组抽象的文件输入输出接口...</p>
+    <p>文件系统概述 Linux内核的各种真实文件系统、块设备和字符设备统一在虚拟文件系统的框架中，虚拟文件系统为应用提供了一组抽象的文件输入输出接口。 虚拟文件系统是对各种真实文件系统的抽象，在虚拟文件系统中定义了抽象的超级块、i节点和目录，它为真实文件系统提供了一种统一的框架接口。真实文...</p>
   </div>
   <footer class="entry-footer"><span title='2018-10-06 00:00:00 +0000 UTC'>2018-10-06</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2846 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux下glic库操作文件和目录" href="https://blog.niuhemoon.win/posts/tech/linux-c-io/"></a>
@@ -271,7 +283,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>信号是内核和进程之间通信的一种方式，信号是由内核产生，并发送给一个或一组进程的短消息，用不同特定的数字表示不同的信号，信号的作用是表示某种事...</p>
+    <p>信号是内核和进程之间通信的一种方式，信号是由内核产生，并发送给一个或一组进程的短消息，用不同特定的数字表示不同的信号，信号的作用是表示某种事件的发生。 信号简介 分类 非实时不可靠信号，值为1-31 实时的可靠信号，值为32-63 信号由内核生成，信号生成和事件的发生密切相关，可将事件发生...</p>
   </div>
   <footer class="entry-footer"><span title='2018-10-06 00:00:00 +0000 UTC'>2018-10-06</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1482 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux信号处理——自定义信号处理函数" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-1/"></a>
@@ -283,7 +295,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>函数库介绍 函数库分为： 静态库 共享库（动态加载库） 应用程序在链接静态库时候，将使用的静态库对象嵌入至可执行映像文件中；而在链接共享库时，仅在可...</p>
+    <p>函数库介绍 函数库分为： 静态库 共享库（动态加载库） 应用程序在链接静态库时候，将使用的静态库对象嵌入至可执行映像文件中；而在链接共享库时，仅在可执行映像文件中保留加载目标对象所需的信息，在调用时，才真正将目标对象加载至内存。 静态库特点： 运行时无需外部库的支持，可执行文件中已经嵌入了所...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-26 00:00:00 +0000 UTC'>2018-09-26</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1317 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Linux下创建和使用C语言函数库" href="https://blog.niuhemoon.win/posts/tech/linux-c-lib/"></a>
@@ -295,7 +307,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、...</p>
+    <p>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell 对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常 Shell 脚本结构...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-25 00:00:00 +0000 UTC'>2018-09-25</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1626 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Shell编程基础" href="https://blog.niuhemoon.win/posts/tech/basic-shell/"></a>
@@ -307,7 +319,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或...</p>
+    <p>现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-13 00:00:00 +0000 UTC'>2018-09-13</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;462 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Pyserial快速上手" href="https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/"></a>
@@ -319,7 +331,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C...</p>
+    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C接口。 引脚定义 VIN 2.5-5.5V电压供电引脚，SCL和SDA引脚的高电平电压和VIN引脚的电压相同。 VDD 根据VIN引脚的连接情况，VDD引脚用...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-10 00:00:00 +0000 UTC'>2018-09-10</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;535 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to LSM303_Doc" href="https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/"></a>
@@ -331,7 +343,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果...</p>
+    <p>在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。 VPS &#43; SSH远程...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-04 00:00:00 +0000 UTC'>2018-09-04</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1224 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 远程ssh连接家中的树莓派" href="https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/"></a>
@@ -343,22 +355,10 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。 产生方波信号后，如果手边没有示波器，...</p>
+    <p>在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。 产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。 树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)...</p>
   </div>
   <footer class="entry-footer"><span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;744 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Arduino简易示波器检测树莓派产生的方波" href="https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Arduino任何引脚产生方波
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Arduino可以使用PWM产生方波信号，在我的Arduino UNO R3上，支持PWM的输出口是pin 3,5,6,9,10,11这几个引脚，支持...</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;631 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Arduino任何引脚产生方波" href="https://blog.niuhemoon.win/posts/tech/arduino-squrewave/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

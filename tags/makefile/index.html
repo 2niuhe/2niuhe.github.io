@@ -136,13 +136,13 @@ if (!doNotTrack) {
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
                 </a>
             </li>
             <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
                 </a>
             </li>
             <li>
@@ -166,7 +166,7 @@ if (!doNotTrack) {
     </h2>
   </header>
   <div class="entry-content">
-    <p>Makefile基础 语法 # 目标 ：依赖 # 根据依赖生成目标的命令 targets : prerequisites command 变量 Makefile 允许使用等号自定义变量。 txt = Hello World test: @echo $(txt) 上面代码中，变量 txt 等于 Hello Wo...</p>
+    <p>Makefile基础 语法 # 目标 ：依赖 # 根据依赖生成目标的命令 targets : prerequisites command 变量 Makefile 允许使用等号自定义变量。 txt = Hello World test: @echo $(txt) 上面代码中，变量 txt 等于 Hello World。调用时，变量需要放在 $( ) 之中。 调用Shell变量，需要在美元符号前，再加一个美元符号，这是因为Make命令会对美元符号转义。 test: @echo $$HOME 有...</p>
   </div>
   <footer class="entry-footer"><span title='2021-02-27 00:00:00 +0000 UTC'>2021-02-27</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;976 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Go语言和Makefile" href="https://blog.niuhemoon.win/posts/tech/golang-makefile/"></a>

@@ -5,7 +5,7 @@
     <link>https://blog.niuhemoon.win/tags/kubernetes/</link>
     <description>Recent content in Kubernetes on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
+    <language>zh</language>
     <lastBuildDate>Sat, 04 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Manjaro 搭建 minikube 环境</title>

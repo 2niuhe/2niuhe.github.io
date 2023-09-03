@@ -5,7 +5,16 @@
     <link>https://blog.niuhemoon.win/posts/tech/</link>
     <description>Recent content in 👨🏻‍💻 技术 on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh</language><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>xpath基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/xpath-cheetsheet/</link>
+      <pubDate>Sun, 03 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/xpath-cheetsheet/</guid>
+      <description>记录常用的xpath匹配方式</description>
+    </item>
+    
     <item>
       <title>tmux-usage</title>
       <link>https://blog.niuhemoon.win/posts/tech/tmux-usage/</link>
@@ -48,7 +57,7 @@
       <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</guid>
-      <description>使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &amp;#34;fmt&amp;#34; &amp;#34;time&amp;#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &amp;lt; 10;</description>
+      <description>使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &amp;#34;fmt&amp;#34; &amp;#34;time&amp;#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &amp;lt; 10; i++ { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan &amp;lt;- true: f() &amp;lt;-jobChan default: fmt.Println(&amp;#34;job channel is full. pass &amp;#34;, i) } fmt.Println(&amp;#34;jobs&amp;#34;, i, &amp;#34;exit&amp;#34;) } func do() { time.Sleep(3e9) fmt.Println(&amp;#34;job done&amp;#34;) }</description>
     </item>
     
     <item>
@@ -75,7 +84,7 @@
       <pubDate>Sat, 23 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</guid>
-      <description>CheatSheet Docker 核心架构： 客户端 Client 服务器 Docker daemon 镜像 Image Registry 容器 Container 容器基本技术： cgroup 资源限额 namespace 资源隔离 Mount UTS IPC PID Network User Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责</description>
+      <description>CheatSheet Docker 核心架构： 客户端 Client 服务器 Docker daemon 镜像 Image Registry 容器 Container 容器基本技术： cgroup 资源限额 namespace 资源隔离 Mount UTS IPC PID Network User Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个 host 上，客户端也可以通过 socket 或者 REST API 和远程服务器通信。docker 客户端是和服务器通信的命令</description>
     </item>
     
     <item>
@@ -156,7 +165,7 @@
       <pubDate>Sat, 17 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/linux-peformence-test/</guid>
-      <description>简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、t</description>
+      <description>简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。 ▪ 高级的命令如下： sar、net</description>
     </item>
     
     <item>
@@ -165,7 +174,7 @@
       <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</guid>
-      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，</description>
+      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。 Gdb可以附着在特定进程上调试，但</description>
     </item>
     
     <item>
@@ -264,7 +273,7 @@
       <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/angular-devenv/</guid>
-      <description>Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖 node -v npm -v # npm换源 npm config set registry https://registry.npm.taobao.org # 查看n</description>
+      <description>Angular 开发环境 Angular 依赖于 Nodejs，需要首先安装 node 和 npm,安装完成后可以查看 node 和 npm 的版本 然后再安装 angular 依赖 node -v npm -v # npm换源 npm config set registry https://registry.npm.taobao.org # 查看npm的源 npm config get registry # 安装angular npm install -g @angular/cli # 更新所有套件到最新版 ng update --all --force # 创建一个angular项目 ng new testng StackBlitz是一个在线开</description>
     </item>
     
     <item>
@@ -363,7 +372,7 @@
       <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/basic-shell/</guid>
-      <description>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、</description>
+      <description>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell 对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常 Shell 脚本结构</description>
     </item>
     
     <item>
@@ -453,7 +462,7 @@
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</guid>
-      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并</description>
+      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。 1.实验目的 熟悉MD5和SHA25</description>
     </item>
     
     <item>

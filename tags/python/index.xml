@@ -5,7 +5,7 @@
     <link>https://blog.niuhemoon.win/tags/python/</link>
     <description>Recent content in Python on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
+    <language>zh</language>
     <lastBuildDate>Fri, 16 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GDB调试Python代码</title>
@@ -13,7 +13,7 @@
       <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</guid>
-      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，</description>
+      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。 Gdb可以附着在特定进程上调试，但</description>
     </item>
     
     <item>
@@ -94,7 +94,7 @@
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</guid>
-      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并</description>
+      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。 1.实验目的 熟悉MD5和SHA25</description>
     </item>
     
     <item>
