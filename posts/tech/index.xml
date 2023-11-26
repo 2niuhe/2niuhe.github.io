@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>text2sql Prompt 调优笔记</title>
+      <link>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</link>
+      <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</guid>
+      <description>参加了一个LLM的应用比赛，赛题目标是编码优化prompt提高text2sql推理的正确率 给定的资源如下： 所有数据库schema 一个100条记录的训练集（其实是基于spider数据集做了修改） 三个LLM的接口（Baichuan13B/LLama2/Code-LLama） text2</description>
+    </item>
+    
+    <item>
       <title>xpath基本使用</title>
       <link>https://blog.niuhemoon.win/posts/tech/xpath-cheetsheet/</link>
       <pubDate>Sun, 03 Sep 2023 00:00:00 +0000</pubDate>

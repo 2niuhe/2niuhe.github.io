@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>LLM on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/llm/</link>
+    <description>Recent content in LLM on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 13 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/llm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>text2sql Prompt 调优笔记</title>
+      <link>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</link>
+      <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</guid>
+      <description>参加了一个LLM的应用比赛，赛题目标是编码优化prompt提高text2sql推理的正确率 给定的资源如下： 所有数据库schema 一个100条记录的训练集（其实是基于spider数据集做了修改） 三个LLM的接口（Baichuan13B/LLama2/Code-LLama） text2</description>
+    </item>
+    
+  </channel>
+</rss>
