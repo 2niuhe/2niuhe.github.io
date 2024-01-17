@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>CKA备考笔记</title>
+      <link>https://blog.niuhemoon.win/posts/tech/cka-study-record/</link>
+      <pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/cka-study-record/</guid>
+      <description>&lt;p&gt;记录一下CKA考试的备考过程&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>text2sql Prompt 调优笔记</title>
       <link>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</link>
       <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
