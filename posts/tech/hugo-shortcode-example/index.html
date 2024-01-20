@@ -116,8 +116,8 @@ if (!doNotTrack) {
   "keywords": [
     "Hugo"
   ],
-  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nPlantuml Grpahvizo DOT Language (GraphViz) Example Chart Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ Tmux基本概念 不带标题的图片 折叠内容 测试折叠内容 测试折叠内容\nprint('hello') RawHTML \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e Everyday Italian Giada De Laurentiis 2005 30.00 Harry Potter J K. Rowling 2005 29.99 XQuery Kick Start James McGovern Per Bothner Kurt Cagle James Linn Vaidyanathan Nagarajan 2003 49.99 Learning XML Erik T. Ray 2003 39.95 Music 基于meeting js\nspotify iframe\nNotice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
-  "wordCount" : "215",
+  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nPlantuml Grpahvizo DOT Language (GraphViz) Example Chart Vega Plotly Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ Tmux基本概念 不带标题的图片 折叠内容 测试折叠内容 测试折叠内容\nprint('hello') RawHTML \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e Everyday Italian Giada De Laurentiis 2005 30.00 Harry Potter J K. Rowling 2005 29.99 XQuery Kick Start James McGovern Per Bothner Kurt Cagle James Linn Vaidyanathan Nagarajan 2003 49.99 Learning XML Erik T. Ray 2003 39.95 Music 基于meeting js\nspotify iframe\nNotice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
+  "wordCount" : "217",
   "inLanguage": "zh",
   "datePublished": "2022-12-21T00:00:00Z",
   "dateModified": "2022-12-21T00:00:00Z",
@@ -224,7 +224,7 @@ if (!doNotTrack) {
     <h1 class="post-title">
       hugo shortcode example
     </h1>
-    <div class="post-meta"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;215 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;217 字&nbsp;·&nbsp;Niuhe
 
 </div>
   </header> <div class="toc">
@@ -242,6 +242,10 @@ if (!doNotTrack) {
                     <a href="#grpahvizo" aria-label="Grpahvizo">Grpahvizo</a></li>
                 <li>
                     <a href="#chart" aria-label="Chart">Chart</a></li>
+                <li>
+                    <a href="#vega" aria-label="Vega">Vega</a></li>
+                <li>
+                    <a href="#plotly" aria-label="Plotly">Plotly</a></li>
                 <li>
                     <a href="#blockquote" aria-label="Blockquote">Blockquote</a></li>
                 <li>
@@ -492,7 +496,7 @@ if (!doNotTrack) {
 
 
 <div style="width: 100%;height: 300px;margin: 0 auto">
-    <canvas id="1fcdf8e84ccdfb6e545c8acdc4c2bda4"></canvas>
+    <canvas id="add5fcc4b4dbf4ce8c28fc8ca4c5ed61"></canvas>
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
 <script type="text/javascript">
@@ -534,8 +538,39 @@ if (!doNotTrack) {
         }
     }
 };
-    new Chart(document.getElementById('1fcdf8e84ccdfb6e545c8acdc4c2bda4').getContext('2d'), options);
+    new Chart(document.getElementById('add5fcc4b4dbf4ce8c28fc8ca4c5ed61').getContext('2d'), options);
 </script>
+<h3 id="vega">Vega<a hidden class="anchor" aria-hidden="true" href="#vega">#</a></h3>
+
+
+    <div id='viz'></div>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  
+    <script type="text/javascript">
+      var json = '\/chart\/vega.json';
+      vegaEmbed('#viz', json).then(function(result) {
+
+      }).catch(console.error);
+    </script>
+
+<h3 id="plotly">Plotly<a hidden class="anchor" aria-hidden="true" href="#plotly">#</a></h3>
+
+
+
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<div id="pt1" class="plotly" style="height:530px;"></div>
+<script>
+    d3.json("/chart/mtbruno.json").then(function (fig) {
+      Plotly.newPlot("pt1", fig.data, fig.layout, { responsive: true });
+  });
+</script>
+
+
+
 <h3 id="blockquote">Blockquote<a hidden class="anchor" aria-hidden="true" href="#blockquote">#</a></h3>
 
 
