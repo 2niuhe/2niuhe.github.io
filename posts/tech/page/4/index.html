@@ -183,6 +183,18 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>LSM303_Doc
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C接口。 引脚定义 VIN 2.5-5.5V电压供电引脚，SCL和SDA引脚的高电平电压和VIN引脚的电压相同。 VDD 根据VIN引脚的连接情况，VDD引脚用...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-09-10 00:00:00 +0000 UTC'>2018-09-10</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;535 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to LSM303_Doc" href="https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>远程ssh连接家中的树莓派
     </h2>
   </header>
@@ -349,18 +361,6 @@ if (!doNotTrack) {
   </div>
   <footer class="entry-footer">1 min&nbsp;·&nbsp;369 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Python 生成ankidroid单词表/语音包" href="https://blog.niuhemoon.win/posts/tech/anki-python/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>STM32笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。 LED灯实验 #include &#34;stm32f10x.h&#34; #define LED GPIO_Pin_All void delay(u32 i) { while(i--); } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,&amp;GPIO_InitStructure); //初始化...</p>
-  </div>
-  <footer class="entry-footer">8 min&nbsp;·&nbsp;3645 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to STM32笔记" href="https://blog.niuhemoon.win/posts/tech/stm32-example-1/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
