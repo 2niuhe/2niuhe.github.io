@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>数据中心组网收敛比概念和计算 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Network">
+<meta name="description" content="本文介绍收敛比概念和简单计算">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="数据中心组网收敛比概念和计算" />
+<meta property="og:description" content="本文介绍收敛比概念和简单计算" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-10T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="数据中心组网收敛比概念和计算"/>
+<meta name="twitter:description" content="本文介绍收敛比概念和简单计算"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "数据中心组网收敛比概念和计算",
+      "item": "https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "数据中心组网收敛比概念和计算",
+  "name": "数据中心组网收敛比概念和计算",
+  "description": "本文介绍收敛比概念和简单计算",
+  "keywords": [
+    "Network"
+  ],
+  "articleBody": "收敛比 超售在生活中很常见，航空公司假设并不是所有购票的乘客都会按时到达，因此会多售出一些机票。在云计算领域，也会存在一定程度的超售，一台128核心的物理服务器，可能会运行16台虚拟机，每台虚拟机都有16个cpu内核，那么实际售出了16*16=256个核心，超售比是2:1。这么做是假设用户虚拟机的CPU使用率不会同时高于50%，如果同时高于50%，此时请求的资源大于所能提供的资源，用户就可能会感受到机器卡顿。\n网络收敛比是一个比较奇怪的称呼，对应到英文应该是over-subscription ratio这个含义，指的是网络设备南北向带宽超售的比例。为了能够描述不同的收敛程度，我们通常用一个系统所有南向（下行）接口的总带宽比上这个系统所有北向（上行）接口总带宽的数值来表示，我们也将这个数值称为这个系统的收敛比，即over-subscription ratio。\n举个例子，假设你有10台服务器，每台服务器通过10GE的接口连接到一个接入交换机，那我们一共就有100G（10×10G=100G）的南向带宽。假设这台交换机还有2个40GE的接口可以用于接入到更高一层的汇聚交换机，那我们一共就有80G（2×40G=80G）的北向带宽。此时，我们得到的收敛比则是1.25：1（100G÷80G=1.25）\n收敛比计算公式 收敛比表示网络中下行链路总带宽与上行链路总带宽之间的关系。通过计算下行链路的总带宽与上行链路的总带宽的比值，可以评估网络的超售程度和潜在的瓶颈。较低的收敛比通常意味着更高的网络性能和更低的延迟，而较高的收敛比则可能导致网络拥堵和性能下降。\n收敛比的计算公式为：\n(Pn × Ps) : (Un × Us) 其中：\nPn 是连接的 Leaf 端口的数量，表示叶交换机上可用的下行链路数量。 Ps 是这些端口的速度，表示每个下行链路的带宽。 Un 是上行链路的数量，表示连接 Leaf 交换机的上行链路数量。 Us 是上行链路的速度，表示每个上行链路的带宽。 例如下图，一个具有 48x10g 端口的 Leaf 交换机，用于连接服务器，提供 480Gb/s 的端口容量。如果此 Leaf 以 40Gb/s 的速率连接到 4 个Spine交换机，则其总上行链路容量将为 160Gb/s。此时收敛比为3:1\n/\n在设计数据中心网络收敛比时，我们需要根据网络业务和流量模型。综合考虑东西、南北流量的大小、比例，来制定合适的收敛比和选择相应的设备。通常收敛比应该低于3:1，理想情况是1:1，可以认为是无阻塞网络（在部分场合也称为无收敛网络），对于任意的通信模式，总有路径让他们的通信带宽达到网卡带宽。\n传统三层架构网络 如下的是一个收敛比较高的三层组网。这种三层设计收敛比高，存在上行链路瓶颈，并增加了东西向流量（数据中心设备之间的流量）的延迟。因此，现代数据中心通常使用后年的叶脊Leaf-Spine架构，叶脊架构的延迟处于可预测的水平，并且数据包跳数最小。\nLeaf-Spine叶脊架构网络 也称为分布式核心网络，优势如下\n扁平化：扁平化设计缩短服务器之间的通信路径，从而降低延迟，可以显著提高应用程序和服务性能。 易扩展：如果 Spine 交换机的带宽不足，我们只需要增加 Spine 节点数，也可以提供路径上的负载均衡；如果接入连接不足，则只需增加 Leaf 节点数。 低收敛比：容易实现 1:X 甚至是无阻塞的 1:1 的收敛比，而且通过增加 Spine 和 Leaf 设备间的链路带宽也可以降低链路收敛比。 简化管理：叶脊结构可以在无环路环境中使用全网格中的每个链路并进行负载平衡，这种等价多路径设计在使用 SDN 等集中式网络管理平台时处于最佳状态。SDN 允许在发生堵塞或链路故障时简化流量的配置，管理和重新分配路由，使得智能负载均衡的全网状拓扑成为一个相对简单的配置和管理方式。 边缘流量处理：随着物联网（IoT）等业务的兴起，接入层压力剧增，可能有数千个传感器和设备在网络边缘连接并产生大量流量。Leaf 可以在接入层处理连接，Spine 保证节点内的任意两个端口之间提供延迟非常低的无阻塞性能，从而实现从接入到云平台的敏捷服务。 多云管理：数据中心或云之间通过 Leaf Spine 架构仍可以实现高性能、高容错等优势，而多云管理策略也逐渐成为企业的必选项。 上图的组网，数据中心中拥有 960 台 10G 带宽的服务器，收敛比(over-subscription ratio)为 2.4:1。Leaf交换机位于机架顶部，支持 48 x 10GB 服务器端口和 8 x 100G 上行链路端口。Spine交换机支持 64 x 100G 端口。为了覆盖所有 960 台服务器，我们需要 20 台Leaf交换机（960 台服务器/ 48 个端口）和两台Spine交换机。每个Leaf交换机都通过两个 100G 上行链路连接到Spine。收敛比为 2.4:1 时，服务器的最大数量为 960 台(48 x 10Gbps 下行链路到服务器/2 x 100Gbps 上行链路到Spine = 2.4)。\n如果再添加两台Spine交换机，收敛比例将为 1.2:1 (480G / 400G)。这接近1:1，因此不存在网络瓶颈。此时，Leaf交换机转发流量时不会丢失数据包。但1:1收敛比可能会导致非高峰时段容量过剩，成本较高。\n总结 网络收敛比是设计高效数据中心网络的关键因素。通过合理的收敛比设计，能够有效平衡资源利用率与网络性能，避免瓶颈和延迟。现代的Leaf-Spine架构提供了更低的收敛比和更高的可扩展性，使得数据中心能够灵活应对不断增长的业务需求。在选择网络架构时，需综合考虑业务流量、成本与性能，以实现最佳的网络设计。\n参考 Oversubscription in Networking | Noction\nConverged Networking: OVER-Subscription Ratio | by Mike Lyons | Medium\n第四章 收敛比 - 华为数据中心网络设计指南 - 华为\nOverlay介绍 - 华为数据中心网络设计指南 - 华为\n数据中心网络架构的问题与演进 — CLOS 网络与 Fat-Tree、Spine-Leaf 架构 - 云物互联 - 博客园\n",
+  "wordCount" : "2250",
+  "inLanguage": "zh",
+  "datePublished": "2024-08-10T00:00:00Z",
+  "dateModified": "2024-08-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      数据中心组网收敛比概念和计算
+    </h1>
+    <div class="post-description">
+      本文介绍收敛比概念和简单计算
+    </div>
+    <div class="post-meta"><span title='2024-08-10 00:00:00 +0000 UTC'>2024-08-10</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2250 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%94%b6%e6%95%9b%e6%af%94" aria-label="收敛比">收敛比</a><ul>
+                        
+                <li>
+                    <a href="#%e6%94%b6%e6%95%9b%e6%af%94%e8%ae%a1%e7%ae%97%e5%85%ac%e5%bc%8f" aria-label="收敛比计算公式">收敛比计算公式</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bc%a0%e7%bb%9f%e4%b8%89%e5%b1%82%e6%9e%b6%e6%9e%84%e7%bd%91%e7%bb%9c" aria-label="传统三层架构网络">传统三层架构网络</a></li>
+                <li>
+                    <a href="#leaf-spine%e5%8f%b6%e8%84%8a%e6%9e%b6%e6%9e%84%e7%bd%91%e7%bb%9c" aria-label="Leaf-Spine叶脊架构网络">Leaf-Spine叶脊架构网络</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="收敛比">收敛比<a hidden class="anchor" aria-hidden="true" href="#收敛比">#</a></h3>
+<blockquote>
+<p>超售在生活中很常见，航空公司假设并不是所有购票的乘客都会按时到达，因此会多售出一些机票。在云计算领域，也会存在一定程度的超售，一台128核心的物理服务器，可能会运行16台虚拟机，每台虚拟机都有16个cpu内核，那么实际售出了16*16=256个核心，超售比是2:1。这么做是假设用户虚拟机的CPU使用率不会同时高于50%，如果同时高于50%，此时请求的资源大于所能提供的资源，用户就可能会感受到机器卡顿。</p>
+<p><strong>网络收敛比是一个比较奇怪的称呼，对应到英文应该是over-subscription ratio这个含义，指的是网络设备南北向带宽超售的比例</strong>。为了能够描述不同的收敛程度，我们通常用一个系统所有南向（下行）接口的总带宽比上这个系统所有北向（上行）接口总带宽的数值来表示，我们也将这个数值称为这个系统的收敛比，即over-subscription ratio。</p>
+<p>举个例子，假设你有10台服务器，每台服务器通过10GE的接口连接到一个接入交换机，那我们一共就有100G（10×10G=100G）的南向带宽。假设这台交换机还有2个40GE的接口可以用于接入到更高一层的汇聚交换机，那我们一共就有80G（2×40G=80G）的北向带宽。此时，我们得到的收敛比则是1.25：1（100G÷80G=1.25）</p>
+</blockquote>
+<h4 id="收敛比计算公式">收敛比计算公式<a hidden class="anchor" aria-hidden="true" href="#收敛比计算公式">#</a></h4>
+<blockquote>
+<p>收敛比表示网络中下行链路总带宽与上行链路总带宽之间的关系。通过计算下行链路的总带宽与上行链路的总带宽的比值，可以评估网络的超售程度和潜在的瓶颈。<strong>较低的收敛比通常意味着更高的网络性能和更低的延迟，而较高的收敛比则可能导致网络拥堵和性能下降。</strong></p>
+</blockquote>
+<p>收敛比的计算公式为：</p>
+
+<p>
+    <span>(P<sub>n</sub> × P<sub>s</sub>) : (U<sub>n</sub> × U<sub>s</sub>)</span>
+</p>
+
+<p>其中：</p>
+<ul>
+    <li>P<sub>n</sub> 是连接的 Leaf 端口的数量，表示叶交换机上可用的下行链路数量。</li>
+    <li>P<sub>s</sub> 是这些端口的速度，表示每个下行链路的带宽。</li>
+    <li>U<sub>n</sub> 是上行链路的数量，表示连接 Leaf 交换机的上行链路数量。</li>
+    <li>U<sub>s</sub> 是上行链路的速度，表示每个上行链路的带宽。</li>
+</ul>
+
+<blockquote>
+<p>例如下图，一个具有 48x10g 端口的 Leaf 交换机，用于连接服务器，提供 480Gb/s 的端口容量。如果此 Leaf 以 40Gb/s 的速率连接到 4 个Spine交换机，则其总上行链路容量将为 160Gb/s。此时收敛比为3:1</p>
+</blockquote>
+<p><img loading="lazy" src="/img/1*c7hHTEgkkZH_GhTV84SCdA.png" alt="img"  />
+/</p>
+<p>在设计数据中心网络收敛比时，我们需要根据网络业务和流量模型。综合考虑东西、南北流量的大小、比例，来制定合适的收敛比和选择相应的设备。通常收敛比应该低于3:1，理想情况是1:1，可以认为是无阻塞网络（<del>在部分场合也称为无收敛网络</del>），对于任意的通信模式，总有路径让他们的通信带宽达到网卡带宽。</p>
+<h3 id="传统三层架构网络">传统三层架构网络<a hidden class="anchor" aria-hidden="true" href="#传统三层架构网络">#</a></h3>
+<blockquote>
+<p>如下的是一个收敛比较高的三层组网。这种三层设计收敛比高，存在上行链路瓶颈，并增加了东西向流量（数据中心设备之间的流量）的延迟。因此，现代数据中心通常使用后年的叶脊Leaf-Spine架构，叶脊架构的延迟处于可预测的水平，并且数据包跳数最小。</p>
+</blockquote>
+<p><img loading="lazy" src="/img/oversupscription-networks.png" alt="oversupscription networks"  />
+</p>
+<h3 id="leaf-spine叶脊架构网络">Leaf-Spine叶脊架构网络<a hidden class="anchor" aria-hidden="true" href="#leaf-spine叶脊架构网络">#</a></h3>
+<blockquote>
+<p>也称为分布式核心网络，优势如下</p>
+<ol>
+<li><strong>扁平化</strong>：扁平化设计缩短服务器之间的通信路径，从而降低延迟，可以显著提高应用程序和服务性能。</li>
+<li><strong>易扩展</strong>：如果 Spine 交换机的带宽不足，我们只需要增加 Spine 节点数，也可以提供路径上的负载均衡；如果接入连接不足，则只需增加 Leaf 节点数。</li>
+<li><strong>低收敛比</strong>：容易实现 1:X 甚至是无阻塞的 1:1 的收敛比，而且通过增加 Spine 和 Leaf 设备间的链路带宽也可以降低链路收敛比。</li>
+<li><strong>简化管理</strong>：叶脊结构可以在无环路环境中使用全网格中的每个链路并进行负载平衡，这种等价多路径设计在使用 SDN 等集中式网络管理平台时处于最佳状态。SDN 允许在发生堵塞或链路故障时简化流量的配置，管理和重新分配路由，使得智能负载均衡的全网状拓扑成为一个相对简单的配置和管理方式。</li>
+<li><strong>边缘流量处理</strong>：随着物联网（IoT）等业务的兴起，接入层压力剧增，可能有数千个传感器和设备在网络边缘连接并产生大量流量。Leaf 可以在接入层处理连接，Spine 保证节点内的任意两个端口之间提供延迟非常低的无阻塞性能，从而实现从接入到云平台的敏捷服务。</li>
+<li><strong>多云管理</strong>：数据中心或云之间通过 Leaf Spine 架构仍可以实现高性能、高容错等优势，而多云管理策略也逐渐成为企业的必选项。</li>
+</ol>
+</blockquote>
+<p><img loading="lazy" src="/img/oversupscription-in-networking-1.png" alt="oversupscription in networking"  />
+</p>
+<blockquote>
+<p>上图的组网，数据中心中拥有 960 台 10G 带宽的服务器，收敛比(over-subscription ratio)为 <code>2.4:1</code>。Leaf交换机位于机架顶部，支持 48 x 10GB 服务器端口和 8 x 100G 上行链路端口。Spine交换机支持 64 x 100G 端口。为了覆盖所有 960 台服务器，我们需要 20 台Leaf交换机（960 台服务器/ 48 个端口）和两台Spine交换机。每个Leaf交换机都通过两个 100G 上行链路连接到Spine。收敛比为 <code>2.4:1</code> 时，服务器的最大数量为 960 台(48 x 10Gbps 下行链路到服务器/2 x 100Gbps 上行链路到Spine = 2.4)。</p>
+<p>如果再添加两台Spine交换机，收敛比例将为 1.2:1 (480G / 400G)。这接近1:1，因此不存在网络瓶颈。此时，Leaf交换机转发流量时不会丢失数据包。但1:1收敛比可能会导致非高峰时段容量过剩，成本较高。</p>
+</blockquote>
+<h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>网络收敛比是设计高效数据中心网络的关键因素。通过合理的收敛比设计，能够有效平衡资源利用率与网络性能，避免瓶颈和延迟。现代的Leaf-Spine架构提供了更低的收敛比和更高的可扩展性，使得数据中心能够灵活应对不断增长的业务需求。在选择网络架构时，需综合考虑业务流量、成本与性能，以实现最佳的网络设计。</p>
+<h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+<p><a href="https://www.noction.com/blog/oversubscription-in-networking?utm_source=pocket_saves">Oversubscription in Networking | Noction</a></p>
+<p><a href="https://mikenovahunter.medium.com/converged-networking-over-subscription-ratio-f1c74348a5f3">Converged Networking: OVER-Subscription Ratio | by Mike Lyons | Medium</a></p>
+<p><a href="https://support.huawei.com/enterprise/zh/doc/EDOC1100023543/9bab26ed?utm_source=pocket_saves">第四章 收敛比 - 华为数据中心网络设计指南 - 华为</a></p>
+<p><a href="https://support.huawei.com/enterprise/zh/doc/EDOC1100023543/496f4272#ZH-CN_TOPIC_0085560766">Overlay介绍 - 华为数据中心网络设计指南 - 华为</a></p>
+<p><a href="https://www.cnblogs.com/jmilkfan-fanguiju/p/11825042.html?utm_source=pocket_saves">数据中心网络架构的问题与演进 — CLOS 网络与 Fat-Tree、Spine-Leaf 架构 - 云物互联 - 博客园</a></p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/network/">Network</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/ftp-http-file-share/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>局域网搭建文件分享服务</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2024 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
