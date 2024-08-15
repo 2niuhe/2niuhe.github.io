@@ -6,7 +6,16 @@
     <description>Recent content on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Sat, 10 Aug 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Aug 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MPI入门-安装和基本使用</title>
+      <link>https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/</link>
+      <pubDate>Sun, 11 Aug 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/</guid>
+      <description>MPI入门-安装和基本使用</description>
+    </item>
+    
     <item>
       <title>数据中心组网收敛比概念和计算</title>
       <link>https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/</link>
@@ -620,7 +629,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/about/</guid>
-      <description>一名资深的软件工程师</description>
+      <description>一名软件工程师</description>
     </item>
     
     <item>

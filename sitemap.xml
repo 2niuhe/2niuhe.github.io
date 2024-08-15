@@ -2,13 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://blog.niuhemoon.win/tags/network/</loc>
-    <lastmod>2024-08-10T00:00:00+00:00</lastmod>
+    <loc>https://blog.niuhemoon.win/tags/mpi/</loc>
+    <lastmod>2024-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/</loc>
+    <lastmod>2024-08-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/</loc>
-    <lastmod>2024-08-10T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/</loc>
+    <lastmod>2024-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/network/</loc>
     <lastmod>2024-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/</loc>
@@ -342,7 +348,7 @@
     <lastmod>2023-03-19T23:58:51+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/about/</loc>
-    <lastmod>2024-05-27T23:08:12+08:00</lastmod>
+    <lastmod>2024-08-14T00:03:35+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/anki/</loc>
     <lastmod>2023-03-19T23:58:51+08:00</lastmod>
