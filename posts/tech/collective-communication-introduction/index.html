@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>集合通信入门 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="MPI, Pytorch">
+<meta name="description" content="介绍集合通信和代码实现">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="集合通信入门" />
+<meta property="og:description" content="介绍集合通信和代码实现" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-08-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-08-13T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="集合通信入门"/>
+<meta name="twitter:description" content="介绍集合通信和代码实现"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "集合通信入门",
+      "item": "https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "集合通信入门",
+  "name": "集合通信入门",
+  "description": "介绍集合通信和代码实现",
+  "keywords": [
+    "MPI", "Pytorch"
+  ],
+  "articleBody": "简介 相比p2p即点对点通信，集合通信的参与方可以大于2个，同时在通信中引入同步点，所有代码在达到同步点后才能继续执行后续的代码。 通常包含如下通信类型：\nBroadcast Scatter Gather AllGather Reduce AllReduce 将用mpi4py(mpi的一个python包装库)代码加深对集合通信的理解，c语言的mpi代码可以参考mpitutorial/tutorials/run.py at gh-pages · mpitutorial/mpitutorial，也将提供一些torch进行集合通信的示例。\n因此，需要首先安装依赖包\napt-get update \u0026\u0026 apt-get install mpich mpirun --version pip install mpi4py pip install torch 执行环境 常见的分布式程序需要一个launcher，例如mpi、torchrun、ray等，这里会使用两种\nmpiexec torchrun 主要使用mpiexec\n示例代码如下：\n# torch_mpi_send.py import os import argparse import torch import torch.distributed as dist LOCAL_RANK = 0 WORLD_SIZE = 0 WORLD_RANK = 0 def init_global_vars(frontend): global LOCAL_RANK global WORLD_SIZE global WORLD_RANK env_vars = os.environ if frontend == \"mpi\": # Environment variables set by mpiexec LOCAL_RANK = int(os.environ['OMPI_COMM_WORLD_LOCAL_RANK']) WORLD_SIZE = int(os.environ['OMPI_COMM_WORLD_SIZE']) WORLD_RANK = int(os.environ['OMPI_COMM_WORLD_RANK']) else: # Environment variables set by torch.distributed.launch LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) def run(backend): tensor = torch.zeros(10,10) # Need to put tensor on a GPU device for nccl backend if backend == 'nccl': # device = torch.device(\"cuda:{}\".format(LOCAL_RANK)) device = torch.device(\"cuda:{}\".format(0)) tensor = tensor.to(device) if WORLD_RANK == 0: for rank_recv in range(1, WORLD_SIZE): tensor = torch.ones(10,10) dist.send(tensor=tensor, dst=rank_recv) print('worker_{} sent data to Rank {}\\n'.format(0, rank_recv)) else: dist.recv(tensor=tensor, src=0) print(f'worker_{WORLD_RANK} has received data {tensor.cpu()} from rank 0\\n') def init_processes(frontend, backend): init_global_vars(frontend=frontend) print(f\"local rank {LOCAL_RANK} world size {WORLD_SIZE} world rank {WORLD_RANK}\") dist.init_process_group(backend, rank=WORLD_RANK, world_size=WORLD_SIZE) run(backend) if __name__ == \"__main__\": parser = argparse.ArgumentParser() parser.add_argument(\"--local-rank\", type=int, help=\"Local rank. Necessary for using the torch.distributed.launch utility.\") parser.add_argument(\"--backend\", type=str, default=\"nccl\", choices=['nccl', 'gloo']) parser.add_argument(\"--frontend\", type=str, default=\"mpi\", choices=['mpi', 'torch']) args = parser.parse_args() init_processes(frontend=args.frontend, backend=args.backend) mpi 用mpi启动一个pytorch的分布式训练程序，特点是只需要在master节点执行即可，跨节点时候需要配置节点之间ssh互信免密访问。\n如果--backend nccl，需要环境上至少有两块GPU卡\nmpirun --allow-run-as-root -n 2 --use-hwthread-cpus \\ -H localhost:2 \\ -x MASTER_ADDR=localhost \\ -x MASTER_PORT=1234 \\ -x PATH \\ -bind-to none -map-by slot \\ -mca pml ob1 -mca btl ^openib \\ python torch_mpi_send.py --backend gloo --frontend=mpi 输出如下\nlocal rank 1 world size 2 world rank 1 [W socket.cpp:697] [c10d] The client socket has failed to connect to [localhost]:1234 (errno: 99 - Cannot assign requested address). local rank 0 world size 2 world rank 0 worker_1 has received data tensor([[1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]]) from rank 0 worker_0 sent data to Rank 1 torchrun torchrun跨节点时需要在多节点上执行命令\ntorchrun \\ --nproc_per_node=2 --nnodes=1 --node_rank=0 \\ --master_addr=localhost --master_port=1234 \\ torch_mpi_send.py \\ --backend=gloo --frontend torch 输出如下\nlocal rank 0 world size 2 world rank 0 local rank 1 world size 2 world rank 1 worker_0 sent data to Rank 1 worker_1 has received data tensor([[1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]]) from rank 0 Broadcast 广播将一个进程中的数据发送到所有其他进程。通常用于将一个进程的消息或数据复制到所有参与者。\nmpi4py实现 # broadcast.py from mpi4py import MPI comm = MPI.COMM_WORLD rank = comm.Get_rank() if rank == 0: data = {'key1' : [7, 2.72, 2+3j], 'key2' : ( 'abc', 'xyz')} else: data = None data = comm.bcast(data, root=0) print(f\"rank {rank} data is {data}\") mpiexec --allow-run-as-root -n 4 --use-hwthread-cpus --oversubscribe python broadcast.py # rank 0 data is {'key1': [7, 2.72, (2+3j)], 'key2': ('abc', 'xyz')} # rank 1 data is {'key1': [7, 2.72, (2+3j)], 'key2': ('abc', 'xyz')} # rank 2 data is {'key1': [7, 2.72, (2+3j)], 'key2': ('abc', 'xyz')} # rank 3 data is {'key1': [7, 2.72, (2+3j)], 'key2': ('abc', 'xyz')} pytorch实现 #!/usr/bin/env python import os import torch import torch.distributed as dist LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) def run_broadcast(rank, size): # create a group with all processors group = dist.new_group(list(range(size))) if rank == 0: tensor = torch.tensor([rank], dtype=torch.float32) else: tensor = torch.empty(1) # sending all tensors to the others dist.broadcast(tensor, src=0, group=group) # all ranks will have tensor([0.]) from rank 0 print(f\"[{rank}] data = {tensor}\") def init_process(backend='gloo'): dist.init_process_group(backend, init_method=\"file:///tmp/sharedfile\", rank=WORLD_RANK, world_size=WORLD_SIZE) run_broadcast(WORLD_RANK, WORLD_SIZE) init_process() !torchrun \\ --nproc_per_node=4 --nnodes=1 --node_rank=0 \\ torch_broadcast.py 所有rank都收到了同样的数据\n[3] data = tensor([0.]) [1] data = tensor([0.]) [2] data = tensor([0.]) [0] data = tensor([0.]) Scatter Scatter将一个进程中的数据分发到多个进程中。源进程将数据分成多个部分，并将每部分发送到不同的目标进程。\nmpi4py实现 # scatter.py from mpi4py import MPI comm = MPI.COMM_WORLD size = comm.Get_size() rank = comm.Get_rank() if rank == 0: data = [list(range(i+2)) for i in range(size)] else: data = None data = comm.scatter(data, root=0) print(f\"rank {rank} data is {data}\") rank 0 上数据是[[0, 1], [0, 1 ,2], [0, 1, 2, 3], [0, 1, 2, 3, 4]]，列表共两个元素，分发到两个rank上，rank0获得第一个元素，rank1获得第二个元素, 以此类推。 --use-hwthread-cpus --oversubscribe是因为执行环境只有2核的cpu，如果有更多的cpu，可以去掉这两个参数。\nmpiexec --allow-run-as-root -n 2 --use-hwthread-cpus --oversubscribe python scatter.py rank 2 data is [0, 1, 2, 3] rank 1 data is [0, 1, 2] rank 0 data is [0, 1] rank 3 data is [0, 1, 2, 3, 4] mpi4py还支持numpy对象，具体可以参考使用文档Tutorial — MPI for Python 4.0.0 documentation\npytorch实现 #!/usr/bin/env python import os import torch import torch.distributed as dist LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) def run_scatter(rank, size): # create a group with all processors group = dist.new_group(list(range(size))) # sending all tensors from rank 0 to the others tensor = torch.empty(1) if rank == 0: tensor_list = [torch.tensor([i + 1], dtype=torch.float32) for i in range(size)] # tensor_list = [tensor(1), tensor(2), tensor(3), tensor(4)] dist.scatter(tensor, scatter_list=tensor_list, src=0, group=group) else: dist.scatter(tensor, scatter_list=[], src=0, group=group) # each rank will have a tensor with their rank number dist.barrier() print(f'\\nRank {rank} received data {tensor}') def init_process(backend='gloo'): dist.init_process_group(backend, init_method=\"file:///tmp/sharedfile\", rank=WORLD_RANK, world_size=WORLD_SIZE) run_scatter(WORLD_RANK, WORLD_SIZE) init_process() torchrun \\ --nproc_per_node=4 --nnodes=1 --node_rank=0 \\ torch_scatter.py Rank 2 received data tensor([3.]) Rank 0 received data tensor([1.]) Rank 1 received data tensor([2.]) Rank 3 received data tensor([4.]) Gather Gather操作是将多个进程中的数据汇聚到一个进程中。每个参与进程将其数据发送到指定的根进程，根进程将所有数据整合在一起。\nmpi4py实现 # gather.py from mpi4py import MPI comm = MPI.COMM_WORLD size = comm.Get_size() rank = comm.Get_rank() if rank == 0: data = [list(range(i+2)) for i in range(size)] else: data = None data = comm.scatter(data, root=0) print(f\"rank {rank} data is {data}\") pytorch实现 #!/usr/bin/env python import os import torch import torch.distributed as dist LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) def run_gather(rank, size): # create a group with all processors group = dist.new_group(list(range(size))) tensor = torch.tensor([rank], dtype=torch.float32) # sending all tensors from rank 0 to the others if rank == 0: # create an empty list we will use to hold the gathered values tensor_list = [torch.empty(1) for i in range(size)] dist.gather(tensor, gather_list=tensor_list, dst=0, group=group) else: dist.gather(tensor, gather_list=[], dst=0, group=group) # only rank 0 will have the tensors from the other processed # [tensor([0.]), tensor([1.]), tensor([2.]), tensor([3.])] if rank == 0: print(f\"[{rank}] data = {tensor_list}\") def init_process(backend='gloo'): dist.init_process_group(backend, init_method=\"file:///tmp/sharedfile\", rank=WORLD_RANK, world_size=WORLD_SIZE) run_gather(WORLD_RANK, WORLD_SIZE) init_process() 输出为[0] data = [tensor([0.]), tensor([1.]), tensor([2.]), tensor([3.])]\nAll-Gather All Gather 操作是将所有进程中的数据汇聚到每个进程中。每个进程不仅接收来自根进程的数据，还接收来自其他所有进程的数据。\nmpi4py实现 # allgather.py from mpi4py import MPI import numpy as np comm = MPI.COMM_WORLD rank = comm.Get_rank() size = comm.Get_size() # 每个进程生成一个数据 data = np.array(rank + 1) # 每个进程的数据为其 rank + 1 gathered_data = np.zeros(size, dtype=int) # 执行 AllGather 操作 comm.Allgather(data, gathered_data) print(f\"Rank {rank} gathered data: {gathered_data}\") mpiexec --allow-run-as-root -n 4 --use-hwthread-cpus --oversubscribe python mpi_allgather.py Rank 1 gathered data: [1 2 3 4] Rank 3 gathered data: [1 2 3 4] Rank 0 gathered data: [1 2 3 4] Rank 2 gathered data: [1 2 3 4] pytorch实现 #!/usr/bin/env python import os import torch import torch.distributed as dist LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) def run_all_gather(rank, size): # create a group with all processors group = dist.new_group(list(range(size))) tensor = torch.tensor([rank], dtype=torch.float32) # create an empty list we will use to hold the gathered values tensor_list = [torch.empty(1) for i in range(size)] # sending all tensors to the others dist.all_gather(tensor_list, tensor, group=group) # all ranks will have [tensor([0.]), tensor([1.]), tensor([2.]), tensor([3.])] print(f\"[{rank}] data = {tensor_list}\") def init_process(backend='gloo'): dist.init_process_group(backend, init_method=\"file:///tmp/sharedfile\", rank=WORLD_RANK, world_size=WORLD_SIZE) run_all_gather(WORLD_RANK, WORLD_SIZE) init_process() Reduce Reduce操作将多个进程中的数据通过某种运算（如求和、取最大值等）整合成一个结果，并将该结果发送到一个指定的根进程\nmpi4py实现 # reduce.py from mpi4py import MPI import numpy as np comm = MPI.COMM_WORLD rank = comm.Get_rank() # 每个进程生成一个数据 data = np.array(rank + 1) # 每个进程的数据为其 rank + 1 # 只有根进程接收结果 if rank == 0: result = np.zeros(1, dtype=int) else: result = None # 执行 Reduce 操作 comm.Reduce(data, result, op=MPI.SUM, root=0) if rank == 0: print(f\"Result after Reduce: {result[0]}\") mpiexec --allow-run-as-root -n 4 --use-hwthread-cpus --oversubscribe python mpi_reduce.py # Result after Reduce: 10 pytorch实现 #!/usr/bin/env python import os import torch import torch.distributed as dist LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) def run_reduce(rank, size): # create a group with all processors group = dist.new_group(list(range(size))) tensor = torch.ones(1) # sending all tensors to rank 0 and sum them dist.reduce(tensor, dst=0, op=dist.ReduceOp.SUM, group=group) # can be dist.ReduceOp.PRODUCT, dist.ReduceOp.MAX, dist.ReduceOp.MIN # only rank 0 will have four print(f\"[{rank}] data = {tensor[0]}\") def init_process(backend='gloo'): dist.init_process_group(backend, init_method=\"file:///tmp/sharedfile\", rank=WORLD_RANK, world_size=WORLD_SIZE) run_reduce(WORLD_RANK, WORLD_SIZE) init_process() All-Reduce All Reduce操作是将所有进程中的数据进行归约运算，并将结果发送到所有进程。每个进程都能获得归约后的结果。\nmpi4py实现 # allreduce.py from mpi4py import MPI import numpy as np comm = MPI.COMM_WORLD rank = comm.Get_rank() # 每个进程生成一个数据 data = np.array(rank + 1) # 每个进程的数据为其 rank + 1 # 执行 AllReduce 操作 result = np.zeros(1, dtype=int) comm.Allreduce(data, result, op=MPI.SUM) print(f\"Rank {rank} has result after AllReduce: {result[0]}\") mpiexec --allow-run-as-root -n 4 --use-hwthread-cpus --oversubscribe python all_reduce.py Rank 1 has result after AllReduce: 10 Rank 3 has result after AllReduce: 10 Rank 0 has result after AllReduce: 10 Rank 2 has result after AllReduce: 10 Pytorch实现 #!/usr/bin/env python # torch_all_reduce.py import os import torch import torch.distributed as dist # Environment variables set by torch.distributed.launch or torchrun LOCAL_RANK = int(os.environ['LOCAL_RANK']) WORLD_SIZE = int(os.environ['WORLD_SIZE']) WORLD_RANK = int(os.environ['RANK']) \"\"\" All-Reduce example.\"\"\" def run(rank, size): \"\"\" Simple collective communication. \"\"\" group = dist.new_group([0, 1, 2, 3]) tensor = torch.ones(2,3) dist.all_reduce(tensor, op=dist.ReduceOp.SUM, group=group) dist.barrier(group) print(f'\\nRank {rank} has data {tensor}') def init_process(backend='gloo'): \"\"\" Initialize the distributed environment. \"\"\" dist.init_process_group(backend, init_method=\"file:///tmp/sharedfile\", rank=WORLD_RANK, world_size=WORLD_SIZE) run(WORLD_RANK, WORLD_SIZE) init_process() torchrun \\ --nproc_per_node=4 --nnodes=1 --node_rank=0 \\ torch_all_reduce.py Rank 0 has data tensor([[4., 4., 4.], [4., 4., 4.]]) Rank 1 has data tensor([[4., 4., 4.], [4., 4., 4.]]) Rank 3 has data tensor([[4., 4., 4.], [4., 4., 4.]]) Rank 2 has data tensor([[4., 4., 4.], [4., 4., 4.]]) 参考 Writing Distributed Applications with PyTorch — PyTorch Tutorials 2.4.0+cu121 documentation Tutorial — MPI for Python 4.0.0 documentation\nCollective Communication in Distributed Systems with PyTorch\nmpitutorial/mpitutorial: MPI programming lessons in C and executable code examples\nMPI 广播以及集体(collective)通信 · MPI Tutorial PyTorch分布式训练详解教程 scatter, gather \u0026 isend, irecv \u0026 all_reduce \u0026 DDP - 天靖居士 - 博客园\n",
+  "wordCount" : "2809",
+  "inLanguage": "zh",
+  "datePublished": "2024-08-12T00:00:00Z",
+  "dateModified": "2023-08-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      集合通信入门
+    </h1>
+    <div class="post-description">
+      介绍集合通信和代码实现
+    </div>
+    <div class="post-meta"><span title='2024-08-12 00:00:00 +0000 UTC'>2024-08-12</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2809 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%ae%80%e4%bb%8b" aria-label="简介">简介</a></li>
+                <li>
+                    <a href="#%e6%89%a7%e8%a1%8c%e7%8e%af%e5%a2%83" aria-label="执行环境">执行环境</a><ul>
+                        
+                <li>
+                    <a href="#mpi" aria-label="mpi">mpi</a></li>
+                <li>
+                    <a href="#torchrun" aria-label="torchrun">torchrun</a></li></ul>
+                </li>
+                <li>
+                    <a href="#broadcast" aria-label="Broadcast">Broadcast</a></li>
+                <li>
+                    <a href="#scatter" aria-label="Scatter">Scatter</a></li>
+                <li>
+                    <a href="#gather" aria-label="Gather">Gather</a></li>
+                <li>
+                    <a href="#all-gather" aria-label="All-Gather">All-Gather</a></li>
+                <li>
+                    <a href="#reduce" aria-label="Reduce">Reduce</a></li>
+                <li>
+                    <a href="#all-reduce" aria-label="All-Reduce">All-Reduce</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="简介">简介<a hidden class="anchor" aria-hidden="true" href="#简介">#</a></h3>
+<blockquote>
+<p>相比p2p即点对点通信，集合通信的参与方可以大于2个，同时在通信中引入同步点，所有代码在达到同步点后才能继续执行后续的代码。
+通常包含如下通信类型：</p>
+<ul>
+<li>Broadcast</li>
+<li>Scatter</li>
+<li>Gather</li>
+<li>AllGather</li>
+<li>Reduce</li>
+<li>AllReduce</li>
+</ul>
+</blockquote>
+<p>将用mpi4py(mpi的一个python包装库)代码加深对集合通信的理解，c语言的mpi代码可以参考<a href="https://github.com/mpitutorial/mpitutorial/blob/gh-pages/tutorials/run.py">mpitutorial/tutorials/run.py at gh-pages · mpitutorial/mpitutorial</a>，也将提供一些torch进行集合通信的示例。</p>
+<p>因此，需要首先安装依赖包</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>apt-get update &amp;&amp; apt-get install mpich
+</span></span><span style="display:flex;"><span>mpirun --version
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pip install mpi4py
+</span></span><span style="display:flex;"><span>pip install torch
+</span></span></code></pre></div><h3 id="执行环境">执行环境<a hidden class="anchor" aria-hidden="true" href="#执行环境">#</a></h3>
+<blockquote>
+<p>常见的分布式程序需要一个launcher，例如mpi、torchrun、ray等，这里会使用两种</p>
+<ul>
+<li>mpiexec</li>
+<li>torchrun</li>
+</ul>
+<p>主要使用mpiexec</p>
+</blockquote>
+<p>示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># torch_mpi_send.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> argparse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_global_vars(frontend):
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">global</span> LOCAL_RANK
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">global</span> WORLD_SIZE
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">global</span> WORLD_RANK
+</span></span><span style="display:flex;"><span>    env_vars = os.environ
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> frontend == <span style="color:#0ff;font-weight:bold">&#34;mpi&#34;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># Environment variables set by mpiexec</span>
+</span></span><span style="display:flex;"><span>        LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;OMPI_COMM_WORLD_LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>        WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;OMPI_COMM_WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>        WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;OMPI_COMM_WORLD_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># Environment variables set by torch.distributed.launch</span>
+</span></span><span style="display:flex;"><span>        LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>        WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>        WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run(backend):
+</span></span><span style="display:flex;"><span>    tensor = torch.zeros(<span style="color:#ff0;font-weight:bold">10</span>,<span style="color:#ff0;font-weight:bold">10</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Need to put tensor on a GPU device for nccl backend</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> backend == <span style="color:#0ff;font-weight:bold">&#39;nccl&#39;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># device = torch.device(&#34;cuda:{}&#34;.format(LOCAL_RANK))</span>
+</span></span><span style="display:flex;"><span>        device = torch.device(<span style="color:#0ff;font-weight:bold">&#34;cuda:</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">&#34;</span>.format(<span style="color:#ff0;font-weight:bold">0</span>))
+</span></span><span style="display:flex;"><span>        tensor = tensor.to(device)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> WORLD_RANK == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> rank_recv in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">1</span>, WORLD_SIZE):
+</span></span><span style="display:flex;"><span>            tensor = torch.ones(<span style="color:#ff0;font-weight:bold">10</span>,<span style="color:#ff0;font-weight:bold">10</span>)
+</span></span><span style="display:flex;"><span>            dist.send(tensor=tensor, dst=rank_recv)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;worker_</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold"> sent data to Rank </span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#39;</span>.format(<span style="color:#ff0;font-weight:bold">0</span>, rank_recv))
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        dist.recv(tensor=tensor, src=<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;worker_</span><span style="color:#0ff;font-weight:bold">{</span>WORLD_RANK<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> has received data </span><span style="color:#0ff;font-weight:bold">{</span>tensor.cpu()<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> from rank 0</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_processes(frontend, backend):
+</span></span><span style="display:flex;"><span>    init_global_vars(frontend=frontend)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;local rank </span><span style="color:#0ff;font-weight:bold">{</span>LOCAL_RANK<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> world size </span><span style="color:#0ff;font-weight:bold">{</span>WORLD_SIZE<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> world rank </span><span style="color:#0ff;font-weight:bold">{</span>WORLD_RANK<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run(backend)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    parser = argparse.ArgumentParser()
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--local-rank&#34;</span>, <span style="color:#fff;font-weight:bold">type</span>=<span style="color:#fff;font-weight:bold">int</span>, help=<span style="color:#0ff;font-weight:bold">&#34;Local rank. Necessary for using the torch.distributed.launch utility.&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--backend&#34;</span>, <span style="color:#fff;font-weight:bold">type</span>=<span style="color:#fff;font-weight:bold">str</span>, default=<span style="color:#0ff;font-weight:bold">&#34;nccl&#34;</span>, choices=[<span style="color:#0ff;font-weight:bold">&#39;nccl&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>])
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--frontend&#34;</span>, <span style="color:#fff;font-weight:bold">type</span>=<span style="color:#fff;font-weight:bold">str</span>, default=<span style="color:#0ff;font-weight:bold">&#34;mpi&#34;</span>, choices=[<span style="color:#0ff;font-weight:bold">&#39;mpi&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;torch&#39;</span>])
+</span></span><span style="display:flex;"><span>    args = parser.parse_args()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    init_processes(frontend=args.frontend, backend=args.backend)
+</span></span></code></pre></div><h4 id="mpi">mpi<a hidden class="anchor" aria-hidden="true" href="#mpi">#</a></h4>
+<blockquote>
+<p>用mpi启动一个pytorch的分布式训练程序，特点是只需要在master节点执行即可，跨节点时候需要配置节点之间ssh互信免密访问。</p>
+<p>如果<code>--backend nccl</code>，需要环境上至少有两块GPU卡</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpirun --allow-run-as-root -n <span style="color:#ff0;font-weight:bold">2</span> --use-hwthread-cpus <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>-H localhost:2 <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>-x MASTER_ADDR=localhost <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>-x MASTER_PORT=<span style="color:#ff0;font-weight:bold">1234</span> <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>-x PATH <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>-bind-to none -map-by slot <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>-mca pml ob1 -mca btl ^openib <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>python torch_mpi_send.py --backend gloo --frontend=mpi
+</span></span></code></pre></div><blockquote>
+<p>输出如下</p>
+</blockquote>
+<pre tabindex="0"><code>local rank 1 world size 2 world rank 1
+[W socket.cpp:697] [c10d] The client socket has failed to connect to [localhost]:1234 (errno: 99 - Cannot assign requested address).
+local rank 0 world size 2 world rank 0
+worker_1 has received data tensor([[1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]]) from rank 0
+
+worker_0 sent data to Rank 1
+</code></pre><h4 id="torchrun">torchrun<a hidden class="anchor" aria-hidden="true" href="#torchrun">#</a></h4>
+<blockquote>
+<p>torchrun跨节点时需要在多节点上执行命令</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>torchrun <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>--nproc_per_node=<span style="color:#ff0;font-weight:bold">2</span> --nnodes=<span style="color:#ff0;font-weight:bold">1</span> --node_rank=<span style="color:#ff0;font-weight:bold">0</span> <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>--master_addr=localhost --master_port=<span style="color:#ff0;font-weight:bold">1234</span> <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>torch_mpi_send.py <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>--backend=gloo --frontend torch
+</span></span></code></pre></div><blockquote>
+<p>输出如下</p>
+</blockquote>
+<pre tabindex="0"><code>local rank 0 world size 2 world rank 0
+local rank 1 world size 2 world rank 1
+worker_0 sent data to Rank 1
+
+worker_1 has received data tensor([[1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+        [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]]) from rank 0
+</code></pre><h3 id="broadcast">Broadcast<a hidden class="anchor" aria-hidden="true" href="#broadcast">#</a></h3>
+<blockquote>
+<p>广播将一个进程中的数据发送到所有其他进程。通常用于将一个进程的消息或数据复制到所有参与者。</p>
+</blockquote>
+<p><img loading="lazy" src="/img/broadcast.png" alt="Broadcast"  />
+</p>
+<ul>
+<li>mpi4py实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># broadcast.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mpi4py <span style="color:#fff;font-weight:bold">import</span> MPI
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>comm = MPI.COMM_WORLD
+</span></span><span style="display:flex;"><span>rank = comm.Get_rank()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>    data = {<span style="color:#0ff;font-weight:bold">&#39;key1&#39;</span> : [<span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">2.72</span>, <span style="color:#ff0;font-weight:bold">2</span>+<span style="color:#ff0;font-weight:bold">3</span>j],
+</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">&#39;key2&#39;</span> : ( <span style="color:#0ff;font-weight:bold">&#39;abc&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;xyz&#39;</span>)}
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>    data = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>data = comm.bcast(data, root=<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> data is </span><span style="color:#0ff;font-weight:bold">{</span>data<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpiexec --allow-run-as-root -n <span style="color:#ff0;font-weight:bold">4</span> --use-hwthread-cpus --oversubscribe python broadcast.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># rank 0 data is {&#39;key1&#39;: [7, 2.72, (2+3j)], &#39;key2&#39;: (&#39;abc&#39;, &#39;xyz&#39;)}</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># rank 1 data is {&#39;key1&#39;: [7, 2.72, (2+3j)], &#39;key2&#39;: (&#39;abc&#39;, &#39;xyz&#39;)}</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># rank 2 data is {&#39;key1&#39;: [7, 2.72, (2+3j)], &#39;key2&#39;: (&#39;abc&#39;, &#39;xyz&#39;)}</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># rank 3 data is {&#39;key1&#39;: [7, 2.72, (2+3j)], &#39;key2&#39;: (&#39;abc&#39;, &#39;xyz&#39;)}</span>
+</span></span></code></pre></div><ul>
+<li>pytorch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_broadcast(rank, size):
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># create a group with all processors</span>
+</span></span><span style="display:flex;"><span>    group = dist.new_group(<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(size)))
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        tensor = torch.tensor([rank], dtype=torch.float32)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        tensor = torch.empty(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># sending all tensors to the others</span>
+</span></span><span style="display:flex;"><span>    dist.broadcast(tensor, src=<span style="color:#ff0;font-weight:bold">0</span>, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># all ranks will have tensor([0.]) from rank 0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;[</span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">] data = </span><span style="color:#0ff;font-weight:bold">{</span>tensor<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_process(backend=<span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>):
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, init_method=<span style="color:#0ff;font-weight:bold">&#34;file:///tmp/sharedfile&#34;</span>, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run_broadcast(WORLD_RANK, WORLD_SIZE)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>init_process()
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>!torchrun <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>--nproc_per_node=<span style="color:#ff0;font-weight:bold">4</span> --nnodes=<span style="color:#ff0;font-weight:bold">1</span> --node_rank=<span style="color:#ff0;font-weight:bold">0</span> <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>torch_broadcast.py
+</span></span></code></pre></div><blockquote>
+<p>所有rank都收到了同样的数据</p>
+</blockquote>
+<pre tabindex="0"><code>[3] data = tensor([0.])
+[1] data = tensor([0.])
+[2] data = tensor([0.])
+[0] data = tensor([0.])
+</code></pre><h3 id="scatter">Scatter<a hidden class="anchor" aria-hidden="true" href="#scatter">#</a></h3>
+<blockquote>
+<p>Scatter将一个进程中的数据分发到多个进程中。源进程将数据分成多个部分，并将每部分发送到不同的目标进程。</p>
+</blockquote>
+<p><img loading="lazy" src="/img/scatter-20240819214610513.png" alt="Scatter"  />
+</p>
+<ul>
+<li>mpi4py实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># scatter.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mpi4py <span style="color:#fff;font-weight:bold">import</span> MPI
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>comm = MPI.COMM_WORLD
+</span></span><span style="display:flex;"><span>size = comm.Get_size()
+</span></span><span style="display:flex;"><span>rank = comm.Get_rank()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>    data = [<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(i+<span style="color:#ff0;font-weight:bold">2</span>)) <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(size)]
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>    data = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>data = comm.scatter(data, root=<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> data is </span><span style="color:#0ff;font-weight:bold">{</span>data<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><blockquote>
+<p>rank 0 上数据是<code>[[0, 1], [0, 1 ,2], [0, 1, 2, 3], [0, 1, 2, 3, 4]]</code>，列表共两个元素，分发到两个rank上，rank0获得第一个元素，rank1获得第二个元素, 以此类推。 <code>--use-hwthread-cpus --oversubscribe</code>是因为执行环境只有2核的cpu，如果有更多的cpu，可以去掉这两个参数。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpiexec --allow-run-as-root -n <span style="color:#ff0;font-weight:bold">2</span> --use-hwthread-cpus --oversubscribe python scatter.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>rank <span style="color:#ff0;font-weight:bold">2</span> data is [0, 1, 2, 3]
+</span></span><span style="display:flex;"><span>rank <span style="color:#ff0;font-weight:bold">1</span> data is [0, 1, 2]
+</span></span><span style="display:flex;"><span>rank <span style="color:#ff0;font-weight:bold">0</span> data is [0, 1]
+</span></span><span style="display:flex;"><span>rank <span style="color:#ff0;font-weight:bold">3</span> data is [0, 1, 2, 3, 4]
+</span></span></code></pre></div><blockquote>
+<p>mpi4py还支持numpy对象，具体可以参考使用文档<a href="https://mpi4py.readthedocs.io/en/stable/tutorial.html">Tutorial — MPI for Python 4.0.0 documentation</a></p>
+</blockquote>
+<ul>
+<li>pytorch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_scatter(rank, size):
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># create a group with all processors</span>
+</span></span><span style="display:flex;"><span>    group = dist.new_group(<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(size)))
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># sending all tensors from rank 0 to the others</span>
+</span></span><span style="display:flex;"><span>    tensor = torch.empty(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        tensor_list = [torch.tensor([i + <span style="color:#ff0;font-weight:bold">1</span>], dtype=torch.float32) <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(size)]
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># tensor_list = [tensor(1), tensor(2), tensor(3), tensor(4)]</span>
+</span></span><span style="display:flex;"><span>        dist.scatter(tensor, scatter_list=tensor_list, src=<span style="color:#ff0;font-weight:bold">0</span>, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        dist.scatter(tensor, scatter_list=[], src=<span style="color:#ff0;font-weight:bold">0</span>, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># each rank will have a tensor with their rank number</span>
+</span></span><span style="display:flex;"><span>    dist.barrier()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> received data </span><span style="color:#0ff;font-weight:bold">{</span>tensor<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_process(backend=<span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>):
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, init_method=<span style="color:#0ff;font-weight:bold">&#34;file:///tmp/sharedfile&#34;</span>, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run_scatter(WORLD_RANK, WORLD_SIZE)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>init_process()
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>torchrun <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>--nproc_per_node=<span style="color:#ff0;font-weight:bold">4</span> --nnodes=<span style="color:#ff0;font-weight:bold">1</span> --node_rank=<span style="color:#ff0;font-weight:bold">0</span> <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>torch_scatter.py
+</span></span></code></pre></div><pre tabindex="0"><code>Rank 2 received data tensor([3.])
+Rank 0 received data tensor([1.])
+Rank 1 received data tensor([2.])
+Rank 3 received data tensor([4.])
+</code></pre><h3 id="gather">Gather<a hidden class="anchor" aria-hidden="true" href="#gather">#</a></h3>
+<blockquote>
+<p>Gather操作是将多个进程中的数据汇聚到一个进程中。每个参与进程将其数据发送到指定的根进程，根进程将所有数据整合在一起。</p>
+</blockquote>
+<p><img loading="lazy" src="/img/gather.png" alt="Gather"  />
+</p>
+<ul>
+<li>mpi4py实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># gather.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mpi4py <span style="color:#fff;font-weight:bold">import</span> MPI
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>comm = MPI.COMM_WORLD
+</span></span><span style="display:flex;"><span>size = comm.Get_size()
+</span></span><span style="display:flex;"><span>rank = comm.Get_rank()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>    data = [<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(i+<span style="color:#ff0;font-weight:bold">2</span>)) <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(size)]
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>    data = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>data = comm.scatter(data, root=<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> data is </span><span style="color:#0ff;font-weight:bold">{</span>data<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><ul>
+<li>pytorch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_gather(rank, size):
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># create a group with all processors</span>
+</span></span><span style="display:flex;"><span>    group = dist.new_group(<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(size)))
+</span></span><span style="display:flex;"><span>    tensor = torch.tensor([rank], dtype=torch.float32)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># sending all tensors from rank 0 to the others</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># create an empty list we will use to hold the gathered values</span>
+</span></span><span style="display:flex;"><span>        tensor_list = [torch.empty(<span style="color:#ff0;font-weight:bold">1</span>) <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(size)]
+</span></span><span style="display:flex;"><span>        dist.gather(tensor, gather_list=tensor_list, dst=<span style="color:#ff0;font-weight:bold">0</span>, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        dist.gather(tensor, gather_list=[], dst=<span style="color:#ff0;font-weight:bold">0</span>, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># only rank 0 will have the tensors from the other processed</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># [tensor([0.]), tensor([1.]), tensor([2.]), tensor([3.])]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;[</span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">] data = </span><span style="color:#0ff;font-weight:bold">{</span>tensor_list<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_process(backend=<span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>):
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, init_method=<span style="color:#0ff;font-weight:bold">&#34;file:///tmp/sharedfile&#34;</span>, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run_gather(WORLD_RANK, WORLD_SIZE)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>init_process()
+</span></span></code></pre></div><blockquote>
+<p>输出为<code>[0] data = [tensor([0.]), tensor([1.]), tensor([2.]), tensor([3.])]</code></p>
+</blockquote>
+<h3 id="all-gather">All-Gather<a hidden class="anchor" aria-hidden="true" href="#all-gather">#</a></h3>
+<blockquote>
+<p>All Gather 操作是将所有进程中的数据汇聚到每个进程中。每个进程不仅接收来自根进程的数据，还接收来自其他所有进程的数据。</p>
+</blockquote>
+<p><img loading="lazy" src="/img/all_gather.png" alt="All-Gather"  />
+</p>
+<ul>
+<li>mpi4py实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># allgather.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mpi4py <span style="color:#fff;font-weight:bold">import</span> MPI
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> numpy <span style="color:#fff;font-weight:bold">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>comm = MPI.COMM_WORLD
+</span></span><span style="display:flex;"><span>rank = comm.Get_rank()
+</span></span><span style="display:flex;"><span>size = comm.Get_size()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 每个进程生成一个数据</span>
+</span></span><span style="display:flex;"><span>data = np.array(rank + <span style="color:#ff0;font-weight:bold">1</span>)  <span style="color:#007f7f"># 每个进程的数据为其 rank + 1</span>
+</span></span><span style="display:flex;"><span>gathered_data = np.zeros(size, dtype=<span style="color:#fff;font-weight:bold">int</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 执行 AllGather 操作</span>
+</span></span><span style="display:flex;"><span>comm.Allgather(data, gathered_data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> gathered data: </span><span style="color:#0ff;font-weight:bold">{</span>gathered_data<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpiexec --allow-run-as-root -n <span style="color:#ff0;font-weight:bold">4</span> --use-hwthread-cpus  --oversubscribe  python mpi_allgather.py
+</span></span></code></pre></div><pre tabindex="0"><code>Rank 1 gathered data: [1 2 3 4]
+Rank 3 gathered data: [1 2 3 4]
+Rank 0 gathered data: [1 2 3 4]
+Rank 2 gathered data: [1 2 3 4]
+</code></pre><ul>
+<li>pytorch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_all_gather(rank, size):
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># create a group with all processors</span>
+</span></span><span style="display:flex;"><span>    group = dist.new_group(<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(size)))
+</span></span><span style="display:flex;"><span>    tensor = torch.tensor([rank], dtype=torch.float32)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># create an empty list we will use to hold the gathered values</span>
+</span></span><span style="display:flex;"><span>    tensor_list = [torch.empty(<span style="color:#ff0;font-weight:bold">1</span>) <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(size)]
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># sending all tensors to the others</span>
+</span></span><span style="display:flex;"><span>    dist.all_gather(tensor_list, tensor, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># all ranks will have [tensor([0.]), tensor([1.]), tensor([2.]), tensor([3.])]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;[</span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">] data = </span><span style="color:#0ff;font-weight:bold">{</span>tensor_list<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_process(backend=<span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>):
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, init_method=<span style="color:#0ff;font-weight:bold">&#34;file:///tmp/sharedfile&#34;</span>, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run_all_gather(WORLD_RANK, WORLD_SIZE)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>init_process()
+</span></span></code></pre></div><h3 id="reduce">Reduce<a hidden class="anchor" aria-hidden="true" href="#reduce">#</a></h3>
+<blockquote>
+<p>Reduce操作将多个进程中的数据通过某种运算（如求和、取最大值等）整合成一个结果，并将该结果发送到一个指定的根进程</p>
+</blockquote>
+<p><img loading="lazy" src="/img/reduce.png" alt="Reduce"  />
+</p>
+<ul>
+<li>mpi4py实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># reduce.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mpi4py <span style="color:#fff;font-weight:bold">import</span> MPI
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> numpy <span style="color:#fff;font-weight:bold">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>comm = MPI.COMM_WORLD
+</span></span><span style="display:flex;"><span>rank = comm.Get_rank()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 每个进程生成一个数据</span>
+</span></span><span style="display:flex;"><span>data = np.array(rank + <span style="color:#ff0;font-weight:bold">1</span>)  <span style="color:#007f7f"># 每个进程的数据为其 rank + 1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 只有根进程接收结果</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>    result = np.zeros(<span style="color:#ff0;font-weight:bold">1</span>, dtype=<span style="color:#fff;font-weight:bold">int</span>)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>    result = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 执行 Reduce 操作</span>
+</span></span><span style="display:flex;"><span>comm.Reduce(data, result, op=MPI.SUM, root=<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> rank == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Result after Reduce: </span><span style="color:#0ff;font-weight:bold">{</span>result[<span style="color:#ff0;font-weight:bold">0</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpiexec --allow-run-as-root -n <span style="color:#ff0;font-weight:bold">4</span> --use-hwthread-cpus  --oversubscribe  python mpi_reduce.py
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Result after Reduce: 10</span>
+</span></span></code></pre></div><ul>
+<li>pytorch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_reduce(rank, size):
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># create a group with all processors</span>
+</span></span><span style="display:flex;"><span>    group = dist.new_group(<span style="color:#fff;font-weight:bold">list</span>(<span style="color:#fff;font-weight:bold">range</span>(size)))
+</span></span><span style="display:flex;"><span>    tensor = torch.ones(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># sending all tensors to rank 0 and sum them</span>
+</span></span><span style="display:flex;"><span>    dist.reduce(tensor, dst=<span style="color:#ff0;font-weight:bold">0</span>, op=dist.ReduceOp.SUM, group=group)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># can be dist.ReduceOp.PRODUCT, dist.ReduceOp.MAX, dist.ReduceOp.MIN</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># only rank 0 will have four</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;[</span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">] data = </span><span style="color:#0ff;font-weight:bold">{</span>tensor[<span style="color:#ff0;font-weight:bold">0</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_process(backend=<span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>):
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, init_method=<span style="color:#0ff;font-weight:bold">&#34;file:///tmp/sharedfile&#34;</span>, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run_reduce(WORLD_RANK, WORLD_SIZE)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>init_process()
+</span></span></code></pre></div><h3 id="all-reduce">All-Reduce<a hidden class="anchor" aria-hidden="true" href="#all-reduce">#</a></h3>
+<blockquote>
+<p>All Reduce操作是将所有进程中的数据进行归约运算，并将结果发送到所有进程。每个进程都能获得归约后的结果。</p>
+</blockquote>
+<p><img loading="lazy" src="/img/all_reduce.png" alt="All-Reduce"  />
+</p>
+<ul>
+<li>mpi4py实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># allreduce.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mpi4py <span style="color:#fff;font-weight:bold">import</span> MPI
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> numpy <span style="color:#fff;font-weight:bold">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>comm = MPI.COMM_WORLD
+</span></span><span style="display:flex;"><span>rank = comm.Get_rank()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 每个进程生成一个数据</span>
+</span></span><span style="display:flex;"><span>data = np.array(rank + <span style="color:#ff0;font-weight:bold">1</span>)  <span style="color:#007f7f"># 每个进程的数据为其 rank + 1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 执行 AllReduce 操作</span>
+</span></span><span style="display:flex;"><span>result = np.zeros(<span style="color:#ff0;font-weight:bold">1</span>, dtype=<span style="color:#fff;font-weight:bold">int</span>)
+</span></span><span style="display:flex;"><span>comm.Allreduce(data, result, op=MPI.SUM)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> has result after AllReduce: </span><span style="color:#0ff;font-weight:bold">{</span>result[<span style="color:#ff0;font-weight:bold">0</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mpiexec --allow-run-as-root -n <span style="color:#ff0;font-weight:bold">4</span> --use-hwthread-cpus  --oversubscribe  python all_reduce.py
+</span></span></code></pre></div><pre tabindex="0"><code>Rank 1 has result after AllReduce: 10
+Rank 3 has result after AllReduce: 10
+Rank 0 has result after AllReduce: 10
+Rank 2 has result after AllReduce: 10
+</code></pre><ul>
+<li>Pytorch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># torch_all_reduce.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.distributed <span style="color:#fff;font-weight:bold">as</span> dist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Environment variables set by torch.distributed.launch or torchrun</span>
+</span></span><span style="display:flex;"><span>LOCAL_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;LOCAL_RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_SIZE = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;WORLD_SIZE&#39;</span>])
+</span></span><span style="display:flex;"><span>WORLD_RANK = <span style="color:#fff;font-weight:bold">int</span>(os.environ[<span style="color:#0ff;font-weight:bold">&#39;RANK&#39;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34; All-Reduce example.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run(rank, size):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34; Simple collective communication. &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    group = dist.new_group([<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>])
+</span></span><span style="display:flex;"><span>    tensor = torch.ones(<span style="color:#ff0;font-weight:bold">2</span>,<span style="color:#ff0;font-weight:bold">3</span>)
+</span></span><span style="display:flex;"><span>    dist.all_reduce(tensor, op=dist.ReduceOp.SUM, group=group)
+</span></span><span style="display:flex;"><span>    dist.barrier(group)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Rank </span><span style="color:#0ff;font-weight:bold">{</span>rank<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> has data </span><span style="color:#0ff;font-weight:bold">{</span>tensor<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> init_process(backend=<span style="color:#0ff;font-weight:bold">&#39;gloo&#39;</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34; Initialize the distributed environment. &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    dist.init_process_group(backend, init_method=<span style="color:#0ff;font-weight:bold">&#34;file:///tmp/sharedfile&#34;</span>, rank=WORLD_RANK, world_size=WORLD_SIZE)
+</span></span><span style="display:flex;"><span>    run(WORLD_RANK, WORLD_SIZE)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>init_process()
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>torchrun <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>--nproc_per_node=<span style="color:#ff0;font-weight:bold">4</span> --nnodes=<span style="color:#ff0;font-weight:bold">1</span> --node_rank=<span style="color:#ff0;font-weight:bold">0</span> <span style="color:#0ff;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span>torch_all_reduce.py
+</span></span></code></pre></div><pre tabindex="0"><code>Rank 0 has data tensor([[4., 4., 4.],
+        [4., 4., 4.]])
+Rank 1 has data tensor([[4., 4., 4.],
+        [4., 4., 4.]])
+
+
+Rank 3 has data tensor([[4., 4., 4.],
+        [4., 4., 4.]])
+
+Rank 2 has data tensor([[4., 4., 4.],
+        [4., 4., 4.]])
+</code></pre><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+<p><a href="https://pytorch.org/tutorials/intermediate/dist_tuto.html?utm_source=pocket_saves">Writing Distributed Applications with PyTorch — PyTorch Tutorials 2.4.0+cu121 documentation</a>
+<a href="https://mpi4py.readthedocs.io/en/stable/tutorial.html">Tutorial — MPI for Python 4.0.0 documentation</a></p>
+<p><a href="https://blog.roboflow.com/collective-communication-distributed-systems-pytorch/#scatter">Collective Communication in Distributed Systems with PyTorch</a></p>
+<p><a href="https://github.com/mpitutorial/mpitutorial">mpitutorial/mpitutorial: MPI programming lessons in C and executable code examples</a></p>
+<p><a href="https://mpitutorial.com/tutorials/mpi-broadcast-and-collective-communication/zh_cn/">MPI 广播以及集体(collective)通信 · MPI Tutorial</a>
+<a href="https://www.cnblogs.com/kkyyhh96/p/13769220.html?utm_source=pocket_saves">PyTorch分布式训练详解教程 scatter, gather &amp; isend, irecv &amp; all_reduce &amp; DDP - 天靖居士 - 博客园</a></p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/mpi/">MPI</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/pytorch/">Pytorch</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>MPI入门-安装和基本使用</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2024 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -5,13 +5,19 @@
     <loc>https://blog.niuhemoon.win/tags/mpi/</loc>
     <lastmod>2024-08-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/</loc>
-    <lastmod>2024-08-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.niuhemoon.win/</loc>
     <lastmod>2024-08-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://blog.niuhemoon.win/tags/pytorch/</loc>
+    <lastmod>2024-04-10T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.niuhemoon.win/tags/</loc>
+    <lastmod>2024-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/</loc>
+    <lastmod>2023-08-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/</loc>
     <lastmod>2024-08-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/network/</loc>
@@ -40,9 +46,6 @@
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/linux-fake-node/</loc>
     <lastmod>2024-05-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/pytorch/</loc>
-    <lastmod>2024-04-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/pytorch-model-view/</loc>
     <lastmod>2024-04-10T00:00:00+00:00</lastmod>
