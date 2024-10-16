@@ -35,6 +35,15 @@
     </item>
     
     <item>
+      <title>llm推理优化之kv cache</title>
+      <link>https://blog.niuhemoon.win/posts/tech/llm-infer-kv-cache/</link>
+      <pubDate>Thu, 25 Jul 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/llm-infer-kv-cache/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>局域网搭建文件分享服务</title>
       <link>https://blog.niuhemoon.win/posts/tech/ftp-http-file-share/</link>
       <pubDate>Sun, 21 Jul 2024 00:00:00 +0000</pubDate>

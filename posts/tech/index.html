@@ -219,6 +219,18 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>llm推理优化之kv cache
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-07-25 00:00:00 +0000 UTC'>2024-07-25</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1622 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to llm推理优化之kv cache" href="https://blog.niuhemoon.win/posts/tech/llm-infer-kv-cache/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>局域网搭建文件分享服务
     </h2>
   </header>
@@ -323,7 +335,7 @@ if (!doNotTrack) {
     <p>记录hugo 一些常用的shortcode
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;270 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;274 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to hugo shortcode example" href="https://blog.niuhemoon.win/posts/tech/hugo-shortcode-example/"></a>
 </article>
 
@@ -351,18 +363,6 @@ if (!doNotTrack) {
   </div>
   <footer class="entry-footer"><span title='2021-03-25 00:00:00 +0000 UTC'>2021-03-25</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;442 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to tinygo点亮esp32" href="https://blog.niuhemoon.win/posts/tech/tinygo-esp32/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>golang限制函数同时调用次数
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &#34;fmt&#34; &#34;time&#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &lt; 10; i&#43;&#43; { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan &lt;- true: f() &lt;-jobChan default: fmt.Println(&#34;job channel is full. pass &#34;, i) } fmt.Println(&#34;jobs&#34;, i, &#34;exit&#34;) } func do() { time.Sleep(3e9) fmt.Println(&#34;job done&#34;) }</p>
-  </div>
-  <footer class="entry-footer"><span title='2021-03-04 00:00:00 +0000 UTC'>2021-03-04</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;117 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to golang限制函数同时调用次数" href="https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
