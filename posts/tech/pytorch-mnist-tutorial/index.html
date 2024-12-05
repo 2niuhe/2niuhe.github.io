@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用 PyTorch 进行 MNIST 手写数字识别 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Pytorch">
+<meta name="description" content="使用 PyTorch 进行 MNIST 手写数字识别 - Niuhe&#39;s Blog">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="使用 PyTorch 进行 MNIST 手写数字识别" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-10-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-04T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用 PyTorch 进行 MNIST 手写数字识别"/>
+<meta name="twitter:description" content=""/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "使用 PyTorch 进行 MNIST 手写数字识别",
+      "item": "https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用 PyTorch 进行 MNIST 手写数字识别",
+  "name": "使用 PyTorch 进行 MNIST 手写数字识别",
+  "description": "",
+  "keywords": [
+    "Pytorch"
+  ],
+  "articleBody": "在这篇技术博客中，我们将使用 PyTorch 框架构建一个卷积神经网络（CNN），以识别 MNIST 数据集中的手写数字。我们将重点介绍如何在 GPU 上运行模型，以提高训练和推理的速度。\n环境准备与库导入 确保您已经安装了 PyTorch 和 torchvision。如果您使用 Google Colab，可以直接在代码单元中运行以下命令：\npip install torch torchvision 接下来，导入必要的库：\nimport torch import torchvision import matplotlib.pyplot as plt import torch.nn as nn import torch.nn.functional as F import torch.optim as optim 设备设置与超参数 检查是否有可用的 GPU，并相应地设置设备：\ndevice = torch.device('cpu') if torch.cuda.is_available(): device = torch.device('cuda') print(\"Using CUDA!\") 设置超参数，包括训练的轮数、批量大小、学习率等：\nn_epochs = 3 batch_size_train = 64 batch_size_test = 1000 learning_rate = 0.01 momentum = 0.5 log_interval = 10 random_seed = 1 torch.manual_seed(random_seed) 数据加载与可视化 使用 torchvision 加载 MNIST 数据集，并进行归一化处理：\ntrain_loader = torch.utils.data.DataLoader( torchvision.datasets.MNIST(root='./MNIST', train=True, download=True, transform=torchvision.transforms.Compose([ torchvision.transforms.ToTensor(), torchvision.transforms.Normalize((0.1307,), (0.3081,)) ])), batch_size=batch_size_train, shuffle=True) test_loader = torch.utils.data.DataLoader( torchvision.datasets.MNIST(root='./MNIST', train=False, download=True, transform=torchvision.transforms.Compose([ torchvision.transforms.ToTensor(), torchvision.transforms.Normalize((0.1307,), (0.3081,)) ])), batch_size=batch_size_test, shuffle=True) 可视化一些测试数据，以便更好地理解数据集：\nexamples = enumerate(test_loader) batch_idx, (example_data, example_targets) = next(examples) fig = plt.figure() for i in range(6): plt.subplot(2, 3, i + 1) plt.tight_layout() plt.imshow(example_data[i][0], cmap='gray', interpolation='none') plt.title(\"Ground Truth: {}\".format(example_targets[i])) plt.xticks([]) plt.yticks([]) plt.show() 模型定义与训练 定义一个简单的卷积神经网络：\nclass Net(nn.Module): def __init__(self): super(Net, self).__init__() self.conv1 = nn.Conv2d(1, 10, kernel_size=5) self.conv2 = nn.Conv2d(10, 20, kernel_size=5) self.conv2_drop = nn.Dropout2d() self.fc1 = nn.Linear(320, 50) self.fc2 = nn.Linear(50, 10) def forward(self, x): x = F.relu(F.max_pool2d(self.conv1(x), 2)) x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2)) x = x.view(-1, 320) x = F.relu(self.fc1(x)) x = F.dropout(x, training=self.training) x = self.fc2(x) return F.log_softmax(x) 设置优化器和损失函数，并定义训练和测试函数：\nnetwork = Net().to(device) optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum) train_losses = [] train_counter = [] test_losses = [] test_counter = [i * len(train_loader.dataset) for i in range(n_epochs + 1)] def train(epoch): network.train() for batch_idx, (data, target) in enumerate(train_loader): data, target = data.to(device), target.to(device) optimizer.zero_grad() output = network(data) loss = F.nll_loss(output, target) loss.backward() optimizer.step() if batch_idx % log_interval == 0: print('Train Epoch: {} [{}/{} ({:.0f}%)]\\tLoss: {:.6f}'.format( epoch, batch_idx * len(data), len(train_loader.dataset), 100. * batch_idx / len(train_loader), loss.item())) train_losses.append(loss.item()) train_counter.append((batch_idx * 64) + ((epoch - 1) * len(train_loader.dataset))) def test(): network.eval() test_loss = 0 correct = 0 with torch.no_grad(): for data, target in test_loader: data, target = data.to(device), target.to(device) output = network(data) test_loss += F.nll_loss(output, target, reduction='sum').item() pred = output.data.max(1, keepdim=True)[1] correct += pred.eq(target.data.view_as(pred)).sum() test_loss /= len(test_loader.dataset) test_losses.append(test_loss) print('\\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\\n'.format( test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset))) 进行模型训练和测试：\nfor epoch in range(1, n_epochs + 1): train(epoch) test() 可视化训练过程与模型预测 可视化训练和测试损失：\nfig = plt.figure() plt.plot(train_counter, train_losses, color='blue') plt.scatter(test_counter, test_losses, color='red') plt.legend(['Train Loss', 'Test Loss'], loc='upper right') plt.xlabel('number of training examples seen') plt.ylabel('negative log likelihood loss') plt.show() 使用训练好的模型进行预测：\nwith torch.no_grad(): example_data_device = example_data.to(device) output = network(example_data_device) output = output.cpu() fig = plt.figure() for i in range(6): plt.subplot(2, 3, i + 1) plt.tight_layout() plt.imshow(example_data[i][0], cmap='gray', interpolation='none') plt.title(\"Prediction: {}\".format(output.data.max(1, keepdim=True)[1][i].item())) plt.xticks([]) plt.yticks([]) plt.show() 继续训练模型 如果需要继续训练模型，可以加载之前保存的模型和优化器状态：\ncontinued_network = Net().to(device) continued_optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum) network_state_dict = torch.load('./model.pth') continued_network.load_state_dict(network_state_dict) optimizer_state_dict = torch.load('./optimizer.pth') continued_optimizer.load_state_dict(optimizer_state_dict) for i in range(4, 6): test_counter.append(i * len(train_loader.dataset)) train(i) test() 总结 在本文中，我们介绍了如何使用 PyTorch 构建一个简单的卷积神经网络，以识别 MNIST 数据集中的手写数字，并在 GPU 上运行以提高性能。希望这篇博客能帮助您更好地理解深度学习的基本概念和实践。\n如需进一步学习，请参考 PyTorch 官方文档。\n",
+  "wordCount" : "873",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-04T00:00:00Z",
+  "dateModified": "2024-10-04T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      使用 PyTorch 进行 MNIST 手写数字识别
+    </h1>
+    <div class="post-meta"><span title='2024-10-04 00:00:00 +0000 UTC'>2024-10-04</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;873 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83%e5%87%86%e5%a4%87%e4%b8%8e%e5%ba%93%e5%af%bc%e5%85%a5" aria-label="环境准备与库导入">环境准备与库导入</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e5%a4%87%e8%ae%be%e7%bd%ae%e4%b8%8e%e8%b6%85%e5%8f%82%e6%95%b0" aria-label="设备设置与超参数">设备设置与超参数</a></li>
+                <li>
+                    <a href="#%e6%95%b0%e6%8d%ae%e5%8a%a0%e8%bd%bd%e4%b8%8e%e5%8f%af%e8%a7%86%e5%8c%96" aria-label="数据加载与可视化">数据加载与可视化</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e5%ae%9a%e4%b9%89%e4%b8%8e%e8%ae%ad%e7%bb%83" aria-label="模型定义与训练">模型定义与训练</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e8%a7%86%e5%8c%96%e8%ae%ad%e7%bb%83%e8%bf%87%e7%a8%8b%e4%b8%8e%e6%a8%a1%e5%9e%8b%e9%a2%84%e6%b5%8b" aria-label="可视化训练过程与模型预测">可视化训练过程与模型预测</a></li>
+                <li>
+                    <a href="#%e7%bb%a7%e7%bb%ad%e8%ae%ad%e7%bb%83%e6%a8%a1%e5%9e%8b" aria-label="继续训练模型">继续训练模型</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>在这篇技术博客中，我们将使用 PyTorch 框架构建一个卷积神经网络（CNN），以识别 MNIST 数据集中的手写数字。我们将重点介绍如何在 GPU 上运行模型，以提高训练和推理的速度。</p>
+<h3 id="环境准备与库导入">环境准备与库导入<a hidden class="anchor" aria-hidden="true" href="#环境准备与库导入">#</a></h3>
+<p>确保您已经安装了 PyTorch 和 torchvision。如果您使用 Google Colab，可以直接在代码单元中运行以下命令：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pip install torch torchvision
+</span></span></code></pre></div><p>接下来，导入必要的库：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torchvision
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> matplotlib.pyplot <span style="color:#fff;font-weight:bold">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.nn <span style="color:#fff;font-weight:bold">as</span> nn
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.nn.functional <span style="color:#fff;font-weight:bold">as</span> F
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> torch.optim <span style="color:#fff;font-weight:bold">as</span> optim
+</span></span></code></pre></div><h3 id="设备设置与超参数">设备设置与超参数<a hidden class="anchor" aria-hidden="true" href="#设备设置与超参数">#</a></h3>
+<p>检查是否有可用的 GPU，并相应地设置设备：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>device = torch.device(<span style="color:#0ff;font-weight:bold">&#39;cpu&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> torch.cuda.is_available():
+</span></span><span style="display:flex;"><span>    device = torch.device(<span style="color:#0ff;font-weight:bold">&#39;cuda&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Using CUDA!&#34;</span>)
+</span></span></code></pre></div><p>设置超参数，包括训练的轮数、批量大小、学习率等：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>n_epochs = <span style="color:#ff0;font-weight:bold">3</span>
+</span></span><span style="display:flex;"><span>batch_size_train = <span style="color:#ff0;font-weight:bold">64</span>
+</span></span><span style="display:flex;"><span>batch_size_test = <span style="color:#ff0;font-weight:bold">1000</span>
+</span></span><span style="display:flex;"><span>learning_rate = <span style="color:#ff0;font-weight:bold">0.01</span>
+</span></span><span style="display:flex;"><span>momentum = <span style="color:#ff0;font-weight:bold">0.5</span>
+</span></span><span style="display:flex;"><span>log_interval = <span style="color:#ff0;font-weight:bold">10</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>random_seed = <span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>torch.manual_seed(random_seed)
+</span></span></code></pre></div><h3 id="数据加载与可视化">数据加载与可视化<a hidden class="anchor" aria-hidden="true" href="#数据加载与可视化">#</a></h3>
+<p>使用 <code>torchvision</code> 加载 MNIST 数据集，并进行归一化处理：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>train_loader = torch.utils.data.DataLoader(
+</span></span><span style="display:flex;"><span>    torchvision.datasets.MNIST(root=<span style="color:#0ff;font-weight:bold">&#39;./MNIST&#39;</span>, train=<span style="color:#fff;font-weight:bold">True</span>, download=<span style="color:#fff;font-weight:bold">True</span>,
+</span></span><span style="display:flex;"><span>                                transform=torchvision.transforms.Compose([
+</span></span><span style="display:flex;"><span>                                    torchvision.transforms.ToTensor(),
+</span></span><span style="display:flex;"><span>                                    torchvision.transforms.Normalize((<span style="color:#ff0;font-weight:bold">0.1307</span>,), (<span style="color:#ff0;font-weight:bold">0.3081</span>,))
+</span></span><span style="display:flex;"><span>                                ])),
+</span></span><span style="display:flex;"><span>    batch_size=batch_size_train, shuffle=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>test_loader = torch.utils.data.DataLoader(
+</span></span><span style="display:flex;"><span>    torchvision.datasets.MNIST(root=<span style="color:#0ff;font-weight:bold">&#39;./MNIST&#39;</span>, train=<span style="color:#fff;font-weight:bold">False</span>, download=<span style="color:#fff;font-weight:bold">True</span>,
+</span></span><span style="display:flex;"><span>                                transform=torchvision.transforms.Compose([
+</span></span><span style="display:flex;"><span>                                    torchvision.transforms.ToTensor(),
+</span></span><span style="display:flex;"><span>                                    torchvision.transforms.Normalize((<span style="color:#ff0;font-weight:bold">0.1307</span>,), (<span style="color:#ff0;font-weight:bold">0.3081</span>,))
+</span></span><span style="display:flex;"><span>                                ])),
+</span></span><span style="display:flex;"><span>    batch_size=batch_size_test, shuffle=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span></code></pre></div><p>可视化一些测试数据，以便更好地理解数据集：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>examples = <span style="color:#fff;font-weight:bold">enumerate</span>(test_loader)
+</span></span><span style="display:flex;"><span>batch_idx, (example_data, example_targets) = <span style="color:#fff;font-weight:bold">next</span>(examples)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig = plt.figure()
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">6</span>):
+</span></span><span style="display:flex;"><span>    plt.subplot(<span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, i + <span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    plt.tight_layout()
+</span></span><span style="display:flex;"><span>    plt.imshow(example_data[i][<span style="color:#ff0;font-weight:bold">0</span>], cmap=<span style="color:#0ff;font-weight:bold">&#39;gray&#39;</span>, interpolation=<span style="color:#0ff;font-weight:bold">&#39;none&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt.title(<span style="color:#0ff;font-weight:bold">&#34;Ground Truth: </span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">&#34;</span>.format(example_targets[i]))
+</span></span><span style="display:flex;"><span>    plt.xticks([])
+</span></span><span style="display:flex;"><span>    plt.yticks([])
+</span></span><span style="display:flex;"><span>plt.show()
+</span></span></code></pre></div><h3 id="模型定义与训练">模型定义与训练<a hidden class="anchor" aria-hidden="true" href="#模型定义与训练">#</a></h3>
+<p>定义一个简单的卷积神经网络：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Net(nn.Module):
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">super</span>(Net, self).__init__()
+</span></span><span style="display:flex;"><span>        self.conv1 = nn.Conv2d(<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">10</span>, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>)
+</span></span><span style="display:flex;"><span>        self.conv2 = nn.Conv2d(<span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">20</span>, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>)
+</span></span><span style="display:flex;"><span>        self.conv2_drop = nn.Dropout2d()
+</span></span><span style="display:flex;"><span>        self.fc1 = nn.Linear(<span style="color:#ff0;font-weight:bold">320</span>, <span style="color:#ff0;font-weight:bold">50</span>)
+</span></span><span style="display:flex;"><span>        self.fc2 = nn.Linear(<span style="color:#ff0;font-weight:bold">50</span>, <span style="color:#ff0;font-weight:bold">10</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> forward(self, x):
+</span></span><span style="display:flex;"><span>        x = F.relu(F.max_pool2d(self.conv1(x), <span style="color:#ff0;font-weight:bold">2</span>))
+</span></span><span style="display:flex;"><span>        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), <span style="color:#ff0;font-weight:bold">2</span>))
+</span></span><span style="display:flex;"><span>        x = x.view(-<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">320</span>)
+</span></span><span style="display:flex;"><span>        x = F.relu(self.fc1(x))
+</span></span><span style="display:flex;"><span>        x = F.dropout(x, training=self.training)
+</span></span><span style="display:flex;"><span>        x = self.fc2(x)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> F.log_softmax(x)
+</span></span></code></pre></div><p>设置优化器和损失函数，并定义训练和测试函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>network = Net().to(device)
+</span></span><span style="display:flex;"><span>optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>train_losses = []
+</span></span><span style="display:flex;"><span>train_counter = []
+</span></span><span style="display:flex;"><span>test_losses = []
+</span></span><span style="display:flex;"><span>test_counter = [i * <span style="color:#fff;font-weight:bold">len</span>(train_loader.dataset) <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(n_epochs + <span style="color:#ff0;font-weight:bold">1</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> train(epoch):
+</span></span><span style="display:flex;"><span>    network.train()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> batch_idx, (data, target) in <span style="color:#fff;font-weight:bold">enumerate</span>(train_loader):
+</span></span><span style="display:flex;"><span>        data, target = data.to(device), target.to(device)
+</span></span><span style="display:flex;"><span>        optimizer.zero_grad()
+</span></span><span style="display:flex;"><span>        output = network(data)
+</span></span><span style="display:flex;"><span>        loss = F.nll_loss(output, target)
+</span></span><span style="display:flex;"><span>        loss.backward()
+</span></span><span style="display:flex;"><span>        optimizer.step()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> batch_idx % log_interval == <span style="color:#ff0;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Train Epoch: </span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold"> [</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">/</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold"> (</span><span style="color:#0ff;font-weight:bold">{:.0f}</span><span style="color:#0ff;font-weight:bold">%)]</span><span style="color:#0ff;font-weight:bold">\t</span><span style="color:#0ff;font-weight:bold">Loss: </span><span style="color:#0ff;font-weight:bold">{:.6f}</span><span style="color:#0ff;font-weight:bold">&#39;</span>.format(
+</span></span><span style="display:flex;"><span>                epoch, batch_idx * <span style="color:#fff;font-weight:bold">len</span>(data), <span style="color:#fff;font-weight:bold">len</span>(train_loader.dataset),
+</span></span><span style="display:flex;"><span>                <span style="color:#ff0;font-weight:bold">100.</span> * batch_idx / <span style="color:#fff;font-weight:bold">len</span>(train_loader), loss.item()))
+</span></span><span style="display:flex;"><span>            train_losses.append(loss.item())
+</span></span><span style="display:flex;"><span>            train_counter.append((batch_idx * <span style="color:#ff0;font-weight:bold">64</span>) + ((epoch - <span style="color:#ff0;font-weight:bold">1</span>) * <span style="color:#fff;font-weight:bold">len</span>(train_loader.dataset)))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> test():
+</span></span><span style="display:flex;"><span>    network.eval()
+</span></span><span style="display:flex;"><span>    test_loss = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    correct = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">with</span> torch.no_grad():
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> data, target in test_loader:
+</span></span><span style="display:flex;"><span>            data, target = data.to(device), target.to(device)
+</span></span><span style="display:flex;"><span>            output = network(data)
+</span></span><span style="display:flex;"><span>            test_loss += F.nll_loss(output, target, reduction=<span style="color:#0ff;font-weight:bold">&#39;sum&#39;</span>).item()
+</span></span><span style="display:flex;"><span>            pred = output.data.max(<span style="color:#ff0;font-weight:bold">1</span>, keepdim=<span style="color:#fff;font-weight:bold">True</span>)[<span style="color:#ff0;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            correct += pred.eq(target.data.view_as(pred)).sum()
+</span></span><span style="display:flex;"><span>    test_loss /= <span style="color:#fff;font-weight:bold">len</span>(test_loader.dataset)
+</span></span><span style="display:flex;"><span>    test_losses.append(test_loss)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Test set: Avg. loss: </span><span style="color:#0ff;font-weight:bold">{:.4f}</span><span style="color:#0ff;font-weight:bold">, Accuracy: </span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">/</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold"> (</span><span style="color:#0ff;font-weight:bold">{:.0f}</span><span style="color:#0ff;font-weight:bold">%)</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#39;</span>.format(
+</span></span><span style="display:flex;"><span>        test_loss, correct, <span style="color:#fff;font-weight:bold">len</span>(test_loader.dataset),
+</span></span><span style="display:flex;"><span>        <span style="color:#ff0;font-weight:bold">100.</span> * correct / <span style="color:#fff;font-weight:bold">len</span>(test_loader.dataset)))
+</span></span></code></pre></div><p>进行模型训练和测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> epoch in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">1</span>, n_epochs + <span style="color:#ff0;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>    train(epoch)
+</span></span><span style="display:flex;"><span>    test()
+</span></span></code></pre></div><h3 id="可视化训练过程与模型预测">可视化训练过程与模型预测<a hidden class="anchor" aria-hidden="true" href="#可视化训练过程与模型预测">#</a></h3>
+<p>可视化训练和测试损失：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>fig = plt.figure()
+</span></span><span style="display:flex;"><span>plt.plot(train_counter, train_losses, color=<span style="color:#0ff;font-weight:bold">&#39;blue&#39;</span>)
+</span></span><span style="display:flex;"><span>plt.scatter(test_counter, test_losses, color=<span style="color:#0ff;font-weight:bold">&#39;red&#39;</span>)
+</span></span><span style="display:flex;"><span>plt.legend([<span style="color:#0ff;font-weight:bold">&#39;Train Loss&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;Test Loss&#39;</span>], loc=<span style="color:#0ff;font-weight:bold">&#39;upper right&#39;</span>)
+</span></span><span style="display:flex;"><span>plt.xlabel(<span style="color:#0ff;font-weight:bold">&#39;number of training examples seen&#39;</span>)
+</span></span><span style="display:flex;"><span>plt.ylabel(<span style="color:#0ff;font-weight:bold">&#39;negative log likelihood loss&#39;</span>)
+</span></span><span style="display:flex;"><span>plt.show()
+</span></span></code></pre></div><p>使用训练好的模型进行预测：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">with</span> torch.no_grad():
+</span></span><span style="display:flex;"><span>    example_data_device = example_data.to(device)
+</span></span><span style="display:flex;"><span>    output = network(example_data_device)
+</span></span><span style="display:flex;"><span>    output = output.cpu()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig = plt.figure()
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">6</span>):
+</span></span><span style="display:flex;"><span>    plt.subplot(<span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, i + <span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    plt.tight_layout()
+</span></span><span style="display:flex;"><span>    plt.imshow(example_data[i][<span style="color:#ff0;font-weight:bold">0</span>], cmap=<span style="color:#0ff;font-weight:bold">&#39;gray&#39;</span>, interpolation=<span style="color:#0ff;font-weight:bold">&#39;none&#39;</span>)
+</span></span><span style="display:flex;"><span>    plt.title(<span style="color:#0ff;font-weight:bold">&#34;Prediction: </span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">&#34;</span>.format(output.data.max(<span style="color:#ff0;font-weight:bold">1</span>, keepdim=<span style="color:#fff;font-weight:bold">True</span>)[<span style="color:#ff0;font-weight:bold">1</span>][i].item()))
+</span></span><span style="display:flex;"><span>    plt.xticks([])
+</span></span><span style="display:flex;"><span>    plt.yticks([])
+</span></span><span style="display:flex;"><span>plt.show()
+</span></span></code></pre></div><h3 id="继续训练模型">继续训练模型<a hidden class="anchor" aria-hidden="true" href="#继续训练模型">#</a></h3>
+<p>如果需要继续训练模型，可以加载之前保存的模型和优化器状态：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>continued_network = Net().to(device)
+</span></span><span style="display:flex;"><span>continued_optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>network_state_dict = torch.load(<span style="color:#0ff;font-weight:bold">&#39;./model.pth&#39;</span>)
+</span></span><span style="display:flex;"><span>continued_network.load_state_dict(network_state_dict)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>optimizer_state_dict = torch.load(<span style="color:#0ff;font-weight:bold">&#39;./optimizer.pth&#39;</span>)
+</span></span><span style="display:flex;"><span>continued_optimizer.load_state_dict(optimizer_state_dict)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">6</span>):
+</span></span><span style="display:flex;"><span>    test_counter.append(i * <span style="color:#fff;font-weight:bold">len</span>(train_loader.dataset))
+</span></span><span style="display:flex;"><span>    train(i)
+</span></span><span style="display:flex;"><span>    test()
+</span></span></code></pre></div><h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>在本文中，我们介绍了如何使用 PyTorch 构建一个简单的卷积神经网络，以识别 MNIST 数据集中的手写数字，并在 GPU 上运行以提高性能。希望这篇博客能帮助您更好地理解深度学习的基本概念和实践。</p>
+<p>如需进一步学习，请参考 <a href="https://pytorch.org/docs/stable/index.html">PyTorch 官方文档</a>。</p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/pytorch/">Pytorch</a></li>
+    </ul>
+<div class="footer-comments">
+  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
+    send an email
+</a> to me</p>
+
+</div>
+<nav class="paginav">
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/netron-visualize-model/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>使用Netron可视化ONNX模型</span>
+  </a>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>集合通信入门</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2024 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

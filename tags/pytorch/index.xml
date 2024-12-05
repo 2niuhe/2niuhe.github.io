@@ -6,7 +6,16 @@
     <description>Recent content in Pytorch on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 12 Aug 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/pytorch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 PyTorch 进行 MNIST 手写数字识别</title>
+      <link>https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/</link>
+      <pubDate>Fri, 04 Oct 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>集合通信入门</title>
       <link>https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/</link>

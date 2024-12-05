@@ -8,10 +8,19 @@
     <language>zh</language><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用Netron可视化ONNX模型</title>
-      <link>https://blog.niuhemoon.win/posts/tech/netron%E5%8F%AF%E8%A7%86%E5%8C%96%E6%A8%A1%E5%9E%8B/</link>
+      <link>https://blog.niuhemoon.win/posts/tech/netron-visualize-model/</link>
       <pubDate>Sun, 01 Dec 2024 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.niuhemoon.win/posts/tech/netron%E5%8F%AF%E8%A7%86%E5%8C%96%E6%A8%A1%E5%9E%8B/</guid>
+      <guid>https://blog.niuhemoon.win/posts/tech/netron-visualize-model/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>使用 PyTorch 进行 MNIST 手写数字识别</title>
+      <link>https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/</link>
+      <pubDate>Fri, 04 Oct 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/</guid>
       <description></description>
     </item>
     
