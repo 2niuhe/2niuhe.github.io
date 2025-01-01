@@ -2,23 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://blog.niuhemoon.win/tags/netron/</loc>
-    <lastmod>2024-12-01T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.niuhemoon.win/</loc>
+    <lastmod>2024-12-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/pytorch/</loc>
+    <lastmod>2024-12-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/</loc>
+    <lastmod>2024-12-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/whisper/</loc>
+    <lastmod>2024-12-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/</loc>
+    <lastmod>2024-12-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/netron/</loc>
     <lastmod>2024-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/onnx/</loc>
     <lastmod>2024-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.niuhemoon.win/tags/</loc>
-    <lastmod>2024-12-01T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/netron-visualize-model/</loc>
     <lastmod>2024-12-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/pytorch/</loc>
-    <lastmod>2024-10-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/</loc>
     <lastmod>2024-10-04T00:00:00+00:00</lastmod>

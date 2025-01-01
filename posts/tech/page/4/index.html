@@ -183,6 +183,18 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>Linux进程——进程创建和同步控制
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使用内核资源时，通过系统调用进入内核态，系统调用结束后，重新返回用户态。 ###创建进程 可通过fork函数创建子进程，理论上，父子进程拥有各自独...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1919 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to Linux进程——进程创建和同步控制" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>Linux进程——进程环境与加载可执行映像
     </h2>
   </header>
@@ -348,18 +360,6 @@ if (!doNotTrack) {
   <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;539 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to 树莓派3启用UART并连接GPS传感器" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>树莓派GPIO入门
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。 BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制G...</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;766 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to 树莓派GPIO入门" href="https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="https://blog.niuhemoon.win/posts/tech/page/3/">
@@ -373,7 +373,7 @@ if (!doNotTrack) {
     
 <footer class="footer">
       
-    <span>&copy; 2024 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
     <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
         Licensed under
         <a
