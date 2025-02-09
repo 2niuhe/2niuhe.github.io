@@ -6,7 +6,16 @@
     <description>Recent content in C on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Tue, 09 Oct 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/c/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 13 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/c/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C Language Cheetsheet</title>
+      <link>https://blog.niuhemoon.win/posts/tech/c-language-cheetsheet/</link>
+      <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/c-language-cheetsheet/</guid>
+      <description>&lt;p&gt;快速回忆C语言怎么写&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Linux进程——进程创建和同步控制</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-2/</link>

@@ -183,6 +183,18 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>树莓派3启用UART并连接GPS传感器
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。 树莓派3启用UART #####先更新系统 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置： disable login shell over serial enable serial hardware port #####然后重启 sudo reboot #####编辑配置文件 sudo nano /boot/config.txt 在最后一段加上： dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt sudo...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;539 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to 树莓派3启用UART并连接GPS传感器" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>树莓派GPIO入门
     </h2>
   </header>
