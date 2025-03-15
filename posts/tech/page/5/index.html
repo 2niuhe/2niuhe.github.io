@@ -183,6 +183,18 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>树莓派连接LCD1602做一个电子钟
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。 通过源码安装： git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py install 将树莓派和LCD1602连接 连接的图如下所示： LCD电子钟程序 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as gpio #to add the LCD library import Adafruit_CharLCD as LCD import time gpio.setmode(gpio.BCM) #声明 LCD pins（对应BCM引脚...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-08-28 00:00:00 +0000 UTC'>2018-08-28</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;232 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to 树莓派连接LCD1602做一个电子钟" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>树莓派3启用UART并连接GPS传感器
     </h2>
   </header>

@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>记录一次失败的小说SFT数据集创建</title>
+      <link>https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/</link>
+      <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/</guid>
+      <description>本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败</description>
+    </item>
+    
+    <item>
       <title>whisper模型转录Pytorch播客内容</title>
       <link>https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/</link>
       <pubDate>Fri, 13 Dec 2024 00:00:00 +0000</pubDate>
