@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>UV 包管理器使用指南 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Python, UV">
+<meta name="description" content="UV是一个现代化的Python包管理器，提供更好的性能和依赖管理能力">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/uv-guide/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="UV 包管理器使用指南" />
+<meta property="og:description" content="UV是一个现代化的Python包管理器，提供更好的性能和依赖管理能力" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/uv-guide/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-03-31T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-03-31T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="UV 包管理器使用指南"/>
+<meta name="twitter:description" content="UV是一个现代化的Python包管理器，提供更好的性能和依赖管理能力"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "UV 包管理器使用指南",
+      "item": "https://blog.niuhemoon.win/posts/tech/uv-guide/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "UV 包管理器使用指南",
+  "name": "UV 包管理器使用指南",
+  "description": "UV是一个现代化的Python包管理器，提供更好的性能和依赖管理能力",
+  "keywords": [
+    "Python", "UV"
+  ],
+  "articleBody": "UV 相比 pip 的主要优势 速度更快\n使用 Rust 编写，性能优化更好 并行下载依赖 更智能的依赖解析算法 更好的依赖解析\n更准确的依赖树计算 更好地处理版本冲突 支持 lockfile，确保环境的可重现性 现代化特性\n原生支持虚拟环境管理 与 pip 完全兼容 支持从多种源安装包（PyPI、Git、本地等） 安装方法 在 macOS 上安装 UV：\nbrew install uv 基础使用 虚拟环境管理 # 创建虚拟环境 uv venv # 激活虚拟环境 source /bin/activate 包管理基础命令 # 安装单个包 uv pip install package_name # 从 requirements.txt 安装依赖 uv pip install -r requirements.txt # 卸载包 uv pip uninstall package_name # 列出当前环境中已安装的所有包 uv pip list # 显示特定包的详细信息（版本、依赖等） uv pip show package_name # 导出当前环境的依赖到 requirements.txt uv pip freeze \u003e requirements.txt # 以开发模式安装当前目录下的项目 # 适用于开发自己的包时，修改代码后无需重新安装 uv pip install -e . 依赖管理最佳实践 requirements.in vs requirements.txt requirements.in（源依赖文件）\nfastapi\u003e=0.100.0 uvicorn[standard] python-dotenv requests 手动维护的直接依赖声明 使用灵活的版本限制（\u003e=, ~=, ^） 只包含项目直接需要的包 requirements.txt（锁定文件）\n# This file was autogenerated by uv via the following command: # uv pip compile requirements.in -o requirements.txt annotated-types==0.7.0 # via pydantic anyio==4.9.0 # via starlette, watchfiles ... 由 uv pip compile 自动生成 包含所有依赖的精确版本 确保环境的可重现性 依赖管理工作流 # 创建 requirements.in 文件声明直接依赖 # 编译依赖生成 requirements.txt uv pip compile requirements.in -o requirements.txt # 安装依赖 uv pip sync requirements.txt 多环境依赖管理 # 开发环境依赖 uv pip compile requirements.in requirements-dev.in -o requirements-dev.txt # 生产环境依赖 uv pip compile requirements.in -o requirements.txt # 测试环境依赖 uv pip compile requirements.in requirements-test.in -o requirements-test.txt 依赖更新与安全 # 更新单个包 uv pip compile --upgrade-package fastapi # 更新所有包 uv pip compile --upgrade # 更新到最新的兼容版本 uv pip compile --upgrade-compatible # 生成带哈希值的依赖文件以确保安全性 uv pip compile --generate-hashes requirements.in -o requirements-hashes.txt 依赖约束 # 使用约束文件限制版本 uv pip compile --constraint constraints.txt requirements.in 项目实践示例 1. 项目初始化 # 创建项目目录 mkdir uv-demo cd uv-demo # 创建并激活虚拟环境 uv venv .venv source .venv/bin/activate 2. 依赖管理实践 创建 requirements.in 文件：\nfastapi\u003e=0.100.0 uvicorn[standard] python-dotenv requests 编译并安装依赖：\nuv pip compile requirements.in -o requirements.txt uv pip sync requirements.txt 3. 示例应用 创建 main.py：\nfrom fastapi import FastAPI app = FastAPI() @app.get(\"/\") async def root(): return {\"message\": \"Hello from UV managed environment!\"} 运行应用：\nuvicorn main:app --reload UVX 工具 UVX 是 UV 的扩展工具，提供了一种简单的方式来运行 Python 包提供的命令。\nUVX 基本用法 # 使用特定包提供的命令 uvx --from # 使用临时安装的包运行命令 uvx --with # 使用 requirements.txt 中的依赖运行命令 uvx --with-requirements requirements.txt 常见用例 # 运行 pytest 测试 uvx --with pytest pytest # 使用 black 格式化代码 uvx --with black black . # 在 CI 环境中运行测试 uvx --with-requirements requirements-dev.txt pytest 推荐的项目结构 project/ ├── pyproject.toml # 项目配置 ├── requirements.in # 依赖声明 ├── requirements.txt # 锁定的依赖 └── src/ # 源代码目录 版本控制与 CI/CD 集成 版本控制策略\n将 requirements.txt 和 requirements-*.txt 加入版本控制 将虚拟环境（.venv）添加到 .gitignore CI/CD 集成\n# CI/CD 环境中使用 uv pip sync requirements.txt # 开发环境使用 uv pip sync requirements-dev.txt 开发工作流\n# 1. 创建虚拟环境 uv venv .venv source .venv/bin/activate # 2. 安装开发依赖 uv pip sync requirements-dev.txt # 3. 开发模式安装项目 uv pip install -e . 总结 UV 是一个现代化的 Python 包管理器，它在保持与 pip 兼容的同时，提供了更好的性能和依赖管理能力。它特别适合：\n需要快速依赖安装的大型项目 需要严格依赖版本控制的生产环境 需要可重现构建环境的团队协作项目 ",
+  "wordCount" : "1140",
+  "inLanguage": "zh",
+  "datePublished": "2025-03-31T00:00:00Z",
+  "dateModified": "2025-03-31T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/uv-guide/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      UV 包管理器使用指南
+    </h1>
+    <div class="post-description">
+      UV是一个现代化的Python包管理器，提供更好的性能和依赖管理能力
+    </div>
+    <div class="post-meta"><span title='2025-03-31 00:00:00 +0000 UTC'>2025-03-31</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1140 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#uv-%e7%9b%b8%e6%af%94-pip-%e7%9a%84%e4%b8%bb%e8%a6%81%e4%bc%98%e5%8a%bf" aria-label="UV 相比 pip 的主要优势">UV 相比 pip 的主要优势</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e6%96%b9%e6%b3%95" aria-label="安装方法">安装方法</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e7%a1%80%e4%bd%bf%e7%94%a8" aria-label="基础使用">基础使用</a><ul>
+                        
+                <li>
+                    <a href="#%e8%99%9a%e6%8b%9f%e7%8e%af%e5%a2%83%e7%ae%a1%e7%90%86" aria-label="虚拟环境管理">虚拟环境管理</a></li>
+                <li>
+                    <a href="#%e5%8c%85%e7%ae%a1%e7%90%86%e5%9f%ba%e7%a1%80%e5%91%bd%e4%bb%a4" aria-label="包管理基础命令">包管理基础命令</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" aria-label="依赖管理最佳实践">依赖管理最佳实践</a><ul>
+                        
+                <li>
+                    <a href="#requirementsin-vs-requirementstxt" aria-label="requirements.in vs requirements.txt">requirements.in vs requirements.txt</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86%e5%b7%a5%e4%bd%9c%e6%b5%81" aria-label="依赖管理工作流">依赖管理工作流</a></li>
+                <li>
+                    <a href="#%e5%a4%9a%e7%8e%af%e5%a2%83%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86" aria-label="多环境依赖管理">多环境依赖管理</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e6%9b%b4%e6%96%b0%e4%b8%8e%e5%ae%89%e5%85%a8" aria-label="依赖更新与安全">依赖更新与安全</a></li>
+                <li>
+                    <a href="#%e4%be%9d%e8%b5%96%e7%ba%a6%e6%9d%9f" aria-label="依赖约束">依赖约束</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e5%ae%9e%e8%b7%b5%e7%a4%ba%e4%be%8b" aria-label="项目实践示例">项目实践示例</a><ul>
+                        
+                <li>
+                    <a href="#1-%e9%a1%b9%e7%9b%ae%e5%88%9d%e5%a7%8b%e5%8c%96" aria-label="1. 项目初始化">1. 项目初始化</a></li>
+                <li>
+                    <a href="#2-%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86%e5%ae%9e%e8%b7%b5" aria-label="2. 依赖管理实践">2. 依赖管理实践</a></li>
+                <li>
+                    <a href="#3-%e7%a4%ba%e4%be%8b%e5%ba%94%e7%94%a8" aria-label="3. 示例应用">3. 示例应用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#uvx-%e5%b7%a5%e5%85%b7" aria-label="UVX 工具">UVX 工具</a><ul>
+                        
+                <li>
+                    <a href="#uvx-%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95" aria-label="UVX 基本用法">UVX 基本用法</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e7%94%a8%e4%be%8b" aria-label="常见用例">常见用例</a></li>
+                <li>
+                    <a href="#%e6%8e%a8%e8%8d%90%e7%9a%84%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84" aria-label="推荐的项目结构">推荐的项目结构</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%89%88%e6%9c%ac%e6%8e%a7%e5%88%b6%e4%b8%8e-cicd-%e9%9b%86%e6%88%90" aria-label="版本控制与 CI/CD 集成">版本控制与 CI/CD 集成</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="uv-相比-pip-的主要优势">UV 相比 pip 的主要优势<a hidden class="anchor" aria-hidden="true" href="#uv-相比-pip-的主要优势">#</a></h3>
+<ol>
+<li>
+<p><strong>速度更快</strong></p>
+<ul>
+<li>使用 Rust 编写，性能优化更好</li>
+<li>并行下载依赖</li>
+<li>更智能的依赖解析算法</li>
+</ul>
+</li>
+<li>
+<p><strong>更好的依赖解析</strong></p>
+<ul>
+<li>更准确的依赖树计算</li>
+<li>更好地处理版本冲突</li>
+<li>支持 lockfile，确保环境的可重现性</li>
+</ul>
+</li>
+<li>
+<p><strong>现代化特性</strong></p>
+<ul>
+<li>原生支持虚拟环境管理</li>
+<li>与 pip 完全兼容</li>
+<li>支持从多种源安装包（PyPI、Git、本地等）</li>
+</ul>
+</li>
+</ol>
+<h3 id="安装方法">安装方法<a hidden class="anchor" aria-hidden="true" href="#安装方法">#</a></h3>
+<p>在 macOS 上安装 UV：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>brew install uv
+</span></span></code></pre></div><h3 id="基础使用">基础使用<a hidden class="anchor" aria-hidden="true" href="#基础使用">#</a></h3>
+<h4 id="虚拟环境管理">虚拟环境管理<a hidden class="anchor" aria-hidden="true" href="#虚拟环境管理">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 创建虚拟环境</span>
+</span></span><span style="display:flex;"><span>uv venv &lt;env_name&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 激活虚拟环境</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">source</span> &lt;env_name&gt;/bin/activate
+</span></span></code></pre></div><h4 id="包管理基础命令">包管理基础命令<a hidden class="anchor" aria-hidden="true" href="#包管理基础命令">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 安装单个包</span>
+</span></span><span style="display:flex;"><span>uv pip install package_name
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 从 requirements.txt 安装依赖</span>
+</span></span><span style="display:flex;"><span>uv pip install -r requirements.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 卸载包</span>
+</span></span><span style="display:flex;"><span>uv pip uninstall package_name
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 列出当前环境中已安装的所有包</span>
+</span></span><span style="display:flex;"><span>uv pip list
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 显示特定包的详细信息（版本、依赖等）</span>
+</span></span><span style="display:flex;"><span>uv pip show package_name
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 导出当前环境的依赖到 requirements.txt</span>
+</span></span><span style="display:flex;"><span>uv pip freeze &gt; requirements.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 以开发模式安装当前目录下的项目</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 适用于开发自己的包时，修改代码后无需重新安装</span>
+</span></span><span style="display:flex;"><span>uv pip install -e .
+</span></span></code></pre></div><h3 id="依赖管理最佳实践">依赖管理最佳实践<a hidden class="anchor" aria-hidden="true" href="#依赖管理最佳实践">#</a></h3>
+<h4 id="requirementsin-vs-requirementstxt">requirements.in vs requirements.txt<a hidden class="anchor" aria-hidden="true" href="#requirementsin-vs-requirementstxt">#</a></h4>
+<ol>
+<li>
+<p><strong>requirements.in（源依赖文件）</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>fastapi&gt;=0.100.0
+</span></span><span style="display:flex;"><span>uvicorn[standard]
+</span></span><span style="display:flex;"><span>python-dotenv
+</span></span><span style="display:flex;"><span>requests
+</span></span></code></pre></div><ul>
+<li>手动维护的直接依赖声明</li>
+<li>使用灵活的版本限制（<code>&gt;=</code>, <code>~=</code>, <code>^</code>）</li>
+<li>只包含项目直接需要的包</li>
+</ul>
+</li>
+<li>
+<p><strong>requirements.txt（锁定文件）</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span># This file was autogenerated by uv via the following command:
+</span></span><span style="display:flex;"><span>#    uv pip compile requirements.in -o requirements.txt
+</span></span><span style="display:flex;"><span>annotated-types==0.7.0
+</span></span><span style="display:flex;"><span>    # via pydantic
+</span></span><span style="display:flex;"><span>anyio==4.9.0
+</span></span><span style="display:flex;"><span>    # via starlette, watchfiles
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ul>
+<li>由 <code>uv pip compile</code> 自动生成</li>
+<li>包含所有依赖的精确版本</li>
+<li>确保环境的可重现性</li>
+</ul>
+</li>
+</ol>
+<h4 id="依赖管理工作流">依赖管理工作流<a hidden class="anchor" aria-hidden="true" href="#依赖管理工作流">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 创建 requirements.in 文件声明直接依赖</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 编译依赖生成 requirements.txt</span>
+</span></span><span style="display:flex;"><span>uv pip compile requirements.in -o requirements.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 安装依赖</span>
+</span></span><span style="display:flex;"><span>uv pip sync requirements.txt
+</span></span></code></pre></div><h4 id="多环境依赖管理">多环境依赖管理<a hidden class="anchor" aria-hidden="true" href="#多环境依赖管理">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 开发环境依赖</span>
+</span></span><span style="display:flex;"><span>uv pip compile requirements.in requirements-dev.in -o requirements-dev.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 生产环境依赖</span>
+</span></span><span style="display:flex;"><span>uv pip compile requirements.in -o requirements.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 测试环境依赖</span>
+</span></span><span style="display:flex;"><span>uv pip compile requirements.in requirements-test.in -o requirements-test.txt
+</span></span></code></pre></div><h4 id="依赖更新与安全">依赖更新与安全<a hidden class="anchor" aria-hidden="true" href="#依赖更新与安全">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 更新单个包</span>
+</span></span><span style="display:flex;"><span>uv pip compile --upgrade-package fastapi
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 更新所有包</span>
+</span></span><span style="display:flex;"><span>uv pip compile --upgrade
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 更新到最新的兼容版本</span>
+</span></span><span style="display:flex;"><span>uv pip compile --upgrade-compatible
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 生成带哈希值的依赖文件以确保安全性</span>
+</span></span><span style="display:flex;"><span>uv pip compile --generate-hashes requirements.in -o requirements-hashes.txt
+</span></span></code></pre></div><h4 id="依赖约束">依赖约束<a hidden class="anchor" aria-hidden="true" href="#依赖约束">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 使用约束文件限制版本</span>
+</span></span><span style="display:flex;"><span>uv pip compile --constraint constraints.txt requirements.in
+</span></span></code></pre></div><h3 id="项目实践示例">项目实践示例<a hidden class="anchor" aria-hidden="true" href="#项目实践示例">#</a></h3>
+<h4 id="1-项目初始化">1. 项目初始化<a hidden class="anchor" aria-hidden="true" href="#1-项目初始化">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 创建项目目录</span>
+</span></span><span style="display:flex;"><span>mkdir uv-demo
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> uv-demo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 创建并激活虚拟环境</span>
+</span></span><span style="display:flex;"><span>uv venv .venv
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">source</span> .venv/bin/activate
+</span></span></code></pre></div><h4 id="2-依赖管理实践">2. 依赖管理实践<a hidden class="anchor" aria-hidden="true" href="#2-依赖管理实践">#</a></h4>
+<p>创建 <code>requirements.in</code> 文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-plaintext" data-lang="plaintext"><span style="display:flex;"><span>fastapi&gt;=0.100.0
+</span></span><span style="display:flex;"><span>uvicorn[standard]
+</span></span><span style="display:flex;"><span>python-dotenv
+</span></span><span style="display:flex;"><span>requests
+</span></span></code></pre></div><p>编译并安装依赖：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uv pip compile requirements.in -o requirements.txt
+</span></span><span style="display:flex;"><span>uv pip sync requirements.txt
+</span></span></code></pre></div><h4 id="3-示例应用">3. 示例应用<a hidden class="anchor" aria-hidden="true" href="#3-示例应用">#</a></h4>
+<p>创建 <code>main.py</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> fastapi <span style="color:#fff;font-weight:bold">import</span> FastAPI
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>app = FastAPI()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@app.get(<span style="color:#0ff;font-weight:bold">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> root():
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> {<span style="color:#0ff;font-weight:bold">&#34;message&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;Hello from UV managed environment!&#34;</span>}
+</span></span></code></pre></div><p>运行应用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uvicorn main:app --reload
+</span></span></code></pre></div><h3 id="uvx-工具">UVX 工具<a hidden class="anchor" aria-hidden="true" href="#uvx-工具">#</a></h3>
+<p>UVX 是 UV 的扩展工具，提供了一种简单的方式来运行 Python 包提供的命令。</p>
+<h4 id="uvx-基本用法">UVX 基本用法<a hidden class="anchor" aria-hidden="true" href="#uvx-基本用法">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 使用特定包提供的命令</span>
+</span></span><span style="display:flex;"><span>uvx --from &lt;package_name&gt; &lt;command&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 使用临时安装的包运行命令</span>
+</span></span><span style="display:flex;"><span>uvx --with &lt;package_name&gt; &lt;command&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 使用 requirements.txt 中的依赖运行命令</span>
+</span></span><span style="display:flex;"><span>uvx --with-requirements requirements.txt &lt;command&gt;
+</span></span></code></pre></div><h4 id="常见用例">常见用例<a hidden class="anchor" aria-hidden="true" href="#常见用例">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 运行 pytest 测试</span>
+</span></span><span style="display:flex;"><span>uvx --with pytest pytest
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 使用 black 格式化代码</span>
+</span></span><span style="display:flex;"><span>uvx --with black black .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 在 CI 环境中运行测试</span>
+</span></span><span style="display:flex;"><span>uvx --with-requirements requirements-dev.txt pytest
+</span></span></code></pre></div><h4 id="推荐的项目结构">推荐的项目结构<a hidden class="anchor" aria-hidden="true" href="#推荐的项目结构">#</a></h4>
+<pre tabindex="0"><code>project/
+├── pyproject.toml    # 项目配置
+├── requirements.in   # 依赖声明
+├── requirements.txt  # 锁定的依赖
+└── src/             # 源代码目录
+</code></pre><h3 id="版本控制与-cicd-集成">版本控制与 CI/CD 集成<a hidden class="anchor" aria-hidden="true" href="#版本控制与-cicd-集成">#</a></h3>
+<ol>
+<li>
+<p><strong>版本控制策略</strong></p>
+<ul>
+<li>将 <code>requirements.txt</code> 和 <code>requirements-*.txt</code> 加入版本控制</li>
+<li>将虚拟环境（<code>.venv</code>）添加到 <code>.gitignore</code></li>
+</ul>
+</li>
+<li>
+<p><strong>CI/CD 集成</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># CI/CD 环境中使用</span>
+</span></span><span style="display:flex;"><span>uv pip sync requirements.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 开发环境使用</span>
+</span></span><span style="display:flex;"><span>uv pip sync requirements-dev.txt
+</span></span></code></pre></div></li>
+<li>
+<p><strong>开发工作流</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 1. 创建虚拟环境</span>
+</span></span><span style="display:flex;"><span>uv venv .venv
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">source</span> .venv/bin/activate
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 2. 安装开发依赖</span>
+</span></span><span style="display:flex;"><span>uv pip sync requirements-dev.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 3. 开发模式安装项目</span>
+</span></span><span style="display:flex;"><span>uv pip install -e .
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>UV 是一个现代化的 Python 包管理器，它在保持与 pip 兼容的同时，提供了更好的性能和依赖管理能力。它特别适合：</p>
+<ul>
+<li>需要快速依赖安装的大型项目</li>
+<li>需要严格依赖版本控制的生产环境</li>
+<li>需要可重现构建环境的团队协作项目</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/uv/">UV</a></li>
+    </ul>
+<div class="footer-comments">
+  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
+    send an email
+</a> to me</p>
+
+</div>
+<nav class="paginav">
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/c-language-cheetsheet/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>C Language Cheetsheet</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

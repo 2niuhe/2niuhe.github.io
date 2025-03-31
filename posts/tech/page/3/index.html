@@ -183,6 +183,18 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2>Virsh命令和虚拟机
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>环境搭建和准备 # 查看cpu是否支持硬件虚拟化 grep -E -c &#34;vmx|svm&#34; /proc/cpuinfo sudo apt install -y qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst # if centos # yum install -y kvm virt-manager libvirt libvirt-python python-virtinst virt-install qemu-kvm lsmod | grep -i kvm sudo systemctl status libvirtd.service # 如果服务未启动 sudo systemctl enable libvirtd --now # 配置网桥使得libvirt可以从外部访问 cat /etc/netplan/00-installer-config.yaml # 可选，GUI管理工具 sudo apt-get install virt-manager python-spice-client-gtk 下载调试镜像： 从官方地址下载cirros镜像，用来调试虚...</p>
+  </div>
+  <footer class="entry-footer"><span title='2020-10-22 00:00:00 +0000 UTC'>2020-10-22</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;4338 字&nbsp;·&nbsp;Niuhe</footer>
+  <a class="entry-link" aria-label="post link to Virsh命令和虚拟机" href="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2>tcpdump的基本使用【译】
     </h2>
   </header>
@@ -348,18 +360,6 @@ if (!doNotTrack) {
   </div>
   <footer class="entry-footer"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;680 字&nbsp;·&nbsp;Niuhe</footer>
   <a class="entry-link" aria-label="post link to Angular开发环境搭建" href="https://blog.niuhemoon.win/posts/tech/angular-devenv/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Python进阶上
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Python种基本类型的比较： List is a collection which is ordered and mutable. Allows duplicate members. Tuple is a collection which is ordered and immutable. Allows duplicate members. Set is a collection which is unordered and unindexed. No duplicate members. Dictionary is a collection which is unordered, mutable and indexed. No duplicate members. Strings are immutable sequences of Unicode code points. List Python中的list是一个有序容器，容纳不同类型的数据（但推荐列表内数据类型相同)，同时其是可变类型的． 创建列表 list_1 = [&#34;banana&#34;, &#34;cherry&#34;, &#34;apple&#34;] print(list_1) # Or create...</p>
-  </div>
-  <footer class="entry-footer"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;3404 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Python进阶上" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

@@ -6,7 +6,25 @@
     <description>Recent content in Tags on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 13 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 31 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python</title>
+      <link>https://blog.niuhemoon.win/tags/python/</link>
+      <pubDate>Mon, 31 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>UV</title>
+      <link>https://blog.niuhemoon.win/tags/uv/</link>
+      <pubDate>Mon, 31 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/tags/uv/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>C</title>
       <link>https://blog.niuhemoon.win/tags/c/</link>
@@ -112,15 +130,6 @@
       <pubDate>Sun, 21 Jul 2024 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Python</title>
-      <link>https://blog.niuhemoon.win/tags/python/</link>
-      <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/tags/python/</guid>
       <description></description>
     </item>
     

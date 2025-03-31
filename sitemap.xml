@@ -2,6 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://blog.niuhemoon.win/</loc>
+    <lastmod>2025-03-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/python/</loc>
+    <lastmod>2025-03-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/</loc>
+    <lastmod>2025-03-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/uv/</loc>
+    <lastmod>2025-03-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/uv-guide/</loc>
+    <lastmod>2025-03-31T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.niuhemoon.win/tags/c/</loc>
     <lastmod>2025-01-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -14,13 +29,7 @@
     <loc>https://blog.niuhemoon.win/tags/llm/</loc>
     <lastmod>2025-03-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.niuhemoon.win/</loc>
-    <lastmod>2025-03-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.niuhemoon.win/tags/sft/</loc>
-    <lastmod>2025-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/</loc>
     <lastmod>2025-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/</loc>
@@ -70,9 +79,6 @@
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/ftp-http-file-share/</loc>
     <lastmod>2024-07-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/python/</loc>
-    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/create-pip-package/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
