@@ -6,7 +6,16 @@
     <description>Recent content on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 31 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>多种编程语言接入大语言模型API指南</title>
+      <link>https://blog.niuhemoon.win/posts/tech/llm-api-integration-guide/</link>
+      <pubDate>Tue, 01 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/llm-api-integration-guide/</guid>
+      <description>详细介绍如何使用Python、curl、Golang等多种方式接入大语言模型API</description>
+    </item>
+    
     <item>
       <title>UV 包管理器使用指南</title>
       <link>https://blog.niuhemoon.win/posts/tech/uv-guide/</link>
