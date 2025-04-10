@@ -5,6 +5,12 @@
     <loc>https://blog.niuhemoon.win/posts/tech/cuda-triton-flash-attention/</loc>
     <lastmod>2025-04-08T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://blog.niuhemoon.win/tags/docker/</loc>
+    <lastmod>2025-04-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/docker-compose-guide/</loc>
+    <lastmod>2025-04-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.niuhemoon.win/tags/flash-attention/</loc>
     <lastmod>2025-04-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -97,9 +103,6 @@
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/create-pip-package/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/docker/</loc>
-    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/linux-fake-node/</loc>
     <lastmod>2024-05-05T00:00:00+00:00</lastmod>
