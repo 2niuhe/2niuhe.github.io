@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language><atom:link href="https://blog.niuhemoon.win/posts/tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>CPU上部署Qwen3模型及性能测试</title>
+      <link>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</link>
+      <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</guid>
+      <description>详解如何在CPU环境下部署和运行Qwen3大语言模型</description>
+    </item>
+    
+    <item>
       <title>CUDA、Triton 与 Flash Attention 学习之旅</title>
       <link>https://blog.niuhemoon.win/posts/tech/cuda-triton-flash-attention/</link>
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>

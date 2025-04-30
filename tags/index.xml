@@ -6,7 +6,43 @@
     <description>Recent content in Tags on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Tue, 08 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 28 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LLM</title>
+      <link>https://blog.niuhemoon.win/tags/llm/</link>
+      <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/tags/llm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ollama</title>
+      <link>https://blog.niuhemoon.win/tags/ollama/</link>
+      <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/tags/ollama/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Qwen3</title>
+      <link>https://blog.niuhemoon.win/tags/qwen3/</link>
+      <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/tags/qwen3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vLLM</title>
+      <link>https://blog.niuhemoon.win/tags/vllm/</link>
+      <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/tags/vllm/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Docker</title>
       <link>https://blog.niuhemoon.win/tags/docker/</link>
@@ -40,15 +76,6 @@
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>
       
       <guid>https://blog.niuhemoon.win/tags/howtolearn/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>LLM</title>
-      <link>https://blog.niuhemoon.win/tags/llm/</link>
-      <pubDate>Tue, 01 Apr 2025 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/tags/llm/</guid>
       <description></description>
     </item>
     

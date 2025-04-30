@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ollama on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/ollama/</link>
+    <description>Recent content in Ollama on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 28 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/ollama/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CPU上部署Qwen3模型及性能测试</title>
+      <link>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</link>
+      <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</guid>
+      <description>详解如何在CPU环境下部署和运行Qwen3大语言模型</description>
+    </item>
+    
+  </channel>
+</rss>
