@@ -6,7 +6,16 @@
     <description>Recent content on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 28 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 06 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python 性能优化：使用 ZeroMQ 突破 GIL 限制</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/</link>
+      <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/</guid>
+      <description>通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能</description>
+    </item>
+    
     <item>
       <title>CPU上部署Qwen3模型及性能测试</title>
       <link>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</link>

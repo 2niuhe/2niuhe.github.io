@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Python 性能优化：使用 ZeroMQ 突破 GIL 限制 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="ZeroMQ, 性能优化, 分布式计算">
+<meta name="description" content="通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="Python 性能优化：使用 ZeroMQ 突破 GIL 限制" />
+<meta property="og:description" content="通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-05-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-05-06T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Python 性能优化：使用 ZeroMQ 突破 GIL 限制"/>
+<meta name="twitter:description" content="通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Python 性能优化：使用 ZeroMQ 突破 GIL 限制",
+      "item": "https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Python 性能优化：使用 ZeroMQ 突破 GIL 限制",
+  "name": "Python 性能优化：使用 ZeroMQ 突破 GIL 限制",
+  "description": "通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能",
+  "keywords": [
+    "ZeroMQ", "性能优化", "分布式计算"
+  ],
+  "articleBody": "在 Python 编程中，全局解释器锁（Global Interpreter Lock，简称 GIL）一直是制约 CPU 密集型任务性能的主要瓶颈。本文将介绍如何使用 ZeroMQ 这一高性能分布式消息队列库来突破 GIL 限制，通过将单一进程拆分为多个通过消息通信的进程，从而充分利用多核 CPU 资源，显著提升性能。\n环境配置与安装 首先，我们需要创建一个虚拟环境并安装必要的依赖包。这里我们使用 uv 命令来创建和管理虚拟环境\nuv venv .venv source .venv/bin/activate \u0026\u0026 uv pip install pyzmq numpy matplotlib tqdm ZeroMQ 核心概念 ZeroMQ (也写作 ØMQ, 0MQ 或 zmq) 是一个高性能的异步消息传递库，旨在用于分布式或并发应用程序。它提供了一个消息队列，但与传统的消息队列不同，它可以在没有专门的消息代理（broker）的情况下运行。\nInfo\nZeroMQ 提供了一种轻量级的消息传递机制，非常适合用于构建分布式系统和并行计算应用。\nZeroMQ 的主要特点 无代理设计：不需要中央消息服务器 异步 I/O 模型：非阻塞操作，提高并发性能 多种通信模式：支持请求-回复、发布-订阅、推送-拉取等模式 多种传输协议：支持 TCP、IPC、进程内通信等 跨语言支持：提供多种编程语言的绑定 ZeroMQ 的常用通信模式 请求-回复 (REQ-REP)：客户端发送请求，服务器回复 发布-订阅 (PUB-SUB)：发布者发送消息，订阅者接收 推送-拉取 (PUSH-PULL)：任务分发和结果收集，适合并行处理 路由-经销商 (ROUTER-DEALER)：高级异步通信模式 基本的 ZeroMQ 示例 以下是一个简单的请求-回复模式示例，展示了 ZeroMQ 的基本用法：\n基本的 ZeroMQ REQ-REP 模式示例 #!/usr/bin/env python # 基本的 ZeroMQ REQ-REP 模式示例 import zmq import time import sys import threading def server(): # 创建上下文和 socket context = zmq.Context() socket = context.socket(zmq.REP) socket.bind(\"tcp://*:5555\") print(\"服务器已启动，等待请求...\") # 服务循环 while True: # 等待客户端请求 message = socket.recv() print(f\"收到请求: {message.decode()}\") # 模拟工作 time.sleep(1) # 发送回复 socket.send(b\"Request processed\") def client(): # 创建上下文和 socket context = zmq.Context() socket = context.socket(zmq.REQ) socket.connect(\"tcp://localhost:5555\") # 发送请求 for i in range(5): print(f\"发送请求 {i}...\") socket.send(f\"请求 #{i}\".encode()) # 获取回复 message = socket.recv() print(f\"收到回复: {message.decode()}\") if __name__ == \"__main__\": if len(sys.argv) \u003c 2: print(\"用法: python zmq_basic.py [server|client]\") sys.exit(1) if sys.argv[1] == \"server\": server() elif sys.argv[1] == \"client\": client() elif sys.argv[1] == \"both\": # 在单独的线程中启动服务器 server_thread = threading.Thread(target=server) server_thread.daemon = True server_thread.start() # 给服务器一点时间启动 time.sleep(1) # 运行客户端 client() else: print(\"用法: python zmq_basic.py [server|client|both]\") 这个简单示例展示了 ZeroMQ 的基本通信模式。服务器创建一个 REP 套接字并绑定到特定端口，客户端创建一个 REQ 套接字并连接到服务器。客户端发送请求，服务器处理后回复。\nGIL 限制下的性能问题 在深入 ZeroMQ 解决方案之前，让我们先了解 Python 中的 GIL 问题以及它如何影响 CPU 密集型任务的性能。\nGIL（全局解释器锁）是 CPython 解释器中的一个互斥锁，它确保同一时刻只有一个线程可以执行 Python 字节码。这意味着即使在多核处理器上，标准的 Python 线程也无法实现真正的并行计算。\nWarning\n由于 GIL 的存在，Python 多线程在 CPU 密集型任务上通常无法提供性能提升，有时甲至会因为线程切换开销而导致性能下降。\n演示 GIL 限制的示例程序 下面是一个 CPU 密集型任务的示例，它模拟了图像处理中的模糊滤镜操作：\nCPU密集型任务示例 - 受GIL限制的模糊滤镜操作 #!/usr/bin/env python # filename: cpu_bound_demo.py # CPU密集型任务示例 - 受GIL限制的性能问题 import numpy as np import time import matplotlib.pyplot as plt from matplotlib.figure import Figure from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas def generate_data(size=1000): \"\"\"生成随机数据矩阵\"\"\" return np.random.random((size, size)) def process_data(data, kernel_size=5): \"\"\"对数据应用简单的模糊滤镜 (CPU密集型操作)\"\"\" result = np.zeros_like(data) rows, cols = data.shape # 简单的滑动窗口平均 (模拟模糊操作) for i in range(kernel_size//2, rows - kernel_size//2): for j in range(kernel_size//2, cols - kernel_size//2): # 提取窗口 window = data[i-kernel_size//2:i+kernel_size//2+1, j-kernel_size//2:j+kernel_size//2+1] # 计算平均值 result[i, j] = np.mean(window) return result def visualize_results(original, processed, execution_time, title): \"\"\"可视化原始数据和处理后的数据\"\"\" fig = Figure(figsize=(10, 5)) canvas = FigureCanvas(fig) ax1 = fig.add_subplot(121) ax1.imshow(original, cmap='viridis') ax1.set_title('Original Data') ax1.axis('off') ax2 = fig.add_subplot(122) ax2.imshow(processed, cmap='viridis') ax2.set_title(f'Processed Data\\nExecution Time: {execution_time:.2f} seconds') ax2.axis('off') fig.suptitle(title) fig.tight_layout() # 保存图像 fig.savefig(f\"{title.replace(' ', '_').lower()}.png\") print(f\"结果已保存为 {title.replace(' ', '_').lower()}.png\") def run_single_process(data_size=500, kernel_size=5): \"\"\"在单个进程中运行数据处理\"\"\" print(f\"生成 {data_size}x{data_size} 的数据矩阵...\") data = generate_data(data_size) print(\"开始处理数据...\") start_time = time.time() result = process_data(data, kernel_size) end_time = time.time() execution_time = end_time - start_time print(f\"处理完成，耗时: {execution_time:.2f} 秒\") # 可视化结果 visualize_results(data, result, execution_time, \"Single Process\") return execution_time if __name__ == \"__main__\": # 运行单进程版本 execution_time = run_single_process(data_size=500, kernel_size=5) print(f\"单进程执行时间: {execution_time:.2f} 秒\") 这个程序生成一个随机数据矩阵，然后对其应用模糊滤镜操作。由于操作是 CPU 密集型的，且在单个进程中运行，因此受到 GIL 的限制，无法充分利用多核处理器的优势。\n使用 ZeroMQ 拆分进程\n为了突破 GIL 限制，我们可以将任务拆分成多个独立的进程，每个进程处理数据的一部分，然后使用 ZeroMQ 进行进程间通信。\nInfo\nZeroMQ 允许我们创建多个独立进程，每个进程可以充分利用一个 CPU 核心，从而绕过 GIL 限制，实现真正的并行计算。\n我们将采用以下架构：\n主进程：负责数据分割、任务分发和结果收集 工作进程：接收数据块，进行处理，并返回结果 通信模式：使用 PUSH-PULL 模式进行任务分发和结果收集 实现分布式处理 下面是使用 ZeroMQ 实现分布式处理的代码：\nZeroMQ 分布式处理实现 #!/usr/bin/env python # filename: zmq_distributed_demo.py # 使用不同并行处理方法对比CPU密集型任务的性能 import numpy as np import time import zmq import pickle import multiprocessing from multiprocessing import Pool, Process, Queue, cpu_count import os import matplotlib.pyplot as plt from matplotlib.figure import Figure from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas import hashlib # 导入单进程版本中的函数 from cpu_bound_demo import generate_data, process_data, visualize_results def worker(worker_id): \"\"\"工作进程 - 接收数据块并处理\"\"\" context = zmq.Context() # 设置接收任务的PULL socket receiver = context.socket(zmq.PULL) receiver.connect(\"tcp://localhost:5557\") # 设置发送结果的PUSH socket sender = context.socket(zmq.PUSH) sender.connect(\"tcp://localhost:5558\") print(f\"工作进程 {worker_id} 已启动\") # 处理循环 while True: try: # 接收任务 task = receiver.recv_pyobj() # 检查是否是终止信号 if task == \"DONE\": print(f\"工作进程 {worker_id} 收到终止信号\") break # 解包任务数据 chunk_id, data_chunk, kernel_size = task # 处理数据 result_chunk = process_data(data_chunk, kernel_size) # 发送结果 sender.send_pyobj((chunk_id, result_chunk)) except Exception as e: print(f\"工作进程 {worker_id} 错误: {e}\") # 关闭连接 receiver.close() sender.close() context.term() print(f\"工作进程 {worker_id} 已终止\") def split_data(data, num_chunks, kernel_size=5, overlap=True): \"\"\"将数据分割成多个块，可选添加重叠区域以解决边界问题\"\"\" rows, cols = data.shape chunk_size = rows // num_chunks chunks = [] chunk_bounds = [] # 记录每个块的有效边界（不包括重叠区域） # 计算重叠大小，至少需要kernel_size//2的重叠 overlap_size = kernel_size // 2 if overlap else 0 for i in range(num_chunks): # 计算块的起始和结束行，包括重叠区域 start_row = max(0, i * chunk_size - overlap_size) end_row = min(rows, (i + 1) * chunk_size + overlap_size if i \u003c num_chunks - 1 else rows) # 计算有效边界（不包括重叠区域） valid_start = i * chunk_size valid_end = min(rows, (i + 1) * chunk_size) # 存储块及其有效边界 chunks.append(data[start_row:end_row, :].copy()) # 使用copy()确保数据独立 chunk_bounds.append((valid_start - start_row, valid_end - start_row)) return chunks, chunk_bounds def run_distributed_process(data_size=500, kernel_size=5, num_workers=None, input_data=None): \"\"\"使用ZeroMQ分布式运行数据处理\"\"\" # 如果没有指定工作进程数，使用CPU核心数 if num_workers is None: num_workers = multiprocessing.cpu_count() if input_data is None: print(f\"生成 {data_size}x{data_size} 的数据矩阵...\") data = generate_data(data_size) else: print(f\"使用提供的输入数据...\") data = input_data # 分割数据，并添加重叠区域 print(f\"将数据分割成 {num_workers} 块，并添加重叠区域...\") data_chunks, chunk_bounds = split_data(data, num_workers, kernel_size) # 创建ZeroMQ上下文 context = zmq.Context() # 设置任务分发的PUSH socket task_sender = context.socket(zmq.PUSH) task_sender.bind(\"tcp://*:5557\") # 设置结果收集的PULL socket result_receiver = context.socket(zmq.PULL) result_receiver.bind(\"tcp://*:5558\") # 启动工作进程 processes = [] for i in range(num_workers): p = multiprocessing.Process(target=worker, args=(i,)) p.daemon = True p.start() processes.append(p) # 给工作进程一点时间启动 time.sleep(0.5) # 开始计时 print(\"开始分布式处理数据...\") start_time = time.time() # 发送任务到工作进程 for i, chunk in enumerate(data_chunks): task_sender.send_pyobj((i, chunk, kernel_size)) # 收集结果 results = [None] * len(data_chunks) for _ in range(len(data_chunks)): chunk_id, result_chunk = result_receiver.recv_pyobj() results[chunk_id] = result_chunk # 合并结果，只保留每个块的有效区域 final_results = [] for i, result_chunk in enumerate(results): valid_start, valid_end = chunk_bounds[i] final_results.append(result_chunk[valid_start:valid_end, :]) # 合并有效区域 result = np.vstack(final_results) # 结束计时 end_time = time.time() execution_time = end_time - start_time print(f\"处理完成，耗时: {execution_time:.2f} 秒\") # 发送终止信号给工作进程 for _ in range(num_workers): task_sender.send_pyobj(\"DONE\") # 等待工作进程终止 for p in processes: p.join(timeout=1) # 关闭ZeroMQ连接 task_sender.close() result_receiver.close() context.term() # 可视化结果 visualize_results(data, result, execution_time, \"ZeroMQ Distributed\") return execution_time, result # 新增的直接使用多进程的实现 def mp_worker(data_chunk, kernel_size, result_queue, chunk_id): \"\"\"多进程工作函数 - 处理数据块并将结果放入队列\"\"\" try: # 处理数据 result_chunk = process_data(data_chunk, kernel_size) # 将结果放入队列 result_queue.put((chunk_id, result_chunk)) except Exception as e: print(f\"多进程工作函数错误: {e}\") def run_multiprocessing(data_size=500, kernel_size=5, num_workers=None, input_data=None): \"\"\"使用Python原生多进程运行数据处理\"\"\" # 如果没有指定工作进程数，使用CPU核心数 if num_workers is None: num_workers = cpu_count() if input_data is None: print(f\"生成 {data_size}x{data_size} 的数据矩阵...\") data = generate_data(data_size) else: print(f\"使用提供的输入数据...\") data = input_data # 分割数据，并添加重叠区域 print(f\"将数据分割成 {num_workers} 块，并添加重叠区域...\") data_chunks, chunk_bounds = split_data(data, num_workers, kernel_size) # 创建结果队列 result_queue = Queue() # 创建进程 processes = [] # 开始计时 print(\"开始多进程处理数据...\") start_time = time.time() # 启动工作进程 for i, chunk in enumerate(data_chunks): p = Process(target=mp_worker, args=(chunk, kernel_size, result_queue, i)) processes.append(p) p.start() # 收集结果 results = [None] * len(data_chunks) for _ in range(len(data_chunks)): chunk_id, result_chunk = result_queue.get() results[chunk_id] = result_chunk # 等待所有进程完成 for p in processes: p.join() # 合并结果，只保留每个块的有效区域 final_results = [] for i, result_chunk in enumerate(results): valid_start, valid_end = chunk_bounds[i] final_results.append(result_chunk[valid_start:valid_end, :]) # 合并有效区域 result = np.vstack(final_results) # 结束计时 end_time = time.time() execution_time = end_time - start_time print(f\"处理完成，耗时: {execution_time:.2f} 秒\") # 可视化结果 visualize_results(data, result, execution_time, \"Multiprocessing\") return execution_time, result # 用于验证结果一致性的函数 def calculate_result_hash(result): \"\"\"计算结果数组的哈希值以验证一致性\"\"\" # 将numpy数组转换为字节序列 # 先四舍五入到固定小数位数，避免浮点数误差引起的不一致 rounded_result = np.round(result, 6) result_bytes = rounded_result.tobytes() # 计算SHA-256哈希 return hashlib.sha256(result_bytes).hexdigest() def compare_performance(): \"\"\"比较三种实现的性能并验证结果一致性\"\"\" print(\"\\n===== 性能对比 =====\") data_size = 2000 kernel_size = 5 # 设置随机种子以确保可重现性 np.random.seed(42) # 运行单进程版本 print(\"\\n运行单进程版本...\") single_data = generate_data(data_size) # 保证所有实现使用相同的输入数据 # 为了确保结果一致性，我们将使用与分布式实现相同的处理方式 # 将数据分割，处理，然后再合并 num_workers = cpu_count() data_chunks, chunk_bounds = split_data(single_data, num_workers, kernel_size) single_start = time.time() # 处理每个块 result_chunks = [] for chunk in data_chunks: result_chunk = process_data(chunk, kernel_size) result_chunks.append(result_chunk) # 合并结果，只保留每个块的有效区域 final_results = [] for i, result_chunk in enumerate(result_chunks): valid_start, valid_end = chunk_bounds[i] final_results.append(result_chunk[valid_start:valid_end, :]) # 合并有效区域 single_result = np.vstack(final_results) single_time = time.time() - single_start print(f\"处理完成，耗时: {single_time:.2f} 秒\") visualize_results(single_data, single_result, single_time, \"Single Process\") # 运行分布式版本 print(\"\\n运行ZeroMQ分布式版本...\") zmq_time, zmq_result = run_distributed_process(data_size=data_size, kernel_size=kernel_size, input_data=single_data) # 运行原生多进程版本 print(\"\\n运行原生多进程版本...\") mp_time, mp_result = run_multiprocessing(data_size=data_size, kernel_size=kernel_size, input_data=single_data) # 验证结果一致性 single_hash = calculate_result_hash(single_result) zmq_hash = calculate_result_hash(zmq_result) mp_hash = calculate_result_hash(mp_result) print(f\"\\n哈希值检查:\") print(f\" 单进程结果哈希: {single_hash[:10]}...\") print(f\" ZeroMQ结果哈希: {zmq_hash[:10]}...\") print(f\" 多进程结果哈希: {mp_hash[:10]}...\") # 检查结果是否相同 if single_hash == zmq_hash and single_hash == mp_hash: print(\" 结果一致性检查: 通过 \\u2705\") else: print(\" 结果一致性检查: 失败 \\u274c\") if single_hash != zmq_hash: print(\" - 单进程与ZeroMQ结果不一致\") if single_hash != mp_hash: print(\" - 单进程与多进程结果不一致\") if zmq_hash != mp_hash: print(\" - ZeroMQ与多进程结果不一致\") # 检查结果是否相同 zmq_match = (single_hash == zmq_hash) mp_match = (single_hash == mp_hash) results_match = zmq_match and mp_match # 计算加速比 zmq_speedup = single_time / zmq_time mp_speedup = single_time / mp_time print(\"\\n===== 结果对比 =====\") print(f\"单进程执行时间: {single_time:.2f} 秒\") print(f\"ZeroMQ分布式执行时间: {zmq_time:.2f} 秒 (加速比: {zmq_speedup:.2f}x)\") print(f\"原生多进程执行时间: {mp_time:.2f} 秒 (加速比: {mp_speedup:.2f}x)\") print(f\"结果一致性检查: {'通过' if results_match else '失败'}\") # 绘制性能对比图 fig = Figure(figsize=(10, 6)) canvas = FigureCanvas(fig) ax = fig.add_subplot(111) methods = ['Single Process', 'ZeroMQ Distributed', 'Python Multiprocessing'] times = [single_time, zmq_time, mp_time] colors = ['blue', 'green', 'orange'] ax.bar(methods, times, color=colors) ax.set_ylabel('Execution Time (seconds)') ax.set_title('Performance Comparison') # 添加数值标签 for i, v in enumerate(times): ax.text(i, v + 0.1, f\"{v:.2f}s\", ha='center') # 添加加速比 ax.text(1, times[1] * 0.5, f\"Speedup: {zmq_speedup:.2f}x\", ha='center', fontsize=10, bbox=dict(facecolor='white', alpha=0.8)) ax.text(2, times[2] * 0.5, f\"Speedup: {mp_speedup:.2f}x\", ha='center', fontsize=10, bbox=dict(facecolor='white', alpha=0.8)) fig.tight_layout() fig.savefig(\"performance_comparison_all.png\") print(\"性能对比图已保存为 performance_comparison_all.png\") if __name__ == \"__main__\": # 比较性能 compare_performance() 性能对比分析 为了验证 ZeroMQ 分布式处理的效果，我们将其与单进程版本和 Python 原生多进程版本进行对比。\n我们使用相同的输入数据，分别用三种方法处理，并记录执行时间：\n单进程版本：所有计算在一个进程中完成 ZeroMQ 分布式版本：使用 ZeroMQ 进行进程间通信 Python 原生多进程版本：使用 Python 的 multiprocessing 模块 性能测试结果\n===== 结果对比 ===== 单进程执行时间: 9.75 秒 ZeroMQ分布式执行时间: 1.28 秒 (加速比: 7.62x) 原生多进程执行时间: 1.27 秒 (加速比: 7.66x) 结果一致性检查: 通过 vLLM 架构模拟：CPU-GPU 并行优化 除了解决 CPU 密集型任务的 GIL 限制，ZeroMQ 还可以用于优化 CPU 和 GPU 之间的协作。这里我们模拟了类似 vLLM（一种高效的大语言模型推理框架）的架构，通过 ZeroMQ 实现 CPU 和 GPU 任务的并行处理。\n传统顺序处理的问题\n在传统的深度学习推理中，处理流程通常是顺序的：\nCPU 进行预处理 等待 GPU 完成计算 CPU 进行后处理 这种方式导致 GPU 在 CPU 处理期间处于空闲状态，无法充分利用计算资源。\n使用 ZeroMQ 实现 CPU-GPU 并行 通过 ZeroMQ，我们可以实现 CPU 和 GPU 的并行工作：\n模拟vllm拆分cpu和gpu工作负载 #!/usr/bin/env python # 模拟vLLM架构的简化版本，使用ZeroMQ分离GPU和CPU工作负载 import numpy as np import time import zmq import multiprocessing import threading import queue import json import argparse from tqdm import tqdm import matplotlib.pyplot as plt from matplotlib.figure import Figure from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas # 模拟GPU计算的函数 def simulate_gpu_computation(input_data, computation_time=0.1): \"\"\"模拟GPU上的矩阵乘法计算\"\"\" # 实际上是在CPU上运行，但我们用sleep来模拟GPU计算时间 time.sleep(computation_time) # 模拟矩阵乘法 result = np.dot(input_data, input_data.T) return result # 模拟CPU处理的函数 def simulate_cpu_preprocessing(request_id, size=100, processing_time=0.05): \"\"\"模拟CPU上的预处理操作\"\"\" # 模拟预处理耗时 time.sleep(processing_time) # 生成随机输入数据 input_data = np.random.random((size, size)) return input_data def simulate_cpu_postprocessing(request_id, result, processing_time=0.05): \"\"\"模拟CPU上的后处理操作\"\"\" # 模拟后处理耗时 time.sleep(processing_time) # 简单处理结果 processed_result = np.mean(result) return processed_result # 传统方式：单进程中顺序执行CPU和GPU操作 def traditional_approach(num_requests=10, matrix_size=100, preprocess_time=0.05, gpu_time=0.1, postprocess_time=0.05): \"\"\"传统方式：在单一进程中顺序执行CPU和GPU操作\"\"\" print(\"\\n运行传统方式（单进程顺序执行）...\") start_time = time.time() gpu_active_time = 0 for i in tqdm(range(num_requests), desc=\"处理请求\"): request_id = f\"req_{i}\" # CPU预处理 preprocess_start = time.time() input_data = simulate_cpu_preprocessing(request_id, matrix_size, preprocess_time) preprocess_end = time.time() # GPU计算 gpu_start = time.time() result = simulate_gpu_computation(input_data, gpu_time) gpu_end = time.time() gpu_active_time += (gpu_end - gpu_start) # CPU后处理 postprocess_start = time.time() final_result = simulate_cpu_postprocessing(request_id, result, postprocess_time) postprocess_end = time.time() end_time = time.time() total_time = end_time - start_time gpu_utilization = gpu_active_time / total_time * 100 print(f\"传统方式完成时间: {total_time:.2f} 秒\") print(f\"GPU活跃时间: {gpu_active_time:.2f} 秒\") print(f\"GPU利用率: {gpu_utilization:.2f}%\") return total_time, gpu_utilization # GPU进程：接收输入数据，执行GPU计算，返回结果 def gpu_worker(port_recv=5555, port_send=5556): \"\"\"GPU工作进程，接收输入数据，执行GPU计算，发送结果\"\"\" context = zmq.Context() # 设置接收输入数据的PULL socket receiver = context.socket(zmq.PULL) receiver.bind(f\"tcp://*:{port_recv}\") # 设置发送结果的PUSH socket sender = context.socket(zmq.PUSH) sender.bind(f\"tcp://*:{port_send}\") print(\"GPU工作进程已启动\") gpu_active_time = 0 processed_count = 0 start_time = time.time() # 记录每次GPU活动的开始和结束时间 gpu_activity_periods = [] try: while True: # 接收任务 message = receiver.recv_pyobj() # 检查是否是终止信号 if message == \"DONE\": print(\"GPU工作进程收到终止信号\") # 发送GPU利用率信息 total_time = time.time() - start_time gpu_utilization = gpu_active_time / total_time * 100 if total_time \u003e 0 else 0 sender.send_pyobj({ \"type\": \"STATS\", \"gpu_active_time\": gpu_active_time, \"total_time\": total_time, \"gpu_utilization\": gpu_utilization, \"processed_count\": processed_count, \"gpu_activity_periods\": gpu_activity_periods }) break # 解包任务数据 request_id, input_data, gpu_time = message # 执行GPU计算 gpu_start = time.time() result = simulate_gpu_computation(input_data, gpu_time) gpu_end = time.time() # 记录GPU活动时间段 gpu_activity_periods.append((gpu_start, gpu_end)) # 更新GPU活跃时间 gpu_active_time += (gpu_end - gpu_start) processed_count += 1 # 发送结果 sender.send_pyobj((request_id, result)) except Exception as e: print(f\"GPU工作进程错误: {e}\") finally: # 关闭连接 receiver.close() sender.close() context.term() print(\"GPU工作进程已终止\") # CPU进程：生成请求，预处理，发送到GPU，接收结果，后处理 def zmq_approach(num_requests=10, matrix_size=100, preprocess_time=0.05, gpu_time=0.1, postprocess_time=0.05): \"\"\"使用ZeroMQ分离CPU和GPU操作\"\"\" print(\"\\n运行ZeroMQ方式（分离CPU和GPU操作）...\") # 启动GPU工作进程 gpu_process = multiprocessing.Process(target=gpu_worker) gpu_process.daemon = True gpu_process.start() # 给GPU进程一点时间启动 time.sleep(0.5) # 创建ZeroMQ上下文 context = zmq.Context() # 设置发送输入数据的PUSH socket sender = context.socket(zmq.PUSH) sender.connect(\"tcp://localhost:5555\") # 设置接收结果的PULL socket receiver = context.socket(zmq.PULL) receiver.connect(\"tcp://localhost:5556\") # 开始计时 start_time = time.time() # 创建结果字典 results = {} # 记录CPU活动时间段 cpu_activity_periods = [] # 启动预处理和发送线程 def preprocess_and_send(): for i in range(num_requests): request_id = f\"req_{i}\" # CPU预处理开始 cpu_start = time.time() # CPU预处理 input_data = simulate_cpu_preprocessing(request_id, matrix_size, preprocess_time) # CPU预处理结束 cpu_end = time.time() # 记录CPU预处理时间段 cpu_activity_periods.append((\"preprocess\", cpu_start, cpu_end)) # 发送到GPU进程 sender.send_pyobj((request_id, input_data, gpu_time)) # 简单的进度显示 if (i + 1) % 10 == 0 or i == num_requests - 1: print(f\"已发送 {i + 1}/{num_requests} 个请求\") send_thread = threading.Thread(target=preprocess_and_send) send_thread.daemon = True send_thread.start() # 接收结果和后处理 for _ in tqdm(range(num_requests), desc=\"接收和处理结果\"): # 接收结果 message = receiver.recv_pyobj() # 处理结果 if isinstance(message, dict) and message.get(\"type\") == \"STATS\": # 这是GPU进程发送的统计信息 gpu_stats = message continue request_id, result = message # CPU后处理开始 cpu_start = time.time() # CPU后处理 final_result = simulate_cpu_postprocessing(request_id, result, postprocess_time) # CPU后处理结束 cpu_end = time.time() # 记录CPU后处理时间段 cpu_activity_periods.append((\"postprocess\", cpu_start, cpu_end)) # 存储结果 results[request_id] = final_result # 发送终止信号给GPU进程 sender.send_pyobj(\"DONE\") # 接收GPU统计信息 gpu_stats = receiver.recv_pyobj() # 等待GPU进程终止 gpu_process.join(timeout=1) # 结束计时 end_time = time.time() total_time = end_time - start_time # 计算CPU-GPU重叠时间 gpu_periods = gpu_stats['gpu_activity_periods'] overlap_time = calculate_overlap(cpu_activity_periods, gpu_periods) overlap_percentage = (overlap_time / total_time) * 100 # 关闭ZeroMQ连接 sender.close() receiver.close() context.term() print(f\"ZeroMQ方式完成时间: {total_time:.2f} 秒\") print(f\"GPU活跃时间: {gpu_stats['gpu_active_time']:.2f} 秒\") print(f\"CPU活跃时间: {sum([end-start for _, start, end in cpu_activity_periods]):.2f} 秒\") print(f\"CPU-GPU重叠时间: {overlap_time:.2f} 秒 ({overlap_percentage:.2f}%)\") print(f\"GPU利用率: {gpu_stats['gpu_utilization']:.2f}%\") return total_time, gpu_stats['gpu_utilization'], overlap_percentage def calculate_overlap(cpu_periods, gpu_periods): \"\"\"计算CPU和GPU活动时间的重叠部分\"\"\" # 将CPU预处理和后处理时间段合并为单一列表 cpu_time_ranges = [(start, end) for _, start, end in cpu_periods] # 初始化重叠时间 total_overlap = 0.0 # 对每个GPU时间段，计算与所有CPU时间段的重叠 for gpu_start, gpu_end in gpu_periods: for cpu_start, cpu_end in cpu_time_ranges: # 计算重叠部分 overlap_start = max(gpu_start, cpu_start) overlap_end = min(gpu_end, cpu_end) # 如果有重叠，累加重叠时间 if overlap_end \u003e overlap_start: total_overlap += (overlap_end - overlap_start) return total_overlap def compare_performance(num_requests=50): \"\"\"比较传统方式和ZeroMQ方式的性能\"\"\" # 设置参数 matrix_size = 100 preprocess_time = 0.05 # CPU预处理时间 gpu_time = 0.1 # GPU计算时间 postprocess_time = 0.05 # CPU后处理时间 # 运行传统方式 trad_time, trad_gpu_util = traditional_approach( num_requests, matrix_size, preprocess_time, gpu_time, postprocess_time ) # 运行ZeroMQ方式 zmq_time, zmq_gpu_util, overlap_percentage = zmq_approach( num_requests, matrix_size, preprocess_time, gpu_time, postprocess_time ) # 计算加速比 speedup = trad_time / zmq_time print(\"\\n===== 性能对比 =====\") print(f\"传统方式执行时间: {trad_time:.2f} 秒, GPU利用率: {trad_gpu_util:.2f}%\") print(f\"ZeroMQ方式执行时间: {zmq_time:.2f} 秒, GPU利用率: {zmq_gpu_util:.2f}%\") print(f\"CPU-GPU重叠比例: {overlap_percentage:.2f}%\") print(f\"加速比: {speedup:.2f}x\") print(f\"GPU利用率提升: {zmq_gpu_util - trad_gpu_util:.2f}%\") # 绘制性能对比图 fig = Figure(figsize=(15, 5)) canvas = FigureCanvas(fig) # 执行时间对比 ax1 = fig.add_subplot(131) methods = ['Traditional', 'ZeroMQ'] times = [trad_time, zmq_time] ax1.bar(methods, times, color=['blue', 'green']) ax1.set_ylabel('Execution Time (seconds)') ax1.set_title('Execution Time Comparison') # 添加数值标签 for i, v in enumerate(times): ax1.text(i, v + 0.1, f\"{v:.2f}s\", ha='center') # 添加加速比 ax1.text(0.5, max(times) * 0.5, f\"Speedup: {speedup:.2f}x\", ha='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.8)) # GPU利用率对比 ax2 = fig.add_subplot(132) utils = [trad_gpu_util, zmq_gpu_util] ax2.bar(methods, utils, color=['blue', 'green']) ax2.set_ylabel('GPU Utilization (%)') ax2.set_title('GPU Utilization Comparison') ax2.set_ylim(0, 100) # 添加数值标签 for i, v in enumerate(utils): ax2.text(i, v + 1, f\"{v:.2f}%\", ha='center') # 添加利用率提升 ax2.text(0.5, 50, f\"Improvement: {zmq_gpu_util - trad_gpu_util:.2f}%\", ha='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.8)) # CPU-GPU重叠比例 ax3 = fig.add_subplot(133) ax3.pie([overlap_percentage, 100-overlap_percentage], labels=['Overlap', 'Non-overlap'], colors=['green', 'lightgray'], autopct='%1.1f%%', startangle=90) ax3.set_title('CPU-GPU Overlap Percentage') ax3.axis('equal') # Equal aspect ratio ensures that pie is drawn as a circle fig.tight_layout() fig.savefig(\"vllm_simulation_comparison.png\") print(\"性能对比图已保存为 vllm_simulation_comparison.png\") if __name__ == \"__main__\": parser = argparse.ArgumentParser(description='模拟vLLM架构的简化版本') parser.add_argument('--requests', type=int, default=50, help='请求数量') args = parser.parse_args() # 比较性能 compare_performance(args.requests) 性能对比 我们比较了传统顺序处理和 ZeroMQ 并行处理的性能差异：\n运行传统方式（单进程顺序执行）... 处理请求: 100%|█████████████████████████████████████████████████████████████| 50/50 [00:10\u003c00:00, 4.94it/s] 传统方式完成时间: 10.13 秒 GPU活跃时间: 5.04 秒 GPU利用率: 49.73% 运行ZeroMQ方式（分离CPU和GPU操作）... GPU工作进程已启动 接收和处理结果: 8%|████▍ | 4/50 [00:00\u003c00:05, 8.69it/s]已发送 10/50 个请求 接收和处理结果: 18%|██████████ | 9/50 [00:01\u003c00:04, 9.73it/s]已发送 20/50 个请求 接收和处理结果: 28%|███████████████▍ | 14/50 [00:01\u003c00:03, 9.85it/s]已发送 30/50 个请求 接收和处理结果: 38%|████████████████████▉ | 19/50 [00:02\u003c00:03, 9.89it/s]已发送 40/50 个请求 接收和处理结果: 46%|█████████████████████████▎ | 23/50 [00:02\u003c00:02, 9.86it/s]已发送 50/50 个请求 接收和处理结果: 100%|███████████████████████████████████████████████████████| 50/50 [00:05\u003c00:00, 9.69it/s] GPU工作进程收到终止信号 GPU工作进程已终止 ZeroMQ方式完成时间: 5.16 秒 GPU活跃时间: 5.04 秒 CPU活跃时间: 5.07 秒 CPU-GPU重叠时间: 4.96 秒 (96.09%) GPU利用率: 89.08% ===== 性能对比 ===== 传统方式执行时间: 10.13 秒, GPU利用率: 49.73% ZeroMQ方式执行时间: 5.16 秒, GPU利用率: 89.08% CPU-GPU重叠比例: 96.09% 加速比: 1.96x GPU利用率提升: 39.35% 通过 ZeroMQ 实现的 CPU-GPU 并行处理，我们获得了以下优势：\n更高的 GPU 利用率 更短的总执行时间 CPU 和 GPU 更好的工作重叠 总结与最佳实践 通过本教程，我们展示了如何使用 ZeroMQ 突破 Python GIL 限制，显著提升 CPU 密集型任务的性能，以及如何优化 CPU-GPU 协作。以下是一些最佳实践：\n何时使用 ZeroMQ 进行并行处理 CPU 密集型任务：计算密集的操作，如图像处理、数值计算等 可拆分的任务：能够被分割成独立子任务的问题 需要灵活通信模式的场景：超出简单多进程模型的复杂通信需求 CPU-GPU 协作优化：在深度学习推理等场景中优化资源利用 ZeroMQ vs Python 原生多进程 ZeroMQ 优势：更灵活的通信模式，更好的扩展性（可跨网络），更精细的控制 原生多进程优势：使用更简单，适合不需要复杂通信的场景 注意事项 进程间通信开销：分布式处理虽然能突破 GIL 限制，但也引入了通信开销 数据序列化：在进程间传递数据需要序列化和反序列化，对于大型数据可能成为瓶颈 任务粒度：太小的任务会使通信开销超过并行处理的收益，太大的任务会影响负载均衡 资源管理：在 CPU-GPU 并行场景中，需要合理管理内存和计算资源 通过合理使用 ZeroMQ 进行分布式处理，我们可以充分发挥多核处理器和 GPU 的性能，显著提升 Python 程序的执行效率，特别是对于计算密集型任务和深度学习推理场景。\n",
+  "wordCount" : "8799",
+  "inLanguage": "zh",
+  "datePublished": "2025-05-06T00:00:00Z",
+  "dateModified": "2025-05-06T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      Python 性能优化：使用 ZeroMQ 突破 GIL 限制
+    </h1>
+    <div class="post-description">
+      通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能
+    </div>
+    <div class="post-meta"><span title='2025-05-06 00:00:00 +0000 UTC'>2025-05-06</span>&nbsp;·&nbsp;18 min&nbsp;·&nbsp;8799 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae%e4%b8%8e%e5%ae%89%e8%a3%85" aria-label="环境配置与安装">环境配置与安装</a></li>
+                <li>
+                    <a href="#zeromq-%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" aria-label="ZeroMQ 核心概念">ZeroMQ 核心概念</a><ul>
+                        
+                <li>
+                    <a href="#zeromq-%e7%9a%84%e4%b8%bb%e8%a6%81%e7%89%b9%e7%82%b9" aria-label="ZeroMQ 的主要特点">ZeroMQ 的主要特点</a></li>
+                <li>
+                    <a href="#zeromq-%e7%9a%84%e5%b8%b8%e7%94%a8%e9%80%9a%e4%bf%a1%e6%a8%a1%e5%bc%8f" aria-label="ZeroMQ 的常用通信模式">ZeroMQ 的常用通信模式</a></li>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e7%9a%84-zeromq-%e7%a4%ba%e4%be%8b" aria-label="基本的 ZeroMQ 示例">基本的 ZeroMQ 示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#gil-%e9%99%90%e5%88%b6%e4%b8%8b%e7%9a%84%e6%80%a7%e8%83%bd%e9%97%ae%e9%a2%98" aria-label="GIL 限制下的性能问题">GIL 限制下的性能问题</a><ul>
+                        
+                <li>
+                    <a href="#%e6%bc%94%e7%a4%ba-gil-%e9%99%90%e5%88%b6%e7%9a%84%e7%a4%ba%e4%be%8b%e7%a8%8b%e5%ba%8f" aria-label="演示 GIL 限制的示例程序">演示 GIL 限制的示例程序</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e7%8e%b0%e5%88%86%e5%b8%83%e5%bc%8f%e5%a4%84%e7%90%86" aria-label="实现分布式处理">实现分布式处理</a></li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e5%af%b9%e6%af%94%e5%88%86%e6%9e%90" aria-label="性能对比分析">性能对比分析</a></li></ul>
+                </li>
+                <li>
+                    <a href="#vllm-%e6%9e%b6%e6%9e%84%e6%a8%a1%e6%8b%9fcpu-gpu-%e5%b9%b6%e8%a1%8c%e4%bc%98%e5%8c%96" aria-label="vLLM 架构模拟：CPU-GPU 并行优化">vLLM 架构模拟：CPU-GPU 并行优化</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8-zeromq-%e5%ae%9e%e7%8e%b0-cpu-gpu-%e5%b9%b6%e8%a1%8c" aria-label="使用 ZeroMQ 实现 CPU-GPU 并行">使用 ZeroMQ 实现 CPU-GPU 并行</a></li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e5%af%b9%e6%af%94" aria-label="性能对比">性能对比</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93%e4%b8%8e%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" aria-label="总结与最佳实践">总结与最佳实践</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%95%e6%97%b6%e4%bd%bf%e7%94%a8-zeromq-%e8%bf%9b%e8%a1%8c%e5%b9%b6%e8%a1%8c%e5%a4%84%e7%90%86" aria-label="何时使用 ZeroMQ 进行并行处理">何时使用 ZeroMQ 进行并行处理</a></li>
+                <li>
+                    <a href="#zeromq-vs-python-%e5%8e%9f%e7%94%9f%e5%a4%9a%e8%bf%9b%e7%a8%8b" aria-label="ZeroMQ vs Python 原生多进程">ZeroMQ vs Python 原生多进程</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>在 Python 编程中，全局解释器锁（Global Interpreter Lock，简称 GIL）一直是制约 CPU 密集型任务性能的主要瓶颈。本文将介绍如何使用 ZeroMQ 这一高性能分布式消息队列库来突破 GIL 限制，通过将单一进程拆分为多个通过消息通信的进程，从而充分利用多核 CPU 资源，显著提升性能。</p>
+<h3 id="环境配置与安装">环境配置与安装<a hidden class="anchor" aria-hidden="true" href="#环境配置与安装">#</a></h3>
+<p>首先，我们需要创建一个虚拟环境并安装必要的依赖包。这里我们使用 <code>uv</code> 命令来创建和管理虚拟环境</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uv venv .venv
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">source</span> .venv/bin/activate &amp;&amp; uv pip install pyzmq numpy matplotlib tqdm
+</span></span></code></pre></div><h3 id="zeromq-核心概念">ZeroMQ 核心概念<a hidden class="anchor" aria-hidden="true" href="#zeromq-核心概念">#</a></h3>
+<p>ZeroMQ (也写作 ØMQ, 0MQ 或 zmq) 是一个高性能的异步消息传递库，旨在用于分布式或并发应用程序。它提供了一个消息队列，但与传统的消息队列不同，它可以在没有专门的消息代理（broker）的情况下运行。</p>
+<style type="text/css">.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe}@media (prefers-color-scheme:dark){.notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}}body.dark .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:.125em;position:relative}</style>
+<div><svg width="0" height="0" display="none" xmlns="http://www.w3.org/2000/svg"><symbol id="tip-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/></symbol><symbol id="note-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="warning-notice" viewBox="0 0 576 512" preserveAspectRatio="xMidYMid meet"><path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="info-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"/></symbol></svg></div><div class="notice info" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"></use></svg></span>Info</p><p>ZeroMQ 提供了一种轻量级的消息传递机制，非常适合用于构建分布式系统和并行计算应用。</p></div>
+<h4 id="zeromq-的主要特点">ZeroMQ 的主要特点<a hidden class="anchor" aria-hidden="true" href="#zeromq-的主要特点">#</a></h4>
+<ul>
+<li><strong>无代理设计</strong>：不需要中央消息服务器</li>
+<li><strong>异步 I/O 模型</strong>：非阻塞操作，提高并发性能</li>
+<li><strong>多种通信模式</strong>：支持请求-回复、发布-订阅、推送-拉取等模式</li>
+<li><strong>多种传输协议</strong>：支持 TCP、IPC、进程内通信等</li>
+<li><strong>跨语言支持</strong>：提供多种编程语言的绑定</li>
+</ul>
+<h4 id="zeromq-的常用通信模式">ZeroMQ 的常用通信模式<a hidden class="anchor" aria-hidden="true" href="#zeromq-的常用通信模式">#</a></h4>
+<ol>
+<li><strong>请求-回复 (REQ-REP)</strong>：客户端发送请求，服务器回复</li>
+<li><strong>发布-订阅 (PUB-SUB)</strong>：发布者发送消息，订阅者接收</li>
+<li><strong>推送-拉取 (PUSH-PULL)</strong>：任务分发和结果收集，适合并行处理</li>
+<li><strong>路由-经销商 (ROUTER-DEALER)</strong>：高级异步通信模式</li>
+</ol>
+<h4 id="基本的-zeromq-示例">基本的 ZeroMQ 示例<a hidden class="anchor" aria-hidden="true" href="#基本的-zeromq-示例">#</a></h4>
+<p>以下是一个简单的请求-回复模式示例，展示了 ZeroMQ 的基本用法：</p>
+
+
+<p><details >
+  <summary markdown="span">基本的 ZeroMQ REQ-REP 模式示例</summary>
+  <div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 基本的 ZeroMQ REQ-REP 模式示例</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> zmq
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> threading
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> server():
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建上下文和 socket</span>
+</span></span><span style="display:flex;"><span>    context = zmq.Context()
+</span></span><span style="display:flex;"><span>    socket = context.socket(zmq.REP)
+</span></span><span style="display:flex;"><span>    socket.bind(<span style="color:#0ff;font-weight:bold">&#34;tcp://*:5555&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;服务器已启动，等待请求...&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 服务循环</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 等待客户端请求</span>
+</span></span><span style="display:flex;"><span>        message = socket.recv()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;收到请求: </span><span style="color:#0ff;font-weight:bold">{</span>message.decode()<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 模拟工作</span>
+</span></span><span style="display:flex;"><span>        time.sleep(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 发送回复</span>
+</span></span><span style="display:flex;"><span>        socket.send(<span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;Request processed&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> client():
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建上下文和 socket</span>
+</span></span><span style="display:flex;"><span>    context = zmq.Context()
+</span></span><span style="display:flex;"><span>    socket = context.socket(zmq.REQ)
+</span></span><span style="display:flex;"><span>    socket.connect(<span style="color:#0ff;font-weight:bold">&#34;tcp://localhost:5555&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 发送请求</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">5</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;发送请求 </span><span style="color:#0ff;font-weight:bold">{</span>i<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">...&#34;</span>)
+</span></span><span style="display:flex;"><span>        socket.send(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;请求 #</span><span style="color:#0ff;font-weight:bold">{</span>i<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>.encode())
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 获取回复</span>
+</span></span><span style="display:flex;"><span>        message = socket.recv()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;收到回复: </span><span style="color:#0ff;font-weight:bold">{</span>message.decode()<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">len</span>(sys.argv) &lt; <span style="color:#ff0;font-weight:bold">2</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;用法: python zmq_basic.py [server|client]&#34;</span>)
+</span></span><span style="display:flex;"><span>        sys.exit(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> sys.argv[<span style="color:#ff0;font-weight:bold">1</span>] == <span style="color:#0ff;font-weight:bold">&#34;server&#34;</span>:
+</span></span><span style="display:flex;"><span>        server()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">elif</span> sys.argv[<span style="color:#ff0;font-weight:bold">1</span>] == <span style="color:#0ff;font-weight:bold">&#34;client&#34;</span>:
+</span></span><span style="display:flex;"><span>        client()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">elif</span> sys.argv[<span style="color:#ff0;font-weight:bold">1</span>] == <span style="color:#0ff;font-weight:bold">&#34;both&#34;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 在单独的线程中启动服务器</span>
+</span></span><span style="display:flex;"><span>        server_thread = threading.Thread(target=server)
+</span></span><span style="display:flex;"><span>        server_thread.daemon = <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        server_thread.start()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 给服务器一点时间启动</span>
+</span></span><span style="display:flex;"><span>        time.sleep(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 运行客户端</span>
+</span></span><span style="display:flex;"><span>        client()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;用法: python zmq_basic.py [server|client|both]&#34;</span>)
+</span></span></code></pre></div>
+</details></p>
+
+<p>这个简单示例展示了 ZeroMQ 的基本通信模式。服务器创建一个 REP 套接字并绑定到特定端口，客户端创建一个 REQ 套接字并连接到服务器。客户端发送请求，服务器处理后回复。</p>
+<h3 id="gil-限制下的性能问题">GIL 限制下的性能问题<a hidden class="anchor" aria-hidden="true" href="#gil-限制下的性能问题">#</a></h3>
+<p>在深入 ZeroMQ 解决方案之前，让我们先了解 Python 中的 GIL 问题以及它如何影响 CPU 密集型任务的性能。</p>
+<blockquote>
+<p>GIL（全局解释器锁）是 CPython 解释器中的一个互斥锁，它确保同一时刻只有一个线程可以执行 Python 字节码。这意味着即使在多核处理器上，标准的 Python 线程也无法实现真正的并行计算。</p>
+</blockquote>
+<div class="notice warning" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#warning-notice"></use></svg></span>Warning</p><p>由于 GIL 的存在，Python 多线程在 CPU 密集型任务上通常无法提供性能提升，有时甲至会因为线程切换开销而导致性能下降。</p></div>
+<h4 id="演示-gil-限制的示例程序">演示 GIL 限制的示例程序<a hidden class="anchor" aria-hidden="true" href="#演示-gil-限制的示例程序">#</a></h4>
+<p>下面是一个 CPU 密集型任务的示例，它模拟了图像处理中的模糊滤镜操作：</p>
+
+
+<p><details >
+  <summary markdown="span">CPU密集型任务示例 - 受GIL限制的模糊滤镜操作</summary>
+  <div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># filename: cpu_bound_demo.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># CPU密集型任务示例 - 受GIL限制的性能问题</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> numpy <span style="color:#fff;font-weight:bold">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> matplotlib.pyplot <span style="color:#fff;font-weight:bold">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> matplotlib.figure <span style="color:#fff;font-weight:bold">import</span> Figure
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> matplotlib.backends.backend_agg <span style="color:#fff;font-weight:bold">import</span> FigureCanvasAgg <span style="color:#fff;font-weight:bold">as</span> FigureCanvas
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> generate_data(size=<span style="color:#ff0;font-weight:bold">1000</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;生成随机数据矩阵&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> np.random.random((size, size))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> process_data(data, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;对数据应用简单的模糊滤镜 (CPU密集型操作)&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    result = np.zeros_like(data)
+</span></span><span style="display:flex;"><span>    rows, cols = data.shape
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 简单的滑动窗口平均 (模拟模糊操作)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(kernel_size//<span style="color:#ff0;font-weight:bold">2</span>, rows - kernel_size//<span style="color:#ff0;font-weight:bold">2</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> j in <span style="color:#fff;font-weight:bold">range</span>(kernel_size//<span style="color:#ff0;font-weight:bold">2</span>, cols - kernel_size//<span style="color:#ff0;font-weight:bold">2</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 提取窗口</span>
+</span></span><span style="display:flex;"><span>            window = data[i-kernel_size//<span style="color:#ff0;font-weight:bold">2</span>:i+kernel_size//<span style="color:#ff0;font-weight:bold">2</span>+<span style="color:#ff0;font-weight:bold">1</span>, 
+</span></span><span style="display:flex;"><span>                          j-kernel_size//<span style="color:#ff0;font-weight:bold">2</span>:j+kernel_size//<span style="color:#ff0;font-weight:bold">2</span>+<span style="color:#ff0;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 计算平均值</span>
+</span></span><span style="display:flex;"><span>            result[i, j] = np.mean(window)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> visualize_results(original, processed, execution_time, title):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;可视化原始数据和处理后的数据&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    fig = Figure(figsize=(<span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">5</span>))
+</span></span><span style="display:flex;"><span>    canvas = FigureCanvas(fig)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    ax1 = fig.add_subplot(<span style="color:#ff0;font-weight:bold">121</span>)
+</span></span><span style="display:flex;"><span>    ax1.imshow(original, cmap=<span style="color:#0ff;font-weight:bold">&#39;viridis&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax1.set_title(<span style="color:#0ff;font-weight:bold">&#39;Original Data&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax1.axis(<span style="color:#0ff;font-weight:bold">&#39;off&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    ax2 = fig.add_subplot(<span style="color:#ff0;font-weight:bold">122</span>)
+</span></span><span style="display:flex;"><span>    ax2.imshow(processed, cmap=<span style="color:#0ff;font-weight:bold">&#39;viridis&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax2.set_title(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;Processed Data</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Execution Time: </span><span style="color:#0ff;font-weight:bold">{</span>execution_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> seconds&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax2.axis(<span style="color:#0ff;font-weight:bold">&#39;off&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    fig.suptitle(title)
+</span></span><span style="display:flex;"><span>    fig.tight_layout()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 保存图像</span>
+</span></span><span style="display:flex;"><span>    fig.savefig(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">{</span>title.replace(<span style="color:#0ff;font-weight:bold">&#39; &#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;_&#39;</span>).lower()<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">.png&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;结果已保存为 </span><span style="color:#0ff;font-weight:bold">{</span>title.replace(<span style="color:#0ff;font-weight:bold">&#39; &#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;_&#39;</span>).lower()<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">.png&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_single_process(data_size=<span style="color:#ff0;font-weight:bold">500</span>, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;在单个进程中运行数据处理&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;生成 </span><span style="color:#0ff;font-weight:bold">{</span>data_size<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x</span><span style="color:#0ff;font-weight:bold">{</span>data_size<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 的数据矩阵...&#34;</span>)
+</span></span><span style="display:flex;"><span>    data = generate_data(data_size)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;开始处理数据...&#34;</span>)
+</span></span><span style="display:flex;"><span>    start_time = time.time()
+</span></span><span style="display:flex;"><span>    result = process_data(data, kernel_size)
+</span></span><span style="display:flex;"><span>    end_time = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    execution_time = end_time - start_time
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;处理完成，耗时: </span><span style="color:#0ff;font-weight:bold">{</span>execution_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 可视化结果</span>
+</span></span><span style="display:flex;"><span>    visualize_results(data, result, execution_time, <span style="color:#0ff;font-weight:bold">&#34;Single Process&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> execution_time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 运行单进程版本</span>
+</span></span><span style="display:flex;"><span>    execution_time = run_single_process(data_size=<span style="color:#ff0;font-weight:bold">500</span>, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;单进程执行时间: </span><span style="color:#0ff;font-weight:bold">{</span>execution_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span></code></pre></div>
+</details></p>
+
+<p>这个程序生成一个随机数据矩阵，然后对其应用模糊滤镜操作。由于操作是 CPU 密集型的，且在单个进程中运行，因此受到 GIL 的限制，无法充分利用多核处理器的优势。</p>
+<p>使用 ZeroMQ 拆分进程</p>
+<p>为了突破 GIL 限制，我们可以将任务拆分成多个独立的进程，每个进程处理数据的一部分，然后使用 ZeroMQ 进行进程间通信。</p>
+<div class="notice info" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"></use></svg></span>Info</p><p>ZeroMQ 允许我们创建多个独立进程，每个进程可以充分利用一个 CPU 核心，从而绕过 GIL 限制，实现真正的并行计算。</p></div>
+<p>我们将采用以下架构：</p>
+<ol>
+<li><strong>主进程</strong>：负责数据分割、任务分发和结果收集</li>
+<li><strong>工作进程</strong>：接收数据块，进行处理，并返回结果</li>
+<li><strong>通信模式</strong>：使用 PUSH-PULL 模式进行任务分发和结果收集</li>
+</ol>
+<h4 id="实现分布式处理">实现分布式处理<a hidden class="anchor" aria-hidden="true" href="#实现分布式处理">#</a></h4>
+<p>下面是使用 ZeroMQ 实现分布式处理的代码：</p>
+
+
+<p><details >
+  <summary markdown="span">ZeroMQ 分布式处理实现</summary>
+  <div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># filename: zmq_distributed_demo.py</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 使用不同并行处理方法对比CPU密集型任务的性能</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> numpy <span style="color:#fff;font-weight:bold">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> zmq
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> pickle
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> multiprocessing
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> multiprocessing <span style="color:#fff;font-weight:bold">import</span> Pool, Process, Queue, cpu_count
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> matplotlib.pyplot <span style="color:#fff;font-weight:bold">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> matplotlib.figure <span style="color:#fff;font-weight:bold">import</span> Figure
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> matplotlib.backends.backend_agg <span style="color:#fff;font-weight:bold">import</span> FigureCanvasAgg <span style="color:#fff;font-weight:bold">as</span> FigureCanvas
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> hashlib
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 导入单进程版本中的函数</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> cpu_bound_demo <span style="color:#fff;font-weight:bold">import</span> generate_data, process_data, visualize_results
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> worker(worker_id):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;工作进程 - 接收数据块并处理&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    context = zmq.Context()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置接收任务的PULL socket</span>
+</span></span><span style="display:flex;"><span>    receiver = context.socket(zmq.PULL)
+</span></span><span style="display:flex;"><span>    receiver.connect(<span style="color:#0ff;font-weight:bold">&#34;tcp://localhost:5557&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置发送结果的PUSH socket</span>
+</span></span><span style="display:flex;"><span>    sender = context.socket(zmq.PUSH)
+</span></span><span style="display:flex;"><span>    sender.connect(<span style="color:#0ff;font-weight:bold">&#34;tcp://localhost:5558&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;工作进程 </span><span style="color:#0ff;font-weight:bold">{</span>worker_id<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 已启动&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 处理循环</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 接收任务</span>
+</span></span><span style="display:flex;"><span>            task = receiver.recv_pyobj()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 检查是否是终止信号</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> task == <span style="color:#0ff;font-weight:bold">&#34;DONE&#34;</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;工作进程 </span><span style="color:#0ff;font-weight:bold">{</span>worker_id<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 收到终止信号&#34;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 解包任务数据</span>
+</span></span><span style="display:flex;"><span>            chunk_id, data_chunk, kernel_size = task
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 处理数据</span>
+</span></span><span style="display:flex;"><span>            result_chunk = process_data(data_chunk, kernel_size)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 发送结果</span>
+</span></span><span style="display:flex;"><span>            sender.send_pyobj((chunk_id, result_chunk))
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;工作进程 </span><span style="color:#0ff;font-weight:bold">{</span>worker_id<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 错误: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 关闭连接</span>
+</span></span><span style="display:flex;"><span>    receiver.close()
+</span></span><span style="display:flex;"><span>    sender.close()
+</span></span><span style="display:flex;"><span>    context.term()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;工作进程 </span><span style="color:#0ff;font-weight:bold">{</span>worker_id<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 已终止&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> split_data(data, num_chunks, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>, overlap=<span style="color:#fff;font-weight:bold">True</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;将数据分割成多个块，可选添加重叠区域以解决边界问题&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    rows, cols = data.shape
+</span></span><span style="display:flex;"><span>    chunk_size = rows // num_chunks
+</span></span><span style="display:flex;"><span>    chunks = []
+</span></span><span style="display:flex;"><span>    chunk_bounds = []  <span style="color:#007f7f"># 记录每个块的有效边界（不包括重叠区域）</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 计算重叠大小，至少需要kernel_size//2的重叠</span>
+</span></span><span style="display:flex;"><span>    overlap_size = kernel_size // <span style="color:#ff0;font-weight:bold">2</span> <span style="color:#fff;font-weight:bold">if</span> overlap <span style="color:#fff;font-weight:bold">else</span> <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(num_chunks):
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 计算块的起始和结束行，包括重叠区域</span>
+</span></span><span style="display:flex;"><span>        start_row = <span style="color:#fff;font-weight:bold">max</span>(<span style="color:#ff0;font-weight:bold">0</span>, i * chunk_size - overlap_size)
+</span></span><span style="display:flex;"><span>        end_row = <span style="color:#fff;font-weight:bold">min</span>(rows, (i + <span style="color:#ff0;font-weight:bold">1</span>) * chunk_size + overlap_size <span style="color:#fff;font-weight:bold">if</span> i &lt; num_chunks - <span style="color:#ff0;font-weight:bold">1</span> <span style="color:#fff;font-weight:bold">else</span> rows)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 计算有效边界（不包括重叠区域）</span>
+</span></span><span style="display:flex;"><span>        valid_start = i * chunk_size
+</span></span><span style="display:flex;"><span>        valid_end = <span style="color:#fff;font-weight:bold">min</span>(rows, (i + <span style="color:#ff0;font-weight:bold">1</span>) * chunk_size)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 存储块及其有效边界</span>
+</span></span><span style="display:flex;"><span>        chunks.append(data[start_row:end_row, :].copy())  <span style="color:#007f7f"># 使用copy()确保数据独立</span>
+</span></span><span style="display:flex;"><span>        chunk_bounds.append((valid_start - start_row, valid_end - start_row))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> chunks, chunk_bounds
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_distributed_process(data_size=<span style="color:#ff0;font-weight:bold">500</span>, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>, num_workers=<span style="color:#fff;font-weight:bold">None</span>, input_data=<span style="color:#fff;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;使用ZeroMQ分布式运行数据处理&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 如果没有指定工作进程数，使用CPU核心数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> num_workers is <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        num_workers = multiprocessing.cpu_count()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> input_data is <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;生成 </span><span style="color:#0ff;font-weight:bold">{</span>data_size<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x</span><span style="color:#0ff;font-weight:bold">{</span>data_size<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 的数据矩阵...&#34;</span>)
+</span></span><span style="display:flex;"><span>        data = generate_data(data_size)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;使用提供的输入数据...&#34;</span>)
+</span></span><span style="display:flex;"><span>        data = input_data
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 分割数据，并添加重叠区域</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;将数据分割成 </span><span style="color:#0ff;font-weight:bold">{</span>num_workers<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 块，并添加重叠区域...&#34;</span>)
+</span></span><span style="display:flex;"><span>    data_chunks, chunk_bounds = split_data(data, num_workers, kernel_size)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建ZeroMQ上下文</span>
+</span></span><span style="display:flex;"><span>    context = zmq.Context()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置任务分发的PUSH socket</span>
+</span></span><span style="display:flex;"><span>    task_sender = context.socket(zmq.PUSH)
+</span></span><span style="display:flex;"><span>    task_sender.bind(<span style="color:#0ff;font-weight:bold">&#34;tcp://*:5557&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置结果收集的PULL socket</span>
+</span></span><span style="display:flex;"><span>    result_receiver = context.socket(zmq.PULL)
+</span></span><span style="display:flex;"><span>    result_receiver.bind(<span style="color:#0ff;font-weight:bold">&#34;tcp://*:5558&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 启动工作进程</span>
+</span></span><span style="display:flex;"><span>    processes = []
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(num_workers):
+</span></span><span style="display:flex;"><span>        p = multiprocessing.Process(target=worker, args=(i,))
+</span></span><span style="display:flex;"><span>        p.daemon = <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        p.start()
+</span></span><span style="display:flex;"><span>        processes.append(p)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 给工作进程一点时间启动</span>
+</span></span><span style="display:flex;"><span>    time.sleep(<span style="color:#ff0;font-weight:bold">0.5</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 开始计时</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;开始分布式处理数据...&#34;</span>)
+</span></span><span style="display:flex;"><span>    start_time = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 发送任务到工作进程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, chunk in <span style="color:#fff;font-weight:bold">enumerate</span>(data_chunks):
+</span></span><span style="display:flex;"><span>        task_sender.send_pyobj((i, chunk, kernel_size))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 收集结果</span>
+</span></span><span style="display:flex;"><span>    results = [<span style="color:#fff;font-weight:bold">None</span>] * <span style="color:#fff;font-weight:bold">len</span>(data_chunks)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> _ in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#fff;font-weight:bold">len</span>(data_chunks)):
+</span></span><span style="display:flex;"><span>        chunk_id, result_chunk = result_receiver.recv_pyobj()
+</span></span><span style="display:flex;"><span>        results[chunk_id] = result_chunk
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 合并结果，只保留每个块的有效区域</span>
+</span></span><span style="display:flex;"><span>    final_results = []
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, result_chunk in <span style="color:#fff;font-weight:bold">enumerate</span>(results):
+</span></span><span style="display:flex;"><span>        valid_start, valid_end = chunk_bounds[i]
+</span></span><span style="display:flex;"><span>        final_results.append(result_chunk[valid_start:valid_end, :])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 合并有效区域</span>
+</span></span><span style="display:flex;"><span>    result = np.vstack(final_results)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 结束计时</span>
+</span></span><span style="display:flex;"><span>    end_time = time.time()
+</span></span><span style="display:flex;"><span>    execution_time = end_time - start_time
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;处理完成，耗时: </span><span style="color:#0ff;font-weight:bold">{</span>execution_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 发送终止信号给工作进程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> _ in <span style="color:#fff;font-weight:bold">range</span>(num_workers):
+</span></span><span style="display:flex;"><span>        task_sender.send_pyobj(<span style="color:#0ff;font-weight:bold">&#34;DONE&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 等待工作进程终止</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> p in processes:
+</span></span><span style="display:flex;"><span>        p.join(timeout=<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 关闭ZeroMQ连接</span>
+</span></span><span style="display:flex;"><span>    task_sender.close()
+</span></span><span style="display:flex;"><span>    result_receiver.close()
+</span></span><span style="display:flex;"><span>    context.term()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 可视化结果</span>
+</span></span><span style="display:flex;"><span>    visualize_results(data, result, execution_time, <span style="color:#0ff;font-weight:bold">&#34;ZeroMQ Distributed&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> execution_time, result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 新增的直接使用多进程的实现</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> mp_worker(data_chunk, kernel_size, result_queue, chunk_id):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;多进程工作函数 - 处理数据块并将结果放入队列&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 处理数据</span>
+</span></span><span style="display:flex;"><span>        result_chunk = process_data(data_chunk, kernel_size)
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 将结果放入队列</span>
+</span></span><span style="display:flex;"><span>        result_queue.put((chunk_id, result_chunk))
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;多进程工作函数错误: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> run_multiprocessing(data_size=<span style="color:#ff0;font-weight:bold">500</span>, kernel_size=<span style="color:#ff0;font-weight:bold">5</span>, num_workers=<span style="color:#fff;font-weight:bold">None</span>, input_data=<span style="color:#fff;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;使用Python原生多进程运行数据处理&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 如果没有指定工作进程数，使用CPU核心数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> num_workers is <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        num_workers = cpu_count()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> input_data is <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;生成 </span><span style="color:#0ff;font-weight:bold">{</span>data_size<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x</span><span style="color:#0ff;font-weight:bold">{</span>data_size<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 的数据矩阵...&#34;</span>)
+</span></span><span style="display:flex;"><span>        data = generate_data(data_size)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;使用提供的输入数据...&#34;</span>)
+</span></span><span style="display:flex;"><span>        data = input_data
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 分割数据，并添加重叠区域</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;将数据分割成 </span><span style="color:#0ff;font-weight:bold">{</span>num_workers<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 块，并添加重叠区域...&#34;</span>)
+</span></span><span style="display:flex;"><span>    data_chunks, chunk_bounds = split_data(data, num_workers, kernel_size)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建结果队列</span>
+</span></span><span style="display:flex;"><span>    result_queue = Queue()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建进程</span>
+</span></span><span style="display:flex;"><span>    processes = []
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 开始计时</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;开始多进程处理数据...&#34;</span>)
+</span></span><span style="display:flex;"><span>    start_time = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 启动工作进程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, chunk in <span style="color:#fff;font-weight:bold">enumerate</span>(data_chunks):
+</span></span><span style="display:flex;"><span>        p = Process(target=mp_worker, args=(chunk, kernel_size, result_queue, i))
+</span></span><span style="display:flex;"><span>        processes.append(p)
+</span></span><span style="display:flex;"><span>        p.start()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 收集结果</span>
+</span></span><span style="display:flex;"><span>    results = [<span style="color:#fff;font-weight:bold">None</span>] * <span style="color:#fff;font-weight:bold">len</span>(data_chunks)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> _ in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#fff;font-weight:bold">len</span>(data_chunks)):
+</span></span><span style="display:flex;"><span>        chunk_id, result_chunk = result_queue.get()
+</span></span><span style="display:flex;"><span>        results[chunk_id] = result_chunk
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 等待所有进程完成</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> p in processes:
+</span></span><span style="display:flex;"><span>        p.join()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 合并结果，只保留每个块的有效区域</span>
+</span></span><span style="display:flex;"><span>    final_results = []
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, result_chunk in <span style="color:#fff;font-weight:bold">enumerate</span>(results):
+</span></span><span style="display:flex;"><span>        valid_start, valid_end = chunk_bounds[i]
+</span></span><span style="display:flex;"><span>        final_results.append(result_chunk[valid_start:valid_end, :])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 合并有效区域</span>
+</span></span><span style="display:flex;"><span>    result = np.vstack(final_results)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 结束计时</span>
+</span></span><span style="display:flex;"><span>    end_time = time.time()
+</span></span><span style="display:flex;"><span>    execution_time = end_time - start_time
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;处理完成，耗时: </span><span style="color:#0ff;font-weight:bold">{</span>execution_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 可视化结果</span>
+</span></span><span style="display:flex;"><span>    visualize_results(data, result, execution_time, <span style="color:#0ff;font-weight:bold">&#34;Multiprocessing&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> execution_time, result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 用于验证结果一致性的函数</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> calculate_result_hash(result):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;计算结果数组的哈希值以验证一致性&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 将numpy数组转换为字节序列</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 先四舍五入到固定小数位数，避免浮点数误差引起的不一致</span>
+</span></span><span style="display:flex;"><span>    rounded_result = np.round(result, <span style="color:#ff0;font-weight:bold">6</span>)
+</span></span><span style="display:flex;"><span>    result_bytes = rounded_result.tobytes()
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 计算SHA-256哈希</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> hashlib.sha256(result_bytes).hexdigest()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> compare_performance():
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;比较三种实现的性能并验证结果一致性&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">===== 性能对比 =====&#34;</span>)
+</span></span><span style="display:flex;"><span>    data_size = <span style="color:#ff0;font-weight:bold">2000</span>
+</span></span><span style="display:flex;"><span>    kernel_size = <span style="color:#ff0;font-weight:bold">5</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置随机种子以确保可重现性</span>
+</span></span><span style="display:flex;"><span>    np.random.seed(<span style="color:#ff0;font-weight:bold">42</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 运行单进程版本</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">运行单进程版本...&#34;</span>)
+</span></span><span style="display:flex;"><span>    single_data = generate_data(data_size)  <span style="color:#007f7f"># 保证所有实现使用相同的输入数据</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 为了确保结果一致性，我们将使用与分布式实现相同的处理方式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 将数据分割，处理，然后再合并</span>
+</span></span><span style="display:flex;"><span>    num_workers = cpu_count()
+</span></span><span style="display:flex;"><span>    data_chunks, chunk_bounds = split_data(single_data, num_workers, kernel_size)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    single_start = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 处理每个块</span>
+</span></span><span style="display:flex;"><span>    result_chunks = []
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> chunk in data_chunks:
+</span></span><span style="display:flex;"><span>        result_chunk = process_data(chunk, kernel_size)
+</span></span><span style="display:flex;"><span>        result_chunks.append(result_chunk)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 合并结果，只保留每个块的有效区域</span>
+</span></span><span style="display:flex;"><span>    final_results = []
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, result_chunk in <span style="color:#fff;font-weight:bold">enumerate</span>(result_chunks):
+</span></span><span style="display:flex;"><span>        valid_start, valid_end = chunk_bounds[i]
+</span></span><span style="display:flex;"><span>        final_results.append(result_chunk[valid_start:valid_end, :])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 合并有效区域</span>
+</span></span><span style="display:flex;"><span>    single_result = np.vstack(final_results)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    single_time = time.time() - single_start
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;处理完成，耗时: </span><span style="color:#0ff;font-weight:bold">{</span>single_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    visualize_results(single_data, single_result, single_time, <span style="color:#0ff;font-weight:bold">&#34;Single Process&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 运行分布式版本</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">运行ZeroMQ分布式版本...&#34;</span>)
+</span></span><span style="display:flex;"><span>    zmq_time, zmq_result = run_distributed_process(data_size=data_size, kernel_size=kernel_size, input_data=single_data)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 运行原生多进程版本</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">运行原生多进程版本...&#34;</span>)
+</span></span><span style="display:flex;"><span>    mp_time, mp_result = run_multiprocessing(data_size=data_size, kernel_size=kernel_size, input_data=single_data)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 验证结果一致性</span>
+</span></span><span style="display:flex;"><span>    single_hash = calculate_result_hash(single_result)
+</span></span><span style="display:flex;"><span>    zmq_hash = calculate_result_hash(zmq_result)
+</span></span><span style="display:flex;"><span>    mp_hash = calculate_result_hash(mp_result)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">哈希值检查:&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;  单进程结果哈希: </span><span style="color:#0ff;font-weight:bold">{</span>single_hash[:<span style="color:#ff0;font-weight:bold">10</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">...&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;  ZeroMQ结果哈希: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_hash[:<span style="color:#ff0;font-weight:bold">10</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">...&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;  多进程结果哈希: </span><span style="color:#0ff;font-weight:bold">{</span>mp_hash[:<span style="color:#ff0;font-weight:bold">10</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">...&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 检查结果是否相同</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> single_hash == zmq_hash and single_hash == mp_hash:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;  结果一致性检查: 通过 </span><span style="color:#0ff;font-weight:bold">\u2705</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;  结果一致性检查: 失败 </span><span style="color:#0ff;font-weight:bold">\u274c</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> single_hash != zmq_hash:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;    - 单进程与ZeroMQ结果不一致&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> single_hash != mp_hash:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;    - 单进程与多进程结果不一致&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> zmq_hash != mp_hash:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;    - ZeroMQ与多进程结果不一致&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 检查结果是否相同</span>
+</span></span><span style="display:flex;"><span>    zmq_match = (single_hash == zmq_hash)
+</span></span><span style="display:flex;"><span>    mp_match = (single_hash == mp_hash)
+</span></span><span style="display:flex;"><span>    results_match = zmq_match and mp_match
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 计算加速比</span>
+</span></span><span style="display:flex;"><span>    zmq_speedup = single_time / zmq_time
+</span></span><span style="display:flex;"><span>    mp_speedup = single_time / mp_time
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">===== 结果对比 =====&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;单进程执行时间: </span><span style="color:#0ff;font-weight:bold">{</span>single_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;ZeroMQ分布式执行时间: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒 (加速比: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_speedup<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x)&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;原生多进程执行时间: </span><span style="color:#0ff;font-weight:bold">{</span>mp_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒 (加速比: </span><span style="color:#0ff;font-weight:bold">{</span>mp_speedup<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x)&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;结果一致性检查: </span><span style="color:#0ff;font-weight:bold">{</span><span style="color:#0ff;font-weight:bold">&#39;通过&#39;</span> <span style="color:#fff;font-weight:bold">if</span> results_match <span style="color:#fff;font-weight:bold">else</span> <span style="color:#0ff;font-weight:bold">&#39;失败&#39;</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 绘制性能对比图</span>
+</span></span><span style="display:flex;"><span>    fig = Figure(figsize=(<span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">6</span>))
+</span></span><span style="display:flex;"><span>    canvas = FigureCanvas(fig)
+</span></span><span style="display:flex;"><span>    ax = fig.add_subplot(<span style="color:#ff0;font-weight:bold">111</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    methods = [<span style="color:#0ff;font-weight:bold">&#39;Single Process&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;ZeroMQ Distributed&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;Python Multiprocessing&#39;</span>]
+</span></span><span style="display:flex;"><span>    times = [single_time, zmq_time, mp_time]
+</span></span><span style="display:flex;"><span>    colors = [<span style="color:#0ff;font-weight:bold">&#39;blue&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;green&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;orange&#39;</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    ax.bar(methods, times, color=colors)
+</span></span><span style="display:flex;"><span>    ax.set_ylabel(<span style="color:#0ff;font-weight:bold">&#39;Execution Time (seconds)&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax.set_title(<span style="color:#0ff;font-weight:bold">&#39;Performance Comparison&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 添加数值标签</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, v in <span style="color:#fff;font-weight:bold">enumerate</span>(times):
+</span></span><span style="display:flex;"><span>        ax.text(i, v + <span style="color:#ff0;font-weight:bold">0.1</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">{</span>v<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">s&#34;</span>, ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 添加加速比</span>
+</span></span><span style="display:flex;"><span>    ax.text(<span style="color:#ff0;font-weight:bold">1</span>, times[<span style="color:#ff0;font-weight:bold">1</span>] * <span style="color:#ff0;font-weight:bold">0.5</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Speedup: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_speedup<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x&#34;</span>, 
+</span></span><span style="display:flex;"><span>            ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>, fontsize=<span style="color:#ff0;font-weight:bold">10</span>, bbox=<span style="color:#fff;font-weight:bold">dict</span>(facecolor=<span style="color:#0ff;font-weight:bold">&#39;white&#39;</span>, alpha=<span style="color:#ff0;font-weight:bold">0.8</span>))
+</span></span><span style="display:flex;"><span>    ax.text(<span style="color:#ff0;font-weight:bold">2</span>, times[<span style="color:#ff0;font-weight:bold">2</span>] * <span style="color:#ff0;font-weight:bold">0.5</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Speedup: </span><span style="color:#0ff;font-weight:bold">{</span>mp_speedup<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x&#34;</span>, 
+</span></span><span style="display:flex;"><span>            ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>, fontsize=<span style="color:#ff0;font-weight:bold">10</span>, bbox=<span style="color:#fff;font-weight:bold">dict</span>(facecolor=<span style="color:#0ff;font-weight:bold">&#39;white&#39;</span>, alpha=<span style="color:#ff0;font-weight:bold">0.8</span>))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    fig.tight_layout()
+</span></span><span style="display:flex;"><span>    fig.savefig(<span style="color:#0ff;font-weight:bold">&#34;performance_comparison_all.png&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;性能对比图已保存为 performance_comparison_all.png&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 比较性能</span>
+</span></span><span style="display:flex;"><span>    compare_performance()
+</span></span></code></pre></div>
+</details></p>
+
+<h4 id="性能对比分析">性能对比分析<a hidden class="anchor" aria-hidden="true" href="#性能对比分析">#</a></h4>
+<p>为了验证 ZeroMQ 分布式处理的效果，我们将其与单进程版本和 Python 原生多进程版本进行对比。</p>
+<p>我们使用相同的输入数据，分别用三种方法处理，并记录执行时间：</p>
+<ol>
+<li><strong>单进程版本</strong>：所有计算在一个进程中完成</li>
+<li><strong>ZeroMQ 分布式版本</strong>：使用 ZeroMQ 进行进程间通信</li>
+<li><strong>Python 原生多进程版本</strong>：使用 Python 的 multiprocessing 模块</li>
+</ol>
+<p><strong>性能测试结果</strong></p>
+<pre tabindex="0"><code>===== 结果对比 =====
+单进程执行时间: 9.75 秒
+ZeroMQ分布式执行时间: 1.28 秒 (加速比: 7.62x)
+原生多进程执行时间: 1.27 秒 (加速比: 7.66x)
+结果一致性检查: 通过
+</code></pre><h3 id="vllm-架构模拟cpu-gpu-并行优化">vLLM 架构模拟：CPU-GPU 并行优化<a hidden class="anchor" aria-hidden="true" href="#vllm-架构模拟cpu-gpu-并行优化">#</a></h3>
+<p>除了解决 CPU 密集型任务的 GIL 限制，ZeroMQ 还可以用于优化 CPU 和 GPU 之间的协作。这里我们模拟了类似 vLLM（一种高效的大语言模型推理框架）的架构，通过 ZeroMQ 实现 CPU 和 GPU 任务的并行处理。</p>
+<p><strong>传统顺序处理的问题</strong></p>
+<p>在传统的深度学习推理中，处理流程通常是顺序的：</p>
+<ol>
+<li>CPU 进行预处理</li>
+<li>等待 GPU 完成计算</li>
+<li>CPU 进行后处理</li>
+</ol>
+<p>这种方式导致 GPU 在 CPU 处理期间处于空闲状态，无法充分利用计算资源。</p>
+<h4 id="使用-zeromq-实现-cpu-gpu-并行">使用 ZeroMQ 实现 CPU-GPU 并行<a hidden class="anchor" aria-hidden="true" href="#使用-zeromq-实现-cpu-gpu-并行">#</a></h4>
+<p>通过 ZeroMQ，我们可以实现 CPU 和 GPU 的并行工作：</p>
+
+
+<p><details >
+  <summary markdown="span">模拟vllm拆分cpu和gpu工作负载</summary>
+  <div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 模拟vLLM架构的简化版本，使用ZeroMQ分离GPU和CPU工作负载</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> numpy <span style="color:#fff;font-weight:bold">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> zmq
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> multiprocessing
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> threading
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> queue
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> argparse
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> tqdm <span style="color:#fff;font-weight:bold">import</span> tqdm
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> matplotlib.pyplot <span style="color:#fff;font-weight:bold">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> matplotlib.figure <span style="color:#fff;font-weight:bold">import</span> Figure
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> matplotlib.backends.backend_agg <span style="color:#fff;font-weight:bold">import</span> FigureCanvasAgg <span style="color:#fff;font-weight:bold">as</span> FigureCanvas
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 模拟GPU计算的函数</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> simulate_gpu_computation(input_data, computation_time=<span style="color:#ff0;font-weight:bold">0.1</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;模拟GPU上的矩阵乘法计算&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 实际上是在CPU上运行，但我们用sleep来模拟GPU计算时间</span>
+</span></span><span style="display:flex;"><span>    time.sleep(computation_time)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 模拟矩阵乘法</span>
+</span></span><span style="display:flex;"><span>    result = np.dot(input_data, input_data.T)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 模拟CPU处理的函数</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> simulate_cpu_preprocessing(request_id, size=<span style="color:#ff0;font-weight:bold">100</span>, processing_time=<span style="color:#ff0;font-weight:bold">0.05</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;模拟CPU上的预处理操作&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 模拟预处理耗时</span>
+</span></span><span style="display:flex;"><span>    time.sleep(processing_time)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 生成随机输入数据</span>
+</span></span><span style="display:flex;"><span>    input_data = np.random.random((size, size))
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> input_data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> simulate_cpu_postprocessing(request_id, result, processing_time=<span style="color:#ff0;font-weight:bold">0.05</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;模拟CPU上的后处理操作&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 模拟后处理耗时</span>
+</span></span><span style="display:flex;"><span>    time.sleep(processing_time)
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 简单处理结果</span>
+</span></span><span style="display:flex;"><span>    processed_result = np.mean(result)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> processed_result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 传统方式：单进程中顺序执行CPU和GPU操作</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> traditional_approach(num_requests=<span style="color:#ff0;font-weight:bold">10</span>, matrix_size=<span style="color:#ff0;font-weight:bold">100</span>, 
+</span></span><span style="display:flex;"><span>                         preprocess_time=<span style="color:#ff0;font-weight:bold">0.05</span>, gpu_time=<span style="color:#ff0;font-weight:bold">0.1</span>, postprocess_time=<span style="color:#ff0;font-weight:bold">0.05</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;传统方式：在单一进程中顺序执行CPU和GPU操作&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">运行传统方式（单进程顺序执行）...&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    start_time = time.time()
+</span></span><span style="display:flex;"><span>    gpu_active_time = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i in tqdm(<span style="color:#fff;font-weight:bold">range</span>(num_requests), desc=<span style="color:#0ff;font-weight:bold">&#34;处理请求&#34;</span>):
+</span></span><span style="display:flex;"><span>        request_id = <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;req_</span><span style="color:#0ff;font-weight:bold">{</span>i<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># CPU预处理</span>
+</span></span><span style="display:flex;"><span>        preprocess_start = time.time()
+</span></span><span style="display:flex;"><span>        input_data = simulate_cpu_preprocessing(request_id, matrix_size, preprocess_time)
+</span></span><span style="display:flex;"><span>        preprocess_end = time.time()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># GPU计算</span>
+</span></span><span style="display:flex;"><span>        gpu_start = time.time()
+</span></span><span style="display:flex;"><span>        result = simulate_gpu_computation(input_data, gpu_time)
+</span></span><span style="display:flex;"><span>        gpu_end = time.time()
+</span></span><span style="display:flex;"><span>        gpu_active_time += (gpu_end - gpu_start)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># CPU后处理</span>
+</span></span><span style="display:flex;"><span>        postprocess_start = time.time()
+</span></span><span style="display:flex;"><span>        final_result = simulate_cpu_postprocessing(request_id, result, postprocess_time)
+</span></span><span style="display:flex;"><span>        postprocess_end = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    end_time = time.time()
+</span></span><span style="display:flex;"><span>    total_time = end_time - start_time
+</span></span><span style="display:flex;"><span>    gpu_utilization = gpu_active_time / total_time * <span style="color:#ff0;font-weight:bold">100</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;传统方式完成时间: </span><span style="color:#0ff;font-weight:bold">{</span>total_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;GPU活跃时间: </span><span style="color:#0ff;font-weight:bold">{</span>gpu_active_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;GPU利用率: </span><span style="color:#0ff;font-weight:bold">{</span>gpu_utilization<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> total_time, gpu_utilization
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># GPU进程：接收输入数据，执行GPU计算，返回结果</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> gpu_worker(port_recv=<span style="color:#ff0;font-weight:bold">5555</span>, port_send=<span style="color:#ff0;font-weight:bold">5556</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;GPU工作进程，接收输入数据，执行GPU计算，发送结果&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    context = zmq.Context()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置接收输入数据的PULL socket</span>
+</span></span><span style="display:flex;"><span>    receiver = context.socket(zmq.PULL)
+</span></span><span style="display:flex;"><span>    receiver.bind(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;tcp://*:</span><span style="color:#0ff;font-weight:bold">{</span>port_recv<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置发送结果的PUSH socket</span>
+</span></span><span style="display:flex;"><span>    sender = context.socket(zmq.PUSH)
+</span></span><span style="display:flex;"><span>    sender.bind(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;tcp://*:</span><span style="color:#0ff;font-weight:bold">{</span>port_send<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;GPU工作进程已启动&#34;</span>)
+</span></span><span style="display:flex;"><span>    gpu_active_time = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    processed_count = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    start_time = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 记录每次GPU活动的开始和结束时间</span>
+</span></span><span style="display:flex;"><span>    gpu_activity_periods = []
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 接收任务</span>
+</span></span><span style="display:flex;"><span>            message = receiver.recv_pyobj()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 检查是否是终止信号</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> message == <span style="color:#0ff;font-weight:bold">&#34;DONE&#34;</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;GPU工作进程收到终止信号&#34;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#007f7f"># 发送GPU利用率信息</span>
+</span></span><span style="display:flex;"><span>                total_time = time.time() - start_time
+</span></span><span style="display:flex;"><span>                gpu_utilization = gpu_active_time / total_time * <span style="color:#ff0;font-weight:bold">100</span> <span style="color:#fff;font-weight:bold">if</span> total_time &gt; <span style="color:#ff0;font-weight:bold">0</span> <span style="color:#fff;font-weight:bold">else</span> <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>                sender.send_pyobj({
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#34;type&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;STATS&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#34;gpu_active_time&#34;</span>: gpu_active_time,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#34;total_time&#34;</span>: total_time,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#34;gpu_utilization&#34;</span>: gpu_utilization,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#34;processed_count&#34;</span>: processed_count,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#34;gpu_activity_periods&#34;</span>: gpu_activity_periods
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 解包任务数据</span>
+</span></span><span style="display:flex;"><span>            request_id, input_data, gpu_time = message
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 执行GPU计算</span>
+</span></span><span style="display:flex;"><span>            gpu_start = time.time()
+</span></span><span style="display:flex;"><span>            result = simulate_gpu_computation(input_data, gpu_time)
+</span></span><span style="display:flex;"><span>            gpu_end = time.time()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 记录GPU活动时间段</span>
+</span></span><span style="display:flex;"><span>            gpu_activity_periods.append((gpu_start, gpu_end))
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 更新GPU活跃时间</span>
+</span></span><span style="display:flex;"><span>            gpu_active_time += (gpu_end - gpu_start)
+</span></span><span style="display:flex;"><span>            processed_count += <span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 发送结果</span>
+</span></span><span style="display:flex;"><span>            sender.send_pyobj((request_id, result))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;GPU工作进程错误: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">finally</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 关闭连接</span>
+</span></span><span style="display:flex;"><span>        receiver.close()
+</span></span><span style="display:flex;"><span>        sender.close()
+</span></span><span style="display:flex;"><span>        context.term()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;GPU工作进程已终止&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># CPU进程：生成请求，预处理，发送到GPU，接收结果，后处理</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> zmq_approach(num_requests=<span style="color:#ff0;font-weight:bold">10</span>, matrix_size=<span style="color:#ff0;font-weight:bold">100</span>, 
+</span></span><span style="display:flex;"><span>                preprocess_time=<span style="color:#ff0;font-weight:bold">0.05</span>, gpu_time=<span style="color:#ff0;font-weight:bold">0.1</span>, postprocess_time=<span style="color:#ff0;font-weight:bold">0.05</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;使用ZeroMQ分离CPU和GPU操作&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">运行ZeroMQ方式（分离CPU和GPU操作）...&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 启动GPU工作进程</span>
+</span></span><span style="display:flex;"><span>    gpu_process = multiprocessing.Process(target=gpu_worker)
+</span></span><span style="display:flex;"><span>    gpu_process.daemon = <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>    gpu_process.start()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 给GPU进程一点时间启动</span>
+</span></span><span style="display:flex;"><span>    time.sleep(<span style="color:#ff0;font-weight:bold">0.5</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建ZeroMQ上下文</span>
+</span></span><span style="display:flex;"><span>    context = zmq.Context()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置发送输入数据的PUSH socket</span>
+</span></span><span style="display:flex;"><span>    sender = context.socket(zmq.PUSH)
+</span></span><span style="display:flex;"><span>    sender.connect(<span style="color:#0ff;font-weight:bold">&#34;tcp://localhost:5555&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置接收结果的PULL socket</span>
+</span></span><span style="display:flex;"><span>    receiver = context.socket(zmq.PULL)
+</span></span><span style="display:flex;"><span>    receiver.connect(<span style="color:#0ff;font-weight:bold">&#34;tcp://localhost:5556&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 开始计时</span>
+</span></span><span style="display:flex;"><span>    start_time = time.time()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 创建结果字典</span>
+</span></span><span style="display:flex;"><span>    results = {}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 记录CPU活动时间段</span>
+</span></span><span style="display:flex;"><span>    cpu_activity_periods = []
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 启动预处理和发送线程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> preprocess_and_send():
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(num_requests):
+</span></span><span style="display:flex;"><span>            request_id = <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;req_</span><span style="color:#0ff;font-weight:bold">{</span>i<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># CPU预处理开始</span>
+</span></span><span style="display:flex;"><span>            cpu_start = time.time()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># CPU预处理</span>
+</span></span><span style="display:flex;"><span>            input_data = simulate_cpu_preprocessing(request_id, matrix_size, preprocess_time)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># CPU预处理结束</span>
+</span></span><span style="display:flex;"><span>            cpu_end = time.time()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 记录CPU预处理时间段</span>
+</span></span><span style="display:flex;"><span>            cpu_activity_periods.append((<span style="color:#0ff;font-weight:bold">&#34;preprocess&#34;</span>, cpu_start, cpu_end))
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 发送到GPU进程</span>
+</span></span><span style="display:flex;"><span>            sender.send_pyobj((request_id, input_data, gpu_time))
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 简单的进度显示</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> (i + <span style="color:#ff0;font-weight:bold">1</span>) % <span style="color:#ff0;font-weight:bold">10</span> == <span style="color:#ff0;font-weight:bold">0</span> or i == num_requests - <span style="color:#ff0;font-weight:bold">1</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;已发送 </span><span style="color:#0ff;font-weight:bold">{</span>i + <span style="color:#ff0;font-weight:bold">1</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">/</span><span style="color:#0ff;font-weight:bold">{</span>num_requests<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 个请求&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    send_thread = threading.Thread(target=preprocess_and_send)
+</span></span><span style="display:flex;"><span>    send_thread.daemon = <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>    send_thread.start()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 接收结果和后处理</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> _ in tqdm(<span style="color:#fff;font-weight:bold">range</span>(num_requests), desc=<span style="color:#0ff;font-weight:bold">&#34;接收和处理结果&#34;</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 接收结果</span>
+</span></span><span style="display:flex;"><span>        message = receiver.recv_pyobj()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 处理结果</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">isinstance</span>(message, <span style="color:#fff;font-weight:bold">dict</span>) and message.get(<span style="color:#0ff;font-weight:bold">&#34;type&#34;</span>) == <span style="color:#0ff;font-weight:bold">&#34;STATS&#34;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 这是GPU进程发送的统计信息</span>
+</span></span><span style="display:flex;"><span>            gpu_stats = message
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">continue</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        request_id, result = message
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># CPU后处理开始</span>
+</span></span><span style="display:flex;"><span>        cpu_start = time.time()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># CPU后处理</span>
+</span></span><span style="display:flex;"><span>        final_result = simulate_cpu_postprocessing(request_id, result, postprocess_time)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># CPU后处理结束</span>
+</span></span><span style="display:flex;"><span>        cpu_end = time.time()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 记录CPU后处理时间段</span>
+</span></span><span style="display:flex;"><span>        cpu_activity_periods.append((<span style="color:#0ff;font-weight:bold">&#34;postprocess&#34;</span>, cpu_start, cpu_end))
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 存储结果</span>
+</span></span><span style="display:flex;"><span>        results[request_id] = final_result
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 发送终止信号给GPU进程</span>
+</span></span><span style="display:flex;"><span>    sender.send_pyobj(<span style="color:#0ff;font-weight:bold">&#34;DONE&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 接收GPU统计信息</span>
+</span></span><span style="display:flex;"><span>    gpu_stats = receiver.recv_pyobj()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 等待GPU进程终止</span>
+</span></span><span style="display:flex;"><span>    gpu_process.join(timeout=<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 结束计时</span>
+</span></span><span style="display:flex;"><span>    end_time = time.time()
+</span></span><span style="display:flex;"><span>    total_time = end_time - start_time
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 计算CPU-GPU重叠时间</span>
+</span></span><span style="display:flex;"><span>    gpu_periods = gpu_stats[<span style="color:#0ff;font-weight:bold">&#39;gpu_activity_periods&#39;</span>]
+</span></span><span style="display:flex;"><span>    overlap_time = calculate_overlap(cpu_activity_periods, gpu_periods)
+</span></span><span style="display:flex;"><span>    overlap_percentage = (overlap_time / total_time) * <span style="color:#ff0;font-weight:bold">100</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 关闭ZeroMQ连接</span>
+</span></span><span style="display:flex;"><span>    sender.close()
+</span></span><span style="display:flex;"><span>    receiver.close()
+</span></span><span style="display:flex;"><span>    context.term()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;ZeroMQ方式完成时间: </span><span style="color:#0ff;font-weight:bold">{</span>total_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;GPU活跃时间: </span><span style="color:#0ff;font-weight:bold">{</span>gpu_stats[<span style="color:#0ff;font-weight:bold">&#39;gpu_active_time&#39;</span>]<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;CPU活跃时间: </span><span style="color:#0ff;font-weight:bold">{</span><span style="color:#fff;font-weight:bold">sum</span>([end-start <span style="color:#fff;font-weight:bold">for</span> _, start, end in cpu_activity_periods])<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;CPU-GPU重叠时间: </span><span style="color:#0ff;font-weight:bold">{</span>overlap_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒 (</span><span style="color:#0ff;font-weight:bold">{</span>overlap_percentage<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%)&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;GPU利用率: </span><span style="color:#0ff;font-weight:bold">{</span>gpu_stats[<span style="color:#0ff;font-weight:bold">&#39;gpu_utilization&#39;</span>]<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> total_time, gpu_stats[<span style="color:#0ff;font-weight:bold">&#39;gpu_utilization&#39;</span>], overlap_percentage
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> calculate_overlap(cpu_periods, gpu_periods):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;计算CPU和GPU活动时间的重叠部分&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 将CPU预处理和后处理时间段合并为单一列表</span>
+</span></span><span style="display:flex;"><span>    cpu_time_ranges = [(start, end) <span style="color:#fff;font-weight:bold">for</span> _, start, end in cpu_periods]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 初始化重叠时间</span>
+</span></span><span style="display:flex;"><span>    total_overlap = <span style="color:#ff0;font-weight:bold">0.0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 对每个GPU时间段，计算与所有CPU时间段的重叠</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> gpu_start, gpu_end in gpu_periods:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> cpu_start, cpu_end in cpu_time_ranges:
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 计算重叠部分</span>
+</span></span><span style="display:flex;"><span>            overlap_start = <span style="color:#fff;font-weight:bold">max</span>(gpu_start, cpu_start)
+</span></span><span style="display:flex;"><span>            overlap_end = <span style="color:#fff;font-weight:bold">min</span>(gpu_end, cpu_end)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># 如果有重叠，累加重叠时间</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> overlap_end &gt; overlap_start:
+</span></span><span style="display:flex;"><span>                total_overlap += (overlap_end - overlap_start)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> total_overlap
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> compare_performance(num_requests=<span style="color:#ff0;font-weight:bold">50</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;比较传统方式和ZeroMQ方式的性能&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 设置参数</span>
+</span></span><span style="display:flex;"><span>    matrix_size = <span style="color:#ff0;font-weight:bold">100</span>
+</span></span><span style="display:flex;"><span>    preprocess_time = <span style="color:#ff0;font-weight:bold">0.05</span>  <span style="color:#007f7f"># CPU预处理时间</span>
+</span></span><span style="display:flex;"><span>    gpu_time = <span style="color:#ff0;font-weight:bold">0.1</span>         <span style="color:#007f7f"># GPU计算时间</span>
+</span></span><span style="display:flex;"><span>    postprocess_time = <span style="color:#ff0;font-weight:bold">0.05</span>  <span style="color:#007f7f"># CPU后处理时间</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 运行传统方式</span>
+</span></span><span style="display:flex;"><span>    trad_time, trad_gpu_util = traditional_approach(
+</span></span><span style="display:flex;"><span>        num_requests, matrix_size, preprocess_time, gpu_time, postprocess_time
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 运行ZeroMQ方式</span>
+</span></span><span style="display:flex;"><span>    zmq_time, zmq_gpu_util, overlap_percentage = zmq_approach(
+</span></span><span style="display:flex;"><span>        num_requests, matrix_size, preprocess_time, gpu_time, postprocess_time
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 计算加速比</span>
+</span></span><span style="display:flex;"><span>    speedup = trad_time / zmq_time
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">===== 性能对比 =====&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;传统方式执行时间: </span><span style="color:#0ff;font-weight:bold">{</span>trad_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒, GPU利用率: </span><span style="color:#0ff;font-weight:bold">{</span>trad_gpu_util<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;ZeroMQ方式执行时间: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_time<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> 秒, GPU利用率: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_gpu_util<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;CPU-GPU重叠比例: </span><span style="color:#0ff;font-weight:bold">{</span>overlap_percentage<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;加速比: </span><span style="color:#0ff;font-weight:bold">{</span>speedup<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;GPU利用率提升: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_gpu_util - trad_gpu_util<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 绘制性能对比图</span>
+</span></span><span style="display:flex;"><span>    fig = Figure(figsize=(<span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">5</span>))
+</span></span><span style="display:flex;"><span>    canvas = FigureCanvas(fig)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 执行时间对比</span>
+</span></span><span style="display:flex;"><span>    ax1 = fig.add_subplot(<span style="color:#ff0;font-weight:bold">131</span>)
+</span></span><span style="display:flex;"><span>    methods = [<span style="color:#0ff;font-weight:bold">&#39;Traditional&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;ZeroMQ&#39;</span>]
+</span></span><span style="display:flex;"><span>    times = [trad_time, zmq_time]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    ax1.bar(methods, times, color=[<span style="color:#0ff;font-weight:bold">&#39;blue&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;green&#39;</span>])
+</span></span><span style="display:flex;"><span>    ax1.set_ylabel(<span style="color:#0ff;font-weight:bold">&#39;Execution Time (seconds)&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax1.set_title(<span style="color:#0ff;font-weight:bold">&#39;Execution Time Comparison&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 添加数值标签</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, v in <span style="color:#fff;font-weight:bold">enumerate</span>(times):
+</span></span><span style="display:flex;"><span>        ax1.text(i, v + <span style="color:#ff0;font-weight:bold">0.1</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">{</span>v<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">s&#34;</span>, ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 添加加速比</span>
+</span></span><span style="display:flex;"><span>    ax1.text(<span style="color:#ff0;font-weight:bold">0.5</span>, <span style="color:#fff;font-weight:bold">max</span>(times) * <span style="color:#ff0;font-weight:bold">0.5</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Speedup: </span><span style="color:#0ff;font-weight:bold">{</span>speedup<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">x&#34;</span>, 
+</span></span><span style="display:flex;"><span>            ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>, fontsize=<span style="color:#ff0;font-weight:bold">12</span>, bbox=<span style="color:#fff;font-weight:bold">dict</span>(facecolor=<span style="color:#0ff;font-weight:bold">&#39;white&#39;</span>, alpha=<span style="color:#ff0;font-weight:bold">0.8</span>))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># GPU利用率对比</span>
+</span></span><span style="display:flex;"><span>    ax2 = fig.add_subplot(<span style="color:#ff0;font-weight:bold">132</span>)
+</span></span><span style="display:flex;"><span>    utils = [trad_gpu_util, zmq_gpu_util]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    ax2.bar(methods, utils, color=[<span style="color:#0ff;font-weight:bold">&#39;blue&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;green&#39;</span>])
+</span></span><span style="display:flex;"><span>    ax2.set_ylabel(<span style="color:#0ff;font-weight:bold">&#39;GPU Utilization (%)&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax2.set_title(<span style="color:#0ff;font-weight:bold">&#39;GPU Utilization Comparison&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax2.set_ylim(<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">100</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 添加数值标签</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i, v in <span style="color:#fff;font-weight:bold">enumerate</span>(utils):
+</span></span><span style="display:flex;"><span>        ax2.text(i, v + <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">{</span>v<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>, ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 添加利用率提升</span>
+</span></span><span style="display:flex;"><span>    ax2.text(<span style="color:#ff0;font-weight:bold">0.5</span>, <span style="color:#ff0;font-weight:bold">50</span>, <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Improvement: </span><span style="color:#0ff;font-weight:bold">{</span>zmq_gpu_util - trad_gpu_util<span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">.2f</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">%&#34;</span>, 
+</span></span><span style="display:flex;"><span>            ha=<span style="color:#0ff;font-weight:bold">&#39;center&#39;</span>, fontsize=<span style="color:#ff0;font-weight:bold">12</span>, bbox=<span style="color:#fff;font-weight:bold">dict</span>(facecolor=<span style="color:#0ff;font-weight:bold">&#39;white&#39;</span>, alpha=<span style="color:#ff0;font-weight:bold">0.8</span>))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># CPU-GPU重叠比例</span>
+</span></span><span style="display:flex;"><span>    ax3 = fig.add_subplot(<span style="color:#ff0;font-weight:bold">133</span>)
+</span></span><span style="display:flex;"><span>    ax3.pie([overlap_percentage, <span style="color:#ff0;font-weight:bold">100</span>-overlap_percentage], 
+</span></span><span style="display:flex;"><span>            labels=[<span style="color:#0ff;font-weight:bold">&#39;Overlap&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;Non-overlap&#39;</span>],
+</span></span><span style="display:flex;"><span>            colors=[<span style="color:#0ff;font-weight:bold">&#39;green&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;lightgray&#39;</span>],
+</span></span><span style="display:flex;"><span>            autopct=<span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">%1.1f%%</span><span style="color:#0ff;font-weight:bold">&#39;</span>,
+</span></span><span style="display:flex;"><span>            startangle=<span style="color:#ff0;font-weight:bold">90</span>)
+</span></span><span style="display:flex;"><span>    ax3.set_title(<span style="color:#0ff;font-weight:bold">&#39;CPU-GPU Overlap Percentage&#39;</span>)
+</span></span><span style="display:flex;"><span>    ax3.axis(<span style="color:#0ff;font-weight:bold">&#39;equal&#39;</span>)  <span style="color:#007f7f"># Equal aspect ratio ensures that pie is drawn as a circle</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    fig.tight_layout()
+</span></span><span style="display:flex;"><span>    fig.savefig(<span style="color:#0ff;font-weight:bold">&#34;vllm_simulation_comparison.png&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;性能对比图已保存为 vllm_simulation_comparison.png&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    parser = argparse.ArgumentParser(description=<span style="color:#0ff;font-weight:bold">&#39;模拟vLLM架构的简化版本&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#39;--requests&#39;</span>, <span style="color:#fff;font-weight:bold">type</span>=<span style="color:#fff;font-weight:bold">int</span>, default=<span style="color:#ff0;font-weight:bold">50</span>, help=<span style="color:#0ff;font-weight:bold">&#39;请求数量&#39;</span>)
+</span></span><span style="display:flex;"><span>    args = parser.parse_args()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 比较性能</span>
+</span></span><span style="display:flex;"><span>    compare_performance(args.requests)
+</span></span></code></pre></div>
+</details></p>
+
+<h4 id="性能对比">性能对比<a hidden class="anchor" aria-hidden="true" href="#性能对比">#</a></h4>
+<p>我们比较了传统顺序处理和 ZeroMQ 并行处理的性能差异：</p>
+<pre tabindex="0"><code>运行传统方式（单进程顺序执行）...
+处理请求: 100%|█████████████████████████████████████████████████████████████| 50/50 [00:10&lt;00:00,  4.94it/s]
+传统方式完成时间: 10.13 秒
+GPU活跃时间: 5.04 秒
+GPU利用率: 49.73%
+
+运行ZeroMQ方式（分离CPU和GPU操作）...
+GPU工作进程已启动
+接收和处理结果:   8%|████▍                                                   | 4/50 [00:00&lt;00:05,  8.69it/s]已发送 10/50 个请求
+接收和处理结果:  18%|██████████                                              | 9/50 [00:01&lt;00:04,  9.73it/s]已发送 20/50 个请求
+接收和处理结果:  28%|███████████████▍                                       | 14/50 [00:01&lt;00:03,  9.85it/s]已发送 30/50 个请求
+接收和处理结果:  38%|████████████████████▉                                  | 19/50 [00:02&lt;00:03,  9.89it/s]已发送 40/50 个请求
+接收和处理结果:  46%|█████████████████████████▎                             | 23/50 [00:02&lt;00:02,  9.86it/s]已发送 50/50 个请求
+接收和处理结果: 100%|███████████████████████████████████████████████████████| 50/50 [00:05&lt;00:00,  9.69it/s]
+GPU工作进程收到终止信号
+GPU工作进程已终止
+ZeroMQ方式完成时间: 5.16 秒
+GPU活跃时间: 5.04 秒
+CPU活跃时间: 5.07 秒
+CPU-GPU重叠时间: 4.96 秒 (96.09%)
+GPU利用率: 89.08%
+
+===== 性能对比 =====
+传统方式执行时间: 10.13 秒, GPU利用率: 49.73%
+ZeroMQ方式执行时间: 5.16 秒, GPU利用率: 89.08%
+CPU-GPU重叠比例: 96.09%
+加速比: 1.96x
+GPU利用率提升: 39.35%
+</code></pre><p>通过 ZeroMQ 实现的 CPU-GPU 并行处理，我们获得了以下优势：</p>
+<ol>
+<li><strong>更高的 GPU 利用率</strong></li>
+<li><strong>更短的总执行时间</strong></li>
+<li><strong>CPU 和 GPU 更好的工作重叠</strong></li>
+</ol>
+<h3 id="总结与最佳实践">总结与最佳实践<a hidden class="anchor" aria-hidden="true" href="#总结与最佳实践">#</a></h3>
+<p>通过本教程，我们展示了如何使用 ZeroMQ 突破 Python GIL 限制，显著提升 CPU 密集型任务的性能，以及如何优化 CPU-GPU 协作。以下是一些最佳实践：</p>
+<h4 id="何时使用-zeromq-进行并行处理">何时使用 ZeroMQ 进行并行处理<a hidden class="anchor" aria-hidden="true" href="#何时使用-zeromq-进行并行处理">#</a></h4>
+<ul>
+<li><strong>CPU 密集型任务</strong>：计算密集的操作，如图像处理、数值计算等</li>
+<li><strong>可拆分的任务</strong>：能够被分割成独立子任务的问题</li>
+<li><strong>需要灵活通信模式</strong>的场景：超出简单多进程模型的复杂通信需求</li>
+<li><strong>CPU-GPU 协作优化</strong>：在深度学习推理等场景中优化资源利用</li>
+</ul>
+<h4 id="zeromq-vs-python-原生多进程">ZeroMQ vs Python 原生多进程<a hidden class="anchor" aria-hidden="true" href="#zeromq-vs-python-原生多进程">#</a></h4>
+<ul>
+<li><strong>ZeroMQ 优势</strong>：更灵活的通信模式，更好的扩展性（可跨网络），更精细的控制</li>
+<li><strong>原生多进程优势</strong>：使用更简单，适合不需要复杂通信的场景</li>
+</ul>
+<h4 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h4>
+<ol>
+<li><strong>进程间通信开销</strong>：分布式处理虽然能突破 GIL 限制，但也引入了通信开销</li>
+<li><strong>数据序列化</strong>：在进程间传递数据需要序列化和反序列化，对于大型数据可能成为瓶颈</li>
+<li><strong>任务粒度</strong>：太小的任务会使通信开销超过并行处理的收益，太大的任务会影响负载均衡</li>
+<li><strong>资源管理</strong>：在 CPU-GPU 并行场景中，需要合理管理内存和计算资源</li>
+</ol>
+<p>通过合理使用 ZeroMQ 进行分布式处理，我们可以充分发挥多核处理器和 GPU 的性能，显著提升 Python 程序的执行效率，特别是对于计算密集型任务和深度学习推理场景。</p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/zeromq/">ZeroMQ</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97/">分布式计算</a></li>
+    </ul>
+<div class="footer-comments">
+  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
+    send an email
+</a> to me</p>
+
+</div>
+<nav class="paginav">
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>CPU上部署Qwen3模型及性能测试</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

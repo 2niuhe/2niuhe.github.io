@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ZeroMQ on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/zeromq/</link>
+    <description>Recent content in ZeroMQ on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 06 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/zeromq/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python 性能优化：使用 ZeroMQ 突破 GIL 限制</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/</link>
+      <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-zeromq-gil/</guid>
+      <description>通过 ZeroMQ 分布式消息队列库突破 Python GIL 限制，优化 CPU 密集型任务性能</description>
+    </item>
+    
+  </channel>
+</rss>
