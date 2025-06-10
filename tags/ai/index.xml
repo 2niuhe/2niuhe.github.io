@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AI on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/ai/</link>
+    <description>Recent content in AI on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>vLLM 开发环境搭建</title>
+      <link>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</link>
+      <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</guid>
+      <description>如何搭建 vLLM 的 CPU 和 GPU 开发环境</description>
+    </item>
+    
+  </channel>
+</rss>

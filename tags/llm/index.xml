@@ -6,7 +6,16 @@
     <description>Recent content in LLM on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 28 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/llm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/llm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>vLLM 开发环境搭建</title>
+      <link>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</link>
+      <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</guid>
+      <description>如何搭建 vLLM 的 CPU 和 GPU 开发环境</description>
+    </item>
+    
     <item>
       <title>CPU上部署Qwen3模型及性能测试</title>
       <link>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</link>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>vLLM 开发环境搭建 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="AI, LLM, vLLM">
+<meta name="description" content="如何搭建 vLLM 的 CPU 和 GPU 开发环境">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="vLLM 开发环境搭建" />
+<meta property="og:description" content="如何搭建 vLLM 的 CPU 和 GPU 开发环境" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-06-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-06-09T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="vLLM 开发环境搭建"/>
+<meta name="twitter:description" content="如何搭建 vLLM 的 CPU 和 GPU 开发环境"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "vLLM 开发环境搭建",
+      "item": "https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "vLLM 开发环境搭建",
+  "name": "vLLM 开发环境搭建",
+  "description": "如何搭建 vLLM 的 CPU 和 GPU 开发环境",
+  "keywords": [
+    "AI", "LLM", "vLLM"
+  ],
+  "articleBody": "本文介绍如何搭建 vLLM 的开发环境，包括 CPU 和 GPU 两种环境配置方法。vLLM 是一个高效的大语言模型推理和服务框架，支持各种主流的开源模型。\n准备工作 在开始搭建环境前，我们需要先克隆 vLLM 的代码库并安装一些基本依赖。\nInfo\n以下步骤适用于 CPU 和 GPU 环境的通用部分\n克隆代码库 git clone https://github.com/vllm-project/vllm.git cd vllm 安装基础依赖 sudo apt-get install ccache numactl xz-utils ninja-build 创建虚拟环境 uv venv .venv source .venv/bin/activate uv pip install pip uv pip install sccache CPU 开发环境 Note\nCPU 环境适合没有 GPU 的开发者或者只需要进行功能开发和测试的场景\n方法一：使用 Docker 使用 Docker 是最简单的方式，可以避免环境配置问题：\nsudo docker build -f docker/Dockerfile.cpu --target vllm-dev -t vllm-cpu-dev --shm-size=16g . 方法二：本地配置 参考 docker/Dockerfile.cpu 文件，我们可以在本地配置开发环境：\nCPU 环境详细配置步骤 # 安装 vLLM 依赖 uv pip install requirements/common.txt uv pip install requirements/cpu.txt uv pip install requirements/build.txt # 构建和安装 vLLM VLLM_TARGT_DEVICE=cpu python3 setup.py bdist_wheel VLLM_TARGET_DEVICE=cpu python3 setup.py develop # 安装测试和开发依赖 uv pip compile requirements/test.in -o requirements/test.txt --index-strategy unsafe-best-match --torch-backend cpu uv pip install requirements/dev.txt # 安装 pre-commit 钩子 pre-commit install --hook-type pre-commit --hook-type commit-msg # 检查 vLLM 版本 pip list | grep vllm GPU 开发环境 Warning\nGPU 环境需要 NVIDIA GPU 硬件和相应的 CUDA 驱动支持\n参考 docker/Dockerfile 文件，我们可以配置 GPU 开发环境。以下步骤主要针对只开发 Python 部分，不需要编译 C++ 代码的情况：\nGPU 环境详细配置步骤 # 安装 vLLM 依赖 uv pip install requirements/common.txt uv pip install requirements/cuda.txt uv pip install requirements/build.txt # 使用预编译的二进制文件安装 vLLM VLLM_USE_PRECOMPILED=1 pip install --editable . # 安装开发依赖 uv pip install --extra-index-url https://download.pytorch.org/whl/cu128 --index-strategy unsafe-best-match -r requirements/dev.txt # 安装 pre-commit 钩子 pre-commit install --hook-type pre-commit --hook-type commit-msg # 检查 vLLM 版本 pip list | grep vllm 测试 vLLM 安装完成后，可以使用以下代码测试 vLLM 是否正常工作：\nfrom vllm import LLM, SamplingParams # Define a list of input prompts prompts = [ \"Hello, my name is\", \"The capital of France is\", \"The largest ocean is\", ] if __name__ == \"__main__\": # Define sampling parameters sampling_params = SamplingParams(temperature=0.8, top_p=0.95) # Initialize the LLM engine with the OPT-125M model llm = LLM(model=\"facebook/opt-125m\") # Generate outputs for the input prompts outputs = llm.generate(prompts, sampling_params) # Print the generated outputs for output in outputs: prompt = output.prompt generated_text = output.outputs[0].text print(f\"Prompt: {prompt!r}, Generated text: {generated_text!r}\") Tip\n测试代码使用了 facebook/opt-125m 模型，这是一个较小的模型，适合快速测试。在实际应用中，您可以替换为其他支持的模型。\n总结 通过以上步骤，我们成功搭建了 vLLM 的开发环境，无论是 CPU 还是 GPU 环境。vLLM 作为一个高效的大语言模型推理框架，可以帮助我们更好地部署和使用各种大语言模型。\nNote\n对于生产环境，建议使用官方提供的预构建 Docker 镜像或按照官方文档进行更详细的配置。\n",
+  "wordCount" : "782",
+  "inLanguage": "zh",
+  "datePublished": "2025-06-09T00:00:00Z",
+  "dateModified": "2025-06-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      vLLM 开发环境搭建
+    </h1>
+    <div class="post-description">
+      如何搭建 vLLM 的 CPU 和 GPU 开发环境
+    </div>
+    <div class="post-meta"><span title='2025-06-09 00:00:00 +0000 UTC'>2025-06-09</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;782 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c" aria-label="准备工作">准备工作</a><ul>
+                        
+                <li>
+                    <a href="#%e5%85%8b%e9%9a%86%e4%bb%a3%e7%a0%81%e5%ba%93" aria-label="克隆代码库">克隆代码库</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e5%9f%ba%e7%a1%80%e4%be%9d%e8%b5%96" aria-label="安装基础依赖">安装基础依赖</a></li>
+                <li>
+                    <a href="#%e5%88%9b%e5%bb%ba%e8%99%9a%e6%8b%9f%e7%8e%af%e5%a2%83" aria-label="创建虚拟环境">创建虚拟环境</a></li></ul>
+                </li>
+                <li>
+                    <a href="#cpu-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83" aria-label="CPU 开发环境">CPU 开发环境</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95%e4%b8%80%e4%bd%bf%e7%94%a8-docker" aria-label="方法一：使用 Docker">方法一：使用 Docker</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95%e4%ba%8c%e6%9c%ac%e5%9c%b0%e9%85%8d%e7%bd%ae" aria-label="方法二：本地配置">方法二：本地配置</a></li></ul>
+                </li>
+                <li>
+                    <a href="#gpu-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83" aria-label="GPU 开发环境">GPU 开发环境</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95-vllm" aria-label="测试 vLLM">测试 vLLM</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本文介绍如何搭建 vLLM 的开发环境，包括 CPU 和 GPU 两种环境配置方法。vLLM 是一个高效的大语言模型推理和服务框架，支持各种主流的开源模型。</p>
+<h2 id="准备工作">准备工作<a hidden class="anchor" aria-hidden="true" href="#准备工作">#</a></h2>
+<p>在开始搭建环境前，我们需要先克隆 vLLM 的代码库并安装一些基本依赖。</p>
+<style type="text/css">.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe}@media (prefers-color-scheme:dark){.notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}}body.dark .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:.125em;position:relative}</style>
+<div><svg width="0" height="0" display="none" xmlns="http://www.w3.org/2000/svg"><symbol id="tip-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/></symbol><symbol id="note-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="warning-notice" viewBox="0 0 576 512" preserveAspectRatio="xMidYMid meet"><path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="info-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"/></symbol></svg></div><div class="notice info" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"></use></svg></span>Info</p><p>以下步骤适用于 CPU 和 GPU 环境的通用部分</p></div>
+<h3 id="克隆代码库">克隆代码库<a hidden class="anchor" aria-hidden="true" href="#克隆代码库">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/vllm-project/vllm.git
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> vllm
+</span></span></code></pre></div><h3 id="安装基础依赖">安装基础依赖<a hidden class="anchor" aria-hidden="true" href="#安装基础依赖">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install ccache numactl xz-utils ninja-build
+</span></span></code></pre></div><h3 id="创建虚拟环境">创建虚拟环境<a hidden class="anchor" aria-hidden="true" href="#创建虚拟环境">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uv venv .venv
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">source</span> .venv/bin/activate
+</span></span><span style="display:flex;"><span>uv pip install pip
+</span></span><span style="display:flex;"><span>uv pip install sccache
+</span></span></code></pre></div><h2 id="cpu-开发环境">CPU 开发环境<a hidden class="anchor" aria-hidden="true" href="#cpu-开发环境">#</a></h2>
+<div class="notice note" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#note-notice"></use></svg></span>Note</p><p>CPU 环境适合没有 GPU 的开发者或者只需要进行功能开发和测试的场景</p></div>
+<h3 id="方法一使用-docker">方法一：使用 Docker<a hidden class="anchor" aria-hidden="true" href="#方法一使用-docker">#</a></h3>
+<p>使用 Docker 是最简单的方式，可以避免环境配置问题：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker build -f docker/Dockerfile.cpu --target vllm-dev -t vllm-cpu-dev --shm-size=16g .
+</span></span></code></pre></div><h3 id="方法二本地配置">方法二：本地配置<a hidden class="anchor" aria-hidden="true" href="#方法二本地配置">#</a></h3>
+<p>参考 docker/Dockerfile.cpu 文件，我们可以在本地配置开发环境：</p>
+
+
+<p><details >
+  <summary markdown="span">CPU 环境详细配置步骤</summary>
+  <div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 安装 vLLM 依赖</span>
+</span></span><span style="display:flex;"><span>uv pip install requirements/common.txt
+</span></span><span style="display:flex;"><span>uv pip install requirements/cpu.txt
+</span></span><span style="display:flex;"><span>uv pip install requirements/build.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 构建和安装 vLLM</span>
+</span></span><span style="display:flex;"><span>VLLM_TARGT_DEVICE=cpu python3 setup.py bdist_wheel
+</span></span><span style="display:flex;"><span>VLLM_TARGET_DEVICE=cpu python3 setup.py develop
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 安装测试和开发依赖</span>
+</span></span><span style="display:flex;"><span>uv pip compile requirements/test.in -o requirements/test.txt --index-strategy unsafe-best-match --torch-backend cpu
+</span></span><span style="display:flex;"><span>uv pip install requirements/dev.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 安装 pre-commit 钩子</span>
+</span></span><span style="display:flex;"><span>pre-commit install --hook-type pre-commit --hook-type commit-msg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 检查 vLLM 版本</span>
+</span></span><span style="display:flex;"><span>pip list | grep vllm
+</span></span></code></pre></div>
+</details></p>
+
+<h2 id="gpu-开发环境">GPU 开发环境<a hidden class="anchor" aria-hidden="true" href="#gpu-开发环境">#</a></h2>
+<div class="notice warning" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#warning-notice"></use></svg></span>Warning</p><p>GPU 环境需要 NVIDIA GPU 硬件和相应的 CUDA 驱动支持</p></div>
+<p>参考 docker/Dockerfile 文件，我们可以配置 GPU 开发环境。以下步骤主要针对只开发 Python 部分，不需要编译 C++ 代码的情况：</p>
+
+
+<p><details >
+  <summary markdown="span">GPU 环境详细配置步骤</summary>
+  <div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># 安装 vLLM 依赖</span>
+</span></span><span style="display:flex;"><span>uv pip install requirements/common.txt
+</span></span><span style="display:flex;"><span>uv pip install requirements/cuda.txt
+</span></span><span style="display:flex;"><span>uv pip install requirements/build.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 使用预编译的二进制文件安装 vLLM</span>
+</span></span><span style="display:flex;"><span>VLLM_USE_PRECOMPILED=<span style="color:#ff0;font-weight:bold">1</span> pip install --editable .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 安装开发依赖</span>
+</span></span><span style="display:flex;"><span>uv pip install --extra-index-url https://download.pytorch.org/whl/cu128 --index-strategy unsafe-best-match -r requirements/dev.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 安装 pre-commit 钩子</span>
+</span></span><span style="display:flex;"><span>pre-commit install --hook-type pre-commit --hook-type commit-msg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 检查 vLLM 版本</span>
+</span></span><span style="display:flex;"><span>pip list | grep vllm
+</span></span></code></pre></div>
+</details></p>
+
+<h2 id="测试-vllm">测试 vLLM<a hidden class="anchor" aria-hidden="true" href="#测试-vllm">#</a></h2>
+<p>安装完成后，可以使用以下代码测试 vLLM 是否正常工作：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> vllm <span style="color:#fff;font-weight:bold">import</span> LLM, SamplingParams
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Define a list of input prompts</span>
+</span></span><span style="display:flex;"><span>prompts = [
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;Hello, my name is&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;The capital of France is&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;The largest ocean is&#34;</span>,
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Define sampling parameters</span>
+</span></span><span style="display:flex;"><span>    sampling_params = SamplingParams(temperature=<span style="color:#ff0;font-weight:bold">0.8</span>, top_p=<span style="color:#ff0;font-weight:bold">0.95</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Initialize the LLM engine with the OPT-125M model</span>
+</span></span><span style="display:flex;"><span>    llm = LLM(model=<span style="color:#0ff;font-weight:bold">&#34;facebook/opt-125m&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Generate outputs for the input prompts</span>
+</span></span><span style="display:flex;"><span>    outputs = llm.generate(prompts, sampling_params)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Print the generated outputs</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> output in outputs:
+</span></span><span style="display:flex;"><span>        prompt = output.prompt
+</span></span><span style="display:flex;"><span>        generated_text = output.outputs[<span style="color:#ff0;font-weight:bold">0</span>].text
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Prompt: </span><span style="color:#0ff;font-weight:bold">{</span>prompt<span style="color:#0ff;font-weight:bold">!r}</span><span style="color:#0ff;font-weight:bold">, Generated text: </span><span style="color:#0ff;font-weight:bold">{</span>generated_text<span style="color:#0ff;font-weight:bold">!r}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><div class="notice tip" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#tip-notice"></use></svg></span>Tip</p><p>测试代码使用了 facebook/opt-125m 模型，这是一个较小的模型，适合快速测试。在实际应用中，您可以替换为其他支持的模型。</p></div>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>通过以上步骤，我们成功搭建了 vLLM 的开发环境，无论是 CPU 还是 GPU 环境。vLLM 作为一个高效的大语言模型推理框架，可以帮助我们更好地部署和使用各种大语言模型。</p>
+<div class="notice note" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#note-notice"></use></svg></span>Note</p><p>对于生产环境，建议使用官方提供的预构建 Docker 镜像或按照官方文档进行更详细的配置。</p></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/ai/">AI</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/llm/">LLM</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/vllm/">vLLM</a></li>
+    </ul>
+<div class="footer-comments">
+  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
+    send an email
+</a> to me</p>
+
+</div>
+<nav class="paginav">
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/frp-nomachine-guide/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>FRP内网穿透与NoMachine远程桌面使用指南</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
