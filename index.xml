@@ -8,6 +8,15 @@
     <language>zh</language>
     <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>跨语言JSON-RPC通信实现：Go与Python互操作Demo</title>
+      <link>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</link>
+      <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</guid>
+      <description>演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端</description>
+    </item>
+    
+    <item>
       <title>vLLM 开发环境搭建</title>
       <link>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>

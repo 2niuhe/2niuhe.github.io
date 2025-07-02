@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>跨语言JSON-RPC通信实现：Go与Python互操作Demo | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Go, Python, RPC">
+<meta name="description" content="演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="跨语言JSON-RPC通信实现：Go与Python互操作Demo" />
+<meta property="og:description" content="演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-01-13T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="跨语言JSON-RPC通信实现：Go与Python互操作Demo"/>
+<meta name="twitter:description" content="演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "跨语言JSON-RPC通信实现：Go与Python互操作Demo",
+      "item": "https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "跨语言JSON-RPC通信实现：Go与Python互操作Demo",
+  "name": "跨语言JSON-RPC通信实现：Go与Python互操作Demo",
+  "description": "演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器+Python客户端，Python服务器+Go客户端",
+  "keywords": [
+    "Go", "Python", "RPC"
+  ],
+  "articleBody": "本项目演示了如何使用JSON-RPC协议实现Go语言和Python之间的跨语言通信。项目包含两种场景的完整实现，展示了双向的RPC调用能力。\n项目概述 JSON-RPC是一种轻量级的远程过程调用协议，使用JSON作为数据交换格式。相比gRPC，JSON-RPC更加简单易用，特别适合跨语言通信场景。\n本demo项目实现了一个简单的算术运算服务，包含乘法(Multiply)和加法(Plus)两个方法，展示了以下两种场景：\n场景一：Go语言作为服务器，Python作为客户端 场景二：Python作为服务器，Go语言作为客户端 场景一：Go服务器 + Python客户端 Go服务器实现 Go服务器使用标准库中的net/rpc和net/rpc/jsonrpc包来实现JSON-RPC服务。\n文件：json_rpc_server.go\npackage main import ( \"log\" \"net\" \"net/rpc\" \"net/rpc/jsonrpc\" ) type Arith int type Args struct { A, B int } // 乘法 func (t *Arith) Mulitply(args *Args, reply *int) error { *reply = args.A * args.B return nil } func (t *Arith) Plus(args *Args, reply *int) error { *reply = args.A + args.B return nil } func main() { addr := \":1234\" server := rpc.NewServer() server.Register(new(Arith)) l, e := net.Listen(\"tcp\", addr) if e != nil { log.Fatalln(\"listen error:\", e) } else { log.Println(\"rpc listening \", addr) } defer l.Close() for { conn, err := l.Accept() if err != nil { log.Print(\"rpc.Serve: accept:\", err.Error()) return } go server.ServeCodec(jsonrpc.NewServerCodec(conn)) } } Python客户端实现 Python客户端使用socket和json标准库实现JSON-RPC客户端功能。\n文件：json_rpc_client.py\nimport json import socket import itertools class RPCClient(object): def __init__(self, addr, codec=json): self._socket = socket.create_connection(addr) self._id_iter = itertools.count() self._codec = codec def _message(self, name, *params): return dict(id=next(self._id_iter), params=list(params), method=name) def call(self, name, *params): req = self._message(name, *params) id = req.get('id') \"\"\" Golang Rpc 返回的Json格式 type serverResponse struct { Id *json.RawMessage `json:\"id\"` Result interface{} `json:\"result\"` Error interface{} `json:\"error\"` } \"\"\" mesg = self._codec.dumps(req) mesg = mesg.encode(encoding='utf-8') self._socket.sendall(mesg) # This will actually have to loop if resp is bigger resp = self._socket.recv(4096) resp = resp.decode(encoding='utf-8') resp = self._codec.loads(resp) if resp.get('id') != id: raise Exception(\"expected id=%s, received id=%s: %s\" %(id, resp.get('id'), resp.get('error'))) if resp.get('error') is not None: raise Exception(resp.get('error')) return resp.get('result') def close(self): self._socket.close() if __name__ == '__main__': rpc = RPCClient((\"127.0.0.1\", 1234)) args = {'A':203, 'B':3} print(rpc.call(\"Arith.Mulitply\",args)) print(rpc.call(\"Arith.Plus\",args)) 运行场景一 启动Go服务器： go run json_rpc_server.go 运行Python客户端： python json_rpc_client.py 输出结果：\n609 206 场景二：Python服务器 + Go客户端 Python服务器实现 Python服务器使用多线程处理并发连接，实现了完整的JSON-RPC协议。\n文件：py_server_go_client/json_rpc_server.py\nimport json import socket import threading # Define the arithmetic service class ArithService: def Multiply(self, args): return args['A'] * args['B'] def Plus(self, args): return args['A'] + args['B'] # JSON-RPC Server class JSONRPCServer: def __init__(self, host='0.0.0.0', port=1234): self.host = host self.port = port self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) self.socket.bind((host, port)) self.socket.listen(5) self.running = False self.services = {} def register_service(self, name, service): self.services[name] = service def handle_client(self, client_socket): while True: try: # Read request data = client_socket.recv(4096) if not data: break # Parse request request = json.loads(data.decode('utf-8')) method_name = request.get('method') params = request.get('params', []) request_id = request.get('id') # Process request result = None error = None try: if '.' in method_name: service_name, method = method_name.split('.', 1) service = self.services.get(service_name) if service and hasattr(service, method): method_func = getattr(service, method) result = method_func(params[0]) else: error = f\"Method not found: {method_name}\" else: error = f\"Invalid method format: {method_name}\" except Exception as e: error = str(e) # Send response response = { 'id': request_id, 'result': result, 'error': error } client_socket.sendall(json.dumps(response).encode('utf-8')) except Exception as e: print(f\"Error handling client request: {e}\") break client_socket.close() def start(self): self.running = True print(f\"JSON-RPC server listening on {self.host}:{self.port}\") try: while self.running: client_socket, _ = self.socket.accept() client_thread = threading.Thread(target=self.handle_client, args=(client_socket,)) client_thread.daemon = True client_thread.start() except KeyboardInterrupt: self.stop() def stop(self): self.running = False self.socket.close() print(\"Server stopped\") if __name__ == '__main__': # Create server server = JSONRPCServer() # Register services server.register_service('Arith', ArithService()) # Start server try: server.start() except KeyboardInterrupt: server.stop() Go客户端实现 Go客户端使用标准库的net/rpc/jsonrpc包连接Python服务器。\n文件：py_server_go_client/json_rpc_client.go\npackage main import ( \"fmt\" \"log\" \"net/rpc/jsonrpc\" ) // Args represents the arguments for arithmetic operations type Args struct { A int `json:\"A\"` B int `json:\"B\"` } func main() { // Connect to the Python JSON-RPC server client, err := jsonrpc.Dial(\"tcp\", \"127.0.0.1:1234\") if err != nil { log.Fatal(\"dialing:\", err) } defer client.Close() // Prepare arguments args := \u0026Args{A: 203, B: 3} // Call Multiply method var multiplyResult int err = client.Call(\"Arith.Multiply\", args, \u0026multiplyResult) if err != nil { log.Fatal(\"Multiply error:\", err) } fmt.Printf(\"Multiply: %d * %d = %d\\n\", args.A, args.B, multiplyResult) // Call Plus method var plusResult int err = client.Call(\"Arith.Plus\", args, \u0026plusResult) if err != nil { log.Fatal(\"Plus error:\", err) } fmt.Printf(\"Plus: %d + %d = %d\\n\", args.A, args.B, plusResult) } 运行场景二 启动Python服务器： cd py_server_go_client python json_rpc_server.py 运行Go客户端： cd py_server_go_client go run json_rpc_client.go 输出结果：\nMultiply: 203 * 3 = 609 Plus: 203 + 3 = 206 技术要点 JSON-RPC协议格式 请求格式：\n{ \"id\": 1, \"method\": \"Arith.Multiply\", \"params\": [{\"A\": 203, \"B\": 3}] } 响应格式：\n{ \"id\": 1, \"result\": 609, \"error\": null } 实现特点 Go服务器：使用官方RPC库，支持方法注册和自动路由 Python服务器：手动实现JSON-RPC协议，支持服务注册和多线程处理 跨语言兼容：两种语言的客户端和服务器可以互相通信 错误处理：包含完整的错误处理机制 并发支持：服务器支持多客户端并发访问 总结 本项目展示了JSON-RPC在跨语言通信中的实用性。相比gRPC，JSON-RPC具有以下优势：\n简单易用：协议简单，易于理解和实现 跨语言友好：基于JSON，几乎所有语言都有很好的支持 调试方便：可读的JSON格式便于调试 轻量级：协议开销小，适合简单的RPC场景 通过本demo，可以快速上手跨语言RPC开发，为分布式系统的不同语言组件提供通信基础。\n",
+  "wordCount" : "1656",
+  "inLanguage": "zh",
+  "datePublished": "2025-01-13T00:00:00Z",
+  "dateModified": "2025-01-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      跨语言JSON-RPC通信实现：Go与Python互操作Demo
+    </h1>
+    <div class="post-description">
+      演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端
+    </div>
+    <div class="post-meta"><span title='2025-01-13 00:00:00 +0000 UTC'>2025-01-13</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1656 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e6%a6%82%e8%bf%b0" aria-label="项目概述">项目概述</a></li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e4%b8%80go%e6%9c%8d%e5%8a%a1%e5%99%a8--python%e5%ae%a2%e6%88%b7%e7%ab%af" aria-label="场景一：Go服务器 &#43; Python客户端">场景一：Go服务器 + Python客户端</a><ul>
+                        
+                <li>
+                    <a href="#go%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%ae%9e%e7%8e%b0" aria-label="Go服务器实现">Go服务器实现</a></li>
+                <li>
+                    <a href="#python%e5%ae%a2%e6%88%b7%e7%ab%af%e5%ae%9e%e7%8e%b0" aria-label="Python客户端实现">Python客户端实现</a></li>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e5%9c%ba%e6%99%af%e4%b8%80" aria-label="运行场景一">运行场景一</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e4%ba%8cpython%e6%9c%8d%e5%8a%a1%e5%99%a8--go%e5%ae%a2%e6%88%b7%e7%ab%af" aria-label="场景二：Python服务器 &#43; Go客户端">场景二：Python服务器 + Go客户端</a><ul>
+                        
+                <li>
+                    <a href="#python%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%ae%9e%e7%8e%b0" aria-label="Python服务器实现">Python服务器实现</a></li>
+                <li>
+                    <a href="#go%e5%ae%a2%e6%88%b7%e7%ab%af%e5%ae%9e%e7%8e%b0" aria-label="Go客户端实现">Go客户端实现</a></li>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e5%9c%ba%e6%99%af%e4%ba%8c" aria-label="运行场景二">运行场景二</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8a%80%e6%9c%af%e8%a6%81%e7%82%b9" aria-label="技术要点">技术要点</a><ul>
+                        
+                <li>
+                    <a href="#json-rpc%e5%8d%8f%e8%ae%ae%e6%a0%bc%e5%bc%8f" aria-label="JSON-RPC协议格式">JSON-RPC协议格式</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e7%8e%b0%e7%89%b9%e7%82%b9" aria-label="实现特点">实现特点</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本项目演示了如何使用JSON-RPC协议实现Go语言和Python之间的跨语言通信。项目包含两种场景的完整实现，展示了双向的RPC调用能力。</p>
+<h2 id="项目概述">项目概述<a hidden class="anchor" aria-hidden="true" href="#项目概述">#</a></h2>
+<p>JSON-RPC是一种轻量级的远程过程调用协议，使用JSON作为数据交换格式。相比gRPC，JSON-RPC更加简单易用，特别适合跨语言通信场景。</p>
+<p>本demo项目实现了一个简单的算术运算服务，包含乘法(Multiply)和加法(Plus)两个方法，展示了以下两种场景：</p>
+<ol>
+<li><strong>场景一</strong>：Go语言作为服务器，Python作为客户端</li>
+<li><strong>场景二</strong>：Python作为服务器，Go语言作为客户端</li>
+</ol>
+<h2 id="场景一go服务器--python客户端">场景一：Go服务器 + Python客户端<a hidden class="anchor" aria-hidden="true" href="#场景一go服务器--python客户端">#</a></h2>
+<h3 id="go服务器实现">Go服务器实现<a hidden class="anchor" aria-hidden="true" href="#go服务器实现">#</a></h3>
+<p>Go服务器使用标准库中的<code>net/rpc</code>和<code>net/rpc/jsonrpc</code>包来实现JSON-RPC服务。</p>
+<p><strong>文件：json_rpc_server.go</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;net/rpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;net/rpc/jsonrpc&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">type</span> Arith <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">type</span> Args <span style="color:#fff;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	A, B <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f">// 乘法
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">func</span> (t *Arith) Mulitply(args *Args, reply *<span style="color:#fff;font-weight:bold">int</span>) <span style="color:#fff;font-weight:bold">error</span> {
+</span></span><span style="display:flex;"><span>	*reply = args.A * args.B
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> (t *Arith) Plus(args *Args, reply *<span style="color:#fff;font-weight:bold">int</span>) <span style="color:#fff;font-weight:bold">error</span> {
+</span></span><span style="display:flex;"><span>	*reply = args.A + args.B
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	addr := <span style="color:#0ff;font-weight:bold">&#34;:1234&#34;</span>
+</span></span><span style="display:flex;"><span>	server := rpc.NewServer()
+</span></span><span style="display:flex;"><span>	server.Register(<span style="color:#fff;font-weight:bold">new</span>(Arith))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	l, e := net.Listen(<span style="color:#0ff;font-weight:bold">&#34;tcp&#34;</span>, addr)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> e != <span style="color:#fff;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>		log.Fatalln(<span style="color:#0ff;font-weight:bold">&#34;listen error:&#34;</span>, e)
+</span></span><span style="display:flex;"><span>	} <span style="color:#fff;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>		log.Println(<span style="color:#0ff;font-weight:bold">&#34;rpc listening &#34;</span>, addr)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">defer</span> l.Close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> {
+</span></span><span style="display:flex;"><span>		conn, err := l.Accept()
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>			log.Print(<span style="color:#0ff;font-weight:bold">&#34;rpc.Serve: accept:&#34;</span>, err.Error())
+</span></span><span style="display:flex;"><span>			<span style="color:#fff;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">go</span> server.ServeCodec(jsonrpc.NewServerCodec(conn))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="python客户端实现">Python客户端实现<a hidden class="anchor" aria-hidden="true" href="#python客户端实现">#</a></h3>
+<p>Python客户端使用socket和json标准库实现JSON-RPC客户端功能。</p>
+<p><strong>文件：json_rpc_client.py</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> socket
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> itertools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> RPCClient(<span style="color:#fff;font-weight:bold">object</span>):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, addr, codec=json):
+</span></span><span style="display:flex;"><span>        self._socket = socket.create_connection(addr)
+</span></span><span style="display:flex;"><span>        self._id_iter = itertools.count()
+</span></span><span style="display:flex;"><span>        self._codec = codec
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> _message(self, name, *params):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">dict</span>(<span style="color:#fff;font-weight:bold">id</span>=<span style="color:#fff;font-weight:bold">next</span>(self._id_iter),
+</span></span><span style="display:flex;"><span>                    params=<span style="color:#fff;font-weight:bold">list</span>(params),
+</span></span><span style="display:flex;"><span>                    method=name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> call(self, name, *params):
+</span></span><span style="display:flex;"><span>        req = self._message(name, *params)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">id</span> = req.get(<span style="color:#0ff;font-weight:bold">&#39;id&#39;</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        Golang Rpc 返回的Json格式
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        type serverResponse struct {
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        Id     *json.RawMessage `json:&#34;id&#34;`
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        Result interface</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">      `json:&#34;result&#34;`
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        Error  interface</span><span style="color:#0ff;font-weight:bold">{}</span><span style="color:#0ff;font-weight:bold">      `json:&#34;error&#34;`
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        }
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        mesg = self._codec.dumps(req)
+</span></span><span style="display:flex;"><span>        mesg = mesg.encode(encoding=<span style="color:#0ff;font-weight:bold">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>        self._socket.sendall(mesg)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># This will actually have to loop if resp is bigger</span>
+</span></span><span style="display:flex;"><span>        resp = self._socket.recv(<span style="color:#ff0;font-weight:bold">4096</span>)
+</span></span><span style="display:flex;"><span>        resp = resp.decode(encoding=<span style="color:#0ff;font-weight:bold">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>        resp = self._codec.loads(resp)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> resp.get(<span style="color:#0ff;font-weight:bold">&#39;id&#39;</span>) != <span style="color:#fff;font-weight:bold">id</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span> Exception(<span style="color:#0ff;font-weight:bold">&#34;expected id=</span><span style="color:#0ff;font-weight:bold">%s</span><span style="color:#0ff;font-weight:bold">, received id=</span><span style="color:#0ff;font-weight:bold">%s</span><span style="color:#0ff;font-weight:bold">: </span><span style="color:#0ff;font-weight:bold">%s</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>                            %(<span style="color:#fff;font-weight:bold">id</span>, resp.get(<span style="color:#0ff;font-weight:bold">&#39;id&#39;</span>), resp.get(<span style="color:#0ff;font-weight:bold">&#39;error&#39;</span>)))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> resp.get(<span style="color:#0ff;font-weight:bold">&#39;error&#39;</span>) is not <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span> Exception(resp.get(<span style="color:#0ff;font-weight:bold">&#39;error&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> resp.get(<span style="color:#0ff;font-weight:bold">&#39;result&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> close(self):
+</span></span><span style="display:flex;"><span>        self._socket.close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    rpc = RPCClient((<span style="color:#0ff;font-weight:bold">&#34;127.0.0.1&#34;</span>, <span style="color:#ff0;font-weight:bold">1234</span>))
+</span></span><span style="display:flex;"><span>    args = {<span style="color:#0ff;font-weight:bold">&#39;A&#39;</span>:<span style="color:#ff0;font-weight:bold">203</span>, <span style="color:#0ff;font-weight:bold">&#39;B&#39;</span>:<span style="color:#ff0;font-weight:bold">3</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(rpc.call(<span style="color:#0ff;font-weight:bold">&#34;Arith.Mulitply&#34;</span>,args))
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(rpc.call(<span style="color:#0ff;font-weight:bold">&#34;Arith.Plus&#34;</span>,args))
+</span></span></code></pre></div><h3 id="运行场景一">运行场景一<a hidden class="anchor" aria-hidden="true" href="#运行场景一">#</a></h3>
+<ol>
+<li>启动Go服务器：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go run json_rpc_server.go
+</span></span></code></pre></div><ol start="2">
+<li>运行Python客户端：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python json_rpc_client.py
+</span></span></code></pre></div><p>输出结果：</p>
+<pre tabindex="0"><code>609
+206
+</code></pre><h2 id="场景二python服务器--go客户端">场景二：Python服务器 + Go客户端<a hidden class="anchor" aria-hidden="true" href="#场景二python服务器--go客户端">#</a></h2>
+<h3 id="python服务器实现">Python服务器实现<a hidden class="anchor" aria-hidden="true" href="#python服务器实现">#</a></h3>
+<p>Python服务器使用多线程处理并发连接，实现了完整的JSON-RPC协议。</p>
+<p><strong>文件：py_server_go_client/json_rpc_server.py</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> socket
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> threading
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Define the arithmetic service</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ArithService:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> Multiply(self, args):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> args[<span style="color:#0ff;font-weight:bold">&#39;A&#39;</span>] * args[<span style="color:#0ff;font-weight:bold">&#39;B&#39;</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> Plus(self, args):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> args[<span style="color:#0ff;font-weight:bold">&#39;A&#39;</span>] + args[<span style="color:#0ff;font-weight:bold">&#39;B&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># JSON-RPC Server</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> JSONRPCServer:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, host=<span style="color:#0ff;font-weight:bold">&#39;0.0.0.0&#39;</span>, port=<span style="color:#ff0;font-weight:bold">1234</span>):
+</span></span><span style="display:flex;"><span>        self.host = host
+</span></span><span style="display:flex;"><span>        self.port = port
+</span></span><span style="display:flex;"><span>        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+</span></span><span style="display:flex;"><span>        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        self.socket.bind((host, port))
+</span></span><span style="display:flex;"><span>        self.socket.listen(<span style="color:#ff0;font-weight:bold">5</span>)
+</span></span><span style="display:flex;"><span>        self.running = <span style="color:#fff;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>        self.services = {}
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> register_service(self, name, service):
+</span></span><span style="display:flex;"><span>        self.services[name] = service
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> handle_client(self, client_socket):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#007f7f"># Read request</span>
+</span></span><span style="display:flex;"><span>                data = client_socket.recv(<span style="color:#ff0;font-weight:bold">4096</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">if</span> not data:
+</span></span><span style="display:flex;"><span>                    <span style="color:#fff;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                <span style="color:#007f7f"># Parse request</span>
+</span></span><span style="display:flex;"><span>                request = json.loads(data.decode(<span style="color:#0ff;font-weight:bold">&#39;utf-8&#39;</span>))
+</span></span><span style="display:flex;"><span>                method_name = request.get(<span style="color:#0ff;font-weight:bold">&#39;method&#39;</span>)
+</span></span><span style="display:flex;"><span>                params = request.get(<span style="color:#0ff;font-weight:bold">&#39;params&#39;</span>, [])
+</span></span><span style="display:flex;"><span>                request_id = request.get(<span style="color:#0ff;font-weight:bold">&#39;id&#39;</span>)
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#007f7f"># Process request</span>
+</span></span><span style="display:flex;"><span>                result = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>                error = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#fff;font-weight:bold">if</span> <span style="color:#0ff;font-weight:bold">&#39;.&#39;</span> in method_name:
+</span></span><span style="display:flex;"><span>                        service_name, method = method_name.split(<span style="color:#0ff;font-weight:bold">&#39;.&#39;</span>, <span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>                        service = self.services.get(service_name)
+</span></span><span style="display:flex;"><span>                        <span style="color:#fff;font-weight:bold">if</span> service and <span style="color:#fff;font-weight:bold">hasattr</span>(service, method):
+</span></span><span style="display:flex;"><span>                            method_func = <span style="color:#fff;font-weight:bold">getattr</span>(service, method)
+</span></span><span style="display:flex;"><span>                            result = method_func(params[<span style="color:#ff0;font-weight:bold">0</span>])
+</span></span><span style="display:flex;"><span>                        <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>                            error = <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Method not found: </span><span style="color:#0ff;font-weight:bold">{</span>method_name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>                        error = <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Invalid method format: </span><span style="color:#0ff;font-weight:bold">{</span>method_name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>                    error = <span style="color:#fff;font-weight:bold">str</span>(e)
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#007f7f"># Send response</span>
+</span></span><span style="display:flex;"><span>                response = {
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#39;id&#39;</span>: request_id,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#39;result&#39;</span>: result,
+</span></span><span style="display:flex;"><span>                    <span style="color:#0ff;font-weight:bold">&#39;error&#39;</span>: error
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                client_socket.sendall(json.dumps(response).encode(<span style="color:#0ff;font-weight:bold">&#39;utf-8&#39;</span>))
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Error handling client request: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        client_socket.close()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> start(self):
+</span></span><span style="display:flex;"><span>        self.running = <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;JSON-RPC server listening on </span><span style="color:#0ff;font-weight:bold">{</span>self.host<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">{</span>self.port<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">while</span> self.running:
+</span></span><span style="display:flex;"><span>                client_socket, _ = self.socket.accept()
+</span></span><span style="display:flex;"><span>                client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
+</span></span><span style="display:flex;"><span>                client_thread.daemon = <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>                client_thread.start()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> KeyboardInterrupt:
+</span></span><span style="display:flex;"><span>            self.stop()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> stop(self):
+</span></span><span style="display:flex;"><span>        self.running = <span style="color:#fff;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>        self.socket.close()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Server stopped&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Create server</span>
+</span></span><span style="display:flex;"><span>    server = JSONRPCServer()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Register services</span>
+</span></span><span style="display:flex;"><span>    server.register_service(<span style="color:#0ff;font-weight:bold">&#39;Arith&#39;</span>, ArithService())
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># Start server</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>        server.start()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">except</span> KeyboardInterrupt:
+</span></span><span style="display:flex;"><span>        server.stop()
+</span></span></code></pre></div><h3 id="go客户端实现">Go客户端实现<a hidden class="anchor" aria-hidden="true" href="#go客户端实现">#</a></h3>
+<p>Go客户端使用标准库的<code>net/rpc/jsonrpc</code>包连接Python服务器。</p>
+<p><strong>文件：py_server_go_client/json_rpc_client.go</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;net/rpc/jsonrpc&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f">// Args represents the arguments for arithmetic operations
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> Args <span style="color:#fff;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	A <span style="color:#fff;font-weight:bold">int</span> <span style="color:#0ff;font-weight:bold">`json:&#34;A&#34;`</span>
+</span></span><span style="display:flex;"><span>	B <span style="color:#fff;font-weight:bold">int</span> <span style="color:#0ff;font-weight:bold">`json:&#34;B&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// Connect to the Python JSON-RPC server
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	client, err := jsonrpc.Dial(<span style="color:#0ff;font-weight:bold">&#34;tcp&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;127.0.0.1:1234&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>		log.Fatal(<span style="color:#0ff;font-weight:bold">&#34;dialing:&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">defer</span> client.Close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// Prepare arguments
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	args := &amp;Args{A: <span style="color:#ff0;font-weight:bold">203</span>, B: <span style="color:#ff0;font-weight:bold">3</span>}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// Call Multiply method
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">var</span> multiplyResult <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	err = client.Call(<span style="color:#0ff;font-weight:bold">&#34;Arith.Multiply&#34;</span>, args, &amp;multiplyResult)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>		log.Fatal(<span style="color:#0ff;font-weight:bold">&#34;Multiply error:&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;Multiply: %d * %d = %d\n&#34;</span>, args.A, args.B, multiplyResult)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// Call Plus method
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">var</span> plusResult <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	err = client.Call(<span style="color:#0ff;font-weight:bold">&#34;Arith.Plus&#34;</span>, args, &amp;plusResult)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>		log.Fatal(<span style="color:#0ff;font-weight:bold">&#34;Plus error:&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;Plus: %d + %d = %d\n&#34;</span>, args.A, args.B, plusResult)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="运行场景二">运行场景二<a hidden class="anchor" aria-hidden="true" href="#运行场景二">#</a></h3>
+<ol>
+<li>启动Python服务器：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> py_server_go_client
+</span></span><span style="display:flex;"><span>python json_rpc_server.py
+</span></span></code></pre></div><ol start="2">
+<li>运行Go客户端：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> py_server_go_client
+</span></span><span style="display:flex;"><span>go run json_rpc_client.go
+</span></span></code></pre></div><p>输出结果：</p>
+<pre tabindex="0"><code>Multiply: 203 * 3 = 609
+Plus: 203 + 3 = 206
+</code></pre><h2 id="技术要点">技术要点<a hidden class="anchor" aria-hidden="true" href="#技术要点">#</a></h2>
+<h3 id="json-rpc协议格式">JSON-RPC协议格式<a hidden class="anchor" aria-hidden="true" href="#json-rpc协议格式">#</a></h3>
+<p><strong>请求格式：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;id&#34;</span>: <span style="color:#ff0;font-weight:bold">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;method&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;Arith.Multiply&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;params&#34;</span>: [{<span style="font-weight:bold">&#34;A&#34;</span>: <span style="color:#ff0;font-weight:bold">203</span>, <span style="font-weight:bold">&#34;B&#34;</span>: <span style="color:#ff0;font-weight:bold">3</span>}]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>响应格式：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;id&#34;</span>: <span style="color:#ff0;font-weight:bold">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;result&#34;</span>: <span style="color:#ff0;font-weight:bold">609</span>,
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;error&#34;</span>: <span style="color:#fff;font-weight:bold">null</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="实现特点">实现特点<a hidden class="anchor" aria-hidden="true" href="#实现特点">#</a></h3>
+<ol>
+<li><strong>Go服务器</strong>：使用官方RPC库，支持方法注册和自动路由</li>
+<li><strong>Python服务器</strong>：手动实现JSON-RPC协议，支持服务注册和多线程处理</li>
+<li><strong>跨语言兼容</strong>：两种语言的客户端和服务器可以互相通信</li>
+<li><strong>错误处理</strong>：包含完整的错误处理机制</li>
+<li><strong>并发支持</strong>：服务器支持多客户端并发访问</li>
+</ol>
+<h2 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h2>
+<p>本项目展示了JSON-RPC在跨语言通信中的实用性。相比gRPC，JSON-RPC具有以下优势：</p>
+<ul>
+<li><strong>简单易用</strong>：协议简单，易于理解和实现</li>
+<li><strong>跨语言友好</strong>：基于JSON，几乎所有语言都有很好的支持</li>
+<li><strong>调试方便</strong>：可读的JSON格式便于调试</li>
+<li><strong>轻量级</strong>：协议开销小，适合简单的RPC场景</li>
+</ul>
+<p>通过本demo，可以快速上手跨语言RPC开发，为分布式系统的不同语言组件提供通信基础。</p>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/go/">Go</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/rpc/">RPC</a></li>
+    </ul>
+<div class="footer-comments">
+  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
+    send an email
+</a> to me</p>
+
+</div>
+<nav class="paginav">
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>vLLM 开发环境搭建</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

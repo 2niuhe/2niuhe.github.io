@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>RPC on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/rpc/</link>
+    <description>Recent content in RPC on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 13 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/rpc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>跨语言JSON-RPC通信实现：Go与Python互操作Demo</title>
+      <link>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</link>
+      <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</guid>
+      <description>演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端</description>
+    </item>
+    
+  </channel>
+</rss>
