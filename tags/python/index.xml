@@ -6,7 +6,7 @@
     <description>Recent content in Python on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 31 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>跨语言JSON-RPC通信实现：Go与Python互操作Demo</title>
       <link>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</link>
@@ -14,6 +14,15 @@
       
       <guid>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</guid>
       <description>演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端</description>
+    </item>
+    
+    <item>
+      <title>MCP技术开发与实践</title>
+      <link>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</link>
+      <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</guid>
+      <description>Model Context Protocol (MCP) 技术开发指南与实践</description>
     </item>
     
     <item>

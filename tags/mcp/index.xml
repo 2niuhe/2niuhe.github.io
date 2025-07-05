@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>MCP on Niuhe&#39;s Blog</title>
+    <link>https://blog.niuhemoon.win/tags/mcp/</link>
+    <description>Recent content in MCP on Niuhe&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/mcp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MCP技术开发与实践</title>
+      <link>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</link>
+      <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</guid>
+      <description>Model Context Protocol (MCP) 技术开发指南与实践</description>
+    </item>
+    
+  </channel>
+</rss>

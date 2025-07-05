@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>MCP技术开发与实践 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="MCP, Python">
+<meta name="description" content="Model Context Protocol (MCP) 技术开发指南与实践">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/mcp-development-guide/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
+<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-116933089-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script><meta property="og:title" content="MCP技术开发与实践" />
+<meta property="og:description" content="Model Context Protocol (MCP) 技术开发指南与实践" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/mcp-development-guide/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-06-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-06-09T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MCP技术开发与实践"/>
+<meta name="twitter:description" content="Model Context Protocol (MCP) 技术开发指南与实践"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "📚文章",
+      "item": "https://blog.niuhemoon.win/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "https://blog.niuhemoon.win/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "MCP技术开发与实践",
+      "item": "https://blog.niuhemoon.win/posts/tech/mcp-development-guide/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MCP技术开发与实践",
+  "name": "MCP技术开发与实践",
+  "description": "Model Context Protocol (MCP) 技术开发指南与实践",
+  "keywords": [
+    "MCP", "Python"
+  ],
+  "articleBody": "MCP技术概述 MCP (Model Context Protocol) 是一个用于连接AI模型与外部数据源和工具的开放标准协议。它允许AI助手安全地访问本地和远程资源，实现更强大的功能扩展。\nMCP核心特性：\n标准化的客户端-服务器通信协议 支持多种传输方式（STDIO、HTTP、SSE） 基于JSON-RPC的消息格式 工具调用和资源访问能力 协议架构 ┌─────────────────┐ ┌─────────────────┐ │ MCP Client │ │ MCP Server │ │ (AI模型) │◄──►│ (工具提供者) │ └─────────────────┘ └─────────────────┘ │ │ └───────── MCP ──────────┘ (JSON-RPC over Transport) 服务器实现 计算器MCP服务器 以下是一个完整的MCP服务器实现，支持三种传输方式：\n#!/usr/bin/env python3 \"\"\" Calculator MCP服务器 使用FastMCP实现标准MCP协议 \"\"\" import logging from mcp.server.fastmcp import FastMCP # 配置日志 logging.basicConfig(level=logging.INFO) logger = logging.getLogger(\"calculator-mcp-server\") # 初始化FastMCP服务器 mcp = FastMCP(\"Calculator MCP Server\") @mcp.tool() def add(a: float, b: float) -\u003e float: \"\"\"Add two numbers(两个数字相加) Parameters: a (float): First number to add b (float): Second number to add Returns: float: The sum of a and b. \"\"\" try: result = a + b logger.info(f\"Addition: {a} + {b} = {result}\") return result except Exception as e: logger.error(f\"Failed to add numbers: {e}\") raise RuntimeError(f\"Failed to add numbers: {str(e)}\") def main_stdio(): \"\"\"STDIO传输模式入口点\"\"\" logger.info(\"启动Calculator MCP服务器 (STDIO传输模式)\") mcp.run(transport=\"stdio\") def main_remote(host: str = \"127.0.0.1\", port: int = 8008, transport: str = \"http\"): \"\"\"HTTP传输模式入口点\"\"\" import uvicorn logger.info(f\"启动Calculator MCP服务器 ({transport.upper()}传输模式) - {host}:{port}\") if transport == \"sse\": app = mcp.sse_app() else: app = mcp.streamable_http_app() uvicorn.run(app, host=host, port=port) def main_http_with_args(): \"\"\"带命令行参数解析的HTTP服务器启动器\"\"\" import argparse import sys # 如果从主脚本调用，需要过滤掉 --http 参数 argv = sys.argv[1:] if argv and argv[0] == \"--http\": argv = argv[1:] parser = argparse.ArgumentParser(description=\"Calculator MCP服务器 - HTTP传输模式\") parser.add_argument(\"--host\", default=\"127.0.0.1\", help=\"绑定的主机地址\") parser.add_argument(\"--port\", type=int, default=8008, help=\"绑定的端口号\") args = parser.parse_args(argv) main_remote(args.host, args.port) def main_sse_with_args(): \"\"\"带命令行参数解析的SSE服务器启动器\"\"\" import argparse import sys # 如果从主脚本调用，需要过滤掉 --sse 参数 argv = sys.argv[1:] if argv and argv[0] == \"--sse\": argv = argv[1:] parser = argparse.ArgumentParser(description=\"Calculator MCP服务器 - SSE传输模式\") parser.add_argument(\"--host\", default=\"127.0.0.1\", help=\"绑定的主机地址\") parser.add_argument(\"--port\", type=int, default=8008, help=\"绑定的端口号\") args = parser.parse_args(argv) main_remote(args.host, args.port, transport=\"sse\") if __name__ == \"__main__\": import sys if len(sys.argv) \u003e 1 and sys.argv[1] == \"--http\": # HTTP模式：python calculator.py --http [--host HOST] [--port PORT] main_http_with_args() elif len(sys.argv) \u003e 1 and sys.argv[1] == \"--sse\": # SSE模式：python calculator.py --sse [--host HOST] [--port PORT] main_sse_with_args() else: # 默认使用STDIO模式 main_stdio() 服务器启动方式 STDIO传输模式（默认）：\npython calculator.py HTTP传输模式：\npython calculator.py --http # 或指定主机和端口 python calculator.py --http --host 0.0.0.0 --port 8080 SSE传输模式：\npython calculator.py --sse # 或指定主机和端口 python calculator.py --sse --host 0.0.0.0 --port 8080 客户端实现 STDIO客户端 以下是一个完整的STDIO客户端实现，用于连接MCP服务器：\n#!/usr/bin/env python3 \"\"\" MCP Client Demo A simplified MCP client that connects to MCP servers and demonstrates basic tool listing and execution functionality. \"\"\" import asyncio import json import logging import os import shutil from contextlib import AsyncExitStack from typing import Any, Dict, List, Optional from mcp import ClientSession, StdioServerParameters from mcp.client.stdio import stdio_client # Configure logging logging.basicConfig( level=logging.INFO, format=\"%(asctime)s - %(levelname)s - %(message)s\" ) logger = logging.getLogger(__name__) class MCPServer: \"\"\"Manages connection to an MCP server and tool execution.\"\"\" def __init__(self, name: str, config: Dict[str, Any]) -\u003e None: self.name = name self.config = config self.session: Optional[ClientSession] = None self.exit_stack = AsyncExitStack() self.tools: List[Dict[str, Any]] = [] async def connect(self) -\u003e None: \"\"\"Connect to the MCP server.\"\"\" command = ( shutil.which(\"npx\") if self.config[\"command\"] == \"npx\" else self.config[\"command\"] ) if command is None: raise ValueError(f\"Invalid command for server {self.name}: {self.config['command']}\") logger.info(f\"Connecting to {self.name} server...\") server_params = StdioServerParameters( command=command, args=self.config[\"args\"], env={**os.environ, **self.config.get(\"env\", {})} ) try: stdio_transport = await self.exit_stack.enter_async_context( stdio_client(server_params) ) read, write = stdio_transport session = await self.exit_stack.enter_async_context( ClientSession(read, write) ) await session.initialize() self.session = session logger.info(f\"Successfully connected to {self.name} server\") except Exception as e: logger.error(f\"Error connecting to server {self.name}: {e}\") await self.disconnect() raise async def get_tools(self) -\u003e List[Dict[str, Any]]: \"\"\"Get available tools from the server.\"\"\" if not self.session: raise RuntimeError(f\"Server {self.name} not connected\") logger.info(f\"Getting tools from {self.name} server...\") tools_response = await self.session.list_tools() tools = [] for item in tools_response: if isinstance(item, tuple) and item[0] == \"tools\": for tool in item[1]: tools.append({ \"name\": tool.name, \"description\": tool.description, \"input_schema\": tool.inputSchema }) self.tools = tools return tools async def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -\u003e Any: \"\"\"Execute a tool on the server.\"\"\" if not self.session: raise RuntimeError(f\"Server {self.name} not connected\") logger.info(f\"Executing tool {tool_name} on {self.name} server...\") try: result = await self.session.call_tool(tool_name, arguments) logger.info(f\"Tool execution successful\") return result except Exception as e: logger.error(f\"Error executing tool {tool_name}: {e}\") raise async def disconnect(self) -\u003e None: \"\"\"Disconnect from the server.\"\"\" try: await self.exit_stack.aclose() self.session = None logger.info(f\"Disconnected from {self.name} server\") except Exception as e: logger.error(f\"Error disconnecting from server {self.name}: {e}\") SSE客户端 以下是一个SSE客户端实现，用于测试SSE传输：\nimport asyncio import os import sys import traceback from typing import Dict, Any from unittest import result import httpx from mcp import ClientSession from mcp.client.sse import sse_client TOOL_TESTS = { \"add\": {\"a\": 5, \"b\": 3}, \"subtract\": {\"a\": 10, \"b\": 4}, \"multiply\": {\"a\": 6, \"b\": 7}, \"divide\": {\"a\": 20, \"b\": 5}, \"factorial\": {\"a\": 5}, \"log\": {\"a\": 100, \"base\": 10}, \"remainder\": {\"a\": 17, \"b\": 5}, \"sin\": {\"angle\": 30, \"degrees\": True}, \"cos\": {\"angle\": 60, \"degrees\": True}, \"tan\": {\"angle\": 45, \"degrees\": True}, \"power\": {\"base\": 2, \"exponent\": 8}, \"sqrt\": {\"a\": 16} } class MCPClient: def __init__(self): self.session = None self.available_tools = [] async def connect(self, server_url: str): print(f\"Connecting to server {server_url}\") try: print(\"Create SSE Client...\") # Store the context managers but don't enter them yet self._streams_context = sse_client(url=server_url) streams = await self._streams_context.__aenter__() print(\"Create MCP Session...\") self._session_context = ClientSession(*streams) self.session = await self._session_context.__aenter__() print(\"Init Session...\") await self.session.initialize() print(\"Get Tool List...\") response = await self.session.list_tools() self.available_tools = response.tools tool_names = [tool.name for tool in self.available_tools] print(f'Connect Successfully! Available Tools: {tool_names}') return True except Exception as e: print(f'Connect Failed: {e}') print(traceback.format_exc()) # Clean up any resources that might have been created await self.cleanup() return False async def call_tool(self, tool_name: str, parameters: Dict[str, Any]) -\u003e str: if not self.session: print('Error: Not Connect to MCP server') return \"Not Connect to MCP server\" try: print(f'Call Tool: {tool_name}') print(f'Params: {parameters}') result = await self.session.call_tool(tool_name, parameters) print(result) if hasattr(result, 'content'): content_str = \"\" for item in result.content: if hasattr(item, 'text'): content_str += item.text + \", \" content_str = content_str.rstrip(', ') else: content_str = str(result) output = content_str or \"No Output\" print(f\"Tool Execute Result: {output}\") return output except Exception as e: error_msg = f\"Tool Execute Failed: {e}\" print(error_msg) print(traceback.format_exc()) return error_msg async def main(): if len(sys.argv) \u003c 2: print(\"Usage: python test_mcp_client.py (Such as http://localhost:8000/sse)\") sys.exit(1) server_url = sys.argv[1] client = MCPClient() try: if await client.connect(server_url): print('Connect Success') # Test tool execution await client.call_tool(\"add\", {\"a\": 5, \"b\": 3}) print(\"\\nTests completed, exiting...\") else: print(\"Connect Failed\") sys.exit(1) except KeyboardInterrupt: print(\"\\nKeyboard interrupt received, shutting down...\") except Exception as e: print('Execute Failed') print(traceback.format_exc()) sys.exit(1) finally: print(\"\\nCleaning up resources...\") await client.cleanup() if __name__ == \"__main__\": asyncio.run(main()) 使用示例 配置文件 客户端配置文件 servers_config.json：\n{ \"mcpServers\": { \"calculator\": { \"command\": \"python\", \"args\": [\"../server/calculator.py\"], \"env\": {} } } } 运行示例 启动服务器：\n# STDIO模式 python calculator.py # HTTP模式 python calculator.py --http --host 127.0.0.1 --port 8008 # SSE模式 python calculator.py --sse --host 127.0.0.1 --port 8008 运行客户端：\n# STDIO客户端 python mcp_client_demo.py # SSE客户端 python test_mcp_sse_client.py http://localhost:8008/sse 参考资料 Model Context Protocol 官方文档\nFastMCP Python库文档\nMCP协议规范\n",
+  "wordCount" : "2075",
+  "inLanguage": "zh",
+  "datePublished": "2025-06-09T00:00:00Z",
+  "dateModified": "2025-06-09T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://blog.niuhemoon.win/posts/tech/mcp-development-guide/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://blog.niuhemoon.win/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
+    <h1 class="post-title">
+      MCP技术开发与实践
+    </h1>
+    <div class="post-description">
+      Model Context Protocol (MCP) 技术开发指南与实践
+    </div>
+    <div class="post-meta"><span title='2025-06-09 00:00:00 +0000 UTC'>2025-06-09</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2075 字&nbsp;·&nbsp;Niuhe
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">文章目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#mcp%e6%8a%80%e6%9c%af%e6%a6%82%e8%bf%b0" aria-label="MCP技术概述">MCP技术概述</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8d%8f%e8%ae%ae%e6%9e%b6%e6%9e%84" aria-label="协议架构">协议架构</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%ae%9e%e7%8e%b0" aria-label="服务器实现">服务器实现</a><ul>
+                        
+                <li>
+                    <a href="#%e8%ae%a1%e7%ae%97%e5%99%a8mcp%e6%9c%8d%e5%8a%a1%e5%99%a8" aria-label="计算器MCP服务器">计算器MCP服务器</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%90%af%e5%8a%a8%e6%96%b9%e5%bc%8f" aria-label="服务器启动方式">服务器启动方式</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%a2%e6%88%b7%e7%ab%af%e5%ae%9e%e7%8e%b0" aria-label="客户端实现">客户端实现</a><ul>
+                        
+                <li>
+                    <a href="#stdio%e5%ae%a2%e6%88%b7%e7%ab%af" aria-label="STDIO客户端">STDIO客户端</a></li>
+                <li>
+                    <a href="#sse%e5%ae%a2%e6%88%b7%e7%ab%af" aria-label="SSE客户端">SSE客户端</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e7%a4%ba%e4%be%8b" aria-label="使用示例">使用示例</a><ul>
+                        
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" aria-label="配置文件">配置文件</a></li>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e7%a4%ba%e4%be%8b" aria-label="运行示例">运行示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" aria-label="参考资料">参考资料</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h3 id="mcp技术概述">MCP技术概述<a hidden class="anchor" aria-hidden="true" href="#mcp技术概述">#</a></h3>
+<blockquote>
+<p>MCP (Model Context Protocol) 是一个用于连接AI模型与外部数据源和工具的开放标准协议。它允许AI助手安全地访问本地和远程资源，实现更强大的功能扩展。</p>
+</blockquote>
+<p><strong>MCP核心特性：</strong></p>
+<ul>
+<li>标准化的客户端-服务器通信协议</li>
+<li>支持多种传输方式（STDIO、HTTP、SSE）</li>
+<li>基于JSON-RPC的消息格式</li>
+<li>工具调用和资源访问能力</li>
+</ul>
+<h4 id="协议架构">协议架构<a hidden class="anchor" aria-hidden="true" href="#协议架构">#</a></h4>
+<pre tabindex="0"><code>┌─────────────────┐    ┌─────────────────┐
+│   MCP Client    │    │   MCP Server    │
+│   (AI模型)       │◄──►│   (工具提供者)   │
+└─────────────────┘    └─────────────────┘
+        │                        │
+        └───────── MCP ──────────┘
+     (JSON-RPC over Transport)
+</code></pre><h3 id="服务器实现">服务器实现<a hidden class="anchor" aria-hidden="true" href="#服务器实现">#</a></h3>
+<h4 id="计算器mcp服务器">计算器MCP服务器<a hidden class="anchor" aria-hidden="true" href="#计算器mcp服务器">#</a></h4>
+<p>以下是一个完整的MCP服务器实现，支持三种传输方式：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">Calculator MCP服务器
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">使用FastMCP实现标准MCP协议
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> logging
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mcp.server.fastmcp <span style="color:#fff;font-weight:bold">import</span> FastMCP
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 配置日志</span>
+</span></span><span style="display:flex;"><span>logging.basicConfig(level=logging.INFO)
+</span></span><span style="display:flex;"><span>logger = logging.getLogger(<span style="color:#0ff;font-weight:bold">&#34;calculator-mcp-server&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 初始化FastMCP服务器</span>
+</span></span><span style="display:flex;"><span>mcp = FastMCP(<span style="color:#0ff;font-weight:bold">&#34;Calculator MCP Server&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>@mcp.tool()
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> add(a: <span style="color:#fff;font-weight:bold">float</span>, b: <span style="color:#fff;font-weight:bold">float</span>) -&gt; <span style="color:#fff;font-weight:bold">float</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Add two numbers(两个数字相加)
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    Parameters:
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        a (float): First number to add
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        b (float): Second number to add
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    Returns:
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">        float: The sum of a and b.
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>        result = a + b
+</span></span><span style="display:flex;"><span>        logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Addition: </span><span style="color:#0ff;font-weight:bold">{</span>a<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> + </span><span style="color:#0ff;font-weight:bold">{</span>b<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> = </span><span style="color:#0ff;font-weight:bold">{</span>result<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> result
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>        logger.error(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Failed to add numbers: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">raise</span> RuntimeError(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Failed to add numbers: </span><span style="color:#0ff;font-weight:bold">{</span><span style="color:#fff;font-weight:bold">str</span>(e)<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> main_stdio():
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;STDIO传输模式入口点&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    logger.info(<span style="color:#0ff;font-weight:bold">&#34;启动Calculator MCP服务器 (STDIO传输模式)&#34;</span>)
+</span></span><span style="display:flex;"><span>    mcp.run(transport=<span style="color:#0ff;font-weight:bold">&#34;stdio&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> main_remote(host: <span style="color:#fff;font-weight:bold">str</span> = <span style="color:#0ff;font-weight:bold">&#34;127.0.0.1&#34;</span>, port: <span style="color:#fff;font-weight:bold">int</span> = <span style="color:#ff0;font-weight:bold">8008</span>, transport: <span style="color:#fff;font-weight:bold">str</span> = <span style="color:#0ff;font-weight:bold">&#34;http&#34;</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;HTTP传输模式入口点&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">import</span> uvicorn
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;启动Calculator MCP服务器 (</span><span style="color:#0ff;font-weight:bold">{</span>transport.upper()<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">传输模式) - </span><span style="color:#0ff;font-weight:bold">{</span>host<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">:</span><span style="color:#0ff;font-weight:bold">{</span>port<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> transport == <span style="color:#0ff;font-weight:bold">&#34;sse&#34;</span>:
+</span></span><span style="display:flex;"><span>        app = mcp.sse_app()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        app = mcp.streamable_http_app()
+</span></span><span style="display:flex;"><span>    uvicorn.run(app, host=host, port=port)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> main_http_with_args():
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;带命令行参数解析的HTTP服务器启动器&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">import</span> argparse
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 如果从主脚本调用，需要过滤掉 --http 参数</span>
+</span></span><span style="display:flex;"><span>    argv = sys.argv[<span style="color:#ff0;font-weight:bold">1</span>:]
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> argv and argv[<span style="color:#ff0;font-weight:bold">0</span>] == <span style="color:#0ff;font-weight:bold">&#34;--http&#34;</span>:
+</span></span><span style="display:flex;"><span>        argv = argv[<span style="color:#ff0;font-weight:bold">1</span>:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    parser = argparse.ArgumentParser(description=<span style="color:#0ff;font-weight:bold">&#34;Calculator MCP服务器 - HTTP传输模式&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--host&#34;</span>, default=<span style="color:#0ff;font-weight:bold">&#34;127.0.0.1&#34;</span>, help=<span style="color:#0ff;font-weight:bold">&#34;绑定的主机地址&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--port&#34;</span>, <span style="color:#fff;font-weight:bold">type</span>=<span style="color:#fff;font-weight:bold">int</span>, default=<span style="color:#ff0;font-weight:bold">8008</span>, help=<span style="color:#0ff;font-weight:bold">&#34;绑定的端口号&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    args = parser.parse_args(argv)
+</span></span><span style="display:flex;"><span>    main_remote(args.host, args.port)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> main_sse_with_args():
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;带命令行参数解析的SSE服务器启动器&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">import</span> argparse
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 如果从主脚本调用，需要过滤掉 --sse 参数</span>
+</span></span><span style="display:flex;"><span>    argv = sys.argv[<span style="color:#ff0;font-weight:bold">1</span>:]
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> argv and argv[<span style="color:#ff0;font-weight:bold">0</span>] == <span style="color:#0ff;font-weight:bold">&#34;--sse&#34;</span>:
+</span></span><span style="display:flex;"><span>        argv = argv[<span style="color:#ff0;font-weight:bold">1</span>:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    parser = argparse.ArgumentParser(description=<span style="color:#0ff;font-weight:bold">&#34;Calculator MCP服务器 - SSE传输模式&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--host&#34;</span>, default=<span style="color:#0ff;font-weight:bold">&#34;127.0.0.1&#34;</span>, help=<span style="color:#0ff;font-weight:bold">&#34;绑定的主机地址&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser.add_argument(<span style="color:#0ff;font-weight:bold">&#34;--port&#34;</span>, <span style="color:#fff;font-weight:bold">type</span>=<span style="color:#fff;font-weight:bold">int</span>, default=<span style="color:#ff0;font-weight:bold">8008</span>, help=<span style="color:#0ff;font-weight:bold">&#34;绑定的端口号&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    args = parser.parse_args(argv)
+</span></span><span style="display:flex;"><span>    main_remote(args.host, args.port, transport=<span style="color:#0ff;font-weight:bold">&#34;sse&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">len</span>(sys.argv) &gt; <span style="color:#ff0;font-weight:bold">1</span> and sys.argv[<span style="color:#ff0;font-weight:bold">1</span>] == <span style="color:#0ff;font-weight:bold">&#34;--http&#34;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># HTTP模式：python calculator.py --http [--host HOST] [--port PORT]</span>
+</span></span><span style="display:flex;"><span>        main_http_with_args()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">elif</span> <span style="color:#fff;font-weight:bold">len</span>(sys.argv) &gt; <span style="color:#ff0;font-weight:bold">1</span> and sys.argv[<span style="color:#ff0;font-weight:bold">1</span>] == <span style="color:#0ff;font-weight:bold">&#34;--sse&#34;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># SSE模式：python calculator.py --sse [--host HOST] [--port PORT]</span>
+</span></span><span style="display:flex;"><span>        main_sse_with_args()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#007f7f"># 默认使用STDIO模式</span>
+</span></span><span style="display:flex;"><span>        main_stdio()
+</span></span></code></pre></div><h4 id="服务器启动方式">服务器启动方式<a hidden class="anchor" aria-hidden="true" href="#服务器启动方式">#</a></h4>
+<p><strong>STDIO传输模式（默认）：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python calculator.py
+</span></span></code></pre></div><p><strong>HTTP传输模式：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python calculator.py --http
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 或指定主机和端口</span>
+</span></span><span style="display:flex;"><span>python calculator.py --http --host 0.0.0.0 --port <span style="color:#ff0;font-weight:bold">8080</span>
+</span></span></code></pre></div><p><strong>SSE传输模式：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python calculator.py --sse
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 或指定主机和端口</span>
+</span></span><span style="display:flex;"><span>python calculator.py --sse --host 0.0.0.0 --port <span style="color:#ff0;font-weight:bold">8080</span>
+</span></span></code></pre></div><h3 id="客户端实现">客户端实现<a hidden class="anchor" aria-hidden="true" href="#客户端实现">#</a></h3>
+<h4 id="stdio客户端">STDIO客户端<a hidden class="anchor" aria-hidden="true" href="#stdio客户端">#</a></h4>
+<p>以下是一个完整的STDIO客户端实现，用于连接MCP服务器：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f">#!/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">MCP Client Demo
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">A simplified MCP client that connects to MCP servers and demonstrates
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">basic tool listing and execution functionality.
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> asyncio
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> logging
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> shutil
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> contextlib <span style="color:#fff;font-weight:bold">import</span> AsyncExitStack
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> typing <span style="color:#fff;font-weight:bold">import</span> Any, Dict, List, Optional
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mcp <span style="color:#fff;font-weight:bold">import</span> ClientSession, StdioServerParameters
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mcp.client.stdio <span style="color:#fff;font-weight:bold">import</span> stdio_client
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Configure logging</span>
+</span></span><span style="display:flex;"><span>logging.basicConfig(
+</span></span><span style="display:flex;"><span>    level=logging.INFO, <span style="color:#fff;font-weight:bold">format</span>=<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">%(asctime)s</span><span style="color:#0ff;font-weight:bold"> - </span><span style="color:#0ff;font-weight:bold">%(levelname)s</span><span style="color:#0ff;font-weight:bold"> - </span><span style="color:#0ff;font-weight:bold">%(message)s</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>logger = logging.getLogger(__name__)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> MCPServer:
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Manages connection to an MCP server and tool execution.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, name: <span style="color:#fff;font-weight:bold">str</span>, config: Dict[<span style="color:#fff;font-weight:bold">str</span>, Any]) -&gt; <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        self.name = name
+</span></span><span style="display:flex;"><span>        self.config = config
+</span></span><span style="display:flex;"><span>        self.session: Optional[ClientSession] = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        self.exit_stack = AsyncExitStack()
+</span></span><span style="display:flex;"><span>        self.tools: List[Dict[<span style="color:#fff;font-weight:bold">str</span>, Any]] = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> connect(self) -&gt; <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Connect to the MCP server.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        command = (
+</span></span><span style="display:flex;"><span>            shutil.which(<span style="color:#0ff;font-weight:bold">&#34;npx&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> self.config[<span style="color:#0ff;font-weight:bold">&#34;command&#34;</span>] == <span style="color:#0ff;font-weight:bold">&#34;npx&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">else</span> self.config[<span style="color:#0ff;font-weight:bold">&#34;command&#34;</span>]
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> command is <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span> ValueError(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Invalid command for server </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">: </span><span style="color:#0ff;font-weight:bold">{</span>self.config[<span style="color:#0ff;font-weight:bold">&#39;command&#39;</span>]<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Connecting to </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> server...&#34;</span>)
+</span></span><span style="display:flex;"><span>        server_params = StdioServerParameters(
+</span></span><span style="display:flex;"><span>            command=command,
+</span></span><span style="display:flex;"><span>            args=self.config[<span style="color:#0ff;font-weight:bold">&#34;args&#34;</span>],
+</span></span><span style="display:flex;"><span>            env={**os.environ, **self.config.get(<span style="color:#0ff;font-weight:bold">&#34;env&#34;</span>, {})}
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            stdio_transport = <span style="color:#fff;font-weight:bold">await</span> self.exit_stack.enter_async_context(
+</span></span><span style="display:flex;"><span>                stdio_client(server_params)
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>            read, write = stdio_transport
+</span></span><span style="display:flex;"><span>            session = <span style="color:#fff;font-weight:bold">await</span> self.exit_stack.enter_async_context(
+</span></span><span style="display:flex;"><span>                ClientSession(read, write)
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">await</span> session.initialize()
+</span></span><span style="display:flex;"><span>            self.session = session
+</span></span><span style="display:flex;"><span>            logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Successfully connected to </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> server&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>            logger.error(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Error connecting to server </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">await</span> self.disconnect()
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> get_tools(self) -&gt; List[Dict[<span style="color:#fff;font-weight:bold">str</span>, Any]]:
+</span></span><span style="display:flex;"><span>        <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Get available tools from the server.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> not self.session:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span> RuntimeError(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Server </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> not connected&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Getting tools from </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> server...&#34;</span>)
+</span></span><span style="display:flex;"><span>        tools_response = <span style="color:#fff;font-weight:bold">await</span> self.session.list_tools()
+</span></span><span style="display:flex;"><span>        tools = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> item in tools_response:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">isinstance</span>(item, <span style="color:#fff;font-weight:bold">tuple</span>) and item[<span style="color:#ff0;font-weight:bold">0</span>] == <span style="color:#0ff;font-weight:bold">&#34;tools&#34;</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">for</span> tool in item[<span style="color:#ff0;font-weight:bold">1</span>]:
+</span></span><span style="display:flex;"><span>                    tools.append({
+</span></span><span style="display:flex;"><span>                        <span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>: tool.name,
+</span></span><span style="display:flex;"><span>                        <span style="color:#0ff;font-weight:bold">&#34;description&#34;</span>: tool.description,
+</span></span><span style="display:flex;"><span>                        <span style="color:#0ff;font-weight:bold">&#34;input_schema&#34;</span>: tool.inputSchema
+</span></span><span style="display:flex;"><span>                    })
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        self.tools = tools
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> tools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> execute_tool(self, tool_name: <span style="color:#fff;font-weight:bold">str</span>, arguments: Dict[<span style="color:#fff;font-weight:bold">str</span>, Any]) -&gt; Any:
+</span></span><span style="display:flex;"><span>        <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Execute a tool on the server.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> not self.session:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span> RuntimeError(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Server </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> not connected&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Executing tool </span><span style="color:#0ff;font-weight:bold">{</span>tool_name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> on </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> server...&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            result = <span style="color:#fff;font-weight:bold">await</span> self.session.call_tool(tool_name, arguments)
+</span></span><span style="display:flex;"><span>            logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Tool execution successful&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> result
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>            logger.error(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Error executing tool </span><span style="color:#0ff;font-weight:bold">{</span>tool_name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> disconnect(self) -&gt; <span style="color:#fff;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Disconnect from the server.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">await</span> self.exit_stack.aclose()
+</span></span><span style="display:flex;"><span>            self.session = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>            logger.info(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Disconnected from </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> server&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>            logger.error(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Error disconnecting from server </span><span style="color:#0ff;font-weight:bold">{</span>self.name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span></code></pre></div><h4 id="sse客户端">SSE客户端<a hidden class="anchor" aria-hidden="true" href="#sse客户端">#</a></h4>
+<p>以下是一个SSE客户端实现，用于测试SSE传输：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> asyncio
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> traceback
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> typing <span style="color:#fff;font-weight:bold">import</span> Dict, Any
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> unittest <span style="color:#fff;font-weight:bold">import</span> result
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> httpx
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mcp <span style="color:#fff;font-weight:bold">import</span> ClientSession
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> mcp.client.sse <span style="color:#fff;font-weight:bold">import</span> sse_client
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>TOOL_TESTS = {
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;add&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#0ff;font-weight:bold">&#34;b&#34;</span>: <span style="color:#ff0;font-weight:bold">3</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;subtract&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#0ff;font-weight:bold">&#34;b&#34;</span>: <span style="color:#ff0;font-weight:bold">4</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;multiply&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#0ff;font-weight:bold">&#34;b&#34;</span>: <span style="color:#ff0;font-weight:bold">7</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;divide&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">20</span>, <span style="color:#0ff;font-weight:bold">&#34;b&#34;</span>: <span style="color:#ff0;font-weight:bold">5</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;factorial&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">5</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;log&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">100</span>, <span style="color:#0ff;font-weight:bold">&#34;base&#34;</span>: <span style="color:#ff0;font-weight:bold">10</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;remainder&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#0ff;font-weight:bold">&#34;b&#34;</span>: <span style="color:#ff0;font-weight:bold">5</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;sin&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;angle&#34;</span>: <span style="color:#ff0;font-weight:bold">30</span>, <span style="color:#0ff;font-weight:bold">&#34;degrees&#34;</span>: <span style="color:#fff;font-weight:bold">True</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;cos&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;angle&#34;</span>: <span style="color:#ff0;font-weight:bold">60</span>, <span style="color:#0ff;font-weight:bold">&#34;degrees&#34;</span>: <span style="color:#fff;font-weight:bold">True</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;tan&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;angle&#34;</span>: <span style="color:#ff0;font-weight:bold">45</span>, <span style="color:#0ff;font-weight:bold">&#34;degrees&#34;</span>: <span style="color:#fff;font-weight:bold">True</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;power&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;base&#34;</span>: <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#0ff;font-weight:bold">&#34;exponent&#34;</span>: <span style="color:#ff0;font-weight:bold">8</span>},
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;sqrt&#34;</span>: {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">16</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> MCPClient:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self):
+</span></span><span style="display:flex;"><span>        self.session = <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        self.available_tools = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> connect(self, server_url: <span style="color:#fff;font-weight:bold">str</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Connecting to server </span><span style="color:#0ff;font-weight:bold">{</span>server_url<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Create SSE Client...&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># Store the context managers but don&#39;t enter them yet</span>
+</span></span><span style="display:flex;"><span>            self._streams_context = sse_client(url=server_url)
+</span></span><span style="display:flex;"><span>            streams = <span style="color:#fff;font-weight:bold">await</span> self._streams_context.__aenter__()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Create MCP Session...&#34;</span>)
+</span></span><span style="display:flex;"><span>            self._session_context = ClientSession(*streams)
+</span></span><span style="display:flex;"><span>            self.session = <span style="color:#fff;font-weight:bold">await</span> self._session_context.__aenter__()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Init Session...&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">await</span> self.session.initialize()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Get Tool List...&#34;</span>)
+</span></span><span style="display:flex;"><span>            response = <span style="color:#fff;font-weight:bold">await</span> self.session.list_tools()
+</span></span><span style="display:flex;"><span>            self.available_tools = response.tools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            tool_names = [tool.name <span style="color:#fff;font-weight:bold">for</span> tool in self.available_tools]
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;Connect Successfully! Available Tools: </span><span style="color:#0ff;font-weight:bold">{</span>tool_names<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;Connect Failed: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(traceback.format_exc())
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># Clean up any resources that might have been created</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">await</span> self.cleanup()
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> call_tool(self, tool_name: <span style="color:#fff;font-weight:bold">str</span>, parameters: Dict[<span style="color:#fff;font-weight:bold">str</span>, Any]) -&gt; <span style="color:#fff;font-weight:bold">str</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> not self.session:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Error: Not Connect to MCP server&#39;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> <span style="color:#0ff;font-weight:bold">&#34;Not Connect to MCP server&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;Call Tool: </span><span style="color:#0ff;font-weight:bold">{</span>tool_name<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#39;Params: </span><span style="color:#0ff;font-weight:bold">{</span>parameters<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            result = <span style="color:#fff;font-weight:bold">await</span> self.session.call_tool(tool_name, parameters)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(result)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">hasattr</span>(result, <span style="color:#0ff;font-weight:bold">&#39;content&#39;</span>):
+</span></span><span style="display:flex;"><span>                content_str = <span style="color:#0ff;font-weight:bold">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">for</span> item in result.content:
+</span></span><span style="display:flex;"><span>                    <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">hasattr</span>(item, <span style="color:#0ff;font-weight:bold">&#39;text&#39;</span>):
+</span></span><span style="display:flex;"><span>                        content_str += item.text + <span style="color:#0ff;font-weight:bold">&#34;, &#34;</span>
+</span></span><span style="display:flex;"><span>                content_str = content_str.rstrip(<span style="color:#0ff;font-weight:bold">&#39;, &#39;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>                content_str = <span style="color:#fff;font-weight:bold">str</span>(result)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            output = content_str or <span style="color:#0ff;font-weight:bold">&#34;No Output&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Tool Execute Result: </span><span style="color:#0ff;font-weight:bold">{</span>output<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> output
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>            error_msg = <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Tool Execute Failed: </span><span style="color:#0ff;font-weight:bold">{</span>e<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(error_msg)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(traceback.format_exc())
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> error_msg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">async</span> <span style="color:#fff;font-weight:bold">def</span> main():
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">len</span>(sys.argv) &lt; <span style="color:#ff0;font-weight:bold">2</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Usage: python test_mcp_client.py &lt;MCP Server URL&gt; (Such as http://localhost:8000/sse)&#34;</span>)
+</span></span><span style="display:flex;"><span>        sys.exit(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    server_url = sys.argv[<span style="color:#ff0;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>    client = MCPClient()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">await</span> client.connect(server_url):
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Connect Success&#39;</span>)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#007f7f"># Test tool execution</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">await</span> client.call_tool(<span style="color:#0ff;font-weight:bold">&#34;add&#34;</span>, {<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>: <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#0ff;font-weight:bold">&#34;b&#34;</span>: <span style="color:#ff0;font-weight:bold">3</span>})
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Tests completed, exiting...&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Connect Failed&#34;</span>)
+</span></span><span style="display:flex;"><span>            sys.exit(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">except</span> KeyboardInterrupt:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Keyboard interrupt received, shutting down...&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">except</span> Exception <span style="color:#fff;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Execute Failed&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(traceback.format_exc())
+</span></span><span style="display:flex;"><span>        sys.exit(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">finally</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">Cleaning up resources...&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">await</span> client.cleanup()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__ == <span style="color:#0ff;font-weight:bold">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    asyncio.run(main())
+</span></span></code></pre></div><h3 id="使用示例">使用示例<a hidden class="anchor" aria-hidden="true" href="#使用示例">#</a></h3>
+<h4 id="配置文件">配置文件<a hidden class="anchor" aria-hidden="true" href="#配置文件">#</a></h4>
+<p>客户端配置文件 <code>servers_config.json</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="font-weight:bold">&#34;mcpServers&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">&#34;calculator&#34;</span>: {
+</span></span><span style="display:flex;"><span>      <span style="font-weight:bold">&#34;command&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;python&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="font-weight:bold">&#34;args&#34;</span>: [<span style="color:#0ff;font-weight:bold">&#34;../server/calculator.py&#34;</span>],
+</span></span><span style="display:flex;"><span>      <span style="font-weight:bold">&#34;env&#34;</span>: {}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="运行示例">运行示例<a hidden class="anchor" aria-hidden="true" href="#运行示例">#</a></h4>
+<p><strong>启动服务器：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># STDIO模式</span>
+</span></span><span style="display:flex;"><span>python calculator.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># HTTP模式</span>
+</span></span><span style="display:flex;"><span>python calculator.py --http --host 127.0.0.1 --port <span style="color:#ff0;font-weight:bold">8008</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># SSE模式</span>
+</span></span><span style="display:flex;"><span>python calculator.py --sse --host 127.0.0.1 --port <span style="color:#ff0;font-weight:bold">8008</span>
+</span></span></code></pre></div><p><strong>运行客户端：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007f7f"># STDIO客户端</span>
+</span></span><span style="display:flex;"><span>python mcp_client_demo.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># SSE客户端</span>
+</span></span><span style="display:flex;"><span>python test_mcp_sse_client.py http://localhost:8008/sse
+</span></span></code></pre></div><h3 id="参考资料">参考资料<a hidden class="anchor" aria-hidden="true" href="#参考资料">#</a></h3>
+<p><a href="https://modelcontextprotocol.io/">Model Context Protocol 官方文档</a></p>
+<p><a href="https://github.com/jlowin/fastmcp">FastMCP Python库文档</a></p>
+<p><a href="https://spec.modelcontextprotocol.io/">MCP协议规范</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://blog.niuhemoon.win/tags/mcp/">MCP</a></li>
+      <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
+    </ul>
+<div class="footer-comments">
+  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
+    send an email
+</a> to me</p>
+
+</div>
+<nav class="paginav">
+  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>跨语言JSON-RPC通信实现：Go与Python互操作Demo</span>
+  </a>
+  <a class="next" href="https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>vLLM 开发环境搭建</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+      
+    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
+    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+        Licensed under
+        <a
+          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
+          target="_blank"
+          rel="license noopener noreferrer"
+          style="display:inline-block;"
+          >CC BY-NC-SA 4.0 </a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '📄复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '👌🏻已复制!';
+            setTimeout(() => {
+                copybutton.innerHTML = '📄复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

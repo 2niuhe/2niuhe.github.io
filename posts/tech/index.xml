@@ -16,6 +16,15 @@
     </item>
     
     <item>
+      <title>MCP技术开发与实践</title>
+      <link>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</link>
+      <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</guid>
+      <description>Model Context Protocol (MCP) 技术开发指南与实践</description>
+    </item>
+    
+    <item>
       <title>vLLM 开发环境搭建</title>
       <link>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
