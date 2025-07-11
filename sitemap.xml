@@ -5,6 +5,21 @@
     <loc>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</loc>
     <lastmod>2025-01-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/</loc>
+    <lastmod>2025-07-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/fire/</loc>
+    <lastmod>2025-07-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/</loc>
+    <lastmod>2025-07-11T22:29:59+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/python/</loc>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.niuhemoon.win/tags/</loc>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
+  </url><url>
     <loc>https://blog.niuhemoon.win/tags/ai/</loc>
     <lastmod>2025-06-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -16,15 +31,6 @@
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</loc>
     <lastmod>2025-06-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/</loc>
-    <lastmod>2025-07-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/python/</loc>
-    <lastmod>2025-06-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.niuhemoon.win/tags/</loc>
-    <lastmod>2025-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/vllm/</loc>
     <lastmod>2025-06-09T00:00:00+00:00</lastmod>
@@ -93,7 +99,7 @@
     <lastmod>2025-03-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/c/</loc>
-    <lastmod>2025-01-13T00:00:00+00:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/c-language-cheetsheet/</loc>
     <lastmod>2025-01-13T00:00:00+00:00</lastmod>
@@ -306,10 +312,10 @@
     <lastmod>2020-10-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/categories/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/categories/others/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/regex/</loc>
     <lastmod>2020-10-11T00:00:00+00:00</lastmod>
@@ -450,50 +456,50 @@
     <lastmod>2024-01-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/archives/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T20:14:38+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:59+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/read/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:59+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/search/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T20:14:38+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/about/</loc>
-    <lastmod>2024-08-14T00:03:35+08:00</lastmod>
+    <lastmod>2025-07-11T20:14:38+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/anki/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/matlab/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/matlab-basic/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/anki-python/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/ros/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/series/</loc>
   </url><url>
     <loc>https://blog.niuhemoon.win/tags/stm32/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/stm32-example-1/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/tech/virual-lidar/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:58+08:00</lastmod>
   </url><url>
     <loc>https://blog.niuhemoon.win/posts/life/</loc>
-    <lastmod>2023-03-19T23:58:51+08:00</lastmod>
+    <lastmod>2025-07-11T22:29:56+08:00</lastmod>
   </url>
 </urlset>

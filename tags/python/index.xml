@@ -6,7 +6,7 @@
     <description>Recent content in Python on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 10 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>跨语言JSON-RPC通信实现：Go与Python互操作Demo</title>
       <link>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</link>
@@ -14,6 +14,15 @@
       
       <guid>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</guid>
       <description>演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端</description>
+    </item>
+    
+    <item>
+      <title>[AI]Python Fire: 告别繁琐，一键生成命令行界面</title>
+      <link>https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/</link>
+      <pubDate>Thu, 10 Jul 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/</guid>
+      <description>介绍 Python Fire 库，它能将任何 Python 对象自动转换成 CLI，极大简化命令行工具的开发。</description>
     </item>
     
     <item>
