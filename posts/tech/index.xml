@@ -16,6 +16,15 @@
     </item>
     
     <item>
+      <title>我的终端AI助手: Mods使用实践</title>
+      <link>https://blog.niuhemoon.win/posts/tech/mods-usage/</link>
+      <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/mods-usage/</guid>
+      <description>介绍如何结合Shell脚本与Charmbracelet/mods，打造个性化的终端AI工具集，实现快速翻译、代码解释和安全命令生成等功能。</description>
+    </item>
+    
+    <item>
       <title>[AI]Python Fire: 告别繁琐，一键生成命令行界面</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/</link>
       <pubDate>Thu, 10 Jul 2025 00:00:00 +0000</pubDate>

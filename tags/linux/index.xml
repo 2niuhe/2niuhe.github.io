@@ -6,7 +6,16 @@
     <description>Recent content in Linux on Niuhe&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Fri, 30 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 18 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我的终端AI助手: Mods使用实践</title>
+      <link>https://blog.niuhemoon.win/posts/tech/mods-usage/</link>
+      <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.niuhemoon.win/posts/tech/mods-usage/</guid>
+      <description>介绍如何结合Shell脚本与Charmbracelet/mods，打造个性化的终端AI工具集，实现快速翻译、代码解释和安全命令生成等功能。</description>
+    </item>
+    
     <item>
       <title>FRP内网穿透与NoMachine远程桌面使用指南</title>
       <link>https://blog.niuhemoon.win/posts/tech/frp-nomachine-guide/</link>
