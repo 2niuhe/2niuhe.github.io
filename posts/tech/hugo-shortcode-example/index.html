@@ -253,8 +253,8 @@ html[data-theme="dark"] .notice {
   "keywords": [
     "Hugo"
   ],
-  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nAsciinema Plantuml Mermaid 使用标准 Markdown 代码块即可渲染 Mermaid 图表。\nflowchart TD A[Markdown mermaid code block] --\u003e B[Hugo render hook] B --\u003e C[Load Mermaid only on pages that need it] C --\u003e D[Render diagram in browser] sequenceDiagram participant User participant Hugo participant Browser User-\u003e\u003eHugo: 写入 mermaid 代码块 Hugo--\u003e\u003eBrowser: 输出 Mermaid 容器和脚本 Browser--\u003e\u003eUser: 渲染图表 Grpahvizo DOT Language (GraphViz) Example Chart Vega Plotly Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ Tmux基本概念 不带标题的图片 折叠内容 测试折叠内容 测试折叠内容\nprint('hello') RawHTML \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e 《从前慢》 木心 记得早先少年时 大家诚诚恳恳 说一句 是一句 \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e Everyday Italian Giada De Laurentiis 2005 30.00 Harry Potter J K. Rowling 2005 29.99 XQuery Kick Start James McGovern Per Bothner Kurt Cagle James Linn Vaidyanathan Nagarajan 2003 49.99 Learning XML Erik T. Ray 2003 39.95 Music 基于meeting js\nspotify iframe\nNotice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Codepen See the Pen Draft Countdown by littlebookboy (@littlebookboy) on CodePen. Youtube Audio A custom comment Video Your browser does not support HTML5 video. Here is \"\u003ea link to download the video. A custom caption Twitter Tweets by elonmusk Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
-  "wordCount" : "345",
+  "articleBody": "记录hugo 一些常用的shortcode\nRaw 如下是一个使用svg绘制的钟表\nAsciinema Plantuml Mermaid 使用标准 Markdown 代码块即可渲染 Mermaid 图表。\nflowchart TD A[Markdown mermaid code block] --\u003e B[Hugo render hook] B --\u003e C[Load Mermaid only on pages that need it] C --\u003e D[Render diagram in browser] sequenceDiagram participant User participant Hugo participant Browser User-\u003e\u003eHugo: 写入 mermaid 代码块 Hugo--\u003e\u003eBrowser: 输出 Mermaid 容器和脚本 Browser--\u003e\u003eUser: 渲染图表 GraphViz Graphvizo 服务已经不可用，这里改用 Mermaid 表达同样的关系图。\nflowchart TD main[main] --\u003e|weight=8| parse parse --\u003e execute main -.-\u003e init main --\u003e cleanup execute --\u003e make_string[make a string] execute --\u003e printf init --\u003e make_string main ==\u003e|100 times| printf execute --\u003e compare Chart Vega Plotly Blockquote 花开花谢 白天黑夜\n一切自然 又不尽然\n春夏秋冬 经过才懂\n世间冷暖 无非自然\n李健 《懂得》 Imagecap 带标题的图片 ◎ Tmux基本概念 不带标题的图片 折叠内容 测试折叠内容 测试折叠内容\nprint('hello') RawHTML \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e 《从前慢》 木心 记得早先少年时 大家诚诚恳恳 说一句 是一句 \u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e Everyday Italian Giada De Laurentiis 2005 30.00 Harry Potter J K. Rowling 2005 29.99 XQuery Kick Start James McGovern Per Bothner Kurt Cagle James Linn Vaidyanathan Nagarajan 2003 49.99 Learning XML Erik T. Ray 2003 39.95 Music 基于meeting js\nspotify iframe\nNotice Warning\n告警\nInfo\n引言/通知\nNote\n记录\nTip\n提示\nBilibili \u003c!DOCTYPE HTML\u003e Gist Youtube Audio 本地 MP3 示例 Video Your browser does not support HTML5 video. Here is a link to download the video. 本地 MP4 示例 Ref Theme Documentation - Extended Shortcodes - LoveIt\n",
+  "wordCount" : "385",
   "inLanguage": "zh",
   "datePublished": "2022-12-21T00:00:00Z",
   "dateModified": "2022-12-21T00:00:00Z",
@@ -367,7 +367,7 @@ html[data-theme="dark"] .notice {
     </h1>
     <div class="post-meta">
 
-<span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>345 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
+<span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>385 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
   </header> <details class="toc"  open>
@@ -385,7 +385,7 @@ html[data-theme="dark"] .notice {
             <li>
                 <a href="#mermaid" aria-label="Mermaid">Mermaid</a></li>
             <li>
-                <a href="#grpahvizo" aria-label="Grpahvizo">Grpahvizo</a></li>
+                <a href="#graphviz" aria-label="GraphViz">GraphViz</a></li>
             <li>
                 <a href="#chart" aria-label="Chart">Chart</a></li>
             <li>
@@ -409,15 +409,11 @@ html[data-theme="dark"] .notice {
             <li>
                 <a href="#gist" aria-label="Gist">Gist</a></li>
             <li>
-                <a href="#codepen" aria-label="Codepen">Codepen</a></li>
-            <li>
                 <a href="#youtube" aria-label="Youtube">Youtube</a></li>
             <li>
                 <a href="#audio" aria-label="Audio">Audio</a></li>
             <li>
                 <a href="#video" aria-label="Video">Video</a></li>
-            <li>
-                <a href="#twitter" aria-label="Twitter">Twitter</a></li>
             <li>
                 <a href="#ref" aria-label="Ref">Ref</a>
             </li>
@@ -693,21 +689,30 @@ html[data-theme="dark"] .notice {
     Hugo-->>Browser: 输出 Mermaid 容器和脚本
     Browser-->>User: 渲染图表</script>
 </div>
-<h3 id="grpahvizo">Grpahvizo<a hidden class="anchor" aria-hidden="true" href="#grpahvizo">#</a></h3>
-
-
-  
-    
-  
-
-
-<figure>
-  <img
-    src='https://g.gravizo.com/svg?%0a%20%20digraph%20G%20%7b%0a%20%20%20%20aize%20%3d%224%2c4%22%3b%0a%20%20%20%20main%20%5bshape%3dbox%5d%3b%0a%20%20%20%20main%20-%3e%20parse%20%5bweight%3d8%5d%3b%0a%20%20%20%20parse%20-%3e%20execute%3b%0a%20%20%20%20main%20-%3e%20init%20%5bstyle%3ddotted%5d%3b%0a%20%20%20%20main%20-%3e%20cleanup%3b%0a%20%20%20%20execute%20-%3e%20%7b%20make_string%3b%20printf%7d%0a%20%20%20%20init%20-%3e%20make_string%3b%0a%20%20%20%20edge%20%5bcolor%3dred%5d%3b%0a%20%20%20%20main%20-%3e%20printf%20%5bstyle%3dbold%2clabel%3d%22100%20times%22%5d%3b%0a%20%20%20%20make_string%20%5blabel%3d%22make%20a%20string%22%5d%3b%0a%20%20%20%20node%20%5bshape%3dbox%2cstyle%3dfilled%2ccolor%3d%22.7%20.3%201.0%22%5d%3b%0a%20%20%20%20execute%20-%3e%20compare%3b%0a%20%20%7d%0a'
-    alt='DOT Language (GraphViz) Example'
-    />
-    <figcaption>DOT Language (GraphViz) Example</figcaption>
-</figure>
+<h3 id="graphviz">GraphViz<a hidden class="anchor" aria-hidden="true" href="#graphviz">#</a></h3>
+<p>Graphvizo 服务已经不可用，这里改用 Mermaid 表达同样的关系图。</p>
+<div class="mermaid-wrapper">
+    <pre class="mermaid">flowchart TD
+    main[main] --&gt;|weight=8| parse
+    parse --&gt; execute
+    main -.-&gt; init
+    main --&gt; cleanup
+    execute --&gt; make_string[make a string]
+    execute --&gt; printf
+    init --&gt; make_string
+    main ==&gt;|100 times| printf
+    execute --&gt; compare</pre>
+    <script type="text/plain" class="mermaid-source">flowchart TD
+    main[main] -->|weight=8| parse
+    parse --> execute
+    main -.-> init
+    main --> cleanup
+    execute --> make_string[make a string]
+    execute --> printf
+    init --> make_string
+    main ==>|100 times| printf
+    execute --> compare</script>
+</div>
 <h3 id="chart">Chart<a hidden class="anchor" aria-hidden="true" href="#chart">#</a></h3>
 
 
@@ -717,7 +722,7 @@ html[data-theme="dark"] .notice {
 
 
 <div style="width: 100%;height: 300px;margin: 0 auto">
-    <canvas id="d85eccf5446fcfddc8a244c1d8cabbce"></canvas>
+    <canvas id="c2c8dfafc5e54d41ecbcb4d6c4cd8f8a"></canvas>
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
 <script type="text/javascript">
@@ -759,7 +764,7 @@ html[data-theme="dark"] .notice {
         }
     }
 };
-    new Chart(document.getElementById('d85eccf5446fcfddc8a244c1d8cabbce').getContext('2d'), options);
+    new Chart(document.getElementById('c2c8dfafc5e54d41ecbcb4d6c4cd8f8a').getContext('2d'), options);
 </script>
 <h3 id="vega">Vega<a hidden class="anchor" aria-hidden="true" href="#vega">#</a></h3>
 
@@ -1010,68 +1015,35 @@ html[data-theme="dark"] .notice {
 
 <h3 id="gist">Gist<a hidden class="anchor" aria-hidden="true" href="#gist">#</a></h3>
 <script src="https://gist.github.com/MatNoble/b8d6a9541221fef7c30bf214d3505836.js"></script>
-<h3 id="codepen">Codepen<a hidden class="anchor" aria-hidden="true" href="#codepen">#</a></h3>
-<iframe height="458" style="width: 100%;" scrolling="no" title="Draft Countdown" src="https://codepen.io/littlebookboy/embed/JryVMP?height=458&theme-id=light&default-tab=js,result" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-    See the Pen <a href='https://codepen.io/littlebookboy/pen/JryVMP'>Draft Countdown</a> by littlebookboy
-    (<a href='https://codepen.io/littlebookboy'>@littlebookboy</a>) on <a href='https://codepen.io'>CodePen</a>.
-  </iframe>
 <h3 id="youtube">Youtube<a hidden class="anchor" aria-hidden="true" href="#youtube">#</a></h3>
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
       <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/w7Ft2ymGmfc?autoplay=0&amp;controls=1&amp;end=0&amp;loop=0&amp;mute=0&amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"></iframe>
     </div>
 
 <h3 id="audio">Audio<a hidden class="anchor" aria-hidden="true" href="#audio">#</a></h3>
-
-
-
 <figure >
-  <audio controls class="player" preload="">
-    <source src="https://file-examples.com/storage/fe15076da466528199d9c5a/2017/11/file_example_MP3_700KB.mp3" type="audio/mpeg">
+  <audio controls class="player" preload="metadata">
+    <source src="/media/shortcode-demo.mp3" type="audio/mpeg">
   </audio>
   
-  <figcaption>A custom comment</figcaption>
+  <figcaption>本地 MP3 示例</figcaption>
 </figure>
+
 <h3 id="video">Video<a hidden class="anchor" aria-hidden="true" href="#video">#</a></h3>
-
-
 <!-- Shortcode 'video.html' -->
 
 <figure >
-  <video playsinline controls class="player" preload="metadata" data-poster="">
-    <source src="https://file-examples.com/storage/fe15076da466528199d9c5a/2017/04/file_example_MP4_480_1_5MG.mp4">
+  <video playsinline controls class="player" preload="metadata">
+    <source src="/media/shortcode-demo.mp4" type="video/mp4">
     <p>
       Your browser does not support HTML5 video.
-      Here is <a href="https://file-examples.com/storage/fe15076da466528199d9c5a/2017/04/file_example_MP4_480_1_5MG.mp4">">a link to download the video</a>.
+      Here is <a href="/media/shortcode-demo.mp4">a link to download the video</a>.
     </p>
   </video>
   
-  <figcaption>A custom caption</figcaption>
+  <figcaption>本地 MP4 示例</figcaption>
 </figure>
-<h3 id="twitter">Twitter<a hidden class="anchor" aria-hidden="true" href="#twitter">#</a></h3>
 
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <div class="twitter-timeline-container">
-        <a class="twitter-timeline" href="https://twitter.com/elonmusk" data-lang=""
-            data-width="500" data-height="800" data-dnt="true" data-theme="dark">
-            Tweets by elonmusk</a>
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-    </div>
 <h3 id="ref">Ref<a hidden class="anchor" aria-hidden="true" href="#ref">#</a></h3>
 <p><a href="https://hugoloveit.com/theme-documentation-extended-shortcodes/#6-echarts">Theme Documentation - Extended Shortcodes - LoveIt</a></p>
 
