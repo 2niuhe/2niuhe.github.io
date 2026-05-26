@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>memcached使用 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Linux">
+<meta name="description" content="yay -Sy memcached
+
+systemctl start memcached
+
+telnet localhost 11211
+
+# Caches foo with the value of bar for 5 minutes (300 seconds).
+# Default timeout is 0 (i.e. no expiration).
+# Syntax: set KEY FLAGS TIMEOUT SIZE
+# FLAGS usually is just 0.
+# SIZE is the number of characters.
+# the bar value is inputted in the next line.
+set foo 0 300 3
+bar
+# Returns bar.
+get foo
+# Deletes foo.
+delete foo
+# Deletes all keys.
+flush_all
+pip install pymemcache
+
+&gt;&gt;&gt; from pymemcache.client import base
+
+# Don&#39;t forget to run `memcached&#39; before running this next line:
+&gt;&gt;&gt; client = base.Client((&#39;localhost&#39;, 11211))
+
+# Once the client is instantiated, you can access the cache:
+&gt;&gt;&gt; client.set(&#39;some_key&#39;, &#39;some value&#39;)
+
+# Retrieve previously set data again:
+&gt;&gt;&gt; client.get(&#39;some_key&#39;)
+&#39;some value&#39;
+import pickle
+
+
+foo = dict()
+a = pickle.dumps(dict)
+b = pickle.loads(a)
+
+class Lock():
+   def __init__(self, key):
+       self.key = &#34;lock.%s&#34; % key
+
+   def __enter__(self):
+       while True:
+           value = getClient().add(self.key, &#34;1&#34;, 60000)
+           if value == True:
+               return
+           time.sleep(.1)
+
+   def __exit__(self, exc_type, exc_val, exc_tb):
+       getClient().delete(self.key)
+       return False
+# from dogpile.cache package
+
+class MemcachedLock(object):
+    &#34;&#34;&#34;Simple distributed lock using memcached.&#34;&#34;&#34;
+
+    def __init__(self, client_fn, key, timeout=0):
+        self.client_fn = client_fn
+        self.key = &#34;_lock&#34; &#43; key
+        self.timeout = timeout
+
+    def acquire(self, wait=True):
+        client = self.client_fn()
+        i = 0
+        while True:
+            if client.add(self.key, 1, self.timeout, noreply=False):
+                return True
+            elif not wait:
+                return False
+            else:
+                sleep_time = (((i &#43; 1) * random.random()) &#43; 2**i) / 2.5
+                time.sleep(sleep_time)
+            if i &lt; 15:
+                i &#43;= 1
+
+    def locked(self):
+        client = self.client_fn()
+        return client.get(self.key) is not None
+
+    def release(self):
+        client = self.client_fn()
+        client.delete(self.key)
+参考
+Python &#43; Memcached: Efficient Caching in Distributed Applications - Real Python">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="http://localhost:1313/posts/tech/memcache-usage/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/base/favicon.ico">
+<link rel="apple-touch-icon" href="http://localhost:1313/base/avatar.jpeg">
+<link rel="mask-icon" href="http://localhost:1313/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/tech/memcache-usage/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+<meta property="og:url" content="http://localhost:1313/posts/tech/memcache-usage/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="memcached使用">
+  <meta property="og:description" content="yay -Sy memcached systemctl start memcached telnet localhost 11211 # Caches foo with the value of bar for 5 minutes (300 seconds). # Default timeout is 0 (i.e. no expiration). # Syntax: set KEY FLAGS TIMEOUT SIZE # FLAGS usually is just 0. # SIZE is the number of characters. # the bar value is inputted in the next line. set foo 0 300 3 bar # Returns bar. get foo # Deletes foo. delete foo # Deletes all keys. flush_all pip install pymemcache &gt;&gt;&gt; from pymemcache.client import base # Don&#39;t forget to run `memcached&#39; before running this next line: &gt;&gt;&gt; client = base.Client((&#39;localhost&#39;, 11211)) # Once the client is instantiated, you can access the cache: &gt;&gt;&gt; client.set(&#39;some_key&#39;, &#39;some value&#39;) # Retrieve previously set data again: &gt;&gt;&gt; client.get(&#39;some_key&#39;) &#39;some value&#39; import pickle foo = dict() a = pickle.dumps(dict) b = pickle.loads(a) class Lock(): def __init__(self, key): self.key = &#34;lock.%s&#34; % key def __enter__(self): while True: value = getClient().add(self.key, &#34;1&#34;, 60000) if value == True: return time.sleep(.1) def __exit__(self, exc_type, exc_val, exc_tb): getClient().delete(self.key) return False # from dogpile.cache package class MemcachedLock(object): &#34;&#34;&#34;Simple distributed lock using memcached.&#34;&#34;&#34; def __init__(self, client_fn, key, timeout=0): self.client_fn = client_fn self.key = &#34;_lock&#34; &#43; key self.timeout = timeout def acquire(self, wait=True): client = self.client_fn() i = 0 while True: if client.add(self.key, 1, self.timeout, noreply=False): return True elif not wait: return False else: sleep_time = (((i &#43; 1) * random.random()) &#43; 2**i) / 2.5 time.sleep(sleep_time) if i &lt; 15: i &#43;= 1 def locked(self): client = self.client_fn() return client.get(self.key) is not None def release(self): client = self.client_fn() client.delete(self.key) 参考 Python &#43; Memcached: Efficient Caching in Distributed Applications - Real Python">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-01-13T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-01-13T00:00:00+00:00">
+    <meta property="article:tag" content="Linux">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="memcached使用">
+  <meta name="twitter:description" content="yay -Sy memcached systemctl start memcached telnet localhost 11211 # Caches foo with the value of bar for 5 minutes (300 seconds). # Default timeout is 0 (i.e. no expiration). # Syntax: set KEY FLAGS TIMEOUT SIZE # FLAGS usually is just 0. # SIZE is the number of characters. # the bar value is inputted in the next line. set foo 0 300 3 bar # Returns bar. get foo # Deletes foo. delete foo # Deletes all keys. flush_all pip install pymemcache &gt;&gt;&gt; from pymemcache.client import base # Don&#39;t forget to run `memcached&#39; before running this next line: &gt;&gt;&gt; client = base.Client((&#39;localhost&#39;, 11211)) # Once the client is instantiated, you can access the cache: &gt;&gt;&gt; client.set(&#39;some_key&#39;, &#39;some value&#39;) # Retrieve previously set data again: &gt;&gt;&gt; client.get(&#39;some_key&#39;) &#39;some value&#39; import pickle foo = dict() a = pickle.dumps(dict) b = pickle.loads(a) class Lock(): def __init__(self, key): self.key = &#34;lock.%s&#34; % key def __enter__(self): while True: value = getClient().add(self.key, &#34;1&#34;, 60000) if value == True: return time.sleep(.1) def __exit__(self, exc_type, exc_val, exc_tb): getClient().delete(self.key) return False # from dogpile.cache package class MemcachedLock(object): &#34;&#34;&#34;Simple distributed lock using memcached.&#34;&#34;&#34; def __init__(self, client_fn, key, timeout=0): self.client_fn = client_fn self.key = &#34;_lock&#34; &#43; key self.timeout = timeout def acquire(self, wait=True): client = self.client_fn() i = 0 while True: if client.add(self.key, 1, self.timeout, noreply=False): return True elif not wait: return False else: sleep_time = (((i &#43; 1) * random.random()) &#43; 2**i) / 2.5 time.sleep(sleep_time) if i &lt; 15: i &#43;= 1 def locked(self): client = self.client_fn() return client.get(self.key) is not None def release(self): client = self.client_fn() client.delete(self.key) 参考 Python &#43; Memcached: Efficient Caching in Distributed Applications - Real Python">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "http://localhost:1313/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "memcached使用",
+      "item": "http://localhost:1313/posts/tech/memcache-usage/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "memcached使用",
+  "name": "memcached使用",
+  "description": "yay -Sy memcached systemctl start memcached telnet localhost 11211 # Caches foo with the value of bar for 5 minutes (300 seconds). # Default timeout is 0 (i.e. no expiration). # Syntax: set KEY FLAGS TIMEOUT SIZE # FLAGS usually is just 0. # SIZE is the number of characters. # the bar value is inputted in the next line. set foo 0 300 3 bar # Returns bar. get foo # Deletes foo. delete foo # Deletes all keys. flush_all pip install pymemcache \u0026gt;\u0026gt;\u0026gt; from pymemcache.client import base # Don\u0026#39;t forget to run `memcached\u0026#39; before running this next line: \u0026gt;\u0026gt;\u0026gt; client = base.Client((\u0026#39;localhost\u0026#39;, 11211)) # Once the client is instantiated, you can access the cache: \u0026gt;\u0026gt;\u0026gt; client.set(\u0026#39;some_key\u0026#39;, \u0026#39;some value\u0026#39;) # Retrieve previously set data again: \u0026gt;\u0026gt;\u0026gt; client.get(\u0026#39;some_key\u0026#39;) \u0026#39;some value\u0026#39; import pickle foo = dict() a = pickle.dumps(dict) b = pickle.loads(a) class Lock(): def __init__(self, key): self.key = \u0026#34;lock.%s\u0026#34; % key def __enter__(self): while True: value = getClient().add(self.key, \u0026#34;1\u0026#34;, 60000) if value == True: return time.sleep(.1) def __exit__(self, exc_type, exc_val, exc_tb): getClient().delete(self.key) return False # from dogpile.cache package class MemcachedLock(object): \u0026#34;\u0026#34;\u0026#34;Simple distributed lock using memcached.\u0026#34;\u0026#34;\u0026#34; def __init__(self, client_fn, key, timeout=0): self.client_fn = client_fn self.key = \u0026#34;_lock\u0026#34; + key self.timeout = timeout def acquire(self, wait=True): client = self.client_fn() i = 0 while True: if client.add(self.key, 1, self.timeout, noreply=False): return True elif not wait: return False else: sleep_time = (((i + 1) * random.random()) + 2**i) / 2.5 time.sleep(sleep_time) if i \u0026lt; 15: i += 1 def locked(self): client = self.client_fn() return client.get(self.key) is not None def release(self): client = self.client_fn() client.delete(self.key) 参考 Python + Memcached: Efficient Caching in Distributed Applications - Real Python\n",
+  "keywords": [
+    "Linux"
+  ],
+  "articleBody": "yay -Sy memcached systemctl start memcached telnet localhost 11211 # Caches foo with the value of bar for 5 minutes (300 seconds). # Default timeout is 0 (i.e. no expiration). # Syntax: set KEY FLAGS TIMEOUT SIZE # FLAGS usually is just 0. # SIZE is the number of characters. # the bar value is inputted in the next line. set foo 0 300 3 bar # Returns bar. get foo # Deletes foo. delete foo # Deletes all keys. flush_all pip install pymemcache \u003e\u003e\u003e from pymemcache.client import base # Don't forget to run `memcached' before running this next line: \u003e\u003e\u003e client = base.Client(('localhost', 11211)) # Once the client is instantiated, you can access the cache: \u003e\u003e\u003e client.set('some_key', 'some value') # Retrieve previously set data again: \u003e\u003e\u003e client.get('some_key') 'some value' import pickle foo = dict() a = pickle.dumps(dict) b = pickle.loads(a) class Lock(): def __init__(self, key): self.key = \"lock.%s\" % key def __enter__(self): while True: value = getClient().add(self.key, \"1\", 60000) if value == True: return time.sleep(.1) def __exit__(self, exc_type, exc_val, exc_tb): getClient().delete(self.key) return False # from dogpile.cache package class MemcachedLock(object): \"\"\"Simple distributed lock using memcached.\"\"\" def __init__(self, client_fn, key, timeout=0): self.client_fn = client_fn self.key = \"_lock\" + key self.timeout = timeout def acquire(self, wait=True): client = self.client_fn() i = 0 while True: if client.add(self.key, 1, self.timeout, noreply=False): return True elif not wait: return False else: sleep_time = (((i + 1) * random.random()) + 2**i) / 2.5 time.sleep(sleep_time) if i \u003c 15: i += 1 def locked(self): client = self.client_fn() return client.get(self.key) is not None def release(self): client = self.client_fn() client.delete(self.key) 参考 Python + Memcached: Efficient Caching in Distributed Applications - Real Python\nHow to interact with Memcached using Telnet, Netcat, Python, or Django | by Ranel Padon | CodeX | Medium\nMemcached Telnet Commands Example | DigitalOcean\nJohn Banana Qwerty: A simple distributed lock with memcached… in Python\nA simple distributed lock with memcached\n",
+  "wordCount" : "315",
+  "inLanguage": "zh",
+  "datePublished": "2023-01-13T00:00:00Z",
+  "dateModified": "2023-01-13T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/tech/memcache-usage/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="http://localhost:1313/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      memcached使用
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-meta">
+
+<span title='2023-01-13 00:00:00 +0000 UTC'>2023-01-13</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>315 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
+
+</div>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>yay -Sy memcached
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>systemctl start memcached
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>telnet localhost <span style="color:#ff0;font-weight:bold">11211</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Caches foo with the value of bar for 5 minutes (300 seconds).</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Default timeout is 0 (i.e. no expiration).</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Syntax: set KEY FLAGS TIMEOUT SIZE</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># FLAGS usually is just 0.</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># SIZE is the number of characters.</span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># the bar value is inputted in the next line.</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">set</span> foo <span style="color:#ff0;font-weight:bold">0</span> <span style="color:#ff0;font-weight:bold">300</span> <span style="color:#ff0;font-weight:bold">3</span>
+</span></span><span style="display:flex;"><span>bar
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Returns bar.</span>
+</span></span><span style="display:flex;"><span>get foo
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Deletes foo.</span>
+</span></span><span style="display:flex;"><span>delete foo
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Deletes all keys.</span>
+</span></span><span style="display:flex;"><span>flush_all
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>pip install pymemcache
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; from pymemcache.client import base
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Don&#39;t forget to run `memcached&#39; before running this next line:</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; client = base.Client((<span style="color:#0ff;font-weight:bold">&#39;localhost&#39;</span>, 11211))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Once the client is instantiated, you can access the cache:</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; client.set(<span style="color:#0ff;font-weight:bold">&#39;some_key&#39;</span>, <span style="color:#0ff;font-weight:bold">&#39;some value&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Retrieve previously set data again:</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; client.get(<span style="color:#0ff;font-weight:bold">&#39;some_key&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#39;some value&#39;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> pickle
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>foo = <span style="color:#fff;font-weight:bold">dict</span>()
+</span></span><span style="display:flex;"><span>a = pickle.dumps(<span style="color:#fff;font-weight:bold">dict</span>)
+</span></span><span style="display:flex;"><span>b = pickle.loads(a)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Lock():
+</span></span><span style="display:flex;"><span>   <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, key):
+</span></span><span style="display:flex;"><span>       <span style="color:#fff;font-weight:bold">self</span>.key = <span style="color:#0ff;font-weight:bold">&#34;lock.</span><span style="color:#0ff;font-weight:bold">%s</span><span style="color:#0ff;font-weight:bold">&#34;</span> % key
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#fff;font-weight:bold">def</span> __enter__(<span style="color:#fff;font-weight:bold">self</span>):
+</span></span><span style="display:flex;"><span>       <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>           value = getClient().add(<span style="color:#fff;font-weight:bold">self</span>.key, <span style="color:#0ff;font-weight:bold">&#34;1&#34;</span>, <span style="color:#ff0;font-weight:bold">60000</span>)
+</span></span><span style="display:flex;"><span>           <span style="color:#fff;font-weight:bold">if</span> value == <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>               <span style="color:#fff;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>           time.sleep(<span style="color:#ff0;font-weight:bold">.1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#fff;font-weight:bold">def</span> __exit__(<span style="color:#fff;font-weight:bold">self</span>, exc_type, exc_val, exc_tb):
+</span></span><span style="display:flex;"><span>       getClient().delete(<span style="color:#fff;font-weight:bold">self</span>.key)
+</span></span><span style="display:flex;"><span>       <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">False</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># from dogpile.cache package</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> MemcachedLock(<span style="color:#fff;font-weight:bold">object</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;Simple distributed lock using memcached.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, client_fn, key, timeout=<span style="color:#ff0;font-weight:bold">0</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.client_fn = client_fn
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.key = <span style="color:#0ff;font-weight:bold">&#34;_lock&#34;</span> + key
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.timeout = timeout
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> acquire(<span style="color:#fff;font-weight:bold">self</span>, wait=<span style="color:#fff;font-weight:bold">True</span>):
+</span></span><span style="display:flex;"><span>        client = <span style="color:#fff;font-weight:bold">self</span>.client_fn()
+</span></span><span style="display:flex;"><span>        i = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> client.add(<span style="color:#fff;font-weight:bold">self</span>.key, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#fff;font-weight:bold">self</span>.timeout, noreply=<span style="color:#fff;font-weight:bold">False</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">elif</span> not wait:
+</span></span><span style="display:flex;"><span>                <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>                sleep_time = (((i + <span style="color:#ff0;font-weight:bold">1</span>) * random.random()) + <span style="color:#ff0;font-weight:bold">2</span>**i) / <span style="color:#ff0;font-weight:bold">2.5</span>
+</span></span><span style="display:flex;"><span>                time.sleep(sleep_time)
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">if</span> i &lt; <span style="color:#ff0;font-weight:bold">15</span>:
+</span></span><span style="display:flex;"><span>                i += <span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> locked(<span style="color:#fff;font-weight:bold">self</span>):
+</span></span><span style="display:flex;"><span>        client = <span style="color:#fff;font-weight:bold">self</span>.client_fn()
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> client.get(<span style="color:#fff;font-weight:bold">self</span>.key) is not <span style="color:#fff;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> release(<span style="color:#fff;font-weight:bold">self</span>):
+</span></span><span style="display:flex;"><span>        client = <span style="color:#fff;font-weight:bold">self</span>.client_fn()
+</span></span><span style="display:flex;"><span>        client.delete(<span style="color:#fff;font-weight:bold">self</span>.key)
+</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
+<p><a href="https://realpython.com/python-memcache-efficient-caching/">Python + Memcached: Efficient Caching in Distributed Applications - Real Python</a></p>
+<p><a href="https://medium.com/codex/how-to-interact-with-memcached-using-telnet-netcat-python-or-django-b88788b71375">How to interact with Memcached using Telnet, Netcat, Python, or Django | by Ranel Padon | CodeX | Medium</a></p>
+<p><a href="https://www.digitalocean.com/community/tutorials/memcached-telnet-commands-example">Memcached Telnet Commands Example | DigitalOcean</a></p>
+<p><a href="http://jbq.caraldi.com/2010/08/simple-distributed-lock-with-memcached.html">John Banana Qwerty: A simple distributed lock with memcached&hellip; in Python</a></p>
+<p><a href="https://bluxte.net/musings/2009/10/28/simple-distributed-lock-memcached/">A simple distributed lock with memcached</a></p>
+
+
+  </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/linux/">Linux</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/tech/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE%E7%AC%94%E8%AE%B0-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+    <span class="title">« 上一页</span>
+    <span>算法基础课笔记-数据结构</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/tech/nodejs-https-server-authentication/">
+    <span class="title">下一页 »</span>
+    <span>Node.js实现HTTPS服务器：单向认证与双向认证详解</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

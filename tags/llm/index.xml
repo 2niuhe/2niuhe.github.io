@@ -4,53 +4,53 @@
     <title>LLM on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/llm/</link>
     <description>Recent content in LLM on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/llm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 09 Jun 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/llm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>vLLM 开发环境搭建</title>
       <link>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/vllm-dev-environment/</guid>
       <description>如何搭建 vLLM 的 CPU 和 GPU 开发环境</description>
     </item>
-    
     <item>
       <title>CPU上部署Qwen3模型及性能测试</title>
       <link>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</link>
       <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/cpu%E4%B8%8A%E9%83%A8%E7%BD%B2qwen3%E5%B9%B6%E6%B5%8B%E8%AF%95%E9%80%9F%E5%BA%A6/</guid>
       <description>详解如何在CPU环境下部署和运行Qwen3大语言模型</description>
     </item>
-    
     <item>
       <title>多种编程语言接入大语言模型API指南</title>
       <link>https://blog.niuhemoon.win/posts/tech/llm-api-integration-guide/</link>
       <pubDate>Tue, 01 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/llm-api-integration-guide/</guid>
       <description>详细介绍如何使用Python、curl、Golang等多种方式接入大语言模型API</description>
     </item>
-    
     <item>
       <title>记录一次失败的小说SFT数据集创建</title>
       <link>https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/</guid>
       <description>本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败</description>
     </item>
-    
     <item>
       <title>text2sql Prompt 调优笔记</title>
       <link>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</link>
       <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/</guid>
-      <description>参加了一个LLM的应用比赛，赛题目标是编码优化prompt提高text2sql推理的正确率 给定的资源如下： 所有数据库schema 一个100条记录的训练集（其实是基于spider数据集做了修改） 三个LLM的接口（Baichuan13B/LLama2/Code-LLama） text2</description>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;参加了一个LLM的应用比赛，赛题目标是编码优化prompt提高text2sql推理的正确率
+给定的资源如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有数据库schema&lt;/li&gt;
+&lt;li&gt;一个100条记录的训练集（其实是基于spider数据集做了修改）&lt;/li&gt;
+&lt;li&gt;三个LLM的接口（Baichuan13B/LLama2/Code-LLama）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;text2sql正确率提高到了60%左右，在此记录一些心得&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>acwing算法基础课笔记-基础算法 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Linux">
+<meta name="description" content="记录acwing算法基础课第一章的笔记">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="http://localhost:1313/posts/tech/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/base/favicon.ico">
+<link rel="apple-touch-icon" href="http://localhost:1313/base/avatar.jpeg">
+<link rel="mask-icon" href="http://localhost:1313/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/tech/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+<meta property="og:url" content="http://localhost:1313/posts/tech/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="acwing算法基础课笔记-基础算法">
+  <meta property="og:description" content="记录acwing算法基础课第一章的笔记">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-01-07T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-01-07T00:00:00+00:00">
+    <meta property="article:tag" content="Linux">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="acwing算法基础课笔记-基础算法">
+  <meta name="twitter:description" content="记录acwing算法基础课第一章的笔记">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "http://localhost:1313/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "acwing算法基础课笔记-基础算法",
+      "item": "http://localhost:1313/posts/tech/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "acwing算法基础课笔记-基础算法",
+  "name": "acwing算法基础课笔记-基础算法",
+  "description": "记录acwing算法基础课第一章的笔记",
+  "keywords": [
+    "Linux"
+  ],
+  "articleBody": "[TOC]\n快速排序 快排基于分治思想\n确定分界点x，取中间元素或随机选择 调整区间，使得区间一侧小于等于x，另一侧大于等于x 递归处理左右两段区间 785. 快速排序 - AcWing题库\npackage main import \"fmt\" func quick_sort(nums []int, l int, r int) { if l \u003e= r { return } // pivot选择中点元素 i, j, x := l-1, r+1, nums[(l+r)\u003e\u003e1] for i \u003c j { for ok := true; ok; ok = nums[i] \u003c x { i++ } for ok := true; ok; ok = nums[j] \u003e x { j-- } if i \u003c j { nums[i], nums[j] = nums[j], nums[i] } } quick_sort(nums, l, j) quick_sort(nums, j+1, r) } func main() { var n int fmt.Scanf(\"%d\", \u0026n) nums := make([]int, n, n) for i := 0; i \u003c n; i++ { fmt.Scanf(\"%d\", \u0026nums[i]) } quick_sort(nums, 0, n-1) for _, v := range nums { fmt.Printf(\"%d \", v) } } 归并排序 787. 归并排序 - AcWing题库\npackage main import \"fmt\" var nums, tmp []int func merge_sort(nums []int, l int, r int) { if l \u003e= r { return } mid := (l + r) \u003e\u003e 1 merge_sort(nums, l, mid) merge_sort(nums, mid+1, r) k, i, j := 0, l, mid+1 for i \u003c= mid \u0026\u0026 j \u003c= r { if nums[i] \u003c= nums[j] { tmp[k] = nums[i] k++ i++ } else { tmp[k] = nums[j] k++ j++ } } for i \u003c= mid { tmp[k] = nums[i] k++ i++ } for j \u003c= r { tmp[k] = nums[j] k++ j++ } for i, j = l, 0; i \u003c= r; { nums[i] = tmp[j] i++ j++ } } func main() { var n int fmt.Scanf(\"%d\", \u0026n) nums = make([]int, n, n) tmp = make([]int, n, n) for i := 0; i \u003c n; i++ { fmt.Scanf(\"%d\", \u0026nums[i]) } merge_sort(nums, 0, n-1) for i := 0; i \u003c n; i++ { fmt.Printf(\"%d \", nums[i]) } } 前缀和 795. 前缀和 - AcWing题库\npackage main import \"fmt\" var nums, sums []int func main() { var n, m int fmt.Scanf(\"%d%d\", \u0026n, \u0026m) nums = make([]int, n+1) sums = make([]int, n+1) for i := 1; i \u003c= n; i++ { fmt.Scanf(\"%d\", \u0026nums[i]) } // s[0] = 0 s[1] = a[0] for i := 1; i \u003c= n; i++ { // 前缀和初始化 sums[i] = sums[i-1] + nums[i] } l, r := 0, 0 for i := 0; i \u003c m; i++ { fmt.Scanf(\"%d%d\", \u0026l, \u0026r) // 打印区间和 fmt.Printf(\"%d\\n\", sums[r]-sums[l-1]) } } 差分 797. 差分 - AcWing题库\npackage main import ( \"bufio\" \"fmt\" \"os\" \"strconv\" \"strings\" ) var nums, b []int func insert(l int, r int, c int) { b[l] += c b[r+1] -= c } func readArrInt(in *bufio.Reader, out []int) { line, _ := in.ReadString('\\n') line = strings.TrimSpace(line) foo := strings.Split(line, \" \") for i, bar := range foo { out[i], _ = strconv.Atoi(bar) } } func main() { var n, m int fmt.Scanf(\"%d%d\", \u0026n, \u0026m) nums = make([]int, n+2) b = make([]int, n+2) in := bufio.NewReader(os.Stdin) readArrInt(in, nums[1:]) // 差分 for i := 1; i \u003c= n; i++ { insert(i, i, nums[i]) } lrc := make([]int, 3) for i := 0; i \u003c m; i++ { readArrInt(in, lrc) insert(lrc[0], lrc[1], lrc[2]) } //原地求前缀和 for i := 1; i \u003c= n; i++ { b[i] += b[i-1] } for i := 1; i \u003c= n; i++ { fmt.Printf(\"%d \", b[i]) } } 双指针算法 799. 最长连续不重复子序列 - AcWing题库\npackage main import ( \"bufio\" \"fmt\" \"os\" \"strconv\" \"strings\" ) func readArrInt(in *bufio.Reader, out []int) { line, _ := in.ReadString('\\n') line = strings.TrimSpace(line) foo := strings.Split(line, \" \") for i, bar := range foo { out[i], _ = strconv.Atoi(bar) } } func max(a, b int) int { if a \u003e b { return a } return b } func main() { var n int fmt.Scanf(\"%d\", \u0026n) nums := make([]int, n) // Init counter with n items // counter := make(map[int]int, n) // slice is faster counter := make([]int, 1e5+1) in := bufio.NewReader(os.Stdin) readArrInt(in, nums) res := 0 //双指针 使用counter计数 for i, j := 0, 0; i \u003c n; i++ { counter[nums[i]]++ for j \u003c i \u0026\u0026 counter[nums[i]] \u003e 1 { counter[nums[j]]-- j++ } res = max(res, i-j+1) } fmt.Println(res) } 800. 数组元素的目标和 - AcWing题库\npackage main import ( \"bufio\" \"fmt\" \"os\" \"strconv\" \"strings\" ) func readArrInt(in *bufio.Reader, out []int) { line, _ := in.ReadString('\\n') line = strings.TrimSpace(line) foo := strings.Split(line, \" \") for i, bar := range foo { out[i], _ = strconv.Atoi(bar) } } func main() { var n, m, x int fmt.Scanf(\"%d%d%d\", \u0026n, \u0026m, \u0026x) numsA := make([]int, n) numsB := make([]int, m) in := bufio.NewReader(os.Stdin) readArrInt(in, numsA) readArrInt(in, numsB) //双指针 for i, j := 0, m-1; i \u003c n; i++ { for j \u003e= 0 \u0026\u0026 numsA[i]+numsB[j] \u003e x { j-- } if j \u003e= 0 \u0026\u0026 numsA[i]+numsB[j] == x { fmt.Printf(\"%d %d\", i, j) // 唯一解 break } } } 2816. 判断子序列 - AcWing题库\npackage main import ( \"bufio\" \"fmt\" \"os\" \"strconv\" \"strings\" ) func readArrInt(in *bufio.Reader, out []int) { line, _ := in.ReadString('\\n') line = strings.TrimSpace(line) foo := strings.Split(line, \" \") for i, bar := range foo { out[i], _ = strconv.Atoi(bar) } } func main() { var n, m int fmt.Scanf(\"%d%d%d\", \u0026n, \u0026m) if n \u003e m { fmt.Println(\"No\") return } numsA := make([]int, n) numsB := make([]int, m) in := bufio.NewReader(os.Stdin) readArrInt(in, numsA) readArrInt(in, numsB) //双指针 i, j := 0, 0 for i \u003c n \u0026\u0026 j \u003c m { if numsA[i] == numsB[j] { i++ } j++ } if i == n { fmt.Println(\"Yes\") } else { fmt.Println(\"No\") } } 位运算 801. 二进制中1的个数 - AcWing题库\npackage main import ( \"bufio\" \"fmt\" \"os\" \"strconv\" \"strings\" ) func readArrInt(in *bufio.Reader, out []int) { line, _ := in.ReadString('\\n') line = strings.TrimSpace(line) foo := strings.Split(line, \" \") for i, bar := range foo { out[i], _ = strconv.Atoi(bar) } } func writeArrInt(data []int, delim string) { fmt.Println(strings.Trim(strings.Join(strings.Split(fmt.Sprint(data), \" \"), delim), \"[]\")) } func main() { var n int fmt.Scanf(\"%d\", \u0026n) nums := make([]int, n) counter := make([]int, n) in := bufio.NewReader(os.Stdin) readArrInt(in, nums) for idx, num := range nums { res := 0 for num \u003e 0 { num -= num \u0026 -num res++ } counter[idx] = res } writeArrInt(counter, \" \") } ",
+  "wordCount" : "1217",
+  "inLanguage": "zh",
+  "datePublished": "2023-01-07T00:00:00Z",
+  "dateModified": "2023-01-07T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/tech/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE%E7%AC%94%E8%AE%B0-%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="http://localhost:1313/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      acwing算法基础课笔记-基础算法
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-meta">
+
+<span title='2023-01-07 00:00:00 +0000 UTC'>2023-01-07</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1217 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
+
+</div>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#%e5%bf%ab%e9%80%9f%e6%8e%92%e5%ba%8f" aria-label="快速排序">快速排序</a></li>
+            <li>
+                <a href="#%e5%bd%92%e5%b9%b6%e6%8e%92%e5%ba%8f" aria-label="归并排序">归并排序</a></li>
+            <li>
+                <a href="#%e5%89%8d%e7%bc%80%e5%92%8c" aria-label="前缀和">前缀和</a></li>
+            <li>
+                <a href="#%e5%b7%ae%e5%88%86" aria-label="差分">差分</a></li>
+            <li>
+                <a href="#%e5%8f%8c%e6%8c%87%e9%92%88%e7%ae%97%e6%b3%95" aria-label="双指针算法">双指针算法</a></li>
+            <li>
+                <a href="#%e4%bd%8d%e8%bf%90%e7%ae%97" aria-label="位运算">位运算</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><p>[TOC]</p>
+<h4 id="快速排序">快速排序<a hidden class="anchor" aria-hidden="true" href="#快速排序">#</a></h4>
+<blockquote>
+<p>快排基于分治思想</p>
+<ul>
+<li>确定分界点x，取中间元素或随机选择</li>
+<li>调整区间，使得区间一侧小于等于x，另一侧大于等于x</li>
+<li>递归处理左右两段区间</li>
+</ul>
+</blockquote>
+<p><a href="https://www.acwing.com/problem/content/description/787/">785. 快速排序 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> <span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> quick_sort(nums []<span style="color:#fff;font-weight:bold">int</span>, l <span style="color:#fff;font-weight:bold">int</span>, r <span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> l &gt;= r {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// pivot选择中点元素</span>
+</span></span><span style="display:flex;"><span>	i, j, x := l-<span style="color:#ff0;font-weight:bold">1</span>, r+<span style="color:#ff0;font-weight:bold">1</span>, nums[(l+r)&gt;&gt;<span style="color:#ff0;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i &lt; j {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">for</span> ok := <span style="color:#fff;font-weight:bold">true</span>; ok; ok = nums[i] &lt; x {
+</span></span><span style="display:flex;"><span>			i++
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">for</span> ok := <span style="color:#fff;font-weight:bold">true</span>; ok; ok = nums[j] &gt; x {
+</span></span><span style="display:flex;"><span>			j--
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span> i &lt; j {
+</span></span><span style="display:flex;"><span>			nums[i], nums[j] = nums[j], nums[i]
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	quick_sort(nums, l, j)
+</span></span><span style="display:flex;"><span>	quick_sort(nums, j+<span style="color:#ff0;font-weight:bold">1</span>, r)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;n)
+</span></span><span style="display:flex;"><span>	nums := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n, n)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">0</span>; i &lt; n; i++ {
+</span></span><span style="display:flex;"><span>		fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;nums[i])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	quick_sort(nums, <span style="color:#ff0;font-weight:bold">0</span>, n-<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> _, v := <span style="color:#fff;font-weight:bold">range</span> nums {
+</span></span><span style="display:flex;"><span>		fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;%d &#34;</span>, v)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="归并排序">归并排序<a hidden class="anchor" aria-hidden="true" href="#归并排序">#</a></h4>
+<p><a href="https://www.acwing.com/problem/content/789/">787. 归并排序 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> <span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">var</span> nums, tmp []<span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> merge_sort(nums []<span style="color:#fff;font-weight:bold">int</span>, l <span style="color:#fff;font-weight:bold">int</span>, r <span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> l &gt;= r {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	mid := (l + r) &gt;&gt; <span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	merge_sort(nums, l, mid)
+</span></span><span style="display:flex;"><span>	merge_sort(nums, mid+<span style="color:#ff0;font-weight:bold">1</span>, r)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	k, i, j := <span style="color:#ff0;font-weight:bold">0</span>, l, mid+<span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i &lt;= mid &amp;&amp; j &lt;= r {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span> nums[i] &lt;= nums[j] {
+</span></span><span style="display:flex;"><span>			tmp[k] = nums[i]
+</span></span><span style="display:flex;"><span>			k++
+</span></span><span style="display:flex;"><span>			i++
+</span></span><span style="display:flex;"><span>		} <span style="color:#fff;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>			tmp[k] = nums[j]
+</span></span><span style="display:flex;"><span>			k++
+</span></span><span style="display:flex;"><span>			j++
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i &lt;= mid {
+</span></span><span style="display:flex;"><span>		tmp[k] = nums[i]
+</span></span><span style="display:flex;"><span>		k++
+</span></span><span style="display:flex;"><span>		i++
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> j &lt;= r {
+</span></span><span style="display:flex;"><span>		tmp[k] = nums[j]
+</span></span><span style="display:flex;"><span>		k++
+</span></span><span style="display:flex;"><span>		j++
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, j = l, <span style="color:#ff0;font-weight:bold">0</span>; i &lt;= r; {
+</span></span><span style="display:flex;"><span>		nums[i] = tmp[j]
+</span></span><span style="display:flex;"><span>		i++
+</span></span><span style="display:flex;"><span>		j++
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;n)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	nums = <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n, n)
+</span></span><span style="display:flex;"><span>	tmp = <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n, n)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">0</span>; i &lt; n; i++ {
+</span></span><span style="display:flex;"><span>		fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;nums[i])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	merge_sort(nums, <span style="color:#ff0;font-weight:bold">0</span>, n-<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">0</span>; i &lt; n; i++ {
+</span></span><span style="display:flex;"><span>		fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;%d &#34;</span>, nums[i])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="前缀和">前缀和<a hidden class="anchor" aria-hidden="true" href="#前缀和">#</a></h4>
+<p><a href="https://www.acwing.com/problem/content/797/">795. 前缀和 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> <span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">var</span> nums, sums []<span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n, m <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d%d&#34;</span>, &amp;n, &amp;m)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	nums = <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n+<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>	sums = <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n+<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">1</span>; i &lt;= n; i++ {
+</span></span><span style="display:flex;"><span>		fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;nums[i])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// s[0] = 0 s[1] = a[0]</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">1</span>; i &lt;= n; i++ {
+</span></span><span style="display:flex;"><span>		<span style="color:#007f7f">// 前缀和初始化</span>
+</span></span><span style="display:flex;"><span>		sums[i] = sums[i-<span style="color:#ff0;font-weight:bold">1</span>] + nums[i]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	l, r := <span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">0</span>; i &lt; m; i++ {
+</span></span><span style="display:flex;"><span>		fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d%d&#34;</span>, &amp;l, &amp;r)
+</span></span><span style="display:flex;"><span>		<span style="color:#007f7f">// 打印区间和</span>
+</span></span><span style="display:flex;"><span>		fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;%d\n&#34;</span>, sums[r]-sums[l-<span style="color:#ff0;font-weight:bold">1</span>])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="差分">差分<a hidden class="anchor" aria-hidden="true" href="#差分">#</a></h4>
+<p><a href="https://www.acwing.com/problem/content/description/799/">797. 差分 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;bufio&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">var</span> nums, b []<span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> insert(l <span style="color:#fff;font-weight:bold">int</span>, r <span style="color:#fff;font-weight:bold">int</span>, c <span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	b[l] += c
+</span></span><span style="display:flex;"><span>	b[r+<span style="color:#ff0;font-weight:bold">1</span>] -= c
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> readArrInt(in *bufio.Reader, out []<span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	line, _ := in.ReadString(<span style="color:#0ff;font-weight:bold">&#39;\n&#39;</span>)
+</span></span><span style="display:flex;"><span>	line = strings.TrimSpace(line)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	foo := strings.Split(line, <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, bar := <span style="color:#fff;font-weight:bold">range</span> foo {
+</span></span><span style="display:flex;"><span>		out[i], _ = strconv.Atoi(bar)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n, m <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d%d&#34;</span>, &amp;n, &amp;m)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	nums = <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n+<span style="color:#ff0;font-weight:bold">2</span>)
+</span></span><span style="display:flex;"><span>	b = <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n+<span style="color:#ff0;font-weight:bold">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	in := bufio.NewReader(os.Stdin)
+</span></span><span style="display:flex;"><span>	readArrInt(in, nums[<span style="color:#ff0;font-weight:bold">1</span>:])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// 差分</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">1</span>; i &lt;= n; i++ {
+</span></span><span style="display:flex;"><span>		insert(i, i, nums[i])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	lrc := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, <span style="color:#ff0;font-weight:bold">3</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">0</span>; i &lt; m; i++ {
+</span></span><span style="display:flex;"><span>		readArrInt(in, lrc)
+</span></span><span style="display:flex;"><span>		insert(lrc[<span style="color:#ff0;font-weight:bold">0</span>], lrc[<span style="color:#ff0;font-weight:bold">1</span>], lrc[<span style="color:#ff0;font-weight:bold">2</span>])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0;font-weight:bold">//原地求前缀和</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">1</span>; i &lt;= n; i++ {
+</span></span><span style="display:flex;"><span>		b[i] += b[i-<span style="color:#ff0;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i := <span style="color:#ff0;font-weight:bold">1</span>; i &lt;= n; i++ {
+</span></span><span style="display:flex;"><span>		fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;%d &#34;</span>, b[i])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="双指针算法">双指针算法<a hidden class="anchor" aria-hidden="true" href="#双指针算法">#</a></h4>
+<p><a href="https://www.acwing.com/problem/content/801/">799. 最长连续不重复子序列 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;bufio&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> readArrInt(in *bufio.Reader, out []<span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	line, _ := in.ReadString(<span style="color:#0ff;font-weight:bold">&#39;\n&#39;</span>)
+</span></span><span style="display:flex;"><span>	line = strings.TrimSpace(line)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	foo := strings.Split(line, <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, bar := <span style="color:#fff;font-weight:bold">range</span> foo {
+</span></span><span style="display:flex;"><span>		out[i], _ = strconv.Atoi(bar)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> <span style="color:#fff;font-weight:bold">max</span>(a, b <span style="color:#fff;font-weight:bold">int</span>) <span style="color:#fff;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> a &gt; b {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">return</span> a
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">return</span> b
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;n)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	nums := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n)
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// Init counter with n items</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// counter := make(map[int]int, n)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">// slice is faster</span>
+</span></span><span style="display:flex;"><span>	counter := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, <span style="color:#ff0;font-weight:bold">1e5</span>+<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	in := bufio.NewReader(os.Stdin)
+</span></span><span style="display:flex;"><span>	readArrInt(in, nums)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	res := <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0;font-weight:bold">//双指针 使用counter计数</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, j := <span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">0</span>; i &lt; n; i++ {
+</span></span><span style="display:flex;"><span>		counter[nums[i]]++
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">for</span> j &lt; i &amp;&amp; counter[nums[i]] &gt; <span style="color:#ff0;font-weight:bold">1</span> {
+</span></span><span style="display:flex;"><span>			counter[nums[j]]--
+</span></span><span style="display:flex;"><span>			j++
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		res = <span style="color:#fff;font-weight:bold">max</span>(res, i-j+<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fmt.Println(res)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><a href="https://www.acwing.com/problem/content/802/">800. 数组元素的目标和 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;bufio&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> readArrInt(in *bufio.Reader, out []<span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	line, _ := in.ReadString(<span style="color:#0ff;font-weight:bold">&#39;\n&#39;</span>)
+</span></span><span style="display:flex;"><span>	line = strings.TrimSpace(line)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	foo := strings.Split(line, <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, bar := <span style="color:#fff;font-weight:bold">range</span> foo {
+</span></span><span style="display:flex;"><span>		out[i], _ = strconv.Atoi(bar)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n, m, x <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d%d%d&#34;</span>, &amp;n, &amp;m, &amp;x)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	numsA := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n)
+</span></span><span style="display:flex;"><span>	numsB := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, m)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	in := bufio.NewReader(os.Stdin)
+</span></span><span style="display:flex;"><span>	readArrInt(in, numsA)
+</span></span><span style="display:flex;"><span>	readArrInt(in, numsB)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0;font-weight:bold">//双指针</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, j := <span style="color:#ff0;font-weight:bold">0</span>, m-<span style="color:#ff0;font-weight:bold">1</span>; i &lt; n; i++ {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">for</span> j &gt;= <span style="color:#ff0;font-weight:bold">0</span> &amp;&amp; numsA[i]+numsB[j] &gt; x {
+</span></span><span style="display:flex;"><span>			j--
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span> j &gt;= <span style="color:#ff0;font-weight:bold">0</span> &amp;&amp; numsA[i]+numsB[j] == x {
+</span></span><span style="display:flex;"><span>			fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;%d %d&#34;</span>, i, j)
+</span></span><span style="display:flex;"><span>			<span style="color:#007f7f">// 唯一解</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#fff;font-weight:bold">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><a href="https://www.acwing.com/problem/content/2818/">2816. 判断子序列 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;bufio&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> readArrInt(in *bufio.Reader, out []<span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	line, _ := in.ReadString(<span style="color:#0ff;font-weight:bold">&#39;\n&#39;</span>)
+</span></span><span style="display:flex;"><span>	line = strings.TrimSpace(line)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	foo := strings.Split(line, <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, bar := <span style="color:#fff;font-weight:bold">range</span> foo {
+</span></span><span style="display:flex;"><span>		out[i], _ = strconv.Atoi(bar)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n, m <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d%d%d&#34;</span>, &amp;n, &amp;m)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> n &gt; m {
+</span></span><span style="display:flex;"><span>		fmt.Println(<span style="color:#0ff;font-weight:bold">&#34;No&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	numsA := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n)
+</span></span><span style="display:flex;"><span>	numsB := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, m)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	in := bufio.NewReader(os.Stdin)
+</span></span><span style="display:flex;"><span>	readArrInt(in, numsA)
+</span></span><span style="display:flex;"><span>	readArrInt(in, numsB)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0;font-weight:bold">//双指针</span>
+</span></span><span style="display:flex;"><span>	i, j := <span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i &lt; n &amp;&amp; j &lt; m {
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span> numsA[i] == numsB[j] {
+</span></span><span style="display:flex;"><span>			i++
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		j++
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span> i == n {
+</span></span><span style="display:flex;"><span>		fmt.Println(<span style="color:#0ff;font-weight:bold">&#34;Yes&#34;</span>)
+</span></span><span style="display:flex;"><span>	} <span style="color:#fff;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>		fmt.Println(<span style="color:#0ff;font-weight:bold">&#34;No&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="位运算">位运算<a hidden class="anchor" aria-hidden="true" href="#位运算">#</a></h4>
+<p><a href="https://www.acwing.com/problem/content/803/">801. 二进制中1的个数 - AcWing题库</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;bufio&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0ff;font-weight:bold">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> readArrInt(in *bufio.Reader, out []<span style="color:#fff;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>	line, _ := in.ReadString(<span style="color:#0ff;font-weight:bold">&#39;\n&#39;</span>)
+</span></span><span style="display:flex;"><span>	line = strings.TrimSpace(line)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	foo := strings.Split(line, <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> i, bar := <span style="color:#fff;font-weight:bold">range</span> foo {
+</span></span><span style="display:flex;"><span>		out[i], _ = strconv.Atoi(bar)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> writeArrInt(data []<span style="color:#fff;font-weight:bold">int</span>, delim <span style="color:#fff;font-weight:bold">string</span>) {
+</span></span><span style="display:flex;"><span>	fmt.Println(strings.Trim(strings.Join(strings.Split(fmt.Sprint(data), <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>), delim), <span style="color:#0ff;font-weight:bold">&#34;[]&#34;</span>))
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">func</span> main() {
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">var</span> n <span style="color:#fff;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	fmt.Scanf(<span style="color:#0ff;font-weight:bold">&#34;%d&#34;</span>, &amp;n)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	nums := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n)
+</span></span><span style="display:flex;"><span>	counter := <span style="color:#fff;font-weight:bold">make</span>([]<span style="color:#fff;font-weight:bold">int</span>, n)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	in := bufio.NewReader(os.Stdin)
+</span></span><span style="display:flex;"><span>	readArrInt(in, nums)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span> idx, num := <span style="color:#fff;font-weight:bold">range</span> nums {
+</span></span><span style="display:flex;"><span>		res := <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">for</span> num &gt; <span style="color:#ff0;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>			num -= num &amp; -num
+</span></span><span style="display:flex;"><span>			res++
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		counter[idx] = res
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	writeArrInt(counter, <span style="color:#0ff;font-weight:bold">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+
+  </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/linux/">Linux</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/read/%E8%BA%AB%E4%BB%BD%E7%9A%84%E7%84%A6%E8%99%91/">
+    <span class="title">« 上一页</span>
+    <span>身份的焦虑</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/read/%E5%A5%88%E9%A3%9E%E6%96%87%E5%8C%96%E6%89%8B%E5%86%8C/">
+    <span class="title">下一页 »</span>
+    <span>奈飞文化手册</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

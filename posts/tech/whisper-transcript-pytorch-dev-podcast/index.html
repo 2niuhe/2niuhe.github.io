@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,12 +7,10 @@
 <meta name="robots" content="index, follow">
 <title>whisper模型转录Pytorch播客内容 | Niuhe&#39;s Blog</title>
 <meta name="keywords" content="Whisper, Pytorch">
-<meta name="description" content="whisper模型转录Pytorch播客内容 - Niuhe&#39;s Blog">
+<meta name="description" content="pytorch developer podcast transcript">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,159 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="whisper模型转录Pytorch播客内容" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-12-13T00:00:00+00:00" />
-<meta property="article:modified_time" content="2024-12-13T00:00:00+00:00" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="whisper模型转录Pytorch播客内容"/>
-<meta name="twitter:description" content=""/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="whisper模型转录Pytorch播客内容">
+  <meta property="og:description" content="pytorch developer podcast transcript">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-12-13T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-12-13T00:00:00+00:00">
+    <meta property="article:tag" content="Whisper">
+    <meta property="article:tag" content="Pytorch">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="whisper模型转录Pytorch播客内容">
+  <meta name="twitter:description" content="pytorch developer podcast transcript">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "whisper模型转录Pytorch播客内容",
       "item": "https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/"
     }
@@ -112,7 +201,7 @@ if (!doNotTrack) {
   "@type": "BlogPosting",
   "headline": "whisper模型转录Pytorch播客内容",
   "name": "whisper模型转录Pytorch播客内容",
-  "description": "",
+  "description": "pytorch developer podcast transcript",
   "keywords": [
     "Whisper", "Pytorch"
   ],
@@ -140,33 +229,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +259,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,209 +297,225 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       whisper模型转录Pytorch播客内容
     </h1>
-    <div class="post-meta"><span title='2024-12-13 00:00:00 +0000 UTC'>2024-12-13</span>&nbsp;·&nbsp;499 min&nbsp;·&nbsp;249546 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2024-12-13 00:00:00 +0000 UTC'>2024-12-13</span>&nbsp;·&nbsp;<span>499 分钟</span>&nbsp;·&nbsp;<span>249546 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#intro" aria-label="Intro">Intro</a></li>
-                <li>
-                    <a href="#usage" aria-label="Usage">Usage</a><ul>
-                        
-                <li>
-                    <a href="#install-whisper" aria-label="Install Whisper">Install Whisper</a></li>
-                <li>
-                    <a href="#transcribe" aria-label="Transcribe">Transcribe</a></li></ul>
-                </li>
-                <li>
-                    <a href="#pytorch-podcast-transcript" aria-label="pytorch podcast transcript">pytorch podcast transcript</a><ul>
-                        
-                <li>
-                    <a href="#ep1-binding-c-objects-to-python" aria-label="EP1 Binding-C&#43;&#43;-objects-to-Python">EP1 Binding-C++-objects-to-Python</a></li>
-                <li>
-                    <a href="#ep2-history-and-constraints-of-the-dispatcher" aria-label="EP2 History-and-constraints-of-the-dispatcher">EP2 History-and-constraints-of-the-dispatcher</a></li>
-                <li>
-                    <a href="#ep3-dynamic-library-structure" aria-label="EP3 Dynamic-library-structure">EP3 Dynamic-library-structure</a></li>
-                <li>
-                    <a href="#ep4-vectorization" aria-label="EP4 Vectorization">EP4 Vectorization</a></li>
-                <li>
-                    <a href="#ep5-inference-mode" aria-label="EP5 Inference-mode">EP5 Inference-mode</a></li>
-                <li>
-                    <a href="#ep6-just-enough-cuda-to-be-dangerous" aria-label="EP6 Just-enough-CUDA-to-be-dangerous">EP6 Just-enough-CUDA-to-be-dangerous</a></li>
-                <li>
-                    <a href="#ep7-functionalization" aria-label="EP7 Functionalization">EP7 Functionalization</a></li>
-                <li>
-                    <a href="#ep8-the-road-to-structured-kernels" aria-label="EP8 The-road-to-structured-kernels">EP8 The-road-to-structured-kernels</a></li>
-                <li>
-                    <a href="#ep9-backend-extensibility" aria-label="EP9 Backend-extensibility">EP9 Backend-extensibility</a></li>
-                <li>
-                    <a href="#ep10-the-life-and-death-of-variable" aria-label="EP10 The-life-and-death-of-Variable">EP10 The-life-and-death-of-Variable</a></li>
-                <li>
-                    <a href="#ep11-how-new-operators-are-authored" aria-label="EP11 How-new-operators-are-authored">EP11 How-new-operators-are-authored</a></li>
-                <li>
-                    <a href="#ep12-history-and-constraints-of-tensor" aria-label="EP12 History-and-constraints-of-Tensor">EP12 History-and-constraints-of-Tensor</a></li>
-                <li>
-                    <a href="#ep13-conjugate-views" aria-label="EP13 Conjugate-views">EP13 Conjugate-views</a></li>
-                <li>
-                    <a href="#ep14-automatic-mixed-precision" aria-label="EP14 Automatic-mixed-precision">EP14 Automatic-mixed-precision</a></li>
-                <li>
-                    <a href="#ep15-shared-memory" aria-label="EP15 Shared-memory">EP15 Shared-memory</a></li>
-                <li>
-                    <a href="#ep16-stacked-diffs-and-ghstack" aria-label="EP16 Stacked-diffs-and-ghstack">EP16 Stacked-diffs-and-ghstack</a></li>
-                <li>
-                    <a href="#ep17-continuous-integration" aria-label="EP17 Continuous-integration">EP17 Continuous-integration</a></li>
-                <li>
-                    <a href="#ep18-serialization" aria-label="EP18 Serialization">EP18 Serialization</a></li>
-                <li>
-                    <a href="#ep19-native_functionsyaml" aria-label="EP19 native_functions.yaml">EP19 native_functions.yaml</a></li>
-                <li>
-                    <a href="#ep20-tensoriterator" aria-label="EP20 TensorIterator">EP20 TensorIterator</a></li>
-                <li>
-                    <a href="#ep21-__torch_function__" aria-label="EP21 torch_function">EP21 <strong>torch_function</strong></a></li>
-                <li>
-                    <a href="#ep22-why-is-autograd-so-complicated" aria-label="EP22 Why-is-autograd-so-complicated">EP22 Why-is-autograd-so-complicated</a></li>
-                <li>
-                    <a href="#ep23-code-generation" aria-label="EP23 Code-generation">EP23 Code-generation</a></li>
-                <li>
-                    <a href="#ep24-torchnn" aria-label="EP24 torch.nn">EP24 torch.nn</a></li>
-                <li>
-                    <a href="#ep25-mobile-selective-build" aria-label="EP25 Mobile-selective-build">EP25 Mobile-selective-build</a></li>
-                <li>
-                    <a href="#ep26-pyobject-preservation" aria-label="EP26 PyObject-preservation">EP26 PyObject-preservation</a></li>
-                <li>
-                    <a href="#ep27-c-frontend" aria-label="EP27 C&#43;&#43;-frontend">EP27 C++-frontend</a></li>
-                <li>
-                    <a href="#ep28-torchdeploy" aria-label="EP28 torchdeploy">EP28 torchdeploy</a></li>
-                <li>
-                    <a href="#ep29-cmake" aria-label="EP29 CMake">EP29 CMake</a></li>
-                <li>
-                    <a href="#ep30-torchscript" aria-label="EP30 TorchScript">EP30 TorchScript</a></li>
-                <li>
-                    <a href="#ep31-th" aria-label="EP31 TH">EP31 TH</a></li>
-                <li>
-                    <a href="#ep32-xla" aria-label="EP32 XLA">EP32 XLA</a></li>
-                <li>
-                    <a href="#ep33-expect-tests" aria-label="EP33 Expect-tests">EP33 Expect-tests</a></li>
-                <li>
-                    <a href="#ep34-vmap" aria-label="EP34 vmap">EP34 vmap</a></li>
-                <li>
-                    <a href="#ep35-random-number-generators" aria-label="EP35 Random-number-generators">EP35 Random-number-generators</a></li>
-                <li>
-                    <a href="#ep36-tensoraccessor" aria-label="EP36 TensorAccessor">EP36 TensorAccessor</a></li>
-                <li>
-                    <a href="#ep37-anatomy-of-a-domain-library" aria-label="EP37 Anatomy-of-a-domain-library">EP37 Anatomy-of-a-domain-library</a></li>
-                <li>
-                    <a href="#ep38-default-arguments" aria-label="EP38 Default-arguments">EP38 Default-arguments</a></li>
-                <li>
-                    <a href="#ep39-cuda-graphs" aria-label="EP39 CUDA-graphs">EP39 CUDA-graphs</a></li>
-                <li>
-                    <a href="#ep40-functional-modules" aria-label="EP40 Functional-modules">EP40 Functional-modules</a></li>
-                <li>
-                    <a href="#ep41-double-backwards" aria-label="EP41 Double-backwards">EP41 Double-backwards</a></li>
-                <li>
-                    <a href="#ep42-intro-to-distributed" aria-label="EP42 Intro-to-distributed">EP42 Intro-to-distributed</a></li>
-                <li>
-                    <a href="#ep43-api-design-via-lexical-and-dynamic-scoping" aria-label="EP43 API-design-via-lexical-and-dynamic-scoping">EP43 API-design-via-lexical-and-dynamic-scoping</a></li>
-                <li>
-                    <a href="#ep44-pytorch-probot" aria-label="EP44 pytorch-probot">EP44 pytorch-probot</a></li>
-                <li>
-                    <a href="#ep45-memory-layout" aria-label="EP45 Memory-layout">EP45 Memory-layout</a></li>
-                <li>
-                    <a href="#ep46-reference-counting" aria-label="EP46 Reference-counting">EP46 Reference-counting</a></li>
-                <li>
-                    <a href="#ep47-torchuse_deterministic_algorithms" aria-label="EP47 torch.use_deterministic_algorithms">EP47 torch.use_deterministic_algorithms</a></li>
-                <li>
-                    <a href="#ep48-gradcheck" aria-label="EP48 gradcheck">EP48 gradcheck</a></li>
-                <li>
-                    <a href="#ep49-asynchronous-versus-synchronous-execution" aria-label="EP49 Asynchronous-versus-synchronous-execution">EP49 Asynchronous-versus-synchronous-execution</a></li>
-                <li>
-                    <a href="#ep50-multithreading" aria-label="EP50 Multithreading">EP50 Multithreading</a></li>
-                <li>
-                    <a href="#ep51-multiple-dispatch-in-__torch_function__" aria-label="EP51 Multiple-dispatch-in-torch_function">EP51 Multiple-dispatch-in-<strong>torch_function</strong></a></li>
-                <li>
-                    <a href="#ep52-batching" aria-label="EP52 Batching">EP52 Batching</a></li>
-                <li>
-                    <a href="#ep53-dataloader-with-multiple-workers-leaks-memory" aria-label="EP53 DataLoader-with-multiple-workers-leaks-memory">EP53 DataLoader-with-multiple-workers-leaks-memory</a></li>
-                <li>
-                    <a href="#ep54-half-precision" aria-label="EP54 Half-precision">EP54 Half-precision</a></li>
-                <li>
-                    <a href="#ep55-tensor-subclasses-and-liskov-substitution-principle" aria-label="EP55 Tensor-subclasses-and-Liskov-substitution-principle">EP55 Tensor-subclasses-and-Liskov-substitution-principle</a></li>
-                <li>
-                    <a href="#ep56-all-about-nvidia-gpus" aria-label="EP56 All-about-NVIDIA-GPUs">EP56 All-about-NVIDIA-GPUs</a></li>
-                <li>
-                    <a href="#ep57-torch-vs-aten-apis" aria-label="EP57 Torch-vs-ATen-APIs">EP57 Torch-vs-ATen-APIs</a></li>
-                <li>
-                    <a href="#ep58-python-exceptions" aria-label="EP58 Python-exceptions">EP58 Python-exceptions</a></li>
-                <li>
-                    <a href="#ep59-new-ci" aria-label="EP59 New-CI">EP59 New-CI</a></li>
-                <li>
-                    <a href="#ep60-dispatcher-questions-with-sherlock" aria-label="EP60 Dispatcher-questions-with-Sherlock">EP60 Dispatcher-questions-with-Sherlock</a></li>
-                <li>
-                    <a href="#ep61-aotautograd" aria-label="EP61 AOTAutograd">EP61 AOTAutograd</a></li>
-                <li>
-                    <a href="#ep62-strides" aria-label="EP62 Strides">EP62 Strides</a></li>
-                <li>
-                    <a href="#ep63-weak-references" aria-label="EP63 Weak-references">EP63 Weak-references</a></li>
-                <li>
-                    <a href="#ep64-learning-rate-schedulers" aria-label="EP64 Learning-rate-schedulers">EP64 Learning-rate-schedulers</a></li>
-                <li>
-                    <a href="#ep65-history-of-functorch" aria-label="EP65 History-of-functorch">EP65 History-of-functorch</a></li>
-                <li>
-                    <a href="#ep66-pytorch-20" aria-label="EP66 PyTorch-2.0">EP66 PyTorch-2.0</a></li>
-                <li>
-                    <a href="#ep67-torchdynamo" aria-label="EP67 torchdynamo">EP67 torchdynamo</a></li>
-                <li>
-                    <a href="#ep68-zero-one-specialization" aria-label="EP68 Zero-one-specialization">EP68 Zero-one-specialization</a></li>
-                <li>
-                    <a href="#ep69-unbacked-symints" aria-label="EP69 Unbacked-SymInts">EP69 Unbacked-SymInts</a></li>
-                <li>
-                    <a href="#ep70-dynamo---variabletracker" aria-label="EP70 Dynamo&amp;mdash;VariableTracker">EP70 Dynamo&mdash;VariableTracker</a></li>
-                <li>
-                    <a href="#ep71-inductor---ir" aria-label="EP71 Inductor&amp;mdash;IR">EP71 Inductor&mdash;IR</a></li>
-                <li>
-                    <a href="#ep72-unsigned-integers" aria-label="EP72 Unsigned-integers">EP72 Unsigned-integers</a></li>
-                <li>
-                    <a href="#ep73-inductor---define-by-run-ir" aria-label="EP73 Inductor&amp;mdash;Define-by-run-IR">EP73 Inductor&mdash;Define-by-run-IR</a></li>
-                <li>
-                    <a href="#ep74-pt2-extension-points" aria-label="EP74 PT2-extension-points">EP74 PT2-extension-points</a></li>
-                <li>
-                    <a href="#ep75-compiled-autograd" aria-label="EP75 Compiled-autograd">EP75 Compiled-autograd</a></li>
-                <li>
-                    <a href="#ep76-tensor-subclasses-and-pt2" aria-label="EP76 Tensor-subclasses-and-PT2">EP76 Tensor-subclasses-and-PT2</a></li>
-                <li>
-                    <a href="#ep77-aotinductor" aria-label="EP77 AOTInductor">EP77 AOTInductor</a></li>
-                <li>
-                    <a href="#ep78-min-cut-partitioner" aria-label="EP78 Min-cut-partitioner">EP78 Min-cut-partitioner</a></li>
-                <li>
-                    <a href="#ep79-cuda-graph-trees" aria-label="EP79 CUDA-graph-trees">EP79 CUDA-graph-trees</a></li>
-                <li>
-                    <a href="#ep80-inductor---post-grad-fx-passes" aria-label="EP80 Inductor&amp;mdash;Post-grad-FX-passes">EP80 Inductor&mdash;Post-grad-FX-passes</a></li>
-                <li>
-                    <a href="#ep81-higher-order-operators" aria-label="EP81 Higher-order-operators">EP81 Higher-order-operators</a></li>
-                <li>
-                    <a href="#ep82-torch_trace-and-tlparse" aria-label="EP82 TORCH_TRACE-and-tlparse">EP82 TORCH_TRACE-and-tlparse</a></li>
-                <li>
-                    <a href="#ep83-compiler-collectives" aria-label="EP83 Compiler-collectives">EP83 Compiler-collectives</a></li></ul>
-                </li>
-                <li>
-                    <a href="#ref" aria-label="Ref">Ref</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+    <div class="inner"><ul>
+            <li>
+                <a href="#intro" aria-label="Intro">Intro</a></li>
+            <li>
+                <a href="#usage" aria-label="Usage">Usage</a><ul>
+                    
+            <li>
+                <a href="#install-whisper" aria-label="Install Whisper">Install Whisper</a></li>
+            <li>
+                <a href="#transcribe" aria-label="Transcribe">Transcribe</a></li></ul>
+            </li>
+            <li>
+                <a href="#pytorch-podcast-transcript" aria-label="pytorch podcast transcript">pytorch podcast transcript</a><ul>
+                    
+            <li>
+                <a href="#ep1-binding-c-objects-to-python" aria-label="EP1 Binding-C&#43;&#43;-objects-to-Python">EP1 Binding-C++-objects-to-Python</a></li>
+            <li>
+                <a href="#ep2-history-and-constraints-of-the-dispatcher" aria-label="EP2 History-and-constraints-of-the-dispatcher">EP2 History-and-constraints-of-the-dispatcher</a></li>
+            <li>
+                <a href="#ep3-dynamic-library-structure" aria-label="EP3 Dynamic-library-structure">EP3 Dynamic-library-structure</a></li>
+            <li>
+                <a href="#ep4-vectorization" aria-label="EP4 Vectorization">EP4 Vectorization</a></li>
+            <li>
+                <a href="#ep5-inference-mode" aria-label="EP5 Inference-mode">EP5 Inference-mode</a></li>
+            <li>
+                <a href="#ep6-just-enough-cuda-to-be-dangerous" aria-label="EP6 Just-enough-CUDA-to-be-dangerous">EP6 Just-enough-CUDA-to-be-dangerous</a></li>
+            <li>
+                <a href="#ep7-functionalization" aria-label="EP7 Functionalization">EP7 Functionalization</a></li>
+            <li>
+                <a href="#ep8-the-road-to-structured-kernels" aria-label="EP8 The-road-to-structured-kernels">EP8 The-road-to-structured-kernels</a></li>
+            <li>
+                <a href="#ep9-backend-extensibility" aria-label="EP9 Backend-extensibility">EP9 Backend-extensibility</a></li>
+            <li>
+                <a href="#ep10-the-life-and-death-of-variable" aria-label="EP10 The-life-and-death-of-Variable">EP10 The-life-and-death-of-Variable</a></li>
+            <li>
+                <a href="#ep11-how-new-operators-are-authored" aria-label="EP11 How-new-operators-are-authored">EP11 How-new-operators-are-authored</a></li>
+            <li>
+                <a href="#ep12-history-and-constraints-of-tensor" aria-label="EP12 History-and-constraints-of-Tensor">EP12 History-and-constraints-of-Tensor</a></li>
+            <li>
+                <a href="#ep13-conjugate-views" aria-label="EP13 Conjugate-views">EP13 Conjugate-views</a></li>
+            <li>
+                <a href="#ep14-automatic-mixed-precision" aria-label="EP14 Automatic-mixed-precision">EP14 Automatic-mixed-precision</a></li>
+            <li>
+                <a href="#ep15-shared-memory" aria-label="EP15 Shared-memory">EP15 Shared-memory</a></li>
+            <li>
+                <a href="#ep16-stacked-diffs-and-ghstack" aria-label="EP16 Stacked-diffs-and-ghstack">EP16 Stacked-diffs-and-ghstack</a></li>
+            <li>
+                <a href="#ep17-continuous-integration" aria-label="EP17 Continuous-integration">EP17 Continuous-integration</a></li>
+            <li>
+                <a href="#ep18-serialization" aria-label="EP18 Serialization">EP18 Serialization</a></li>
+            <li>
+                <a href="#ep19-native_functionsyaml" aria-label="EP19 native_functions.yaml">EP19 native_functions.yaml</a></li>
+            <li>
+                <a href="#ep20-tensoriterator" aria-label="EP20 TensorIterator">EP20 TensorIterator</a></li>
+            <li>
+                <a href="#ep21-torch_" aria-label="EP21 torch_function">EP21 torch_function</a></li>
+            <li>
+                <a href="#ep22-why-is-autograd-so-complicated" aria-label="EP22 Why-is-autograd-so-complicated">EP22 Why-is-autograd-so-complicated</a></li>
+            <li>
+                <a href="#ep23-code-generation" aria-label="EP23 Code-generation">EP23 Code-generation</a></li>
+            <li>
+                <a href="#ep24-torchnn" aria-label="EP24 torch.nn">EP24 torch.nn</a></li>
+            <li>
+                <a href="#ep25-mobile-selective-build" aria-label="EP25 Mobile-selective-build">EP25 Mobile-selective-build</a></li>
+            <li>
+                <a href="#ep26-pyobject-preservation" aria-label="EP26 PyObject-preservation">EP26 PyObject-preservation</a></li>
+            <li>
+                <a href="#ep27-c-frontend" aria-label="EP27 C&#43;&#43;-frontend">EP27 C++-frontend</a></li>
+            <li>
+                <a href="#ep28-torchdeploy" aria-label="EP28 torchdeploy">EP28 torchdeploy</a></li>
+            <li>
+                <a href="#ep29-cmake" aria-label="EP29 CMake">EP29 CMake</a></li>
+            <li>
+                <a href="#ep30-torchscript" aria-label="EP30 TorchScript">EP30 TorchScript</a></li>
+            <li>
+                <a href="#ep31-th" aria-label="EP31 TH">EP31 TH</a></li>
+            <li>
+                <a href="#ep32-xla" aria-label="EP32 XLA">EP32 XLA</a></li>
+            <li>
+                <a href="#ep33-expect-tests" aria-label="EP33 Expect-tests">EP33 Expect-tests</a></li>
+            <li>
+                <a href="#ep34-vmap" aria-label="EP34 vmap">EP34 vmap</a></li>
+            <li>
+                <a href="#ep35-random-number-generators" aria-label="EP35 Random-number-generators">EP35 Random-number-generators</a></li>
+            <li>
+                <a href="#ep36-tensoraccessor" aria-label="EP36 TensorAccessor">EP36 TensorAccessor</a></li>
+            <li>
+                <a href="#ep37-anatomy-of-a-domain-library" aria-label="EP37 Anatomy-of-a-domain-library">EP37 Anatomy-of-a-domain-library</a></li>
+            <li>
+                <a href="#ep38-default-arguments" aria-label="EP38 Default-arguments">EP38 Default-arguments</a></li>
+            <li>
+                <a href="#ep39-cuda-graphs" aria-label="EP39 CUDA-graphs">EP39 CUDA-graphs</a></li>
+            <li>
+                <a href="#ep40-functional-modules" aria-label="EP40 Functional-modules">EP40 Functional-modules</a></li>
+            <li>
+                <a href="#ep41-double-backwards" aria-label="EP41 Double-backwards">EP41 Double-backwards</a></li>
+            <li>
+                <a href="#ep42-intro-to-distributed" aria-label="EP42 Intro-to-distributed">EP42 Intro-to-distributed</a></li>
+            <li>
+                <a href="#ep43-api-design-via-lexical-and-dynamic-scoping" aria-label="EP43 API-design-via-lexical-and-dynamic-scoping">EP43 API-design-via-lexical-and-dynamic-scoping</a></li>
+            <li>
+                <a href="#ep44-pytorch-probot" aria-label="EP44 pytorch-probot">EP44 pytorch-probot</a></li>
+            <li>
+                <a href="#ep45-memory-layout" aria-label="EP45 Memory-layout">EP45 Memory-layout</a></li>
+            <li>
+                <a href="#ep46-reference-counting" aria-label="EP46 Reference-counting">EP46 Reference-counting</a></li>
+            <li>
+                <a href="#ep47-torchuse_deterministic_algorithms" aria-label="EP47 torch.use_deterministic_algorithms">EP47 torch.use_deterministic_algorithms</a></li>
+            <li>
+                <a href="#ep48-gradcheck" aria-label="EP48 gradcheck">EP48 gradcheck</a></li>
+            <li>
+                <a href="#ep49-asynchronous-versus-synchronous-execution" aria-label="EP49 Asynchronous-versus-synchronous-execution">EP49 Asynchronous-versus-synchronous-execution</a></li>
+            <li>
+                <a href="#ep50-multithreading" aria-label="EP50 Multithreading">EP50 Multithreading</a></li>
+            <li>
+                <a href="#ep51-multiple-dispatch-in-torch_" aria-label="EP51 Multiple-dispatch-in-torch_function">EP51 Multiple-dispatch-in-torch_function</a></li>
+            <li>
+                <a href="#ep52-batching" aria-label="EP52 Batching">EP52 Batching</a></li>
+            <li>
+                <a href="#ep53-dataloader-with-multiple-workers-leaks-memory" aria-label="EP53 DataLoader-with-multiple-workers-leaks-memory">EP53 DataLoader-with-multiple-workers-leaks-memory</a></li>
+            <li>
+                <a href="#ep54-half-precision" aria-label="EP54 Half-precision">EP54 Half-precision</a></li>
+            <li>
+                <a href="#ep55-tensor-subclasses-and-liskov-substitution-principle" aria-label="EP55 Tensor-subclasses-and-Liskov-substitution-principle">EP55 Tensor-subclasses-and-Liskov-substitution-principle</a></li>
+            <li>
+                <a href="#ep56-all-about-nvidia-gpus" aria-label="EP56 All-about-NVIDIA-GPUs">EP56 All-about-NVIDIA-GPUs</a></li>
+            <li>
+                <a href="#ep57-torch-vs-aten-apis" aria-label="EP57 Torch-vs-ATen-APIs">EP57 Torch-vs-ATen-APIs</a></li>
+            <li>
+                <a href="#ep58-python-exceptions" aria-label="EP58 Python-exceptions">EP58 Python-exceptions</a></li>
+            <li>
+                <a href="#ep59-new-ci" aria-label="EP59 New-CI">EP59 New-CI</a></li>
+            <li>
+                <a href="#ep60-dispatcher-questions-with-sherlock" aria-label="EP60 Dispatcher-questions-with-Sherlock">EP60 Dispatcher-questions-with-Sherlock</a></li>
+            <li>
+                <a href="#ep61-aotautograd" aria-label="EP61 AOTAutograd">EP61 AOTAutograd</a></li>
+            <li>
+                <a href="#ep62-strides" aria-label="EP62 Strides">EP62 Strides</a></li>
+            <li>
+                <a href="#ep63-weak-references" aria-label="EP63 Weak-references">EP63 Weak-references</a></li>
+            <li>
+                <a href="#ep64-learning-rate-schedulers" aria-label="EP64 Learning-rate-schedulers">EP64 Learning-rate-schedulers</a></li>
+            <li>
+                <a href="#ep65-history-of-functorch" aria-label="EP65 History-of-functorch">EP65 History-of-functorch</a></li>
+            <li>
+                <a href="#ep66-pytorch-20" aria-label="EP66 PyTorch-2.0">EP66 PyTorch-2.0</a></li>
+            <li>
+                <a href="#ep67-torchdynamo" aria-label="EP67 torchdynamo">EP67 torchdynamo</a></li>
+            <li>
+                <a href="#ep68-zero-one-specialization" aria-label="EP68 Zero-one-specialization">EP68 Zero-one-specialization</a></li>
+            <li>
+                <a href="#ep69-unbacked-symints" aria-label="EP69 Unbacked-SymInts">EP69 Unbacked-SymInts</a></li>
+            <li>
+                <a href="#ep70-dynamovariabletracker" aria-label="EP70 Dynamo&mdash;VariableTracker">EP70 Dynamo&mdash;VariableTracker</a></li>
+            <li>
+                <a href="#ep71-inductorir" aria-label="EP71 Inductor&mdash;IR">EP71 Inductor&mdash;IR</a></li>
+            <li>
+                <a href="#ep72-unsigned-integers" aria-label="EP72 Unsigned-integers">EP72 Unsigned-integers</a></li>
+            <li>
+                <a href="#ep73-inductordefine-by-run-ir" aria-label="EP73 Inductor&mdash;Define-by-run-IR">EP73 Inductor&mdash;Define-by-run-IR</a></li>
+            <li>
+                <a href="#ep74-pt2-extension-points" aria-label="EP74 PT2-extension-points">EP74 PT2-extension-points</a></li>
+            <li>
+                <a href="#ep75-compiled-autograd" aria-label="EP75 Compiled-autograd">EP75 Compiled-autograd</a></li>
+            <li>
+                <a href="#ep76-tensor-subclasses-and-pt2" aria-label="EP76 Tensor-subclasses-and-PT2">EP76 Tensor-subclasses-and-PT2</a></li>
+            <li>
+                <a href="#ep77-aotinductor" aria-label="EP77 AOTInductor">EP77 AOTInductor</a></li>
+            <li>
+                <a href="#ep78-min-cut-partitioner" aria-label="EP78 Min-cut-partitioner">EP78 Min-cut-partitioner</a></li>
+            <li>
+                <a href="#ep79-cuda-graph-trees" aria-label="EP79 CUDA-graph-trees">EP79 CUDA-graph-trees</a></li>
+            <li>
+                <a href="#ep80-inductorpost-grad-fx-passes" aria-label="EP80 Inductor&mdash;Post-grad-FX-passes">EP80 Inductor&mdash;Post-grad-FX-passes</a></li>
+            <li>
+                <a href="#ep81-higher-order-operators" aria-label="EP81 Higher-order-operators">EP81 Higher-order-operators</a></li>
+            <li>
+                <a href="#ep82-torch_trace-and-tlparse" aria-label="EP82 TORCH_TRACE-and-tlparse">EP82 TORCH_TRACE-and-tlparse</a></li>
+            <li>
+                <a href="#ep83-compiler-collectives" aria-label="EP83 Compiler-collectives">EP83 Compiler-collectives</a></li></ul>
+            </li>
+            <li>
+                <a href="#ref" aria-label="Ref">Ref</a>
+            </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><h3 id="intro">Intro<a hidden class="anchor" aria-hidden="true" href="#intro">#</a></h3>
+  <div class="post-content md-content"><h3 id="intro">Intro<a hidden class="anchor" aria-hidden="true" href="#intro">#</a></h3>
 <blockquote>
 <p>利用whisper模型转录播客文本</p>
 <ol>
@@ -433,7 +526,7 @@ if (!doNotTrack) {
 </blockquote>
 <h3 id="usage">Usage<a hidden class="anchor" aria-hidden="true" href="#usage">#</a></h3>
 <h4 id="install-whisper">Install Whisper<a hidden class="anchor" aria-hidden="true" href="#install-whisper">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/ggerganov/whisper.cpp.git
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/ggerganov/whisper.cpp.git
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> whisper.cpp
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>bash ./models/download-ggml-model.sh large-v3-turbo
@@ -444,7 +537,7 @@ if (!doNotTrack) {
 <ul>
 <li>download.py</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span> <span style="color:#fff;font-weight:bold">import</span> requests
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span> <span style="color:#fff;font-weight:bold">import</span> requests
 </span></span><span style="display:flex;"><span> <span style="color:#fff;font-weight:bold">from</span> lxml <span style="color:#fff;font-weight:bold">import</span> etree
 </span></span><span style="display:flex;"><span> <span style="color:#fff;font-weight:bold">import</span> os
 </span></span><span style="display:flex;"><span>
@@ -478,7 +571,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>to-wave.sh</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> <span style="color:#007f7f">#!/bin/bash</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> <span style="color:#007f7f">#!/bin/bash</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span> mkdir -p wavs/
 </span></span><span style="display:flex;"><span> MP3s=<span style="color:#fff;font-weight:bold">$(</span>ls *.mp3<span style="color:#fff;font-weight:bold">)</span>
@@ -492,7 +585,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>transcribe.sh</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> <span style="color:#007f7f">#/bin/bash</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> <span style="color:#007f7f">#/bin/bash</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span> WHISPER_SRC=$HOME/Workshop/whisper.cpp
 </span></span><span style="display:flex;"><span>
@@ -687,7 +780,6 @@ It&rsquo;s using a trick that Sam Gross, one of the original PyTorch developers,
 And I&rsquo;m eager to share it with you next time.
 See ya.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep2-history-and-constraints-of-the-dispatcher">EP2 History-and-constraints-of-the-dispatcher<a hidden class="anchor" aria-hidden="true" href="#ep2-history-and-constraints-of-the-dispatcher">#</a></h4>
@@ -858,7 +950,6 @@ it faster, but it&rsquo;s certainly a lot faster than if you were doing all of t
 know, um, the next time you have some project and you&rsquo;re wondering, oh, why is the dispatcher this way?
 Just think about the constraints. It&rsquo;s a really useful way to reason about things. Thank you all for listening. See you all later.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep3-dynamic-library-structure">EP3 Dynamic-library-structure<a hidden class="anchor" aria-hidden="true" href="#ep3-dynamic-library-structure">#</a></h4>
@@ -1010,7 +1101,6 @@ to do this virtual jump. And so there&rsquo;s actually a specialized version of 
 which lets you do exactly this when you don&rsquo;t need to violate the layering. So that&rsquo;s all I wanted to say
 say about library structure today. Thanks for listening. See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep4-vectorization">EP4 Vectorization<a hidden class="anchor" aria-hidden="true" href="#ep4-vectorization">#</a></h4>
@@ -1175,7 +1265,6 @@ And hopefully it also tells you why you can&rsquo;t just, you know, use random t
 So that&rsquo;s all for today.
 See you all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep5-inference-mode">EP5 Inference-mode<a hidden class="anchor" aria-hidden="true" href="#ep5-inference-mode">#</a></h4>
@@ -1387,7 +1476,6 @@ Right now, it&rsquo;s only available from C++, but we&rsquo;ll be adding a Pytho
 So that&rsquo;s all I wanted to say for today.
 See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep6-just-enough-cuda-to-be-dangerous">EP6 Just-enough-CUDA-to-be-dangerous<a hidden class="anchor" aria-hidden="true" href="#ep6-just-enough-cuda-to-be-dangerous">#</a></h4>
@@ -1605,7 +1693,6 @@ but it is very complicated. And make sure to remember that when you&rsquo;re wor
 you go a long way, even if you don&rsquo;t know anything about how to write CUDA algorithms like me.
 All right, so that&rsquo;s all I wanted to say today. Thanks for listening. See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep7-functionalization">EP7 Functionalization<a hidden class="anchor" aria-hidden="true" href="#ep7-functionalization">#</a></h4>
@@ -1896,7 +1983,6 @@ about working about PyTorch.
 All right, that&rsquo;s all I have to say today.
 Talk to you all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep8-the-road-to-structured-kernels">EP8 The-road-to-structured-kernels<a hidden class="anchor" aria-hidden="true" href="#ep8-the-road-to-structured-kernels">#</a></h4>
@@ -2083,7 +2169,6 @@ way, really simple, right? But how are you going to test them? And like getting 
 them was also a project, but, but I&rsquo;m out of time. I&rsquo;m going to leave you all here. Thanks
 all for listening. See y&rsquo;all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep9-backend-extensibility">EP9 Backend-extensibility<a hidden class="anchor" aria-hidden="true" href="#ep9-backend-extensibility">#</a></h4>
@@ -2251,7 +2336,6 @@ passing half of the CIs for a good while now. So I&rsquo;m out of time. Um, ther
 about backend extensibility that I should talk about, but, um, I&rsquo;ll save them for another podcast.
 See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep10-the-life-and-death-of-variable">EP10 The-life-and-death-of-Variable<a hidden class="anchor" aria-hidden="true" href="#ep10-the-life-and-death-of-variable">#</a></h4>
@@ -2417,7 +2501,6 @@ well, who would guess, wrapping the tensor into multiple levels of gradient trac
 work out. So I don&rsquo;t know. Revenge of the wrappers, I suppose. So that&rsquo;s all I wanted to say about
 a variable today. See you all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep11-how-new-operators-are-authored">EP11 How-new-operators-are-authored<a hidden class="anchor" aria-hidden="true" href="#ep11-how-new-operators-are-authored">#</a></h4>
@@ -3259,7 +3342,6 @@ That&rsquo;s all I wanted
 to say today.
 Talk to you next</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep12-history-and-constraints-of-tensor">EP12 History-and-constraints-of-Tensor<a hidden class="anchor" aria-hidden="true" href="#ep12-history-and-constraints-of-tensor">#</a></h4>
@@ -3413,7 +3495,6 @@ all of the weird and wacky other tensor types like sparse tensors and nested ten
 you know, funk torch tensors that people want to support.
 Okay, that&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep13-conjugate-views">EP13 Conjugate-views<a hidden class="anchor" aria-hidden="true" href="#ep13-conjugate-views">#</a></h4>
@@ -3587,7 +3668,6 @@ yet, I think, but Anjali Chordia has been working hard on actually landing it. S
 on actually, you know, pushing this to the finish line. And yeah, I hope it is a cool feature and one
 that will pay off for us in the future. That&rsquo;s all I have to say today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep14-automatic-mixed-precision">EP14 Automatic-mixed-precision<a hidden class="anchor" aria-hidden="true" href="#ep14-automatic-mixed-precision">#</a></h4>
@@ -3748,7 +3828,6 @@ PyTorch in an orthogonal way is by using the dispatcher, which lets us, you know
 functionality that you don&rsquo;t have to care about unless, you know, you actually do want to care
 about it. And then you can write implementations for it. That&rsquo;s all I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep15-shared-memory">EP15 Shared-memory<a hidden class="anchor" aria-hidden="true" href="#ep15-shared-memory">#</a></h4>
@@ -3930,7 +4009,6 @@ But, you know, mostly we&rsquo;re just relying on, you know, mmap support for sh
 So that&rsquo;s all I wanted to say today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep16-stacked-diffs-and-ghstack">EP16 Stacked-diffs-and-ghstack<a hidden class="anchor" aria-hidden="true" href="#ep16-stacked-diffs-and-ghstack">#</a></h4>
@@ -4074,7 +4152,6 @@ landing to master. It makes me a lot more productive. And maybe it will make you
 if you&rsquo;re not just working on one off patches in PyTorch. So give it a try. That&rsquo;s all I wanted to say.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep17-continuous-integration">EP17 Continuous-integration<a hidden class="anchor" aria-hidden="true" href="#ep17-continuous-integration">#</a></h4>
@@ -4260,7 +4337,6 @@ manage all of our build configurations. And historically, we don&rsquo;t really 
 services, although this is changing over time, especially with the work that say Taylor Roby
 is doing to do better performance tracking. So that&rsquo;s all I have to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep18-serialization">EP18 Serialization<a hidden class="anchor" aria-hidden="true" href="#ep18-serialization">#</a></h4>
@@ -4414,7 +4490,6 @@ But hopefully, if that&rsquo;s something you ever actually need to do, you&rsquo
 That&rsquo;s all I have to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep19-native_functionsyaml">EP19 native_functions.yaml<a hidden class="anchor" aria-hidden="true" href="#ep19-native_functionsyaml">#</a></h4>
@@ -4610,7 +4685,6 @@ And that&rsquo;s pretty powerful, and so a generalizable lesson that applies to 
 That&rsquo;s everything I wanted to say today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep20-tensoriterator">EP20 TensorIterator<a hidden class="anchor" aria-hidden="true" href="#ep20-tensoriterator">#</a></h4>
@@ -4802,10 +4876,9 @@ you know, bookkeeping and that bookkeeping adds up, we&rsquo;d like to make it f
 reasons why it&rsquo;s been so hard to replace because it really is doing a lot. And, you know,
 ask what you can do for tensor iterator, I say. That&rsquo;s all I want to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
-<h4 id="ep21-__torch_function__">EP21 <strong>torch_function</strong><a hidden class="anchor" aria-hidden="true" href="#ep21-__torch_function__">#</a></h4>
+<h4 id="ep21-torch_">EP21 <strong>torch_function</strong><a hidden class="anchor" aria-hidden="true" href="#ep21-torch_">#</a></h4>
 
 
 <p><details >
@@ -4989,7 +5062,6 @@ transformations to PyTorch. It&rsquo;s pretty cool. But you know, like, I&rsquo;
 really cool tool, complementary to torch function to let people further extend the behavior of PyTorch on the
 the inside. That&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep22-why-is-autograd-so-complicated">EP22 Why-is-autograd-so-complicated<a hidden class="anchor" aria-hidden="true" href="#ep22-why-is-autograd-so-complicated">#</a></h4>
@@ -5167,7 +5239,6 @@ this view metadata? What is this business with this multi-threading nonsense? We
 um, this podcast has given you some clues about why those things might actually be there.
 That&rsquo;s everything I wanted to say today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep23-code-generation">EP23 Code-generation<a hidden class="anchor" aria-hidden="true" href="#ep23-code-generation">#</a></h4>
@@ -5388,7 +5459,6 @@ That&rsquo;s something that I&rsquo;ve kind of been thinking about, although we 
 That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep24-torchnn">EP24 torch.nn<a hidden class="anchor" aria-hidden="true" href="#ep24-torchnn">#</a></h4>
@@ -5529,7 +5599,6 @@ initialization version three, and that comes with all the updates and you just e
 But no one has really implemented this yet. And something I&rsquo;m kind of interested in seeing done at
 some point. That&rsquo;s everything I wanted to talk about NN module today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep25-mobile-selective-build">EP25 Mobile-selective-build<a hidden class="anchor" aria-hidden="true" href="#ep25-mobile-selective-build">#</a></h4>
@@ -5692,7 +5761,6 @@ it would crash Xcode, because there&rsquo;s just too many libraries. So you know
 implementation details, so that it&rsquo;s calling some new operator. And then some guy comes to you and says, hey, my rando mobile, like application stopped working. And that&rsquo;s usually because there&rsquo;s some YAML somewhere that describes the set of ops the model needs. And it&rsquo;s out of date, right? Because you changed what the dependency structure of the model is. And so now there&rsquo;s a different way. There&rsquo;s a different set of operators that are needed. And you have to tell the YAML file, hey, this is a new thing, you have to rerun the analysis pass. A lot of these things are checked in for better or
 for worse. Fortunately, it&rsquo;s really easy to regenerate this YAML files. And also the PyTorch edge developers are very friendly and very willing to help in these situations. So you can just reach out and you know, learn how to do it. And there&rsquo;s also ample documentation internally for this sort of workflow. Okay, that&rsquo;s everything I want to talk about today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep26-pyobject-preservation">EP26 PyObject-preservation<a hidden class="anchor" aria-hidden="true" href="#ep26-pyobject-preservation">#</a></h4>
@@ -5873,7 +5941,6 @@ project that shows you how to do this trick, you know, in a very compact way, be
 will apply to any project that is binding C++ objects to Python. That&rsquo;s all I wanted to say for
 today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep27-c-frontend">EP27 C++-frontend<a hidden class="anchor" aria-hidden="true" href="#ep27-c-frontend">#</a></h4>
@@ -6055,7 +6122,6 @@ think it was a really good call. It saved us a lot of template headaches. It rea
 for a lot of people to write code in our framework in C++. But you know, like, there&rsquo;s always something
 better you can do. That&rsquo;s everything I wanted to say today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep28-torchdeploy">EP28 torchdeploy<a hidden class="anchor" aria-hidden="true" href="#ep28-torchdeploy">#</a></h4>
@@ -6169,7 +6235,6 @@ So normally, you&rsquo;ve got a bunch of function pointers, they all look great.
 So a lot of tricky stuff going on here, but torch deploy is a pretty cool bullet in our toolkit for letting multi threaded Python processing happen in a single process.
 That&rsquo;s everything I wanted to say today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep29-cmake">EP29 CMake<a hidden class="anchor" aria-hidden="true" href="#ep29-cmake">#</a></h4>
@@ -6353,7 +6418,6 @@ understand the change you&rsquo;re making and then do it. Don&rsquo;t just rando
 out. That&rsquo;s just going to waste a lot of time when you&rsquo;re trying to do things. Uh, I could probably rant
 for CMake a lot longer, but that&rsquo;s really all I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep30-torchscript">EP30 TorchScript<a hidden class="anchor" aria-hidden="true" href="#ep30-torchscript">#</a></h4>
@@ -6567,7 +6631,6 @@ check out the overview document in the JIT folder. I mean, it contains tons and 
 way more information than I talked about in this podcast. That&rsquo;s everything I wanted to say today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep31-th">EP31 TH<a hidden class="anchor" aria-hidden="true" href="#ep31-th">#</a></h4>
@@ -6694,7 +6757,6 @@ inline caches that might make it possible to like speed this up. But that&rsquo;
 speculatively we&rsquo;ve been looking at. Okay, so you know about th. That&rsquo;s everything I wanted to talk
 about today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep32-xla">EP32 XLA<a hidden class="anchor" aria-hidden="true" href="#ep32-xla">#</a></h4>
@@ -6859,7 +6921,6 @@ out into two pieces. And Brian and Alex are working on merging this into PyTorch
 people can use it. Okay, so that&rsquo;s a whirlwind tour of XLA. That&rsquo;s everything I wanted to say for
 today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep33-expect-tests">EP33 Expect-tests<a hidden class="anchor" aria-hidden="true" href="#ep33-expect-tests">#</a></h4>
@@ -7001,7 +7062,6 @@ separate package to do this. But if this is code you are interested in, shoot me
 and I&rsquo;ll figure out what I can do about actually publishing it for real.
 That&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep34-vmap">EP34 vmap<a hidden class="anchor" aria-hidden="true" href="#ep34-vmap">#</a></h4>
@@ -7153,7 +7213,6 @@ You can also think of that as a functional transform in the same sense as VMAP.
 That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep35-random-number-generators">EP35 Random-number-generators<a hidden class="anchor" aria-hidden="true" href="#ep35-random-number-generators">#</a></h4>
@@ -7317,7 +7376,6 @@ the dispatcher. Um, Sebastian and I used to argue a lot about whether or not gen
 dispatch keys or not, but like, this is pretty nice. So I like it personally, at least. Okay.
 That&rsquo;s everything I wanted to tell you about RNGs. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep36-tensoraccessor">EP36 TensorAccessor<a hidden class="anchor" aria-hidden="true" href="#ep36-tensoraccessor">#</a></h4>
@@ -7446,7 +7504,6 @@ having some sort of, uh, like fixed dimensionality, but the D type isn&rsquo;t f
 you do that, but I don&rsquo;t know. That&rsquo;s something that I&rsquo;ve been thinking about. That&rsquo;s everything
 I wanted to talk about today about tensor accessor. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep37-anatomy-of-a-domain-library">EP37 Anatomy-of-a-domain-library<a hidden class="anchor" aria-hidden="true" href="#ep37-anatomy-of-a-domain-library">#</a></h4>
@@ -7626,7 +7683,6 @@ like, you know, C++, you know, core abstractions land. And I actually don&rsquo;
 often in my job function. But you know, in domains, you gotta be doing that sort of thing.
 That&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep38-default-arguments">EP38 Default-arguments<a hidden class="anchor" aria-hidden="true" href="#ep38-default-arguments">#</a></h4>
@@ -7794,7 +7850,6 @@ I want to explicitly credit, uh, Dmitry Julgakov. Um, uh, we had a chat before t
 and he helped, uh, me solidify some of the things that I want to say here. Um,
 that&rsquo;s all I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep39-cuda-graphs">EP39 CUDA-graphs<a hidden class="anchor" aria-hidden="true" href="#ep39-cuda-graphs">#</a></h4>
@@ -8041,7 +8096,6 @@ All right.
 That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep40-functional-modules">EP40 Functional-modules<a hidden class="anchor" aria-hidden="true" href="#ep40-functional-modules">#</a></h4>
@@ -8196,7 +8250,6 @@ modules in PyTorch. If you have any thoughts, this is very much something that i
 Richard and Horace have been working on it. So if you have any comments, please let us know on the issue
 that I will post in the podcast notes. That&rsquo;s everything I had to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep41-double-backwards">EP41 Double-backwards<a hidden class="anchor" aria-hidden="true" href="#ep41-double-backwards">#</a></h4>
@@ -8371,7 +8424,6 @@ partially by backwards. But this actually causes some very intricate behavior, i
 to dig into it, but at a very high level. And when you look at the implementation, that&rsquo;s all there is
 to it. All right, everyone, that&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep42-intro-to-distributed">EP42 Intro-to-distributed<a hidden class="anchor" aria-hidden="true" href="#ep42-intro-to-distributed">#</a></h4>
@@ -8543,7 +8595,6 @@ Talk to you next time.
 Talk to you next time.
 Bye.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep43-api-design-via-lexical-and-dynamic-scoping">EP43 API-design-via-lexical-and-dynamic-scoping<a hidden class="anchor" aria-hidden="true" href="#ep43-api-design-via-lexical-and-dynamic-scoping">#</a></h4>
@@ -8745,7 +8796,6 @@ But there&rsquo;s a lot of work, and I want to see this work actually, you know,
 That&rsquo;s everything I wanted to talk about for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep44-pytorch-probot">EP44 pytorch-probot<a hidden class="anchor" aria-hidden="true" href="#ep44-pytorch-probot">#</a></h4>
@@ -8896,7 +8946,6 @@ never set up listening for labels on pull requests. So that would be really nice
 people could also tag pull requests, and you could get CC&rsquo;d on them in that case as well. All right,
 that&rsquo;s everything I want to talk about today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep45-memory-layout">EP45 Memory-layout<a hidden class="anchor" aria-hidden="true" href="#ep45-memory-layout">#</a></h4>
@@ -9063,7 +9112,6 @@ this because it was kind of a lot of work. And we solved most of the most pressi
 by just manually fixing them. So that&rsquo;s it about memory format. Memory format lets you, you know,
 move around your dimensions and get faster kernels. That&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep46-reference-counting">EP46 Reference-counting<a hidden class="anchor" aria-hidden="true" href="#ep46-reference-counting">#</a></h4>
@@ -9229,7 +9277,6 @@ stuff that goes into reference counting in PyTorch. And if there&rsquo;s one thi
 podcast, it&rsquo;s that atomic ref counts are expensive. So avoid them whenever you can. That&rsquo;s everything I wanted to say for
 today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep47-torchuse_deterministic_algorithms">EP47 torch.use_deterministic_algorithms<a hidden class="anchor" aria-hidden="true" href="#ep47-torchuse_deterministic_algorithms">#</a></h4>
@@ -9352,7 +9399,6 @@ long way. So this is like, I don&rsquo;t know, it&rsquo;s not very glamorous, bu
 our users. And so I want to encourage people to work on this kind of feature, because hey, it really does
 pay off. Okay, that&rsquo;s everything I wanted to say for today. Talk to next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep48-gradcheck">EP48 gradcheck<a hidden class="anchor" aria-hidden="true" href="#ep48-gradcheck">#</a></h4>
@@ -9519,7 +9565,6 @@ And that&rsquo;s some that relates the two different ways to do derivatives, and
 test all of our functions. So we basically don&rsquo;t do tests for gradients by hand, we just rely on grad check
 to tell us if we got it right or not. Okay, that&rsquo;s everything I wanted to say for today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep49-asynchronous-versus-synchronous-execution">EP49 Asynchronous-versus-synchronous-execution<a hidden class="anchor" aria-hidden="true" href="#ep49-asynchronous-versus-synchronous-execution">#</a></h4>
@@ -9747,7 +9792,6 @@ together.
 That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep50-multithreading">EP50 Multithreading<a hidden class="anchor" aria-hidden="true" href="#ep50-multithreading">#</a></h4>
@@ -9935,10 +9979,9 @@ So, hopefully this podcast has given you a little taste of, you know, what some 
 That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
-<h4 id="ep51-multiple-dispatch-in-__torch_function__">EP51 Multiple-dispatch-in-<strong>torch_function</strong><a hidden class="anchor" aria-hidden="true" href="#ep51-multiple-dispatch-in-__torch_function__">#</a></h4>
+<h4 id="ep51-multiple-dispatch-in-torch_">EP51 Multiple-dispatch-in-<strong>torch_function</strong><a hidden class="anchor" aria-hidden="true" href="#ep51-multiple-dispatch-in-torch_">#</a></h4>
 
 
 <p><details >
@@ -10079,7 +10122,6 @@ function. It&rsquo;s pretty simple, but very powerful and good enough to express
 including Jack style, composable transformations. That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep52-batching">EP52 Batching<a hidden class="anchor" aria-hidden="true" href="#ep52-batching">#</a></h4>
@@ -10284,7 +10326,6 @@ What things are generalized ufunks?
 That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep53-dataloader-with-multiple-workers-leaks-memory">EP53 DataLoader-with-multiple-workers-leaks-memory<a hidden class="anchor" aria-hidden="true" href="#ep53-dataloader-with-multiple-workers-leaks-memory">#</a></h4>
@@ -10436,7 +10477,6 @@ I&rsquo;m not going to say that you know PyTorch exactly is blameless here altho
 But it&rsquo;s a pretty interesting problem one that you know is likely to show up if you do any other sort of multiprocessing and I hope this was an interesting podcast and gave you a little bit of insight about some of the complexities and interesting internal workings of working with data loaders in PyTorch.
 That&rsquo;s everything I wanted to say for today talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep54-half-precision">EP54 Half-precision<a hidden class="anchor" aria-hidden="true" href="#ep54-half-precision">#</a></h4>
@@ -10619,7 +10659,6 @@ as integers entirely. And that&rsquo;s called quantization. And it&rsquo;s anoth
 memory footprint and compute costs of your models. That&rsquo;s everything I wanted to talk about today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep55-tensor-subclasses-and-liskov-substitution-principle">EP55 Tensor-subclasses-and-Liskov-substitution-principle<a hidden class="anchor" aria-hidden="true" href="#ep55-tensor-subclasses-and-liskov-substitution-principle">#</a></h4>
@@ -10812,7 +10851,6 @@ JAXA&rsquo;s functional transformations. So that&rsquo;s pretty interesting. And
 detail and share it with you when we figure it all out. That&rsquo;s everything I wanted to say for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep56-all-about-nvidia-gpus">EP56 All-about-NVIDIA-GPUs<a hidden class="anchor" aria-hidden="true" href="#ep56-all-about-nvidia-gpus">#</a></h4>
@@ -10984,7 +11022,6 @@ That&rsquo;s pretty cool.
 All right, well, that&rsquo;s all we had to say for today.
 Talk to you all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep57-torch-vs-aten-apis">EP57 Torch-vs-ATen-APIs<a hidden class="anchor" aria-hidden="true" href="#ep57-torch-vs-aten-apis">#</a></h4>
@@ -11127,7 +11164,6 @@ easy to analyze. So that&rsquo;s a lot of the stuff that&rsquo;s going on right 
 I wanted to tell you about today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep58-python-exceptions">EP58 Python-exceptions<a hidden class="anchor" aria-hidden="true" href="#ep58-python-exceptions">#</a></h4>
@@ -11283,7 +11319,6 @@ remember and we probably should have a lint about this and we don&rsquo;t really
 That&rsquo;s a good topic for another time. All right. That&rsquo;s everything I wanted to say for today.
 Uh, talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep59-new-ci">EP59 New-CI<a hidden class="anchor" aria-hidden="true" href="#ep59-new-ci">#</a></h4>
@@ -11922,7 +11957,6 @@ here.
 Thank you for
 having me.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep60-dispatcher-questions-with-sherlock">EP60 Dispatcher-questions-with-Sherlock<a hidden class="anchor" aria-hidden="true" href="#ep60-dispatcher-questions-with-sherlock">#</a></h4>
@@ -12162,7 +12196,6 @@ Okay, thank you, Sherlock, for asking some great questions.
 Talk to you next time.
 Thank you. Bye-bye.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep61-aotautograd">EP61 AOTAutograd<a hidden class="anchor" aria-hidden="true" href="#ep61-aotautograd">#</a></h4>
@@ -12374,7 +12407,6 @@ kind of like the current name, but, uh, in the future, yeah, perhaps they&rsquo;
 something more generic. All right. Well, um, that&rsquo;s it for our time today. Uh, thank you very much for
 joining. Uh, thanks for having me on. Cheers.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep62-strides">EP62 Strides<a hidden class="anchor" aria-hidden="true" href="#ep62-strides">#</a></h4>
@@ -12586,7 +12618,6 @@ their full glory, it&rsquo;s just too much for our puny, uh, little brains to de
 that we do have a good story for at least the two use cases we care about. So that&rsquo;s everything I
 wanted to say about strides today. Um, see you all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep63-weak-references">EP63 Weak-references<a hidden class="anchor" aria-hidden="true" href="#ep63-weak-references">#</a></h4>
@@ -12782,7 +12813,6 @@ object live until you&rsquo;re done running release resources, and then you can 
 just the kind of thing to be worried about. Okay, that&rsquo;s everything I wanted to talk about today.
 Uh, see you again next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep64-learning-rate-schedulers">EP64 Learning-rate-schedulers<a hidden class="anchor" aria-hidden="true" href="#ep64-learning-rate-schedulers">#</a></h4>
@@ -13781,7 +13811,6 @@ today
 talk to
 you next</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep65-history-of-functorch">EP65 History-of-functorch<a hidden class="anchor" aria-hidden="true" href="#ep65-history-of-functorch">#</a></h4>
@@ -14001,7 +14030,6 @@ You cannot do that in Functorch yet.
 All right. Well, thanks a lot for coming to tell us about the history of Functorch, Richard.
 Cool. Thanks for having me, Ed. Goodbye.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep66-pytorch-20">EP66 PyTorch-2.0<a hidden class="anchor" aria-hidden="true" href="#ep66-pytorch-20">#</a></h4>
@@ -14225,7 +14253,6 @@ And, yeah, I&rsquo;m looking forward to sharing a lot more about PyTorch 2 with 
 That&rsquo;s all for today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep67-torchdynamo">EP67 torchdynamo<a hidden class="anchor" aria-hidden="true" href="#ep67-torchdynamo">#</a></h4>
@@ -14539,7 +14566,6 @@ There&rsquo;s plenty of other things to talk about, and I will talk about them i
 Thank you very much for your time.
 See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep68-zero-one-specialization">EP68 Zero-one-specialization<a hidden class="anchor" aria-hidden="true" href="#ep68-zero-one-specialization">#</a></h4>
@@ -14900,7 +14926,6 @@ Talk to you all next time.
 Yeah.
 I hope to see you again soon.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep69-unbacked-symints">EP69 Unbacked-SymInts<a hidden class="anchor" aria-hidden="true" href="#ep69-unbacked-symints">#</a></h4>
@@ -15788,10 +15813,9 @@ All right,
 thank you very much
 for listening. See you all next time.</p>
 </blockquote>
-
 </details></p>
 
-<h4 id="ep70-dynamo---variabletracker">EP70 Dynamo&mdash;VariableTracker<a hidden class="anchor" aria-hidden="true" href="#ep70-dynamo---variabletracker">#</a></h4>
+<h4 id="ep70-dynamovariabletracker">EP70 Dynamo&mdash;VariableTracker<a hidden class="anchor" aria-hidden="true" href="#ep70-dynamovariabletracker">#</a></h4>
 
 
 <p><details >
@@ -15988,10 +16012,9 @@ These tend to be actually relatively simple, because we don&rsquo;t need any spe
 So that&rsquo;s everything I wanted to say about variable tracker today.
 See you next time.</p>
 </blockquote>
-
 </details></p>
 
-<h4 id="ep71-inductor---ir">EP71 Inductor&mdash;IR<a hidden class="anchor" aria-hidden="true" href="#ep71-inductor---ir">#</a></h4>
+<h4 id="ep71-inductorir">EP71 Inductor&mdash;IR<a hidden class="anchor" aria-hidden="true" href="#ep71-inductorir">#</a></h4>
 
 
 <p><details >
@@ -16379,7 +16402,6 @@ So, yeah, that&rsquo;s a whirlwind tour to Inductor IR.
 As I said, it&rsquo;s highly in flux, and I don&rsquo;t claim to be the world expert on Inductor IR, but hopefully that gives you an idea for how to look around this pretty important Inductor IR data structure.
 Thanks for listening. See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep72-unsigned-integers">EP72 Unsigned-integers<a hidden class="anchor" aria-hidden="true" href="#ep72-unsigned-integers">#</a></h4>
@@ -16525,10 +16547,9 @@ So the quantization team is working on this.
 That&rsquo;s everything I wanted to say about unsigned integers.
 See you next time.</p>
 </blockquote>
-
 </details></p>
 
-<h4 id="ep73-inductor---define-by-run-ir">EP73 Inductor&mdash;Define-by-run-IR<a hidden class="anchor" aria-hidden="true" href="#ep73-inductor---define-by-run-ir">#</a></h4>
+<h4 id="ep73-inductordefine-by-run-ir">EP73 Inductor&mdash;Define-by-run-IR<a hidden class="anchor" aria-hidden="true" href="#ep73-inductordefine-by-run-ir">#</a></h4>
 
 
 <p><details >
@@ -16621,7 +16642,6 @@ We&rsquo;ve talked about the operators inside it and the general way you work wi
 That&rsquo;s everything I wanted to talk about today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep74-pt2-extension-points">EP74 PT2-extension-points<a hidden class="anchor" aria-hidden="true" href="#ep74-pt2-extension-points">#</a></h4>
@@ -16798,7 +16818,6 @@ So that&rsquo;s it for our whirlwind tour of all the things you can extend PyTor
 Hopefully in some later podcast episodes, we can dig into some of these things in more detail.
 Thanks for listening.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep75-compiled-autograd">EP75 Compiled-autograd<a hidden class="anchor" aria-hidden="true" href="#ep75-compiled-autograd">#</a></h4>
@@ -17079,7 +17098,6 @@ maybe we will talk about them some other time.
 That&rsquo;s everything I wanted to say about compiled Autograd today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep76-tensor-subclasses-and-pt2">EP76 Tensor-subclasses-and-PT2<a hidden class="anchor" aria-hidden="true" href="#ep76-tensor-subclasses-and-pt2">#</a></h4>
@@ -17298,7 +17316,6 @@ Okay.
 That&rsquo;s everything I wanted to talk about today.
 See you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep77-aotinductor">EP77 AOTInductor<a hidden class="anchor" aria-hidden="true" href="#ep77-aotinductor">#</a></h4>
@@ -17504,7 +17521,6 @@ more podcasts about this particular problem, because it is a big problem. And we
 one of our top line things we&rsquo;re working on coming this year. Okay, that&rsquo;s everything I want to talk
 about in AOT Inductor today. See you all next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep78-min-cut-partitioner">EP78 Min-cut-partitioner<a hidden class="anchor" aria-hidden="true" href="#ep78-min-cut-partitioner">#</a></h4>
@@ -17674,7 +17690,6 @@ our current plan on record um i think brian hirsch is planning to work on this a
 got a design doc that i&rsquo;ve linked in the pytorch 2 weekly update which you can check out for more
 information okay that&rsquo;s everything i wanted to talk about mincut partitioning today uh see you next time</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep79-cuda-graph-trees">EP79 CUDA-graph-trees<a hidden class="anchor" aria-hidden="true" href="#ep79-cuda-graph-trees">#</a></h4>
@@ -17904,10 +17919,9 @@ Okay. So I hope that told you a little bit about what to expect with CUDA graph 
 happens when you do mode, reduce overhead in torch compile. That&rsquo;s everything I wanted to say today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
-<h4 id="ep80-inductor---post-grad-fx-passes">EP80 Inductor&mdash;Post-grad-FX-passes<a hidden class="anchor" aria-hidden="true" href="#ep80-inductor---post-grad-fx-passes">#</a></h4>
+<h4 id="ep80-inductorpost-grad-fx-passes">EP80 Inductor&mdash;Post-grad-FX-passes<a hidden class="anchor" aria-hidden="true" href="#ep80-inductorpost-grad-fx-passes">#</a></h4>
 
 
 <p><details >
@@ -18254,7 +18268,6 @@ There might be a pretty good explanation of what the heck&rsquo;s going on.
 Okay, that&rsquo;s everything I wanted to talk about today.
 Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep81-higher-order-operators">EP81 Higher-order-operators<a hidden class="anchor" aria-hidden="true" href="#ep81-higher-order-operators">#</a></h4>
@@ -18454,7 +18467,6 @@ backend, you kind of need to know how to deal with higher order operators. They&
 So we try not to add too many of them. But you know, they&rsquo;re a bit too useful not to use. So we are
 using them relatively frequently. That&rsquo;s everything I wanted to talk about today. Talk to you next time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep82-torch_trace-and-tlparse">EP82 TORCH_TRACE-and-tlparse<a hidden class="anchor" aria-hidden="true" href="#ep82-torch_trace-and-tlparse">#</a></h4>
@@ -19158,7 +19170,6 @@ today.
 Talk to you next
 time.</p>
 </blockquote>
-
 </details></p>
 
 <h4 id="ep83-compiler-collectives">EP83 Compiler-collectives<a hidden class="anchor" aria-hidden="true" href="#ep83-compiler-collectives">#</a></h4>
@@ -19340,7 +19351,6 @@ the same problems with that so we&rsquo;re still like working on getting caching
 where we are right now all right so that&rsquo;s everything i want to talk about with compiler collectives
 talk to you next time</p>
 </blockquote>
-
 </details></p>
 
 <h3 id="ref">Ref<a hidden class="anchor" aria-hidden="true" href="#ref">#</a></h3>
@@ -19348,27 +19358,23 @@ talk to you next time</p>
 <p><a href="https://github.com/jerinphilip/pytorch-dev-podcasts-transcribe">jerinphilip/pytorch-dev-podcasts-transcribe: Scripts to transcribe https://pytorch-dev-podcast.simplecast.com/episodes</a></p>
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="https://blog.niuhemoon.win/tags/whisper/">Whisper</a></li>
       <li><a href="https://blog.niuhemoon.win/tags/pytorch/">Pytorch</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/">
     <span class="title">« 上一页</span>
-    <br>
     <span>记录一次失败的小说SFT数据集创建</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/netron-visualize-model/">
     <span class="title">下一页 »</span>
-    <br>
     <span>使用Netron可视化ONNX模型</span>
   </a>
 </nav>
@@ -19378,32 +19384,34 @@ talk to you next time</p>
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -19430,25 +19438,25 @@ talk to you next time</p>
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -19460,12 +19468,12 @@ talk to you next time</p>
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

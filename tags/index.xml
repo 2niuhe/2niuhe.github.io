@@ -4,611 +4,478 @@
     <title>Tags on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/</link>
     <description>Recent content in Tags on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Fri, 18 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 18 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CLI</title>
       <link>https://blog.niuhemoon.win/tags/cli/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/cli/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Linux</title>
       <link>https://blog.niuhemoon.win/tags/linux/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/linux/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Mods</title>
       <link>https://blog.niuhemoon.win/tags/mods/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/mods/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Fire</title>
       <link>https://blog.niuhemoon.win/tags/fire/</link>
       <pubDate>Thu, 10 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/fire/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Python</title>
       <link>https://blog.niuhemoon.win/tags/python/</link>
       <pubDate>Thu, 10 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/python/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Book</title>
       <link>https://blog.niuhemoon.win/tags/book/</link>
       <pubDate>Mon, 07 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/book/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>AI</title>
       <link>https://blog.niuhemoon.win/tags/ai/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/ai/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>LLM</title>
       <link>https://blog.niuhemoon.win/tags/llm/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/llm/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>MCP</title>
       <link>https://blog.niuhemoon.win/tags/mcp/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/mcp/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>vLLM</title>
+      <title>VLLM</title>
       <link>https://blog.niuhemoon.win/tags/vllm/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/vllm/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Frp</title>
       <link>https://blog.niuhemoon.win/tags/frp/</link>
       <pubDate>Fri, 30 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/frp/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>NoMachine</title>
       <link>https://blog.niuhemoon.win/tags/nomachine/</link>
       <pubDate>Fri, 30 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/nomachine/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ZeroMQ</title>
       <link>https://blog.niuhemoon.win/tags/zeromq/</link>
       <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/zeromq/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>分布式计算</title>
       <link>https://blog.niuhemoon.win/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97/</link>
       <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>性能优化</title>
       <link>https://blog.niuhemoon.win/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link>
       <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Ollama</title>
       <link>https://blog.niuhemoon.win/tags/ollama/</link>
       <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/ollama/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Qwen3</title>
       <link>https://blog.niuhemoon.win/tags/qwen3/</link>
       <pubDate>Mon, 28 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/qwen3/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Docker</title>
       <link>https://blog.niuhemoon.win/tags/docker/</link>
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/docker/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Flash Attention</title>
       <link>https://blog.niuhemoon.win/tags/flash-attention/</link>
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/flash-attention/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>GPU</title>
       <link>https://blog.niuhemoon.win/tags/gpu/</link>
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/gpu/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>HowToLearn</title>
       <link>https://blog.niuhemoon.win/tags/howtolearn/</link>
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/howtolearn/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>UV</title>
       <link>https://blog.niuhemoon.win/tags/uv/</link>
       <pubDate>Mon, 31 Mar 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/uv/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>C</title>
       <link>https://blog.niuhemoon.win/tags/c/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/c/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Dataset</title>
       <link>https://blog.niuhemoon.win/tags/dataset/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/dataset/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Go</title>
       <link>https://blog.niuhemoon.win/tags/go/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/go/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>RPC</title>
       <link>https://blog.niuhemoon.win/tags/rpc/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/rpc/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>SFT</title>
       <link>https://blog.niuhemoon.win/tags/sft/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/sft/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Pytorch</title>
       <link>https://blog.niuhemoon.win/tags/pytorch/</link>
       <pubDate>Fri, 13 Dec 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/pytorch/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Whisper</title>
       <link>https://blog.niuhemoon.win/tags/whisper/</link>
       <pubDate>Fri, 13 Dec 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/whisper/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Netron</title>
       <link>https://blog.niuhemoon.win/tags/netron/</link>
       <pubDate>Sun, 01 Dec 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/netron/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ONNX</title>
       <link>https://blog.niuhemoon.win/tags/onnx/</link>
       <pubDate>Sun, 01 Dec 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/onnx/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>MPI</title>
       <link>https://blog.niuhemoon.win/tags/mpi/</link>
       <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/mpi/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Network</title>
       <link>https://blog.niuhemoon.win/tags/network/</link>
       <pubDate>Sat, 10 Aug 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/network/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>FTP</title>
       <link>https://blog.niuhemoon.win/tags/ftp/</link>
       <pubDate>Sun, 21 Jul 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/ftp/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Kubernetes</title>
       <link>https://blog.niuhemoon.win/tags/kubernetes/</link>
       <pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/kubernetes/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Xpath</title>
       <link>https://blog.niuhemoon.win/tags/xpath/</link>
       <pubDate>Sun, 03 Sep 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/xpath/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>HTTPS</title>
       <link>https://blog.niuhemoon.win/tags/https/</link>
       <pubDate>Fri, 13 Jan 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/https/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Node.js</title>
       <link>https://blog.niuhemoon.win/tags/node.js/</link>
       <pubDate>Fri, 13 Jan 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/node.js/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Calibre</title>
       <link>https://blog.niuhemoon.win/tags/calibre/</link>
       <pubDate>Mon, 02 Jan 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/calibre/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Tmux</title>
       <link>https://blog.niuhemoon.win/tags/tmux/</link>
       <pubDate>Mon, 26 Dec 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/tmux/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Hugo</title>
       <link>https://blog.niuhemoon.win/tags/hugo/</link>
       <pubDate>Wed, 21 Dec 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/hugo/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Esp32</title>
       <link>https://blog.niuhemoon.win/tags/esp32/</link>
       <pubDate>Thu, 25 Mar 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/esp32/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Tinygo</title>
       <link>https://blog.niuhemoon.win/tags/tinygo/</link>
       <pubDate>Thu, 25 Mar 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/tinygo/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Makefile</title>
       <link>https://blog.niuhemoon.win/tags/makefile/</link>
       <pubDate>Sat, 27 Feb 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/makefile/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Typescript</title>
       <link>https://blog.niuhemoon.win/tags/typescript/</link>
       <pubDate>Fri, 29 Jan 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/typescript/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>sqlite3</title>
+      <title>Sqlite3</title>
       <link>https://blog.niuhemoon.win/tags/sqlite3/</link>
       <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/sqlite3/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Awk</title>
       <link>https://blog.niuhemoon.win/tags/awk/</link>
       <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/awk/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>VSCode</title>
       <link>https://blog.niuhemoon.win/tags/vscode/</link>
       <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/vscode/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Nova</title>
       <link>https://blog.niuhemoon.win/tags/nova/</link>
       <pubDate>Sat, 31 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/nova/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Openstack</title>
       <link>https://blog.niuhemoon.win/tags/openstack/</link>
       <pubDate>Sat, 31 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/openstack/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>KVM</title>
       <link>https://blog.niuhemoon.win/tags/kvm/</link>
       <pubDate>Thu, 22 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/kvm/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>GDB</title>
       <link>https://blog.niuhemoon.win/tags/gdb/</link>
       <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/gdb/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Regex</title>
       <link>https://blog.niuhemoon.win/tags/regex/</link>
       <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/regex/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>PlantUML</title>
       <link>https://blog.niuhemoon.win/tags/plantuml/</link>
       <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/plantuml/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Git</title>
       <link>https://blog.niuhemoon.win/tags/git/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/git/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Vim</title>
       <link>https://blog.niuhemoon.win/tags/vim/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/vim/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Angular</title>
       <link>https://blog.niuhemoon.win/tags/angular/</link>
       <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/angular/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Nodejs</title>
       <link>https://blog.niuhemoon.win/tags/nodejs/</link>
       <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/nodejs/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Microstack</title>
       <link>https://blog.niuhemoon.win/tags/microstack/</link>
       <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/microstack/</guid>
       <description></description>
     </item>
-    
+    <item>
+      <title>Anki</title>
+      <link>https://blog.niuhemoon.win/tags/anki/</link>
+      <pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate>
+      <guid>https://blog.niuhemoon.win/tags/anki/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>STM32</title>
+      <link>https://blog.niuhemoon.win/tags/stm32/</link>
+      <pubDate>Sun, 12 May 2019 00:00:00 +0000</pubDate>
+      <guid>https://blog.niuhemoon.win/tags/stm32/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>ROS</title>
+      <link>https://blog.niuhemoon.win/tags/ros/</link>
+      <pubDate>Mon, 06 May 2019 19:55:25 +0800</pubDate>
+      <guid>https://blog.niuhemoon.win/tags/ros/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Matlab</title>
+      <link>https://blog.niuhemoon.win/tags/matlab/</link>
+      <pubDate>Mon, 06 May 2019 00:00:00 +0000</pubDate>
+      <guid>https://blog.niuhemoon.win/tags/matlab/</guid>
+      <description></description>
+    </item>
     <item>
       <title>树莓派</title>
       <link>https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/</link>
       <pubDate>Mon, 10 Sep 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Arduino</title>
       <link>https://blog.niuhemoon.win/tags/arduino/</link>
       <pubDate>Sat, 01 Sep 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/arduino/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>密码学</title>
       <link>https://blog.niuhemoon.win/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/</link>
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/</guid>
       <description></description>
     </item>
-    
     <item>
-      <title>wordcloud</title>
+      <title>Wordcloud</title>
       <link>https://blog.niuhemoon.win/tags/wordcloud/</link>
       <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/tags/wordcloud/</guid>
       <description></description>
     </item>
-    
-    <item>
-      <title>Anki</title>
-      <link>https://blog.niuhemoon.win/tags/anki/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/tags/anki/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Matlab</title>
-      <link>https://blog.niuhemoon.win/tags/matlab/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/tags/matlab/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ROS</title>
-      <link>https://blog.niuhemoon.win/tags/ros/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/tags/ros/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STM32</title>
-      <link>https://blog.niuhemoon.win/tags/stm32/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/tags/stm32/</guid>
-      <description></description>
-    </item>
-    
   </channel>
 </rss>

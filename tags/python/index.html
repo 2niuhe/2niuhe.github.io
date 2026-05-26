@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 <meta name="description" content="">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/tags/python/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -18,7 +18,8 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/tags/python/index.xml">
+<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/tags/python/index.xml" title="rss">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/tags/python/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,74 +37,147 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="Python" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.niuhemoon.win/tags/python/" />
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Python"/>
-<meta name="twitter:description" content=""/>
-
-</head>
-
-<body class="list" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
+        document.querySelector("html").dataset.theme = 'dark';
     } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
+       document.querySelector("html").dataset.theme = 'light';
     } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
     }
 
 </script>
 
-<header class="header">
-    <nav class="nav">
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/tags/python/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="Python">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Python">
+
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -119,7 +193,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -154,7 +228,18 @@ if (!doNotTrack) {
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/tags/">Tags</a></div>
+<header class="page-header"><nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/tags/">Tags</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
   <h1>
     Python
   </h1>
@@ -162,20 +247,22 @@ if (!doNotTrack) {
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>跨语言JSON-RPC通信实现：Go与Python互操作Demo
+    <h2 class="entry-hint-parent">跨语言JSON-RPC通信实现：Go与Python互操作Demo
     </h2>
   </header>
   <div class="entry-content">
     <p>本项目演示了如何使用JSON-RPC协议实现Go语言和Python之间的跨语言通信。项目包含两种场景的完整实现，展示了双向的RPC调用能力。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-01-13 00:00:00 +0000 UTC'>2025-01-13</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1656 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2025-01-13 00:00:00 +0000 UTC'>2025-01-13</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>1656 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 跨语言JSON-RPC通信实现：Go与Python互操作Demo" href="https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>[AI]Python Fire: 告别繁琐，一键生成命令行界面
+    <h2 class="entry-hint-parent">[AI]Python Fire: 告别繁琐，一键生成命令行界面
     </h2>
   </header>
   <div class="entry-content">
@@ -183,165 +270,225 @@ if (!doNotTrack) {
 如果你厌倦了为写一个简单的脚本而不得不编写 argparse 的大量模板代码，那么 Fire 绝对是你的得力助手。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-07-10 00:00:00 +0000 UTC'>2025-07-10</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;808 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2025-07-10 00:00:00 +0000 UTC'>2025-07-10</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>808 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to [AI]Python Fire: 告别繁琐，一键生成命令行界面" href="https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>MCP技术开发与实践
+    <h2 class="entry-hint-parent">MCP技术开发与实践
     </h2>
   </header>
   <div class="entry-content">
-    <p>MCP技术概述 MCP (Model Context Protocol) 是一个用于连接AI模型与外部数据源和工具的开放标准协议。它允许AI助手安全地访问本地和远程资源，实现更强大的功能扩展。 MCP核心特性： 标准化的客户端-服务器通信协议 支持多种传输方式（STDIO、HTTP、SSE） 基于JSON-RPC的消息格式 工具调用和资源访...</p>
+    <p>MCP技术概述 MCP (Model Context Protocol) 是一个用于连接AI模型与外部数据源和工具的开放标准协议。它允许AI助手安全地访问本地和远程资源，实现更强大的功能扩展。
+MCP核心特性：
+标准化的客户端-服务器通信协议 支持多种传输方式（STDIO、HTTP、SSE） 基于JSON-RPC的消息格式 工具调用和资源访问能力 协议架构 ┌─────────────────┐ ┌─────────────────┐ │ MCP Client │ │ MCP Server │ │ (AI模型) │◄──►│ (工具提供者) │ └─────────────────┘ └─────────────────┘ │ │ └───────── MCP ──────────┘ (JSON-RPC over Transport) 服务器实现 计算器MCP服务器 以下是一个完整的MCP服务器实现，支持三种传输方式：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-06-09 00:00:00 +0000 UTC'>2025-06-09</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2075 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2025-06-09 00:00:00 +0000 UTC'>2025-06-09</span>&nbsp;·&nbsp;<span>5 分钟</span>&nbsp;·&nbsp;<span>2075 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to MCP技术开发与实践" href="https://blog.niuhemoon.win/posts/tech/mcp-development-guide/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>UV 包管理器使用指南
+    <h2 class="entry-hint-parent">UV 包管理器使用指南
     </h2>
   </header>
   <div class="entry-content">
-    <p>UV 相比 pip 的主要优势 速度更快 使用 Rust 编写，性能优化更好 并行下载依赖 更智能的依赖解析算法 更好的依赖解析 更准确的依赖树计算 更好地处理版本冲突 支持 lockfile，确保环境的可重现性 现代化特性 原生支持虚拟环境管理 与 pip 完全兼容 支持从多种源安装包（PyPI、Git、本地等） 安装方法 在 macOS 上安装 U...</p>
+    <p>UV 相比 pip 的主要优势 速度更快
+使用 Rust 编写，性能优化更好 并行下载依赖 更智能的依赖解析算法 更好的依赖解析
+更准确的依赖树计算 更好地处理版本冲突 支持 lockfile，确保环境的可重现性 现代化特性
+原生支持虚拟环境管理 与 pip 完全兼容 支持从多种源安装包（PyPI、Git、本地等） 安装方法 在 macOS 上安装 UV：
+brew install uv 基础使用 虚拟环境管理 # 创建虚拟环境 uv venv &lt;env_name&gt; # 激活虚拟环境 source &lt;env_name&gt;/bin/activate 包管理基础命令（pip适配） # 安装单个包 uv pip install package_name # 从 requirements.txt 安装依赖 uv pip install -r requirements.txt # 卸载包 uv pip uninstall package_name # 列出当前环境中已安装的所有包 uv pip list # 显示特定包的详细信息（版本、依赖等） uv pip show package_name # 导出当前环境的依赖到 requirements.txt uv pip freeze &gt; requirements.txt # 以开发模式安装当前目录下的项目 # 适用于开发自己的包时，修改代码后无需重新安装 uv pip install -e . 依赖管理最佳实践 requirements.in vs requirements.txt requirements.in（源依赖文件）
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-03-31 00:00:00 +0000 UTC'>2025-03-31</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1577 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2025-03-31 00:00:00 +0000 UTC'>2025-03-31</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>1577 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to UV 包管理器使用指南" href="https://blog.niuhemoon.win/posts/tech/uv-guide/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Python创建自己的package
+    <h2 class="entry-hint-parent">Python创建自己的package
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-05-25 00:00:00 +0000 UTC'>2024-05-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;716 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-05-25 00:00:00 +0000 UTC'>2024-05-25</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>716 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python创建自己的package" href="https://blog.niuhemoon.win/posts/tech/create-pip-package/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Pytorch模型可视化
+    <h2 class="entry-hint-parent">Pytorch模型可视化
     </h2>
   </header>
   <div class="entry-content">
-    <p>...</p>
+    <p>Pytorch模型可视化...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-10 00:00:00 +0000 UTC'>2024-04-10</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1170 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-04-10 00:00:00 +0000 UTC'>2024-04-10</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1170 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Pytorch模型可视化" href="https://blog.niuhemoon.win/posts/tech/pytorch-model-view/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>GDB调试Python代码
+    <h2 class="entry-hint-parent">GDB调试Python代码
     </h2>
   </header>
   <div class="entry-content">
-    <p>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。 Gdb可以附着在特定进程上调试，但...</p>
+    <p>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。
+Gdb可以附着在特定进程上调试，但是为了不影响运行中的进程，可以通过生成 core file 的方式来保存进程的当前信息。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-10-16 00:00:00 +0000 UTC'>2020-10-16</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;946 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2020-10-16 00:00:00 +0000 UTC'>2020-10-16</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>946 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to GDB调试Python代码" href="https://blog.niuhemoon.win/posts/tech/gdb-debug-python/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Python进阶下
+    <h2 class="entry-hint-parent">Python进阶下
     </h2>
   </header>
   <div class="entry-content">
-    <p>有两种常用的方法可以使得代码并行执行，多线程和多进程 。因为Cython解释器的实现不是线程安全的，具有GIL锁，同一时刻，只有一个线程可以获得解释器的锁。因此，Python利用多核心的CPU只能通过多进程，而多线程只适用于IO密集型的程序。 多进程基础 创建并开启进程 可以使用mult...</p>
+    <p> 有两种常用的方法可以使得代码并行执行，多线程和多进程 。因为Cython解释器的实现不是线程安全的，具有GIL锁，同一时刻，只有一个线程可以获得解释器的锁。因此，Python利用多核心的CPU只能通过多进程，而多线程只适用于IO密集型的程序。
+多进程基础 创建并开启进程 可以使用multiprocessing.Process()来创建进程，它接受两个参数：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-10-13 00:00:00 +0000 UTC'>2020-10-13</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2417 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2020-10-13 00:00:00 +0000 UTC'>2020-10-13</span>&nbsp;·&nbsp;<span>5 分钟</span>&nbsp;·&nbsp;<span>2417 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python进阶下" href="https://blog.niuhemoon.win/posts/tech/python-advanced-3/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Python进阶中
+    <h2 class="entry-hint-parent">Python进阶中
     </h2>
   </header>
   <div class="entry-content">
-    <p>生成器Generator def countdown(num): print(&#39;Starting&#39;) while num &gt; 0: yield num num -= 1 # this will not print &#39;Starting&#39; cd = countdown(3) # this will print &#39;Starting&#39; and the first value print(next(cd)) # will print the next values print(next(cd)) print(next(cd)) # this will raise a StopIteration print(next(cd)) 迭代器使用方式 # you can iterate over a generator object with a for in loop cd = countdown(3) for x in cd: print(x) # you can use it for functions that take iterables as input cd = countdown(3) sum_cd = sum(cd) print(sum_cd) cd = countdown(3) sorted_cd = sorted(cd) print(sorted_cd) 生成器表达式 # generator expression mygenerator = (i for i in range(1000) if i % 2 == 0) print(sys.getsizeof(mygenerator), &#34;bytes&#34;) # list comprehension mylist...</p>
+    <p>生成器Generator def countdown(num): print(&#39;Starting&#39;) while num &gt; 0: yield num num -= 1 # this will not print &#39;Starting&#39; cd = countdown(3) # this will print &#39;Starting&#39; and the first value print(next(cd)) # will print the next values print(next(cd)) print(next(cd)) # this will raise a StopIteration print(next(cd)) 迭代器使用方式
+# you can iterate over a generator object with a for in loop cd = countdown(3) for x in cd: print(x) # you can use it for functions that take iterables as input cd = countdown(3) sum_cd = sum(cd) print(sum_cd) cd = countdown(3) sorted_cd = sorted(cd) print(sorted_cd) 生成器表达式
+# generator expression mygenerator = (i for i in range(1000) if i % 2 == 0) print(sys.getsizeof(mygenerator), &#34;bytes&#34;) # list comprehension mylist = [i for i in range(1000) if i % 2 == 0] print(sys.getsizeof(mylist), &#34;bytes&#34;) # 120bytes # 4272 bytes 生成器概念 类可以实现生成器作为一个可迭代对象，它需要实现__iter__方法和__next__方法，使得类对象可迭代。此外，还需要注意记录迭代次数，以及最后raise一个StopIteration异常。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-10-12 00:00:00 +0000 UTC'>2020-10-12</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3535 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2020-10-12 00:00:00 +0000 UTC'>2020-10-12</span>&nbsp;·&nbsp;<span>8 分钟</span>&nbsp;·&nbsp;<span>3535 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python进阶中" href="https://blog.niuhemoon.win/posts/tech/python-advanced-2/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>正则表达式基本使用
+    <h2 class="entry-hint-parent">正则表达式基本使用
     </h2>
   </header>
   <div class="entry-content">
-    <p>基础 1.1 字符匹配 字符 说明 \ 转义符 \d [0-9]。表示是一位数字。 \D [^0-9]。表示除数字外的任意字符。 \w [0-9a-zA-Z_]。表示数字、大小写字母和下划线。 \W [^0-9a-za-z_]。非单词字符。 \s [\t\v\n\r\f]。表示空白符，包括空格、水平制表符、 垂直制表符、换行符...</p>
+    <p>基础 1.1 字符匹配 字符 说明 \ 转义符 \d [0-9]。表示是一位数字。 \D [^0-9]。表示除数字外的任意字符。 \w [0-9a-zA-Z_]。表示数字、大小写字母和下划线。 \W [^0-9a-za-z_]。非单词字符。 \s [\t\v\n\r\f]。表示空白符，包括空格、水平制表符、 垂直制表符、换行符、回车符、换页符。 \S [^\t\v\n\r\f]。非空白符。 . [^\n\r\u2028\u2029]。通配符，表示几乎任意字符。 换行符、回车符、行分隔符和段分隔符除外。 \uxxxx 查找以十六进制数 xxxx 规定的 Unicode 字符。 \f 匹配一个换页符 (U&#43;000C)。 \n 匹配一个换行符 (U&#43;000A)。 \r 匹配一个回车符 (U&#43;000D)。 \t 匹配一个水平制表符 (U&#43;0009)。 \v 匹配一个垂直制表符 (U&#43;000B)。 \0 匹配 NULL（U&#43;0000）字符， 不要在这后面跟其它小数，因为 \0 是一个 八进制转义序列。 [\b] 匹配一个退格(U&#43;0008)。（不要和\b 混淆了。） [abc] any of a, b, or c [^abc] not a, b, or c [a-g] character between a &amp; g 1.2 位置匹配 字符 说明 \b 是单词边界，具体就是\w 和\W 之间的位置，也包括\w 和 ^ 之间的位置， 也包括\w 和 之间的位置。 \B 是\b 的反面的意思，非单词边界。例如在字符串中所有位置中，扣掉\b， 剩下的都是\B 的。 ^abc$ 字符串开始、结束的位置 1.3 组 字符 说明 (abc) capture group，捕获组 \n backreference to group #n，分组引用，引用第 n 个捕获组匹配的内容, 其中 n 是正整数 (?:abc) non-capturing group，非捕获组 1.4 先行断言 字符 说明 a(?=b) positive lookahead，先行断言，a 只有在 b 前面才匹配 a(?!b) negative lookahead，先行否定断言，a 只有不在 b 前面才匹配 1.5 后行断言 字符 说明 (?&lt;=b)a positive lookbehind，后行断言，a 只有在 b 后面才匹配 (?&lt;!b)a negative lookbehind，后行否定断言，a 只有不在 b 后面才匹配 1.6 量词和分支 字符 说明 a* 0 or more a&#43; 1 or more a? 0 or 1 a{5} exactly five a{2,} two or more a{1,3} between one &amp; three a&#43;? a{2,}? match as few as possible，惰性匹配，就是尽可能少的匹配 以下都是惰性匹配： {m,n}? {m,}? ?? &#43;? *?
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-10-11 00:00:00 +0000 UTC'>2020-10-11</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;5265 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2020-10-11 00:00:00 +0000 UTC'>2020-10-11</span>&nbsp;·&nbsp;<span>11 分钟</span>&nbsp;·&nbsp;<span>5265 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 正则表达式基本使用" href="https://blog.niuhemoon.win/posts/tech/re-usage/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>编程工具之Git
+    <h2 class="entry-hint-parent">编程工具之Git
     </h2>
   </header>
   <div class="entry-content">
-    <p>Git版本控制 尽管 Git 的接口有些丑陋，但是它的底层设计和思想却是非常优雅的。丑陋的接口只能靠死记硬背，而优雅的底层设计则非常容易被人理解。因此，我们将通过一种自底向上的方式像您介绍 Git。我们会从数据模型开始，最后再学习它的接口。一旦您搞懂了 Git 的数据模型，再学习其接口并理解这些接口...</p>
+    <p>Git版本控制 尽管 Git 的接口有些丑陋，但是它的底层设计和思想却是非常优雅的。丑陋的接口只能靠死记硬背，而优雅的底层设计则非常容易被人理解。因此，我们将通过一种自底向上的方式像您介绍 Git。我们会从数据模型开始，最后再学习它的接口。一旦您搞懂了 Git 的数据模型，再学习其接口并理解这些接口是如何操作数据模型的就非常容易了。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3786 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2020-09-27 19:55:25 +0800 CST'>2020-09-27</span>&nbsp;·&nbsp;<span>8 分钟</span>&nbsp;·&nbsp;<span>3786 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 编程工具之Git" href="https://blog.niuhemoon.win/posts/tech/coding-tools-git/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Python进阶上
+    <h2 class="entry-hint-parent">Python进阶上
     </h2>
   </header>
   <div class="entry-content">
-    <p>Python种基本类型的比较： List is a collection which is ordered and mutable. Allows duplicate members. Tuple is a collection which is ordered and immutable. Allows duplicate members. Set is a collection which is unordered and unindexed. No duplicate members. Dictionary is a collection which is unordered, mutable and indexed. No duplicate members. Strings are immutable sequences of Unicode code points. List Python中的list是一个有序容器，容纳不同类型的数据（但推荐列表内数据类型相同)，同时其是可变类型的． 创建列表 list_1 = [&#34;banana&#34;, &#34;cherry&#34;, &#34;apple&#34;] print(list_1) # Or create...</p>
+    <p>Python种基本类型的比较：
+List is a collection which is ordered and mutable. Allows duplicate members. Tuple is a collection which is ordered and immutable. Allows duplicate members. Set is a collection which is unordered and unindexed. No duplicate members. Dictionary is a collection which is unordered, mutable and indexed. No duplicate members. Strings are immutable sequences of Unicode code points. List Python中的list是一个有序容器，容纳不同类型的数据（但推荐列表内数据类型相同)，同时其是可变类型的．
+创建列表 list_1 = [&#34;banana&#34;, &#34;cherry&#34;, &#34;apple&#34;] print(list_1) # Or create an empty list with the list function list_2 = list() print(list_2) # Lists allow different data types list_3 = [5, True, &#34;apple&#34;] print(list_3) # Lists allow duplicates list_4 = [0, 0, 1, 1] print(list_4) 内置方法 修改列表的方法尽量使用内置方法，内置方法效率较高
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;3404 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;<span>7 分钟</span>&nbsp;·&nbsp;<span>3404 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python进阶上" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Python3操作二维码图片
+    <h2 class="entry-hint-parent">Python 生成ankidroid单词表/语音包
     </h2>
   </header>
   <div class="entry-content">
-    <p>python3中如何对二维码QRcode进行编码解码 通常对于二维码，我们需要进行两种操作： 将二维码图片扫描后解析成字符串 将字符串编码生成二维码图片 这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在...</p>
+    <p>Ankidroid和插件 ankidroid下载网址https://apps.ankiweb.net/
+目前还是推荐下载anki2.0旧版，2.1版插件支持的不全。
+必装插件列表：
+Awesome TTS:301952613 Review Heatmap:1771074083 Night Mode:1496166067 词库分享
+anki-deck 从网络抓取单词/例句文本 示例从轻松背单词网站抓取，网站上涵盖了从小学到GRE以及各个专业的单词和例句。内容非常丰富，希望大家多支持这个良心网站。本抓取方法仅作示例，侵删。 网站爬取需要两个参数：
+book_id group_id 具体爬取代码参见我的github,anki_spider
+食用方法 将爬取下来的文本，保存为文本文件
+编辑单词书的字段，可自定义样式进行美化
+打开anki,选择文件 ——&gt; 导入，文件类型为以tab分割的文件类型，并允许使用HTML，匹配对应字段
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2019-04-27 00:00:00 +0000 UTC'>2019-04-27</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1014 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2019-06-02 00:00:00 +0000 UTC'>2019-06-02</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>369 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to Python 生成ankidroid单词表/语音包" href="https://blog.niuhemoon.win/posts/tech/anki-python/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Python3操作二维码图片
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>python3中如何对二维码QRcode进行编码解码
+通常对于二维码，我们需要进行两种操作：
+将二维码图片扫描后解析成字符串 将字符串编码生成二维码图片 这是两个逆过程，在python2中，我们可以通过zbar这个第三方库实现两个功能。可以zbar并不支持python3，而且，zbar在window平台上的安装极其繁琐，有很多坑。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2019-04-27 00:00:00 +0000 UTC'>2019-04-27</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1014 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python3操作二维码图片" href="https://blog.niuhemoon.win/posts/tech/python3-qrcode/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Pyserial快速上手
+    <h2 class="entry-hint-parent">Pyserial快速上手
     </h2>
   </header>
   <div class="entry-content">
-    <p>现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍...</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-09-13 00:00:00 +0000 UTC'>2018-09-13</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;462 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Pyserial快速上手" href="https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2>Python对称AES和DES加密算法
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Python3实现AES和DES对称加密算法的
+    <p> 现在很多传感器都使用串口进行数据传送，我们再window上通常使用sscom33这类调试工具，在linux下通常使用带界面的cutecom或者命令行界面的minicom进行调试。 而使用Python写几行程API序进行自定义调试，就非常有用。并且可以快速的对传感器进行测试。本文介绍python的串口读写模块Pyserial
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3863 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Python对称AES和DES加密算法" href="https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/"></a>
+  <footer class="entry-footer">
+
+<span title='2018-09-13 00:00:00 +0000 UTC'>2018-09-13</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>462 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to Pyserial快速上手" href="https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
@@ -352,32 +499,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -404,25 +553,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })

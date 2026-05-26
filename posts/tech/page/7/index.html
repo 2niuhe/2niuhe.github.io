@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>👨🏻‍💻 技术 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="👨🏻‍💻 技术 - Niuhe&#39;s Blog">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="http://localhost:1313/posts/tech/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/base/favicon.ico">
+<link rel="apple-touch-icon" href="http://localhost:1313/base/avatar.jpeg">
+<link rel="mask-icon" href="http://localhost:1313/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/posts/tech/index.xml" title="rss">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/tech/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+<meta property="og:url" content="http://localhost:1313/posts/tech/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="👨🏻‍💻 技术">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="👨🏻‍💻 技术">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "http://localhost:1313/posts/tech/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="http://localhost:1313/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+  <h1>
+    👨🏻‍💻 技术
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Python实现MD5和Sha256
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Python3实现哈希散列算法，包含MD5和sha256。
+Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。
+验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。
+1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。
+MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。
+填充的工作原理如下：
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2646 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to Python实现MD5和Sha256" href="http://localhost:1313/posts/tech/python-hash-experiment/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">在Linux终端里浏览知乎日报
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>程序效果图如下：
+程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。
+程序十分简单，只十几行代码。使用python3，需要安装requests包。
+源代码如下，也可以从我的github下载。
+#!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {&#39;User-Agent&#39; : &#39;Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)&#39;} def get_daily(): page = requests.get(&#39;http://news-at.zhihu.com/api/3/news/latest&#39;, headers=headers).text response = json.loads(page) date = response[&#39;date&#39;] stories = response[&#39;stories&#39;] date = &#39;\n%s年%s月%s日&#39; % (date[:4], date[4:6], date[6:]) print(&#39;%s 共%d条日报\n&#39; % (date, len(stories))) for index,story in enumerate(stories, 1): print(&#39;{0:&lt;2d}：{1:s}\n url：http://news-at.zhihu.com/story/{2:d}&#39;.format(index, story[&#39;title&#39;], story[&#39;id&#39;])) if __name__ == &#39;__main__&#39;: get_daily() 保存为zhdaily.py文件，然后将文件放到/usr/local/bin/目录下，并给zhdaily.py增加执行权限：
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>607 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to 在Linux终端里浏览知乎日报" href="http://localhost:1313/posts/tech/zhihu-daily-crawler/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">wordcloud源码阅读2——Cython
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>上一节中，IntegralOccupancyMap()函数用来确定单词位置，其中调用了query_integral_image()方法。而query_integral_image是用来Cython。下边介绍Cython。
+Cython介绍 Cython 的本质可以总结如下：Cython 是包含C 数据类型的Python。
+Cython可以将Python代码编译成动态链接库，在某些情况下，可以极大提高Python程序的运行效率。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-04-17 00:00:00 +0000 UTC'>2018-04-17</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>958 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to wordcloud源码阅读2——Cython" href="http://localhost:1313/posts/tech/wordcloud-src-note2/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">wordcloud源码阅读1——初探
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>wordcloud是python用来生成词云的第三方库，github地址是word_cloud
+下载源码：
+git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。
+git tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下：
+wordcloud项目主要用了以下第三方库：
+Numpy PIL Cython 储备知识：
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-04-16 00:00:00 +0000 UTC'>2018-04-16</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>607 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to wordcloud源码阅读1——初探" href="http://localhost:1313/posts/tech/wordcloud-src-note1/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">WordCloud文档中文翻译
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference
+Github链接：wordcloud
+所有函数均封装在WordCloud类里:
+WordCloud([…]) 生成并绘制WordCloud对象 ImageColorGenerator(image) 词云颜色生成器（基于图片颜色） random_color_func([]) 词云颜色随机生成 wordcloud.WordCloud class wordcloud.WordCloud(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color=&#39;black&#39;, max_font_size=None, font_step=1, mode=&#39;RGB&#39;, relative_scaling=0.5, regexp=None, collocations=True, colormap=None, normalize_plurals=True) 参数： font_path : string
+需要使用的字体路径(支持OTF和TTF)。Linux系统上默认指向DroidSansMono路径。若使用其他操作系统或者没有DroidSansMono字体，需要指定字体路径。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-04-08 00:00:00 +0000 UTC'>2018-04-08</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2588 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to WordCloud文档中文翻译" href="http://localhost:1313/posts/tech/word-cloud-doc-cn/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">PyTrick_Daily
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>2018-3-28 # How to merge two dictionaries # in Python 3.5&#43; &gt;&gt;&gt; x = {&#39;a&#39;: 1, &#39;b&#39;: 2} &gt;&gt;&gt; y = {&#39;b&#39;: 3, &#39;c&#39;: 4} &gt;&gt;&gt; z = {**x, **y} &gt;&gt;&gt; z {&#39;c&#39;: 4, &#39;a&#39;: 1, &#39;b&#39;: 3} # In Python 2.x you could # use this: &gt;&gt;&gt; z = dict(x, **y) &gt;&gt;&gt; z {&#39;a&#39;: 1, &#39;c&#39;: 4, &#39;b&#39;: 3} # In these examples, Python merges dictionary keys # in the order listed in the expression, overwriting # duplicates from left to right. 2018-3-29 # Different ways to test multiple # flags at once in Python x, y, z = 0, 1, 0 if x == 1 or y == 1 or z == 1: print(&#39;passed&#39;) if 1 in (x, y, z): print(&#39;passed&#39;) # These only test for truthiness: if x or y or z: print(&#39;passed&#39;) if any((x, y, z)): print(&#39;passed&#39;) 2018-3-30 # How to sort a Python dict by value # (== get a representation sorted by value) &gt;&gt;&gt; xs = {&#39;a&#39;: 4, &#39;b&#39;: 3, &#39;c&#39;: 2, &#39;d&#39;: 1} &gt;&gt;&gt; sorted(xs.items(), key=lambda x: x[1]) [(&#39;d&#39;, 1), (&#39;c&#39;, 2), (&#39;b&#39;, 3), (&#39;a&#39;, 4)] # Or: &gt;&gt;&gt; import operator &gt;&gt;&gt; sorted(xs.items(), key=operator.itemgetter(1)) [(&#39;d&#39;, 1), (&#39;c&#39;, 2), (&#39;b&#39;, 3), (&#39;a&#39;, 4)] 2018-4-2 # The get() method on dicts # and its &#34;default&#34; argument name_for_userid = { 382: &#34;Alice&#34;, 590: &#34;Bob&#34;, 951: &#34;Dilbert&#34;, } def greeting(userid): return &#34;Hi %s!&#34; % name_for_userid.get(userid, &#34;there&#34;) &gt;&gt;&gt; greeting(382) &#34;Hi Alice!&#34; &gt;&gt;&gt; greeting(333333) &#34;Hi there!&#34; 2018-4-4 # Why Python is Great: Namedtuples # Using namedtuple is way shorter than # defining a class manually: &gt;&gt;&gt; from collections import namedtuple &gt;&gt;&gt; Car = namedtuple(&#39;Car&#39;, &#39;color mileage&#39;) # Our new &#34;Car&#34; class works as expected: &gt;&gt;&gt; my_car = Car(&#39;red&#39;, 3812.4) &gt;&gt;&gt; my_car.color &#39;red&#39; &gt;&gt;&gt; my_car.mileage 3812.4 # We get a nice string repr for free: &gt;&gt;&gt; my_car Car(color=&#39;red&#39; , mileage=3812.4) # Like tuples, namedtuples are immutable: &gt;&gt;&gt; my_car.color = &#39;blue&#39; AttributeError: &#34;can&#39;t set attribute&#34; 2018-4-7 &gt;&gt;&gt; import this The Zen of Python, by Tim Peters Beautiful is better than ugly. Explicit is better than implicit. Simple is better than complex. Complex is better than complicated. Flat is better than nested. Sparse is better than dense. Readability counts. Special cases aren&#39;t special enough to break the rules. Although practicality beats purity. Errors should never pass silently. Unless explicitly silenced. In the face of ambiguity, refuse the temptation to guess. There should be one-- and preferably only one --obvious way to do it. Although that way may not be obvious at first unless you&#39;re Dutch. Now is better than never. Although never is often better than *right* now. If the implementation is hard to explain, it&#39;s a bad idea. If the implementation is easy to explain, it may be a good idea. Namespaces are one honking great idea -- let&#39;s do more of those! 2018-4-10 # The standard string repr for dicts is hard to read: &gt;&gt;&gt; my_mapping = {&#39;a&#39;: 23, &#39;b&#39;: 42, &#39;c&#39;: 0xc0ffee} &gt;&gt;&gt; my_mapping {&#39;b&#39;: 42, &#39;c&#39;: 12648430. &#39;a&#39;: 23} # 😞 # The &#34;json&#34; module can do a much better job: &gt;&gt;&gt; import json &gt;&gt;&gt; print(json.dumps(my_mapping, indent=4, sort_keys=True)) { &#34;a&#34;: 23, &#34;b&#34;: 42, &#34;c&#34;: 12648430 } # Note this only works with dicts containing # primitive types (check out the &#34;pprint&#34; module): &gt;&gt;&gt; json.dumps({all: &#39;yup&#39;}) TypeError: keys must be a string 2018-04-11 # Why Python Is Great: # Function argument unpacking def myfunc(x, y, z): print(x, y, z) tuple_vec = (1, 0, 1) dict_vec = {&#39;x&#39;: 1, &#39;y&#39;: 0, &#39;z&#39;: 1} &gt;&gt;&gt; myfunc(*tuple_vec) 1, 0, 1 &gt;&gt;&gt; myfunc(**dict_vec) 1, 0, 1 2018-4-16 # The &#34;timeit&#34; module lets you measure the execution # time of small bits of Python code &gt;&gt;&gt; import timeit &gt;&gt;&gt; timeit.timeit(&#39;&#34;-&#34;.join(str(n) for n in range(100))&#39;, number=10000) 0.3412662749997253 &gt;&gt;&gt; timeit.timeit(&#39;&#34;-&#34;.join([str(n) for n in range(100)])&#39;, number=10000) 0.2996307989997149 &gt;&gt;&gt; timeit.timeit(&#39;&#34;-&#34;.join(map(str, range(100)))&#39;, number=10000) 0.24581470699922647 2018-4-19 # Why Python Is Great: # In-place value swapping # Let&#39;s say we want to swap # the values of a and b... a = 23 b = 42 # The &#34;classic&#34; way to do it # with a temporary variable: tmp = a a = b b = tmp # Python also lets us # use this short-hand: a, b = b, a 2018-5-7 # Python has a HTTP server built into the # standard library. This is super handy for # previewing websites. # Python 3.x $ python3 -m http.server # Python 2.x $ python -m SimpleHTTPServer 8000 # (This will serve the current directory at # http://localhost:8000) 2018-5-7 # Because Python has first-class functions they can # be used to emulate switch/case statements def dispatch_if(operator, x, y): if operator == &#39;add&#39;: return x &#43; y elif operator == &#39;sub&#39;: return x - y elif operator == &#39;mul&#39;: return x * y elif operator == &#39;div&#39;: return x / y else: return None def dispatch_dict(operator, x, y): return { &#39;add&#39;: lambda: x &#43; y, &#39;sub&#39;: lambda: x - y, &#39;mul&#39;: lambda: x * y, &#39;div&#39;: lambda: x / y, }.get(operator, lambda: None)() &gt;&gt;&gt; dispatch_if(&#39;mul&#39;, 2, 8) 16 &gt;&gt;&gt; dispatch_dict(&#39;mul&#39;, 2, 8) 16 &gt;&gt;&gt; dispatch_if(&#39;unknown&#39;, 2, 8) None &gt;&gt;&gt; dispatch_dict(&#39;unknown&#39;, 2, 8) None 2018-5-7 # Functions are first-class citizens in Python. # They can be passed as arguments to other functions, # returned as values from other functions, and # assigned to variables and stored in data structures. &gt;&gt;&gt; def myfunc(a, b): ... return a &#43; b ... &gt;&gt;&gt; funcs = [myfunc] &gt;&gt;&gt; funcs[0] &lt;function myfunc at 0x107012230&gt; &gt;&gt;&gt; funcs[0](2, 3) 5 2018-5-7 # &#34;is&#34; vs &#34;==&#34; &gt;&gt;&gt; a = [1, 2, 3] &gt;&gt;&gt; b = a &gt;&gt;&gt; a is b True &gt;&gt;&gt; a == b True &gt;&gt;&gt; c = list(a) &gt;&gt;&gt; a == c True &gt;&gt;&gt; a is c False # • &#34;is&#34; expressions evaluate to True if two # variables point to the same object # • &#34;==&#34; evaluates to True if the objects # referred to by the variables are equal 2018-05-18 # Python&#39;s list comprehensions are awesome. vals = [expression for value in collection if condition] # This is equivalent to: vals = [] for value in collection: if condition: vals.append(expression) # Example: &gt;&gt;&gt; even_squares = [x * x for x in range(10) if not x % 2] &gt;&gt;&gt; even_squares [0, 4, 16, 36, 64] 2018-05-19 # &#39;type annotation&#39;不改变Python运行时，但可以在开发程序时用其他第三方工具进行类型检查。 # Python 3.5&#43; supports &#39;type annotations&#39; that can be # used with tools like Mypy to write statically typed Python: def my_add(a: int, b: int) -&gt; int: return a &#43; b 2018-05-20 # Python&#39;s list slice syntax can be used without indices # for a few fun and useful things: # You can clear all elements from a list: &gt;&gt;&gt; lst = [1, 2, 3, 4, 5] &gt;&gt;&gt; del lst[:] &gt;&gt;&gt; lst [] # You can replace all elements of a list # without creating a new list object: &gt;&gt;&gt; a = lst &gt;&gt;&gt; lst[:] = [7, 8, 9] &gt;&gt;&gt; lst [7, 8, 9] &gt;&gt;&gt; a [7, 8, 9] &gt;&gt;&gt; a is lst True # You can also create a (shallow) copy of a list: &gt;&gt;&gt; b = lst[:] &gt;&gt;&gt; b [7, 8, 9] &gt;&gt;&gt; b is lst False 2018-05-29 # collections.Counter lets you find the most common # elements in an iterable: &gt;&gt;&gt; import collections &gt;&gt;&gt; c = collections.Counter(&#39;helloworld&#39;) &gt;&gt;&gt; c Counter({&#39;l&#39;: 3, &#39;o&#39;: 2, &#39;e&#39;: 1, &#39;d&#39;: 1, &#39;h&#39;: 1, &#39;r&#39;: 1, &#39;w&#39;: 1}) &gt;&gt;&gt; c.most_common(3) [(&#39;l&#39;, 3), (&#39;o&#39;, 2), (&#39;e&#39;, 1)] 2018-06-06 # itertools.permutations() generates permutations # for an iterable. Time to brute-force those passwords ;-) &gt;&gt;&gt; import itertools &gt;&gt;&gt; for p in itertools.permutations(&#39;ABCD&#39;): ... print(p) (&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;) (&#39;A&#39;, &#39;B&#39;, &#39;D&#39;, &#39;C&#39;) (&#39;A&#39;, &#39;C&#39;, &#39;B&#39;, &#39;D&#39;) (&#39;A&#39;, &#39;C&#39;, &#39;D&#39;, &#39;B&#39;) (&#39;A&#39;, &#39;D&#39;, &#39;B&#39;, &#39;C&#39;) (&#39;A&#39;, &#39;D&#39;, &#39;C&#39;, &#39;B&#39;) (&#39;B&#39;, &#39;A&#39;, &#39;C&#39;, &#39;D&#39;) (&#39;B&#39;, &#39;A&#39;, &#39;D&#39;, &#39;C&#39;) (&#39;B&#39;, &#39;C&#39;, &#39;A&#39;, &#39;D&#39;) (&#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;A&#39;) (&#39;B&#39;, &#39;D&#39;, &#39;A&#39;, &#39;C&#39;) (&#39;B&#39;, &#39;D&#39;, &#39;C&#39;, &#39;A&#39;) (&#39;C&#39;, &#39;A&#39;, &#39;B&#39;, &#39;D&#39;) (&#39;C&#39;, &#39;A&#39;, &#39;D&#39;, &#39;B&#39;) (&#39;C&#39;, &#39;B&#39;, &#39;A&#39;, &#39;D&#39;) (&#39;C&#39;, &#39;B&#39;, &#39;D&#39;, &#39;A&#39;) (&#39;C&#39;, &#39;D&#39;, &#39;A&#39;, &#39;B&#39;) (&#39;C&#39;, &#39;D&#39;, &#39;B&#39;, &#39;A&#39;) (&#39;D&#39;, &#39;A&#39;, &#39;B&#39;, &#39;C&#39;) (&#39;D&#39;, &#39;A&#39;, &#39;C&#39;, &#39;B&#39;) (&#39;D&#39;, &#39;B&#39;, &#39;A&#39;, &#39;C&#39;) (&#39;D&#39;, &#39;B&#39;, &#39;C&#39;, &#39;A&#39;) (&#39;D&#39;, &#39;C&#39;, &#39;A&#39;, &#39;B&#39;) (&#39;D&#39;, &#39;C&#39;, &#39;B&#39;, &#39;A&#39;) </p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-04-05 00:00:00 +0000 UTC'>2018-04-05</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1386 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to PyTrick_Daily" href="http://localhost:1313/posts/tech/python-tricks/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="http://localhost:1313/posts/tech/page/6/">
+      «&nbsp;上一页&nbsp;
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

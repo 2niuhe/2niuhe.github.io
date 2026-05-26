@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 <meta name="description" content="👨🏻‍💻 技术 - Niuhe&#39;s Blog">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -18,7 +18,8 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/posts/tech/index.xml">
+<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/posts/tech/index.xml" title="rss">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,61 +37,146 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="👨🏻‍💻 技术" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="👨🏻‍💻 技术"/>
-<meta name="twitter:description" content=""/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="👨🏻‍💻 技术">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="👨🏻‍💻 技术">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }
@@ -98,33 +184,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
 <body class="list" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -140,7 +214,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -175,7 +249,18 @@ if (!doNotTrack) {
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a></div>
+<header class="page-header"><nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
   <h1>
     👨🏻‍💻 技术
   </h1>
@@ -183,184 +268,219 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>使用Netron可视化ONNX模型
+    <h2 class="entry-hint-parent">使用Netron可视化ONNX模型
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-12-01 00:00:00 +0000 UTC'>2024-12-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;751 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-12-01 00:00:00 +0000 UTC'>2024-12-01</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>751 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 使用Netron可视化ONNX模型" href="https://blog.niuhemoon.win/posts/tech/netron-visualize-model/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>使用 PyTorch 进行 MNIST 手写数字识别
+    <h2 class="entry-hint-parent">使用 PyTorch 进行 MNIST 手写数字识别
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-10-04 00:00:00 +0000 UTC'>2024-10-04</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;873 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-10-04 00:00:00 +0000 UTC'>2024-10-04</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>873 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 使用 PyTorch 进行 MNIST 手写数字识别" href="https://blog.niuhemoon.win/posts/tech/pytorch-mnist-tutorial/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>集合通信入门
+    <h2 class="entry-hint-parent">集合通信入门
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-12 00:00:00 +0000 UTC'>2024-08-12</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2809 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-08-12 00:00:00 +0000 UTC'>2024-08-12</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2809 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 集合通信入门" href="https://blog.niuhemoon.win/posts/tech/collective-communication-introduction/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>MPI入门-安装和基本使用
+    <h2 class="entry-hint-parent">MPI入门-安装和基本使用
     </h2>
   </header>
   <div class="entry-content">
-    <p>...</p>
+    <p>MPI入门-安装和基本使用...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-11 00:00:00 +0000 UTC'>2024-08-11</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1258 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-08-11 00:00:00 +0000 UTC'>2024-08-11</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1258 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to MPI入门-安装和基本使用" href="https://blog.niuhemoon.win/posts/tech/mpi-tutorial-install/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>数据中心组网收敛比概念和计算
+    <h2 class="entry-hint-parent">数据中心组网收敛比概念和计算
     </h2>
   </header>
   <div class="entry-content">
-    <p>...</p>
+    <p>本文介绍收敛比概念和简单计算...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-08-10 00:00:00 +0000 UTC'>2024-08-10</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2255 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-08-10 00:00:00 +0000 UTC'>2024-08-10</span>&nbsp;·&nbsp;<span>5 分钟</span>&nbsp;·&nbsp;<span>2255 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 数据中心组网收敛比概念和计算" href="https://blog.niuhemoon.win/posts/tech/network-oversubscription-ratio/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>局域网搭建文件分享服务
+    <h2 class="entry-hint-parent">局域网搭建文件分享服务
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-07-21 00:00:00 +0000 UTC'>2024-07-21</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;809 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-07-21 00:00:00 +0000 UTC'>2024-07-21</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>809 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 局域网搭建文件分享服务" href="https://blog.niuhemoon.win/posts/tech/ftp-http-file-share/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Python创建自己的package
+    <h2 class="entry-hint-parent">Python创建自己的package
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-05-25 00:00:00 +0000 UTC'>2024-05-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;716 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-05-25 00:00:00 +0000 UTC'>2024-05-25</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>716 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python创建自己的package" href="https://blog.niuhemoon.win/posts/tech/create-pip-package/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>制作Docker镜像模拟服务器节点
+    <h2 class="entry-hint-parent">制作Docker镜像模拟服务器节点
     </h2>
   </header>
   <div class="entry-content">
     <p>...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-05-05 00:00:00 +0000 UTC'>2024-05-05</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;421 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-05-05 00:00:00 +0000 UTC'>2024-05-05</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>421 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 制作Docker镜像模拟服务器节点" href="https://blog.niuhemoon.win/posts/tech/linux-fake-node/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Pytorch模型可视化
+    <h2 class="entry-hint-parent">Pytorch模型可视化
     </h2>
   </header>
   <div class="entry-content">
-    <p>...</p>
+    <p>Pytorch模型可视化...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-04-10 00:00:00 +0000 UTC'>2024-04-10</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1170 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-04-10 00:00:00 +0000 UTC'>2024-04-10</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1170 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Pytorch模型可视化" href="https://blog.niuhemoon.win/posts/tech/pytorch-model-view/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>CKA备考笔记
+    <h2 class="entry-hint-parent">CKA备考笔记
     </h2>
   </header>
   <div class="entry-content">
     <p>记录一下CKA考试的备考过程
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-01-15 00:00:00 +0000 UTC'>2024-01-15</span>&nbsp;·&nbsp;22 min&nbsp;·&nbsp;10926 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2024-01-15 00:00:00 +0000 UTC'>2024-01-15</span>&nbsp;·&nbsp;<span>22 分钟</span>&nbsp;·&nbsp;<span>10878 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to CKA备考笔记" href="https://blog.niuhemoon.win/posts/tech/cka-study-record/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>text2sql Prompt 调优笔记
+    <h2 class="entry-hint-parent">text2sql Prompt 调优笔记
     </h2>
   </header>
   <div class="entry-content">
-    <p>参加了一个LLM的应用比赛，赛题目标是编码优化prompt提高text2sql推理的正确率 给定的资源如下： 所有数据库schema 一个100条记录的训练集（其实是基于spider数据集做了修改） 三个LLM的接口（Baichuan13B/LLama2/Code-LLama） text2...</p>
+    <p> 参加了一个LLM的应用比赛，赛题目标是编码优化prompt提高text2sql推理的正确率 给定的资源如下：
+所有数据库schema 一个100条记录的训练集（其实是基于spider数据集做了修改） 三个LLM的接口（Baichuan13B/LLama2/Code-LLama） text2sql正确率提高到了60%左右，在此记录一些心得
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-11-13 00:00:00 +0000 UTC'>2023-11-13</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;706 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2023-11-13 00:00:00 +0000 UTC'>2023-11-13</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>706 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to text2sql Prompt 调优笔记" href="https://blog.niuhemoon.win/posts/tech/text2sql-prompt-engineering/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>xpath基本使用
+    <h2 class="entry-hint-parent">xpath基本使用
     </h2>
   </header>
   <div class="entry-content">
-    <p>介绍 Xpath全称XML Path Language，功能上使用类似路径的语法来识别和导航XML文档中的节点，同时支持HTML语言。XPath是W3C的推荐标准 Nodes Xpath中有七种节点： element attribute text namespace processing-instruction comment root nodes 句法 选中Nodes 表达式 描述 nodename 选中所有同名节点 / 从root node开始选择 // 从当前节点开...</p>
+    <p>介绍 Xpath全称XML Path Language，功能上使用类似路径的语法来识别和导航XML文档中的节点，同时支持HTML语言。XPath是W3C的推荐标准
+Nodes Xpath中有七种节点：
+element attribute text namespace processing-instruction comment root nodes 句法 选中Nodes 表达式 描述 nodename 选中所有同名节点 / 从root node开始选择 // 从当前节点开始选择，不管层级关系 . 选择当前节点 .. 选择当前节点的父节点 @ 选择属性 举例如下
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-09-03 00:00:00 +0000 UTC'>2023-09-03</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1532 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2023-09-03 00:00:00 +0000 UTC'>2023-09-03</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>1532 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to xpath基本使用" href="https://blog.niuhemoon.win/posts/tech/xpath-cheetsheet/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Node.js实现HTTPS服务器：单向认证与双向认证详解
+    <h2 class="entry-hint-parent">Node.js实现HTTPS服务器：单向认证与双向认证详解
     </h2>
   </header>
   <div class="entry-content">
     <p>在现代Web应用开发中，HTTPS已经成为标准配置。本文将详细介绍如何使用Node.js实现HTTPS服务器，包括证书生成、单向认证和双向认证的完整实现。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2023-01-13 00:00:00 +0000 UTC'>2023-01-13</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;1892 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2023-01-13 00:00:00 +0000 UTC'>2023-01-13</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>1892 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Node.js实现HTTPS服务器：单向认证与双向认证详解" href="https://blog.niuhemoon.win/posts/tech/nodejs-https-server-authentication/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>tmux-usage
+    <h2 class="entry-hint-parent">tmux-usage
     </h2>
   </header>
   <div class="entry-content">
     <p>tmux是将会话和窗口解绑的工具</p>
   </div>
-  <footer class="entry-footer"><span title='2022-12-26 00:00:00 +0000 UTC'>2022-12-26</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1092 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2022-12-26 00:00:00 +0000 UTC'>2022-12-26</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1092 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to tmux-usage" href="https://blog.niuhemoon.win/posts/tech/tmux-usage/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>hugo shortcode example
+    <h2 class="entry-hint-parent">hugo shortcode example
     </h2>
   </header>
   <div class="entry-content">
     <p>记录hugo 一些常用的shortcode
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;274 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2022-12-21 00:00:00 +0000 UTC'>2022-12-21</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>345 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to hugo shortcode example" href="https://blog.niuhemoon.win/posts/tech/hugo-shortcode-example/"></a>
 </article>
 <footer class="page-footer">
@@ -375,32 +495,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -427,25 +549,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })

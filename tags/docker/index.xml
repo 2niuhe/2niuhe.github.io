@@ -4,35 +4,54 @@
     <title>Docker on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/docker/</link>
     <description>Recent content in Docker on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Tue, 08 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 08 Apr 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker Compose 实用指南：从入门到实践</title>
       <link>https://blog.niuhemoon.win/posts/tech/docker-compose-guide/</link>
       <pubDate>Tue, 08 Apr 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/docker-compose-guide/</guid>
       <description>Docker Compose 多容器应用管理工具的核心概念和常见用法</description>
     </item>
-    
     <item>
       <title>制作Docker镜像模拟服务器节点</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-fake-node/</link>
       <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-fake-node/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>docker基本使用</title>
       <link>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</link>
       <pubDate>Sat, 23 Jan 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</guid>
-      <description>CheatSheet Docker 核心架构： 客户端 Client 服务器 Docker daemon 镜像 Image Registry 容器 Container 容器基本技术： cgroup 资源限额 namespace 资源隔离 Mount UTS IPC PID Network User Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个 host 上，客户端也可以通过 socket 或者 REST API 和远程服务器通信。docker 客户端是和服务器通信的命令</description>
+      <description>&lt;h3 id=&#34;cheatsheet&#34;&gt;CheatSheet&lt;/h3&gt;
+&lt;p&gt;Docker 核心架构：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;客户端 Client&lt;/li&gt;
+&lt;li&gt;服务器 Docker daemon&lt;/li&gt;
+&lt;li&gt;镜像 Image&lt;/li&gt;
+&lt;li&gt;Registry&lt;/li&gt;
+&lt;li&gt;容器 Container&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;容器基本技术：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cgroup 资源限额&lt;/li&gt;
+&lt;li&gt;namespace 资源隔离
+&lt;ul&gt;
+&lt;li&gt;Mount&lt;/li&gt;
+&lt;li&gt;UTS&lt;/li&gt;
+&lt;li&gt;IPC&lt;/li&gt;
+&lt;li&gt;PID&lt;/li&gt;
+&lt;li&gt;Network&lt;/li&gt;
+&lt;li&gt;User&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt=&#34;cheatsheet&#34; loading=&#34;lazy&#34; src=&#34;https://blog.niuhemoon.win/img/Docker%20commands%20cheat%20sheet%20by%20PhoenixNAP.jpeg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个 host 上，客户端也可以通过 socket 或者 REST API 和远程服务器通信。docker 客户端是和服务器通信的命令行工具。服务器负责创建、运行、监控容器，构建、存储镜像。镜像是一个只读模板，通过镜像可以创建容器。容器就是镜像运行的实例。Registry 是存放镜像的仓库。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

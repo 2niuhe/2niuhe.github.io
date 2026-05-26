@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,7 @@
 <meta name="description" content="本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,160 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="记录一次失败的小说SFT数据集创建" />
-<meta property="og:description" content="本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2025-01-13T00:00:00+00:00" />
-<meta property="article:modified_time" content="2025-03-15T00:00:00+00:00" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="记录一次失败的小说SFT数据集创建"/>
-<meta name="twitter:description" content="本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败"/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="记录一次失败的小说SFT数据集创建">
+  <meta property="og:description" content="本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-01-13T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-03-15T00:00:00+00:00">
+    <meta property="article:tag" content="LLM">
+    <meta property="article:tag" content="SFT">
+    <meta property="article:tag" content="Dataset">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="记录一次失败的小说SFT数据集创建">
+  <meta name="twitter:description" content="本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "记录一次失败的小说SFT数据集创建",
       "item": "https://blog.niuhemoon.win/posts/tech/failed-novel-sft-dataset-creation/"
     }
@@ -140,33 +230,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +260,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,64 +298,80 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       记录一次失败的小说SFT数据集创建
     </h1>
     <div class="post-description">
       本来想拿喜欢的小说做数据集，然后制作SFT数据集，通过微调，让LLM学会小说内容、文风，从而分析人物关系，进行续写，但尝试失败
     </div>
-    <div class="post-meta"><span title='2025-01-13 00:00:00 +0000 UTC'>2025-01-13</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;2361 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2025-01-13 00:00:00 +0000 UTC'>2025-01-13</span>&nbsp;·&nbsp;<span>5 分钟</span>&nbsp;·&nbsp;<span>2361 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#%e8%83%8c%e6%99%af%e4%bb%8b%e7%bb%8d" aria-label="背景介绍">背景介绍</a></li>
-                <li>
-                    <a href="#%e6%95%b0%e6%8d%ae%e9%9b%86%e5%88%9b%e5%bb%ba%e8%bf%87%e7%a8%8b" aria-label="数据集创建过程">数据集创建过程</a><ul>
-                        
-                <li>
-                    <a href="#%e6%95%b0%e6%8d%ae%e9%a2%84%e5%a4%84%e7%90%86" aria-label="数据预处理">数据预处理</a></li>
-                <li>
-                    <a href="#%e6%96%b9%e6%b3%95%e4%b8%80%e4%bd%bf%e7%94%a8llm%e6%8f%90%e5%8f%96%e9%97%ae%e7%ad%94%e6%95%b0%e6%8d%ae" aria-label="方法一：使用LLM提取问答数据">方法一：使用LLM提取问答数据</a><ul>
-                        
-                <li>
-                    <a href="#1-%e8%ae%be%e7%bd%aellm%e6%8e%a5%e5%8f%a3" aria-label="1. 设置LLM接口">1. 设置LLM接口</a></li>
-                <li>
-                    <a href="#2-%e5%8a%a0%e8%bd%bd%e5%92%8c%e5%a4%84%e7%90%86%e6%95%b0%e6%8d%ae" aria-label="2. 加载和处理数据">2. 加载和处理数据</a></li>
-                <li>
-                    <a href="#3-%e6%95%b0%e6%8d%ae%e8%bd%ac%e6%8d%a2%e4%b8%basft%e6%a0%bc%e5%bc%8f" aria-label="3. 数据转换为SFT格式">3. 数据转换为SFT格式</a></li>
-                <li>
-                    <a href="#4-%e7%94%9f%e6%88%90%e7%9a%84%e6%95%b0%e6%8d%ae%e7%a4%ba%e4%be%8b" aria-label="4. 生成的数据示例">4. 生成的数据示例</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e6%96%b9%e6%b3%95%e4%ba%8c%e6%8f%90%e5%8f%96%e5%af%b9%e8%af%9d%e6%95%b0%e6%8d%ae" aria-label="方法二：提取对话数据">方法二：提取对话数据</a><ul>
-                        
-                <li>
-                    <a href="#1-%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae%e5%b7%a5%e5%85%b7" aria-label="1. 安装和配置工具">1. 安装和配置工具</a></li>
-                <li>
-                    <a href="#2-%e9%85%8d%e7%bd%aeapi" aria-label="2. 配置API">2. 配置API</a></li>
-                <li>
-                    <a href="#3-%e5%88%9b%e5%bb%ba%e4%b8%bb%e7%a8%8b%e5%ba%8f" aria-label="3. 创建主程序">3. 创建主程序</a></li>
-                <li>
-                    <a href="#4-%e6%8f%90%e5%8f%96%e7%bb%93%e6%9e%9c%e7%a4%ba%e4%be%8b" aria-label="4. 提取结果示例">4. 提取结果示例</a></li></ul>
-                </li></ul>
-                </li>
-                <li>
-                    <a href="#%e5%a4%b1%e8%b4%a5%e5%8e%9f%e5%9b%a0%e4%b8%8e%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93" aria-label="失败原因与经验总结">失败原因与经验总结</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+    <div class="inner"><ul>
+            <li>
+                <a href="#%e8%83%8c%e6%99%af%e4%bb%8b%e7%bb%8d" aria-label="背景介绍">背景介绍</a></li>
+            <li>
+                <a href="#%e6%95%b0%e6%8d%ae%e9%9b%86%e5%88%9b%e5%bb%ba%e8%bf%87%e7%a8%8b" aria-label="数据集创建过程">数据集创建过程</a><ul>
+                    
+            <li>
+                <a href="#%e6%95%b0%e6%8d%ae%e9%a2%84%e5%a4%84%e7%90%86" aria-label="数据预处理">数据预处理</a></li>
+            <li>
+                <a href="#%e6%96%b9%e6%b3%95%e4%b8%80%e4%bd%bf%e7%94%a8llm%e6%8f%90%e5%8f%96%e9%97%ae%e7%ad%94%e6%95%b0%e6%8d%ae" aria-label="方法一：使用LLM提取问答数据">方法一：使用LLM提取问答数据</a><ul>
+                    
+            <li>
+                <a href="#1-%e8%ae%be%e7%bd%aellm%e6%8e%a5%e5%8f%a3" aria-label="1. 设置LLM接口">1. 设置LLM接口</a></li>
+            <li>
+                <a href="#2-%e5%8a%a0%e8%bd%bd%e5%92%8c%e5%a4%84%e7%90%86%e6%95%b0%e6%8d%ae" aria-label="2. 加载和处理数据">2. 加载和处理数据</a></li>
+            <li>
+                <a href="#3-%e6%95%b0%e6%8d%ae%e8%bd%ac%e6%8d%a2%e4%b8%basft%e6%a0%bc%e5%bc%8f" aria-label="3. 数据转换为SFT格式">3. 数据转换为SFT格式</a></li>
+            <li>
+                <a href="#4-%e7%94%9f%e6%88%90%e7%9a%84%e6%95%b0%e6%8d%ae%e7%a4%ba%e4%be%8b" aria-label="4. 生成的数据示例">4. 生成的数据示例</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e6%96%b9%e6%b3%95%e4%ba%8c%e6%8f%90%e5%8f%96%e5%af%b9%e8%af%9d%e6%95%b0%e6%8d%ae" aria-label="方法二：提取对话数据">方法二：提取对话数据</a><ul>
+                    
+            <li>
+                <a href="#1-%e5%ae%89%e8%a3%85%e5%92%8c%e9%85%8d%e7%bd%ae%e5%b7%a5%e5%85%b7" aria-label="1. 安装和配置工具">1. 安装和配置工具</a></li>
+            <li>
+                <a href="#2-%e9%85%8d%e7%bd%aeapi" aria-label="2. 配置API">2. 配置API</a></li>
+            <li>
+                <a href="#3-%e5%88%9b%e5%bb%ba%e4%b8%bb%e7%a8%8b%e5%ba%8f" aria-label="3. 创建主程序">3. 创建主程序</a></li>
+            <li>
+                <a href="#4-%e6%8f%90%e5%8f%96%e7%bb%93%e6%9e%9c%e7%a4%ba%e4%be%8b" aria-label="4. 提取结果示例">4. 提取结果示例</a></li></ul>
+            </li></ul>
+            </li>
+            <li>
+                <a href="#%e5%a4%b1%e8%b4%a5%e5%8e%9f%e5%9b%a0%e4%b8%8e%e7%bb%8f%e9%aa%8c%e6%80%bb%e7%bb%93" aria-label="失败原因与经验总结">失败原因与经验总结</a>
+            </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><h3 id="背景介绍">背景介绍<a hidden class="anchor" aria-hidden="true" href="#背景介绍">#</a></h3>
+  <div class="post-content md-content"><h3 id="背景介绍">背景介绍<a hidden class="anchor" aria-hidden="true" href="#背景介绍">#</a></h3>
 <p>最近我一直在研究如何让LLM更好地理解和生成特定领域的内容。我选择了自己喜欢的小说《逍遥小散仙》作为实验数据，希望通过SFT（Supervised Fine-Tuning）让模型学习小说的内容、人物关系和写作风格，最终能够进行相关的分析和续写。这篇文章详细记录了我的数据集创建过程，以及最终的微调结果。</p>
 <h3 id="数据集创建过程">数据集创建过程<a hidden class="anchor" aria-hidden="true" href="#数据集创建过程">#</a></h3>
 <h4 id="数据预处理">数据预处理<a hidden class="anchor" aria-hidden="true" href="#数据预处理">#</a></h4>
@@ -286,7 +380,7 @@ if (!doNotTrack) {
 <p>第一种方法是使用LLM从小说文本中提取问答对。这种方法的核心思想是将小说分成多个段落，然后让LLM为每个段落生成相关的问题和答案。</p>
 <h5 id="1-设置llm接口">1. 设置LLM接口<a hidden class="anchor" aria-hidden="true" href="#1-设置llm接口">#</a></h5>
 <p>首先，我创建了<code>llm.py</code>文件，用于与LLM API进行交互：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> openai <span style="color:#fff;font-weight:bold">import</span> OpenAI
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> openai <span style="color:#fff;font-weight:bold">import</span> OpenAI
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> typing <span style="color:#fff;font-weight:bold">import</span> List, Dict
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> re
@@ -325,7 +419,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> json_match[<span style="color:#ff0;font-weight:bold">0</span>] <span style="color:#fff;font-weight:bold">if</span> json_match <span style="color:#fff;font-weight:bold">else</span> <span style="color:#fff;font-weight:bold">None</span>
 </span></span></code></pre></div><h5 id="2-加载和处理数据">2. 加载和处理数据<a hidden class="anchor" aria-hidden="true" href="#2-加载和处理数据">#</a></h5>
 <p>接下来，创建<code>main.py</code>文件来加载小说文本并分块处理：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> datasets <span style="color:#fff;font-weight:bold">import</span> load_dataset
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> datasets <span style="color:#fff;font-weight:bold">import</span> load_dataset
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> llm <span style="color:#fff;font-weight:bold">import</span> get_qa
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> tqdm
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
@@ -382,7 +476,7 @@ if (!doNotTrack) {
 </ol>
 <h5 id="3-数据转换为sft格式">3. 数据转换为SFT格式<a hidden class="anchor" aria-hidden="true" href="#3-数据转换为sft格式">#</a></h5>
 <p>生成问答对后，需要将其转换为SFT训练所需的格式。创建<code>convert.py</code>文件：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> json
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 初始化一个空列表来存储转换后的数据</span>
 </span></span><span style="display:flex;"><span>data = []
@@ -410,7 +504,7 @@ if (!doNotTrack) {
 </ul>
 <h5 id="4-生成的数据示例">4. 生成的数据示例<a hidden class="anchor" aria-hidden="true" href="#4-生成的数据示例">#</a></h5>
 <p>以下是生成的问答对数据示例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>  <span style="font-weight:bold">&#34;instruction&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;小玄对自己的处境有何自我安慰的想法？&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="font-weight:bold">&#34;input&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;&#34;</span>,
 </span></span><span style="display:flex;"><span>  <span style="font-weight:bold">&#34;output&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;忽尔厚颜无耻地思道：男子汉大丈夫，自古以来就三妻四妾，她们老爹不就娶了五房夫人嘛，岳父可以放火，女婿就不能点灯么，姐妹俩总不能一点情理也不讲吧......&#34;</span>
@@ -424,16 +518,16 @@ if (!doNotTrack) {
 <p>第二种方法是提取小说中的对话内容。我使用了<code>extract-dialogue</code>工具来完成这项工作，该工具可以从小说文本中自动识别并提取对话内容，包括说话人和对话内容。</p>
 <h5 id="1-安装和配置工具">1. 安装和配置工具<a hidden class="anchor" aria-hidden="true" href="#1-安装和配置工具">#</a></h5>
 <p>首先，克隆工具仓库并安装依赖：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/KMnO4-zx/extract-dialogue.git
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/KMnO4-zx/extract-dialogue.git
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">cd</span> extract-dialogue &amp;&amp; pip install -r requirements.txt
 </span></span></code></pre></div><h5 id="2-配置api">2. 配置API<a hidden class="anchor" aria-hidden="true" href="#2-配置api">#</a></h5>
 <p>创建<code>.env</code>文件，配置DeepSeek API：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 创建.env文件</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 创建.env文件</span>
 </span></span><span style="display:flex;"><span>DEEPSEEK_BASE_URL=https://api.deepseek.com
 </span></span><span style="display:flex;"><span>DEEPSEEK_API=sk-xxxx  
 </span></span></code></pre></div><h5 id="3-创建主程序">3. 创建主程序<a hidden class="anchor" aria-hidden="true" href="#3-创建主程序">#</a></h5>
 <p>创建<code>main.py</code>文件，用于处理小说文本并提取对话：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> extract <span style="color:#fff;font-weight:bold">import</span> system_prompt
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> extract <span style="color:#fff;font-weight:bold">import</span> system_prompt
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> schema <span style="color:#fff;font-weight:bold">import</span> novel_schema
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> LLM <span style="color:#fff;font-weight:bold">import</span> DeepseekChat
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> utils <span style="color:#fff;font-weight:bold">import</span> ReadFiles
@@ -469,7 +563,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(e)
 </span></span></code></pre></div><h5 id="4-提取结果示例">4. 提取结果示例<a hidden class="anchor" aria-hidden="true" href="#4-提取结果示例">#</a></h5>
 <p>运行程序后，会得到包含角色和对话内容的JSONL文件，每行是一个JSON对象：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="font-weight:bold">&#34;role&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;小玄&#34;</span>, <span style="font-weight:bold">&#34;dialogue&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;办不到。&#34;</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="font-weight:bold">&#34;role&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;小玄&#34;</span>, <span style="font-weight:bold">&#34;dialogue&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;办不到。&#34;</span>}
 </span></span><span style="display:flex;"><span>{<span style="font-weight:bold">&#34;role&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;方少麟&#34;</span>, <span style="font-weight:bold">&#34;dialogue&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;办不到？你是不想？还是办不到？&#34;</span>}
 </span></span><span style="display:flex;"><span>{<span style="font-weight:bold">&#34;role&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;小玄&#34;</span>, <span style="font-weight:bold">&#34;dialogue&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;换个条件。&#34;</span>}
 </span></span><span style="display:flex;"><span>{<span style="font-weight:bold">&#34;role&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;方少麟&#34;</span>, <span style="font-weight:bold">&#34;dialogue&#34;</span>: <span style="color:#0ff;font-weight:bold">&#34;我想不出别的。如果这两个都做不到，那么我无法相信你之前说的话。&#34;</span>}
@@ -480,6 +574,10 @@ if (!doNotTrack) {
 <p>后续使用了LammaFactory工具进行SFT微调，测试效果都比较差，模型只能简单记忆问答对，而不能进行更复杂的对话。我认为一方面是数据集质量比较差，并且在微调时候产生了过拟合，模型遗忘了原有的能力。但更主要问题在于直接进行SFT可能不是最佳选择，应该先进行领域适应性的预训练。此外，数据集的规模和质量也有待提高。</p>
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
@@ -487,21 +585,13 @@ if (!doNotTrack) {
       <li><a href="https://blog.niuhemoon.win/tags/sft/">SFT</a></li>
       <li><a href="https://blog.niuhemoon.win/tags/dataset/">Dataset</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/c-language-cheetsheet/">
     <span class="title">« 上一页</span>
-    <br>
     <span>C Language Cheetsheet</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/whisper-transcript-pytorch-dev-podcast/">
     <span class="title">下一页 »</span>
-    <br>
     <span>whisper模型转录Pytorch播客内容</span>
   </a>
 </nav>
@@ -511,32 +601,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -563,25 +655,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -593,12 +685,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

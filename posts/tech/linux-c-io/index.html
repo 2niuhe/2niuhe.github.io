@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,7 @@
 <meta name="description" content="使用glic操作linux的文件和目录">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-io/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/linux-c-io/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,159 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="Linux下glic库操作文件和目录" />
-<meta property="og:description" content="使用glic操作linux的文件和目录" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-io/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2018-10-06T00:00:00+00:00" />
-<meta property="article:modified_time" content="2018-10-06T00:00:00+00:00" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Linux下glic库操作文件和目录"/>
-<meta name="twitter:description" content="使用glic操作linux的文件和目录"/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-io/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="Linux下glic库操作文件和目录">
+  <meta property="og:description" content="使用glic操作linux的文件和目录">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2018-10-06T00:00:00+00:00">
+    <meta property="article:modified_time" content="2018-10-06T00:00:00+00:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="C">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Linux下glic库操作文件和目录">
+  <meta name="twitter:description" content="使用glic操作linux的文件和目录">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "Linux下glic库操作文件和目录",
       "item": "https://blog.niuhemoon.win/posts/tech/linux-c-io/"
     }
@@ -140,33 +229,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +259,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,44 +297,60 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       Linux下glic库操作文件和目录
     </h1>
     <div class="post-description">
       使用glic操作linux的文件和目录
     </div>
-    <div class="post-meta"><span title='2018-10-06 00:00:00 +0000 UTC'>2018-10-06</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2846 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2018-10-06 00:00:00 +0000 UTC'>2018-10-06</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2846 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f%e6%a6%82%e8%bf%b0" aria-label="文件系统概述">文件系统概述</a></li>
-                <li>
-                    <a href="#%e6%96%87%e4%bb%b6%e6%93%8d%e4%bd%9c%e5%b8%b8%e7%94%a8%e7%9a%84%e5%a4%b4%e6%96%87%e4%bb%b6" aria-label="文件操作常用的头文件">文件操作常用的头文件</a></li>
-                <li>
-                    <a href="#%e6%96%87%e4%bb%b6%e5%9f%ba%e6%9c%ac%e8%be%93%e5%85%a5%e8%be%93%e5%87%ba" aria-label="文件基本输入输出">文件基本输入输出</a></li>
-                <li>
-                    <a href="#io%e9%87%8d%e5%ae%9a%e5%90%91" aria-label="I/O重定向">I/O重定向</a><ul>
-                        
-                <li>
-                    <a href="#%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6" aria-label="文件描述符">文件描述符</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+    <div class="inner"><ul>
+            <li>
+                <a href="#%e6%96%87%e4%bb%b6%e7%b3%bb%e7%bb%9f%e6%a6%82%e8%bf%b0" aria-label="文件系统概述">文件系统概述</a></li>
+            <li>
+                <a href="#%e6%96%87%e4%bb%b6%e6%93%8d%e4%bd%9c%e5%b8%b8%e7%94%a8%e7%9a%84%e5%a4%b4%e6%96%87%e4%bb%b6" aria-label="文件操作常用的头文件">文件操作常用的头文件</a></li>
+            <li>
+                <a href="#%e6%96%87%e4%bb%b6%e5%9f%ba%e6%9c%ac%e8%be%93%e5%85%a5%e8%be%93%e5%87%ba" aria-label="文件基本输入输出">文件基本输入输出</a></li>
+            <li>
+                <a href="#io%e9%87%8d%e5%ae%9a%e5%90%91" aria-label="I/O重定向">I/O重定向</a><ul>
+                    
+            <li>
+                <a href="#%e6%96%87%e4%bb%b6%e6%8f%8f%e8%bf%b0%e7%ac%a6" aria-label="文件描述符">文件描述符</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+            </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><h3 id="文件系统概述">文件系统概述<a hidden class="anchor" aria-hidden="true" href="#文件系统概述">#</a></h3>
+  <div class="post-content md-content"><h3 id="文件系统概述">文件系统概述<a hidden class="anchor" aria-hidden="true" href="#文件系统概述">#</a></h3>
 <blockquote>
 <p>Linux内核的各种真实文件系统、块设备和字符设备统一在虚拟文件系统的框架中，虚拟文件系统为应用提供了一组抽象的文件输入输出接口。</p>
 <p>虚拟文件系统是对各种真实文件系统的抽象，在虚拟文件系统中定义了抽象的超级块、i节点和目录，它为真实文件系统提供了一种统一的框架接口。真实文件系统通过这些接口与虚拟文件系统相连接，真实文件系统是这些抽象接口的具体实现。</p>
@@ -267,13 +360,13 @@ if (!doNotTrack) {
 <blockquote>
 <p><strong>C POSIX library</strong>是C语言的<a href="https://zh.wikipedia.org/wiki/POSIX">POSIX</a>系统下的标准库。包含了一些在<a href="https://zh.wikipedia.org/wiki/C%E6%A0%87%E5%87%86%E5%BA%93">C语言标准库</a>之外的函数。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;  //多种必要的POSIX函数与常量</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;  //多种必要的POSIX函数与常量</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;fcntl.h&gt;   //文件打开、创建、加锁等操作</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;//文件信息(stat (Unix)等)</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/types.h&gt;//不同的数据类型</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;dirent.h&gt;   //打开与列出目录内容</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span><span style="color:#007f7f">//此外，还有C标注库中的
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;	  //标准缓存输入输出</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">//此外，还有C标注库中的
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;	  //标准缓存输入输出</span><span style="color:#0f0;font-weight:bold">
 </span></span></span></code></pre></div><h3 id="文件基本输入输出">文件基本输入输出<a hidden class="anchor" aria-hidden="true" href="#文件基本输入输出">#</a></h3>
 <blockquote>
 <p>文件输入输出涉及到以下函数：</p>
@@ -283,13 +376,13 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <p><strong>案例:复制文件</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//cp.c
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//cp.c
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define PMODE 0644	</span><span style="color:#007f7f">//权限定义为rw-r--r--
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#define BUFSIZE 200
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define BUFSIZE 200
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[])
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">int</span> fdin,fdout,n;
@@ -320,7 +413,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>###文件属性操作
 文件的属性信息存放在文件对应的i节点中，对于不同类型的物理文件系统，文件属性的组织形式不尽相同，为了获得统一的文件属性格式，Linux定义了struct stat这个数据结构，类型定义如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> stat {
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> stat {
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">dev_t</span>     st_dev;         <span style="color:#007f7f">/* 文件设备编号*/</span>
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">ino_t</span>     st_ino;         <span style="color:#007f7f">/* i节点号 */</span>
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">mode_t</span>    st_mode;        <span style="color:#007f7f">/* 文件类型和存储权限 */</span>
@@ -336,8 +429,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>             <span style="color:#fff;font-weight:bold">struct</span> timespec st_ctim;  <span style="color:#007f7f">/* 文件属性最后一次改变时间 */</span>
 </span></span><span style="display:flex;"><span>          };
 </span></span></code></pre></div><p>以之前的cp.c为例:</p>
-<p><img loading="lazy" src="/img/cp%e5%91%bd%e4%bb%a4%e7%a4%ba%e4%be%8b.jpg" alt="cp"  />
-</p>
+<p><img alt="cp" loading="lazy" src="/img/cp%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B.jpg"></p>
 <blockquote>
 <p>可以看到cp.c文件实际大小640bytes，在磁盘上占用了一个4096bytes的块，也就是8个512bytes的块。`</p>
 </blockquote>
@@ -353,9 +445,9 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <p><strong>案例：改变文件读写权限</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">mode_t</span> fdmode = (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
@@ -367,7 +459,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>编译运行，结果如下，可见文件权限已经被修改。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ gcc -o chmod chmod.c 
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ gcc -o chmod chmod.c 
 </span></span><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ ls
 </span></span><span style="display:flex;"><span>chmod  chmod.c  cp  cp.c
 </span></span><span style="display:flex;"><span>niuhe@niuhe-ubuntu:~/Linux$ ll cp.c 
@@ -378,37 +470,37 @@ if (!doNotTrack) {
 </span></span></code></pre></div><p>###目录操作
 目录是一种特殊的文件，其内容由若干目录项组成，一个目录项包括文件名和i节点号。为了便于管理，每个目录中都包含当前目录&quot;.&ldquo;和父目录&rdquo;..&quot;,当前目录项指向当前目录的i节点编号，父目录项记录了父目录对应的i节点编号。
 常用库函数及头文件如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>	<span style="color:#007f7f">//在某目录中创建一个目录项，分配一个i节点和目录项相链接
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//分配一个逻辑块用来存放目录内容，并在其中建立当前目录和父目录两个目录项
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> mkdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname,<span style="color:#fff;font-weight:bold">mode_t</span> mode);
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//在某目录中创建一个目录项，分配一个i节点和目录项相链接
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//分配一个逻辑块用来存放目录内容，并在其中建立当前目录和父目录两个目录项
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> mkdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname,<span style="color:#fff;font-weight:bold">mode_t</span> mode);
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>	<span style="color:#007f7f">//删除空目录
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> rmdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//删除空目录
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> rmdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname);
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//改变工作目录；在每个进程的进程控制块中保存着当前工作目录的i节点
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//初始工作目录继承自父进程，进程运行过程可以改变工作目录
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> chdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//初始工作目录继承自父进程，进程运行过程可以改变工作目录
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> chdir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pathname);
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//获得调用者进程的当前工作目录，buf存放路径，size路径包含字节数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">char</span> *getcwd(<span style="color:#fff;font-weight:bold">char</span> *buf, <span style="color:#fff;font-weight:bold">size_t</span> size);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">char</span> *getcwd(<span style="color:#fff;font-weight:bold">char</span> *buf, <span style="color:#fff;font-weight:bold">size_t</span> size);
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;dirent.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>	<span style="color:#007f7f">//打开目录,成功返回目录流（字符串）
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	DIR *opendir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pahtname);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//打开目录,成功返回目录流（字符串）
+</span></span></span><span style="display:flex;"><span>	DIR *opendir(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *pahtname);
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//读目录，成功返回下一个目录项
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">struct</span> dirent *readdir(DIR *dp);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">struct</span> dirent *readdir(DIR *dp);
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//关闭目录
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> closedir(DIR *dp);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> closedir(DIR *dp);
 </span></span></code></pre></div><p>目录是一种特殊的文件，存放着很多目录项，每一个目录项是一个结构体。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> dirent
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> dirent
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>  	<span style="color:#fff;font-weight:bold">long</span> d_ino;					<span style="color:#007f7f">//i节点号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>  	<span style="color:#fff;font-weight:bold">char</span> d_name[NAME_MAX+<span style="color:#ff0;font-weight:bold">1</span>];	<span style="color:#007f7f">//文件名
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>  	<span style="color:#fff;font-weight:bold">off_t</span> d_off;				<span style="color:#007f7f">//在目录文件中偏移量
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>  	<span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">short</span> d_reclen;	<span style="color:#007f7f">//文件名长度
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>  	<span style="color:#fff;font-weight:bold">char</span> d_name[NAME_MAX+<span style="color:#ff0;font-weight:bold">1</span>];	<span style="color:#007f7f">//文件名
+</span></span></span><span style="display:flex;"><span>  	<span style="color:#fff;font-weight:bold">off_t</span> d_off;				<span style="color:#007f7f">//在目录文件中偏移量
+</span></span></span><span style="display:flex;"><span>  	<span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">short</span> d_reclen;	<span style="color:#007f7f">//文件名长度
+</span></span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p><strong>案例：改变当前进程工作目录</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">void</span>)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(chdir(<span style="color:#0ff;font-weight:bold">&#34;/tmp&#34;</span>) &lt; <span style="color:#ff0;font-weight:bold">0</span>)
@@ -417,9 +509,9 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p><strong>案例：浏览目录中所有文件名</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;dirent.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[])
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    DIR *dirp;
@@ -466,19 +558,19 @@ if (!doNotTrack) {
 <blockquote>
 <p>使用dup和dup2函数，只是复制文件描述符，使两个文件描述符指向同一个file结构体，并且file结构体引用计数是2。此时，打开文件的状态保存在同一个file结构体中。而使用open函数两次打开一个文件会存在两份file结构体，分别有各自的状态。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>	<span style="color:#007f7f">//从进程文件描述符表中寻找一个可用的最小描述符,返回此描述符
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//并复制oldfd对应的File结构指针到新的最小描述符
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> dup(<span style="color:#fff;font-weight:bold">int</span> oldfd);
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//从进程文件描述符表中寻找一个可用的最小描述符,返回此描述符
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//并复制oldfd对应的File结构指针到新的最小描述符
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> dup(<span style="color:#fff;font-weight:bold">int</span> oldfd);
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//oldfd需要复制的文件描述符，newfd是复制后oldfd在文件描述符表中新的序号。
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//成功返回一个新描述符，否则返回-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">//若newfd已经打开，则先关闭newfd,然后复制oldfd到newfd,使newfd也指向oldfd,此时oldfd和newfd两个描述符共享同一个文件。
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">int</span> dump2(<span style="color:#fff;font-weight:bold">int</span> oldfd, <span style="color:#fff;font-weight:bold">int</span> newfd);
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//成功返回一个新描述符，否则返回-1
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//若newfd已经打开，则先关闭newfd,然后复制oldfd到newfd,使newfd也指向oldfd,此时oldfd和newfd两个描述符共享同一个文件。
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> dump2(<span style="color:#fff;font-weight:bold">int</span> oldfd, <span style="color:#fff;font-weight:bold">int</span> newfd);
 </span></span></code></pre></div><p><strong>案例:输出重定向</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">int</span> fileID;
@@ -501,27 +593,23 @@ if (!doNotTrack) {
 
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
       <li><a href="https://blog.niuhemoon.win/tags/c/">C</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/">
     <span class="title">« 上一页</span>
-    <br>
     <span>Linux信号处理——发送信号</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-1/">
     <span class="title">下一页 »</span>
-    <br>
     <span>Linux信号处理——自定义信号处理函数</span>
   </a>
 </nav>
@@ -531,32 +619,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -583,25 +673,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -613,12 +703,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

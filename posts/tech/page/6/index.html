@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 <meta name="description" content="👨🏻‍💻 技术 - Niuhe&#39;s Blog">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -18,7 +18,8 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/posts/tech/index.xml">
+<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/posts/tech/index.xml" title="rss">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,61 +37,146 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="👨🏻‍💻 技术" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="👨🏻‍💻 技术"/>
-<meta name="twitter:description" content=""/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="👨🏻‍💻 技术">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="👨🏻‍💻 技术">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }
@@ -98,33 +184,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
 <body class="list" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -140,7 +214,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -175,7 +249,18 @@ if (!doNotTrack) {
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a></div>
+<header class="page-header"><nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
   <h1>
     👨🏻‍💻 技术
   </h1>
@@ -183,136 +268,201 @@ if (!doNotTrack) {
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>树莓派GPIO入门
+    <h2 class="entry-hint-parent">Arduino简易示波器检测树莓派产生的方波
     </h2>
   </header>
   <div class="entry-content">
-    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。 BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制G...</p>
+    <p> 在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。
+产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。
+树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)是树莓派提供的PWM硬件接口，可以产生高频的PWM信号。 由于我只需要产生一个大约50Hz的方波信号。用最简单的GPIO库就可以产生可用的方波。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;766 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>744 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to Arduino简易示波器检测树莓派产生的方波" href="https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Arduino任何引脚产生方波
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> Arduino可以使用PWM产生方波信号，在我的Arduino UNO R3上，支持PWM的输出口是pin 3,5,6,9,10,11这几个引脚，支持大约980Hz的PWM输出。这方面不再赘述。
+本文介绍另一种产生方波的方法，可以使用任何引脚产生方波信号。功能：
+固定频率，占空比，偏移量的方波 通过模拟口连接可调电位器，产生可变频率、占空比、偏移量的方波 // High-accuracy square wave generator // based on Arduino UNO // with runtime adjustable frequency, PWM width and offset // Output wave at pin 13 double freq; // Hz double offset; // percent (0.0 to 1.0) double width; // percent (0.0 to 1.0) // unit: microsecond unsigned long cycle_time; unsigned long raising_edge; unsigned long falling_edge; unsigned long prev_micros; // compare 2 unsigned value // true if X &gt; Y while for all possible (X, Y), X - Y &lt; Z #define TIME_CMP(X, Y, Z) (((X) - (Y)) &lt; (Z)) inline void setHigh() { // 2 CPU cycles to balance execution time with setLow() // this is based on measurement on Arduino UNO R3, your mileage may vary PORTB = B00100000; PORTB = B00100000; } inline void setLow() { PORTB = B00000000; } void setup() { DDRB = B00100000; prev_micros = micros(); while(1) { // read everything from analog input (potentiometer) // frequency: 0.1-102.4 Hz // width: 0-100% // offset: 0-100% //freq = (double)(analogRead(1) &#43; 1) / 10; //width = (double)(analogRead(0) &#43; 1) / 1024; //offset = (double)analogRead(2) / 1024; // OR manual settings // max possible frequency is around 55000Hz with &lt;1KHz deviation // based on measurements on Arduino UNO R3 // you may get to ~77500Hz with significantly larger deviation // note: please uncomment the next 3 expressions, then // move the following 6 expressions ahead of while loop // if you are going to use manual settings, because it is no worth // to recalculate them. freq = 50; width = 0.3; offset = 0.0; cycle_time = 1000000 / freq; raising_edge = (unsigned long)(offset * cycle_time) % cycle_time; falling_edge = (unsigned long)((offset &#43; width) * cycle_time) % cycle_time; if (width &#43; offset &lt; 1) { // raising edge should appear earlier while (TIME_CMP(micros(), prev_micros &#43; raising_edge, cycle_time)); setHigh(); while (TIME_CMP(micros(), prev_micros &#43; falling_edge, cycle_time)); setLow(); } else { // falling edge should appear earlier while (TIME_CMP(micros(), prev_micros &#43; falling_edge, cycle_time)); setLow(); while (TIME_CMP(micros(), prev_micros &#43; raising_edge, cycle_time)); setHigh(); }pin prev_micros &#43;= cycle_time; } } 解释：
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>631 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to Arduino任何引脚产生方波" href="https://blog.niuhemoon.win/posts/tech/arduino-squrewave/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">树莓派连接LCD1602做一个电子钟
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。
+通过源码安装：
+git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py install 将树莓派和LCD1602连接 连接的图如下所示： LCD电子钟程序 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as gpio #to add the LCD library import Adafruit_CharLCD as LCD import time gpio.setmode(gpio.BCM) #声明 LCD pins（对应BCM引脚） lcd_rs = 17 lcd_en = 18 lcd_d4 = 27 lcd_d5 = 22 lcd_d6 = 23 lcd_d7 = 10 lcd_backlight = 2 lcd_columns = 16 #Lcd column lcd_rows = 2 #number of LCD rows lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, \ lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows,\ lcd_backlight) lcd.set_cursor(0,0) lcd.message(&#39; CLOCK&#39;) while True: lcd.set_cursor(0,1) localtime = time.asctime( time.localtime(time.time()) )[4:-5] print(localtime) lcd.message(localtime) time.sleep(1) 效果图 显示的效果图如下，可以显示日期和时间，每秒钟刷新屏幕一次： </p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-08-28 00:00:00 +0000 UTC'>2018-08-28</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>232 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to 树莓派连接LCD1602做一个电子钟" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">树莓派3启用UART并连接GPS传感器
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。
+树莓派3启用UART #####先更新系统
+sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置：
+disable login shell over serial enable serial hardware port #####然后重启
+sudo reboot #####编辑配置文件
+sudo nano /boot/config.txt 在最后一段加上：
+dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt
+sudo cp boot/cmdline.txt boot/cmdline_backup.txt sudo nano /boot.cmdline.txt 将cmdline.txt的内容替换为： dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>539 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to 树莓派3启用UART并连接GPS传感器" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">树莓派GPIO入门
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。
+GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。
+BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制GPIO的库，它对40个引脚的编号方式如下：
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>766 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 树莓派GPIO入门" href="https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Python对称AES和DES加密算法
+    <h2 class="entry-hint-parent">Python对称AES和DES加密算法
     </h2>
   </header>
   <div class="entry-content">
     <p>Python3实现AES和DES对称加密算法的
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3863 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>8 分钟</span>&nbsp;·&nbsp;<span>3863 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python对称AES和DES加密算法" href="https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>Python实现MD5和Sha256
+    <h2 class="entry-hint-parent">Python实现MD5和Sha256
     </h2>
   </header>
   <div class="entry-content">
-    <p>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。 1.实验目的 熟悉MD5和SHA25...</p>
+    <p>Python3实现哈希散列算法，包含MD5和sha256。
+Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。
+验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。
+1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。
+MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。
+填充的工作原理如下：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2646 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2646 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Python实现MD5和Sha256" href="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>在Linux终端里浏览知乎日报
+    <h2 class="entry-hint-parent">在Linux终端里浏览知乎日报
     </h2>
   </header>
   <div class="entry-content">
-    <p>程序效果图如下： 程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。 程序十分简单，只十几行代码。使用python3，需要安装requests包。 源代码如下，也可以从我的github下载。 #!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {&#39;User-Agent&#39; : &#39;Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)&#39;} def get_daily(): page...</p>
+    <p>程序效果图如下：
+程序的效果就是可以在Terminal浏览一下每天知乎日报的标题和url，然后根据兴趣选择是否继续阅读。
+程序十分简单，只十几行代码。使用python3，需要安装requests包。
+源代码如下，也可以从我的github下载。
+#!/usr/bin/python3 #-*- coding: utf-8 -*- import requests import json headers = {&#39;User-Agent&#39; : &#39;Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)&#39;} def get_daily(): page = requests.get(&#39;http://news-at.zhihu.com/api/3/news/latest&#39;, headers=headers).text response = json.loads(page) date = response[&#39;date&#39;] stories = response[&#39;stories&#39;] date = &#39;\n%s年%s月%s日&#39; % (date[:4], date[4:6], date[6:]) print(&#39;%s 共%d条日报\n&#39; % (date, len(stories))) for index,story in enumerate(stories, 1): print(&#39;{0:&lt;2d}：{1:s}\n url：http://news-at.zhihu.com/story/{2:d}&#39;.format(index, story[&#39;title&#39;], story[&#39;id&#39;])) if __name__ == &#39;__main__&#39;: get_daily() 保存为zhdaily.py文件，然后将文件放到/usr/local/bin/目录下，并给zhdaily.py增加执行权限：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;607 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>607 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 在Linux终端里浏览知乎日报" href="https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>wordcloud源码阅读2——Cython
+    <h2 class="entry-hint-parent">wordcloud源码阅读2——Cython
     </h2>
   </header>
   <div class="entry-content">
-    <p>上一节中，IntegralOccupancyMap()函数用来确定单词位置，其中调用了query_integral_image()方法。而query_integral_image是用来Cython。下边介绍Cython。 Cython介绍 Cython 的本质可以总结如下：Cython 是包含C 数...</p>
+    <p>上一节中，IntegralOccupancyMap()函数用来确定单词位置，其中调用了query_integral_image()方法。而query_integral_image是用来Cython。下边介绍Cython。
+Cython介绍 Cython 的本质可以总结如下：Cython 是包含C 数据类型的Python。
+Cython可以将Python代码编译成动态链接库，在某些情况下，可以极大提高Python程序的运行效率。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-04-17 00:00:00 +0000 UTC'>2018-04-17</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;958 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-04-17 00:00:00 +0000 UTC'>2018-04-17</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>958 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to wordcloud源码阅读2——Cython" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>wordcloud源码阅读1——初探
+    <h2 class="entry-hint-parent">wordcloud源码阅读1——初探
     </h2>
   </header>
   <div class="entry-content">
-    <p>wordcloud是python用来生成词云的第三方库，github地址是word_cloud 下载源码： git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。 git tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下： wordcloud项目...</p>
+    <p>wordcloud是python用来生成词云的第三方库，github地址是word_cloud
+下载源码：
+git clone https://github.com/amueller/word_cloud 然后，直接看最老的版本，有精力的话看完最老版本可以再看最新的版本。
+git tag git checkout 1.2.1 现在我们的目录结构如下： 可以看到，核心代码都在wordcloud目录下：
+wordcloud项目主要用了以下第三方库：
+Numpy PIL Cython 储备知识：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-04-16 00:00:00 +0000 UTC'>2018-04-16</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;607 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-04-16 00:00:00 +0000 UTC'>2018-04-16</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>607 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to wordcloud源码阅读1——初探" href="https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2>WordCloud文档中文翻译
+    <h2 class="entry-hint-parent">WordCloud文档中文翻译
     </h2>
   </header>
   <div class="entry-content">
-    <p>Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference Github链接：wordcloud 所有函数均封装在WordCloud类里: WordCloud([…]) 生成并绘制WordCloud对象 ImageColorGenerator(image) 词云颜色生成器（基于图片颜色） random_color_func([]) 词云颜色随机生成 wordcloud.WordCloud class wordcloud.WordCloud(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color=&#39;black&#39;, max_font_size=None, font_step=1,...</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-04-08 00:00:00 +0000 UTC'>2018-04-08</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;2588 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to WordCloud文档中文翻译" href="https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Matlab 基础
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>matlba基础和简单用法
+    <p>Python模块wordcloud参考文档的中文翻译 官网链接：wordcloud api reference
+Github链接：wordcloud
+所有函数均封装在WordCloud类里:
+WordCloud([…]) 生成并绘制WordCloud对象 ImageColorGenerator(image) 词云颜色生成器（基于图片颜色） random_color_func([]) 词云颜色随机生成 wordcloud.WordCloud class wordcloud.WordCloud(font_path=None, width=400, height=200, margin=2, ranks_only=None, prefer_horizontal=0.9, mask=None, scale=1, color_func=None, max_words=200, min_font_size=4, stopwords=None, random_state=None, background_color=&#39;black&#39;, max_font_size=None, font_step=1, mode=&#39;RGB&#39;, relative_scaling=0.5, regexp=None, collocations=True, colormap=None, normalize_plurals=True) 参数： font_path : string
+需要使用的字体路径(支持OTF和TTF)。Linux系统上默认指向DroidSansMono路径。若使用其他操作系统或者没有DroidSansMono字体，需要指定字体路径。
 ...</p>
   </div>
-  <footer class="entry-footer">2 min&nbsp;·&nbsp;827 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Matlab 基础" href="https://blog.niuhemoon.win/posts/tech/matlab-basic/"></a>
-</article>
+  <footer class="entry-footer">
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Python 生成ankidroid单词表/语音包
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Ankidroid和插件 ankidroid下载网址https://apps.ankiweb.net/ 目前还是推荐下载anki2.0旧版，2.1版插件支持的不全。 必装插件列表： Awesome TTS:301952613 Review Heatmap:1771074083 Night Mode:1496166067 词库分享 anki-deck 从网络抓取单词/例句文本 示例从轻松背单词网站抓取，网站上涵盖了从小学到GRE以及各个...</p>
-  </div>
-  <footer class="entry-footer">1 min&nbsp;·&nbsp;369 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Python 生成ankidroid单词表/语音包" href="https://blog.niuhemoon.win/posts/tech/anki-python/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>STM32笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。 LED灯实验 #include &#34;stm32f10x.h&#34; #define LED GPIO_Pin_All void delay(u32 i) { while(i--); } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,&amp;GPIO_InitStructure); //初始化...</p>
-  </div>
-  <footer class="entry-footer">8 min&nbsp;·&nbsp;3645 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to STM32笔记" href="https://blog.niuhemoon.win/posts/tech/stm32-example-1/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2>Virtualbox虚拟机连接雷达和UART串口
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>目前ROS只支持Linux版，如果不方便装Linux主机，可以通过以太网桥接的方式获得雷达的数据帧；对一些串口传感器，也可以通过Serial to USB，然后在virtualbox里选择对应的USB设备进行调试。 本方法适用于通过以太网/WLAN来传送数据包的雷达。 使用Virtualb...</p>
-  </div>
-  <footer class="entry-footer">1 min&nbsp;·&nbsp;203 字&nbsp;·&nbsp;Niuhe</footer>
-  <a class="entry-link" aria-label="post link to Virtualbox虚拟机连接雷达和UART串口" href="https://blog.niuhemoon.win/posts/tech/virual-lidar/"></a>
+<span title='2018-04-08 00:00:00 +0000 UTC'>2018-04-08</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2588 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
+  <a class="entry-link" aria-label="post link to WordCloud文档中文翻译" href="https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
@@ -324,32 +474,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -376,25 +528,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })

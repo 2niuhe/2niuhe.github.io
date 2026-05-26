@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,7 @@
 <meta name="description" content="Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/python-advanced-2/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/python-advanced-2/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,158 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="Python进阶中" />
-<meta property="og:description" content="Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-advanced-2/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-10-12T00:00:00+00:00" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Python进阶中"/>
-<meta name="twitter:description" content="Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符"/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-advanced-2/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="Python进阶中">
+  <meta property="og:description" content="Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-10-12T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-10-12T00:00:00+00:00">
+    <meta property="article:tag" content="Python">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Python进阶中">
+  <meta name="twitter:description" content="Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "Python进阶中",
       "item": "https://blog.niuhemoon.win/posts/tech/python-advanced-2/"
     }
@@ -140,33 +228,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +258,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,78 +296,94 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       Python进阶中
     </h1>
     <div class="post-description">
       Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符
     </div>
-    <div class="post-meta"><span title='2020-10-12 00:00:00 +0000 UTC'>2020-10-12</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;3535 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2020-10-12 00:00:00 +0000 UTC'>2020-10-12</span>&nbsp;·&nbsp;<span>8 分钟</span>&nbsp;·&nbsp;<span>3535 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul><ul>
-                <li>
-                    <a href="#%e7%94%9f%e6%88%90%e5%99%a8generator" aria-label="生成器Generator">生成器Generator</a><ul>
-                        
-                <li>
-                    <a href="#%e7%94%9f%e6%88%90%e5%99%a8%e6%a6%82%e5%bf%b5" aria-label="生成器概念">生成器概念</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e8%a3%85%e9%a5%b0%e5%99%a8decorators" aria-label="装饰器Decorators">装饰器Decorators</a><ul>
-                        
-                <li>
-                    <a href="#%e5%b1%82%e5%8f%a0%e8%a3%85%e9%a5%b0%e5%99%a8" aria-label="层叠装饰器">层叠装饰器</a></li>
-                <li>
-                    <a href="#%e8%a3%85%e9%a5%b0%e5%99%a8%e6%89%a7%e8%a1%8c%e6%97%b6%e9%97%b4" aria-label="装饰器执行时间">装饰器执行时间</a></li>
-                <li>
-                    <a href="#%e7%b1%bb%e8%a3%85%e9%a5%b0%e5%99%a8" aria-label="类装饰器">类装饰器</a></li></ul>
-                </li></ul>
+    <div class="inner"><ul><ul>
+            <li>
+                <a href="#%e7%94%9f%e6%88%90%e5%99%a8generator" aria-label="生成器Generator">生成器Generator</a><ul>
                     
-                <li>
-                    <a href="#context-managers" aria-label="Context Managers">Context Managers</a><ul>
-                        
-                <li>
-                    <a href="#%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aa%e4%b8%8a%e4%b8%8b%e6%96%87%e7%ae%a1%e7%90%86%e5%99%a8%e7%b1%bb" aria-label="实现一个上下文管理器类">实现一个上下文管理器类</a><ul>
-                        
-                <li>
-                    <a href="#%e5%a4%84%e7%90%86%e5%bc%82%e5%b8%b8" aria-label="处理异常">处理异常</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e7%94%a8%e7%94%9f%e6%88%90%e5%99%a8%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aa%e4%b8%8a%e4%b8%8b%e6%96%87%e7%ae%a1%e7%90%86%e5%99%a8" aria-label="用生成器实现一个上下文管理器">用生成器实现一个上下文管理器</a></li>
-                <li>
-                    <a href="#python%e4%b8%ad%e7%9a%84%e8%a7%a3%e5%bc%95%e7%94%a8" aria-label="Python中的解引用">Python中的解引用</a></li>
-                <li>
-                    <a href="#python%e5%87%bd%e6%95%b0%e4%bc%a0%e5%8f%82%e4%bb%a5%e5%8f%8a%e6%b7%b1%e6%8b%b7%e8%b4%9d%e6%b5%85%e6%8b%b7%e8%b4%9d" aria-label="Python函数传参以及深拷贝浅拷贝">Python函数传参以及深拷贝浅拷贝</a><ul>
-                        
-                <li>
-                    <a href="#%e8%b5%8b%e5%80%bc%e6%93%8d%e4%bd%9c" aria-label="赋值操作">赋值操作</a></li>
-                <li>
-                    <a href="#%e6%b5%85%e6%8b%b7%e8%b4%9d" aria-label="浅拷贝">浅拷贝</a></li>
-                <li>
-                    <a href="#%e6%b7%b1%e6%8b%b7%e8%b4%9d" aria-label="深拷贝">深拷贝</a></li>
-                <li>
-                    <a href="#%e5%af%b9%e8%b1%a1%e7%9a%84%e6%b7%b1%e6%8b%b7%e8%b4%9d%e5%92%8c%e6%b5%85%e6%8b%b7%e8%b4%9d" aria-label="对象的深拷贝和浅拷贝">对象的深拷贝和浅拷贝</a></li>
-                <li>
-                    <a href="#%e5%87%bd%e6%95%b0%e4%bc%a0%e5%8f%82" aria-label="函数传参">函数传参</a></li></ul>
-                </li></ul>
-                </li>
-                <li>
-                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+            <li>
+                <a href="#%e7%94%9f%e6%88%90%e5%99%a8%e6%a6%82%e5%bf%b5" aria-label="生成器概念">生成器概念</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e8%a3%85%e9%a5%b0%e5%99%a8decorators" aria-label="装饰器Decorators">装饰器Decorators</a><ul>
+                    
+            <li>
+                <a href="#%e5%b1%82%e5%8f%a0%e8%a3%85%e9%a5%b0%e5%99%a8" aria-label="层叠装饰器">层叠装饰器</a></li>
+            <li>
+                <a href="#%e8%a3%85%e9%a5%b0%e5%99%a8%e6%89%a7%e8%a1%8c%e6%97%b6%e9%97%b4" aria-label="装饰器执行时间">装饰器执行时间</a></li>
+            <li>
+                <a href="#%e7%b1%bb%e8%a3%85%e9%a5%b0%e5%99%a8" aria-label="类装饰器">类装饰器</a></li></ul>
+            </li></ul>
+                
+            <li>
+                <a href="#context-managers" aria-label="Context Managers">Context Managers</a><ul>
+                    
+            <li>
+                <a href="#%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aa%e4%b8%8a%e4%b8%8b%e6%96%87%e7%ae%a1%e7%90%86%e5%99%a8%e7%b1%bb" aria-label="实现一个上下文管理器类">实现一个上下文管理器类</a><ul>
+                    
+            <li>
+                <a href="#%e5%a4%84%e7%90%86%e5%bc%82%e5%b8%b8" aria-label="处理异常">处理异常</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e7%94%a8%e7%94%9f%e6%88%90%e5%99%a8%e5%ae%9e%e7%8e%b0%e4%b8%80%e4%b8%aa%e4%b8%8a%e4%b8%8b%e6%96%87%e7%ae%a1%e7%90%86%e5%99%a8" aria-label="用生成器实现一个上下文管理器">用生成器实现一个上下文管理器</a></li>
+            <li>
+                <a href="#python%e4%b8%ad%e7%9a%84%e8%a7%a3%e5%bc%95%e7%94%a8" aria-label="Python中的解引用">Python中的解引用</a></li>
+            <li>
+                <a href="#python%e5%87%bd%e6%95%b0%e4%bc%a0%e5%8f%82%e4%bb%a5%e5%8f%8a%e6%b7%b1%e6%8b%b7%e8%b4%9d%e6%b5%85%e6%8b%b7%e8%b4%9d" aria-label="Python函数传参以及深拷贝浅拷贝">Python函数传参以及深拷贝浅拷贝</a><ul>
+                    
+            <li>
+                <a href="#%e8%b5%8b%e5%80%bc%e6%93%8d%e4%bd%9c" aria-label="赋值操作">赋值操作</a></li>
+            <li>
+                <a href="#%e6%b5%85%e6%8b%b7%e8%b4%9d" aria-label="浅拷贝">浅拷贝</a></li>
+            <li>
+                <a href="#%e6%b7%b1%e6%8b%b7%e8%b4%9d" aria-label="深拷贝">深拷贝</a></li>
+            <li>
+                <a href="#%e5%af%b9%e8%b1%a1%e7%9a%84%e6%b7%b1%e6%8b%b7%e8%b4%9d%e5%92%8c%e6%b5%85%e6%8b%b7%e8%b4%9d" aria-label="对象的深拷贝和浅拷贝">对象的深拷贝和浅拷贝</a></li>
+            <li>
+                <a href="#%e5%87%bd%e6%95%b0%e4%bc%a0%e5%8f%82" aria-label="函数传参">函数传参</a></li></ul>
+            </li></ul>
+            </li>
+            <li>
+                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+            </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><h4 id="生成器generator">生成器Generator<a hidden class="anchor" aria-hidden="true" href="#生成器generator">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> countdown(num):
+  <div class="post-content md-content"><h4 id="生成器generator">生成器Generator<a hidden class="anchor" aria-hidden="true" href="#生成器generator">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> countdown(num):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Starting&#39;</span>)
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span> num &gt; <span style="color:#ff0;font-weight:bold">0</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">yield</span> num
@@ -312,7 +404,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><blockquote>
 <p>迭代器使用方式</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># you can iterate over a generator object with a for in loop</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># you can iterate over a generator object with a for in loop</span>
 </span></span><span style="display:flex;"><span>cd = countdown(<span style="color:#ff0;font-weight:bold">3</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> x in cd:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(x)
@@ -328,7 +420,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><blockquote>
 <p>生成器表达式</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># generator expression</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># generator expression</span>
 </span></span><span style="display:flex;"><span>mygenerator = (i <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">1000</span>) <span style="color:#fff;font-weight:bold">if</span> i % <span style="color:#ff0;font-weight:bold">2</span> == <span style="color:#ff0;font-weight:bold">0</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(sys.getsizeof(mygenerator), <span style="color:#0ff;font-weight:bold">&#34;bytes&#34;</span>)
 </span></span><span style="display:flex;"><span>
@@ -342,18 +434,18 @@ if (!doNotTrack) {
 <blockquote>
 <p>类可以实现生成器作为一个可迭代对象，它需要实现<code>__iter__</code>方法和<code>__next__</code>方法，使得类对象可迭代。此外，还需要注意记录迭代次数，以及最后raise一个StopIteration异常。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> firstn:
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, n):
-</span></span><span style="display:flex;"><span>        self.n = n
-</span></span><span style="display:flex;"><span>        self.num = <span style="color:#ff0;font-weight:bold">0</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> firstn:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, n):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.n = n
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.num = <span style="color:#ff0;font-weight:bold">0</span>
 </span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __iter__(self):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> self
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __iter__(<span style="color:#fff;font-weight:bold">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">self</span>
 </span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __next__(self):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> self.num &lt; self.n:
-</span></span><span style="display:flex;"><span>            cur = self.num
-</span></span><span style="display:flex;"><span>            self.num += <span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __next__(<span style="color:#fff;font-weight:bold">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">self</span>.num &lt; <span style="color:#fff;font-weight:bold">self</span>.n:
+</span></span><span style="display:flex;"><span>            cur = <span style="color:#fff;font-weight:bold">self</span>.num
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">self</span>.num += <span style="color:#ff0;font-weight:bold">1</span>
 </span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span> cur
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">else</span>:
 </span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">raise</span> StopIteration()
@@ -375,13 +467,13 @@ if (!doNotTrack) {
 <p><strong>装饰器就是一个语法糖，如下装饰器就类似<code>target = somedecorator(target)</code></strong></p>
 <p><strong>装饰器一个特性就是将被装饰函数替换为其他函数</strong></p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>@somedecorator
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>@somedecorator
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> target():
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;running target&#34;</span>)
 </span></span></code></pre></div><blockquote>
 <p>简单装饰器模板</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_decorator(func):
 </span></span><span style="display:flex;"><span>    @functools.wraps(func)		<span style="color:#007f7f"># 保持被装饰函数的属性</span>
@@ -395,7 +487,7 @@ if (!doNotTrack) {
 <p>带参数的装饰器函数，可以认为是两层函数，在简单装饰器外部套一个函数来扩展装饰器的行为。</p>
 <p>即两层闭包，一个持有外部环境变量的函数就是闭包。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> repeat(num_times):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> repeat(num_times):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> decorator_repeat(func):
 </span></span><span style="display:flex;"><span>        @functools.wraps(func)
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">def</span> wrapper(*args, **kwargs):
@@ -430,14 +522,14 @@ if (!doNotTrack) {
 <p>而在执行被装饰函数的过程中，从上到下执行wrapper函数内部的代码。</p>
 <p>如下代码多个装饰器，其装饰的顺序和wrapper执行的顺序相反。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 装饰过程</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># 装饰过程</span>
 </span></span><span style="display:flex;"><span>say_hello = start_end_decorator_2(start_end_decorator_1(say_hello))
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>say_hello()
 </span></span></code></pre></div><blockquote>
 <p>多装饰器实验</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># a decorator function that prints debug information about the wrapped function</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> start_end_decorator_2(func): 
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Start decorator2&#39;</span>)
@@ -498,7 +590,7 @@ if (!doNotTrack) {
 <p>装饰器需要区分导入时和运行时，</p>
 <p>装饰器一个特性就是装饰的过程在import时执行，当import代码时，装饰器立刻执行，将被装饰函数变为另一个函数。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>registry = []
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>registry = []
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> register(func):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;running register(</span><span style="color:#0ff;font-weight:bold">%s</span><span style="color:#0ff;font-weight:bold">)&#34;</span> % func)
@@ -547,20 +639,20 @@ if (!doNotTrack) {
 <blockquote>
 <p>可以使用类作为装饰器，因此，需要首先实现魔法方法<code>__call__</code>，使得对象是callable可调用的，类装饰器典型用处是保存状态，如函数被调用次数。我们使用<code>functools.update_wrapper()</code>而不是<code>functools.wraps</code>来持久化被装饰器函数信息。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> functools
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> CountCalls:
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># the init needs to have the func as argument and stores it</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, func):
-</span></span><span style="display:flex;"><span>        functools.update_wrapper(self, func)
-</span></span><span style="display:flex;"><span>        self.func = func
-</span></span><span style="display:flex;"><span>        self.num_calls = <span style="color:#ff0;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, func):
+</span></span><span style="display:flex;"><span>        functools.update_wrapper(<span style="color:#fff;font-weight:bold">self</span>, func)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.func = func
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.num_calls = <span style="color:#ff0;font-weight:bold">0</span>
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># extend functionality, execute function, and return the result</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __call__(self, *args, **kwargs):
-</span></span><span style="display:flex;"><span>        self.num_calls += <span style="color:#ff0;font-weight:bold">1</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Call </span><span style="color:#0ff;font-weight:bold">{</span>self.num_calls<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> of </span><span style="color:#0ff;font-weight:bold">{</span>self.func.__name__<span style="color:#0ff;font-weight:bold">!r}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> self.func(*args, **kwargs)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __call__(<span style="color:#fff;font-weight:bold">self</span>, *args, **kwargs):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.num_calls += <span style="color:#ff0;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;Call </span><span style="color:#0ff;font-weight:bold">{</span><span style="color:#fff;font-weight:bold">self</span>.num_calls<span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold"> of </span><span style="color:#0ff;font-weight:bold">{</span><span style="color:#fff;font-weight:bold">self</span>.func.__name__<span style="color:#0ff;font-weight:bold">!r}</span><span style="color:#0ff;font-weight:bold">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">self</span>.func(*args, **kwargs)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>@CountCalls
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> say_hello(num):
@@ -586,7 +678,7 @@ if (!doNotTrack) {
 <li>获得和释放锁</li>
 </ul>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> threading <span style="color:#fff;font-weight:bold">import</span> Lock
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> threading <span style="color:#fff;font-weight:bold">import</span> Lock
 </span></span><span style="display:flex;"><span>lock = Lock()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># error-prone:</span>
@@ -602,19 +694,19 @@ if (!doNotTrack) {
 <blockquote>
 <p>为了支持with关键字，需要在类中实现<code>__enter__</code>和<code>__exit__</code>方法，当Python执行到with语句，会执行<code>__enter__</code>方法，此时应该获取资源并返回，而当离开上下文环境时，将执行<code>__exit__</code>方法，此时应该释放资源。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, filename):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, filename):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;init&#39;</span>, filename)
-</span></span><span style="display:flex;"><span>        self.filename = filename
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.filename = filename
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __enter__(self):
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __enter__(<span style="color:#fff;font-weight:bold">self</span>):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;enter&#39;</span>)
-</span></span><span style="display:flex;"><span>        self.file = <span style="color:#fff;font-weight:bold">open</span>(self.filename, <span style="color:#0ff;font-weight:bold">&#39;w&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> self.file
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.file = <span style="color:#fff;font-weight:bold">open</span>(<span style="color:#fff;font-weight:bold">self</span>.filename, <span style="color:#0ff;font-weight:bold">&#39;w&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">self</span>.file
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __exit__(self, exc_type, exc_value, exc_traceback):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> self.file:
-</span></span><span style="display:flex;"><span>            self.file.close()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __exit__(<span style="color:#fff;font-weight:bold">self</span>, exc_type, exc_value, exc_traceback):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">self</span>.file:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">self</span>.file.close()
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;exit&#39;</span>)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">with</span> ManagedFile(<span style="color:#0ff;font-weight:bold">&#39;notes.txt&#39;</span>) <span style="color:#fff;font-weight:bold">as</span> f:
@@ -624,19 +716,19 @@ if (!doNotTrack) {
 <blockquote>
 <p>当异常产生时，Python将异常类型、值和traceback信息传递给<code>__exit__</code>方法，它可以处理该异常。如果<code>__exit__</code>方法返回了除True之外的任何值，则由with语句引发异常。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, filename):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, filename):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;init&#39;</span>, filename)
-</span></span><span style="display:flex;"><span>        self.filename = filename
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.filename = filename
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __enter__(self):
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __enter__(<span style="color:#fff;font-weight:bold">self</span>):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;enter&#39;</span>)
-</span></span><span style="display:flex;"><span>        self.file = <span style="color:#fff;font-weight:bold">open</span>(self.filename, <span style="color:#0ff;font-weight:bold">&#39;w&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> self.file
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.file = <span style="color:#fff;font-weight:bold">open</span>(<span style="color:#fff;font-weight:bold">self</span>.filename, <span style="color:#0ff;font-weight:bold">&#39;w&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">self</span>.file
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __exit__(self, exc_type, exc_value, exc_traceback):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> self.file:
-</span></span><span style="display:flex;"><span>            self.file.close()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __exit__(<span style="color:#fff;font-weight:bold">self</span>, exc_type, exc_value, exc_traceback):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">self</span>.file:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">self</span>.file.close()
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;exc:&#39;</span>, exc_type, exc_value)
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;exit&#39;</span>)
 </span></span><span style="display:flex;"><span>
@@ -657,19 +749,19 @@ if (!doNotTrack) {
 </span></span></code></pre></div><blockquote>
 <p>也可以在<code>__exit__</code>方法中处理异常，并返回<code>True</code></p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, filename):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> ManagedFile:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, filename):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;init&#39;</span>, filename)
-</span></span><span style="display:flex;"><span>        self.filename = filename
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.filename = filename
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __enter__(self):
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __enter__(<span style="color:#fff;font-weight:bold">self</span>):
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;enter&#39;</span>)
-</span></span><span style="display:flex;"><span>        self.file = <span style="color:#fff;font-weight:bold">open</span>(self.filename, <span style="color:#0ff;font-weight:bold">&#39;w&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> self.file
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.file = <span style="color:#fff;font-weight:bold">open</span>(<span style="color:#fff;font-weight:bold">self</span>.filename, <span style="color:#0ff;font-weight:bold">&#39;w&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">self</span>.file
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __exit__(self, exc_type, exc_value, exc_traceback):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> self.file:
-</span></span><span style="display:flex;"><span>            self.file.close()
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __exit__(<span style="color:#fff;font-weight:bold">self</span>, exc_type, exc_value, exc_traceback):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#fff;font-weight:bold">self</span>.file:
+</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">self</span>.file.close()
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> exc_type is not <span style="color:#fff;font-weight:bold">None</span>:
 </span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;Exception has been handled&#39;</span>)
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;exit&#39;</span>)
@@ -686,7 +778,7 @@ if (!doNotTrack) {
 <p>与其写一个类，也可以写一个生成器函数，并用<code>contextlib.contextmanager</code>来装饰它。</p>
 <p>为了实现这个目的，函数必须在<code>try</code>语句段中<code>yield</code>资源，而在<code>finally</code>语句中实现类似<code>__exit__</code>的功能，即释放资源。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> contextlib <span style="color:#fff;font-weight:bold">import</span> contextmanager
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> contextlib <span style="color:#fff;font-weight:bold">import</span> contextmanager
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>@contextmanager
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> open_managed_file(filename):
@@ -710,7 +802,7 @@ if (!doNotTrack) {
 <li>Use <code>*,</code> followed by more function parameters to enforce keyword-only arguments</li>
 </ul>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_function(*args, **kwargs):
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_function(*args, **kwargs):
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> arg in args:
 </span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(arg)
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> key in kwargs:
@@ -748,7 +840,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>会产生源对象的一个引用，修改会导致源对象的变更</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>list_a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>]
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>list_a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>]
 </span></span><span style="display:flex;"><span>list_b = list_a
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>list_a[<span style="color:#ff0;font-weight:bold">0</span>] = -<span style="color:#ff0;font-weight:bold">10</span>
@@ -763,7 +855,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>浅拷贝只有一层深度，修改第一层不会影响源对象，使用<code>copy.copy()</code>方法或者对象特定的拷贝方法或者拷贝构造函数</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>list_a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>]
 </span></span><span style="display:flex;"><span>list_b = copy.copy(list_a)
 </span></span><span style="display:flex;"><span>
@@ -774,7 +866,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><blockquote>
 <p>但是在嵌套对象中，修改第二层或者更深层次的数据时，会影响到源对象，因为在第二层时拷贝的是引用，而不是值。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>list_a = [[<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>], [<span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">10</span>]]
 </span></span><span style="display:flex;"><span>list_b = copy.copy(list_a)
 </span></span><span style="display:flex;"><span>
@@ -790,7 +882,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><blockquote>
 <p>对于列表，类似的浅拷贝方法还有</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copies</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copies</span>
 </span></span><span style="display:flex;"><span>list_b = <span style="color:#fff;font-weight:bold">list</span>(list_a)
 </span></span><span style="display:flex;"><span>list_b = list_a[:]
 </span></span><span style="display:flex;"><span>list_b = list_a.copy()
@@ -798,7 +890,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>深拷贝是一份完全独立的克隆，使用<code>copy.deepcopy</code>方法实现</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>list_a = [[<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>], [<span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">10</span>]]
 </span></span><span style="display:flex;"><span>list_b = copy.deepcopy(list_a)
 </span></span><span style="display:flex;"><span>
@@ -818,10 +910,10 @@ if (!doNotTrack) {
 <ul>
 <li>赋值只拷贝对象引用</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Person:
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, name, age):
-</span></span><span style="display:flex;"><span>        self.name = name
-</span></span><span style="display:flex;"><span>        self.age = age
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Person:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, name, age):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.name = name
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.age = age
 </span></span><span style="display:flex;"><span>                
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># Only copies the reference</span>
 </span></span><span style="display:flex;"><span>p1 = Person(<span style="color:#0ff;font-weight:bold">&#39;Alex&#39;</span>, <span style="color:#ff0;font-weight:bold">27</span>)
@@ -837,7 +929,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>浅拷贝拷贝一层</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copy</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># shallow copy</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
 </span></span><span style="display:flex;"><span>p1 = Person(<span style="color:#0ff;font-weight:bold">&#39;Alex&#39;</span>, <span style="color:#ff0;font-weight:bold">27</span>)
 </span></span><span style="display:flex;"><span>p2 = copy.copy(p1)
@@ -852,10 +944,10 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>深拷贝可以完整拷贝</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Company:
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(self, boss, employee):
-</span></span><span style="display:flex;"><span>        self. boss = boss
-</span></span><span style="display:flex;"><span>        self.employee = employee
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> Company:
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, boss, employee):
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>. boss = boss
+</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.employee = employee
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># shallow copy will affect nested objects</span>
 </span></span><span style="display:flex;"><span>boss = Person(<span style="color:#0ff;font-weight:bold">&#39;Jane&#39;</span>, <span style="color:#ff0;font-weight:bold">55</span>)
@@ -891,7 +983,7 @@ if (!doNotTrack) {
 <p>Python中数据类型存在可变和不可变的区别，即mutable和immutable。</p>
 <p>对于可变类型，例如列表，由于传递的是列表的引用，列表可以在一个方法中被修改</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># immutable objects -&gt; no change</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># immutable objects -&gt; no change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(x):
 </span></span><span style="display:flex;"><span>    x = <span style="color:#ff0;font-weight:bold">5</span> <span style="color:#007f7f"># x += 5 also no effect since x is immutable and a new variable must be created</span>
 </span></span><span style="display:flex;"><span>
@@ -907,7 +999,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>可变对象</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># mutable objects -&gt; change</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># mutable objects -&gt; change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(a_list):
 </span></span><span style="display:flex;"><span>    a_list.append(<span style="color:#ff0;font-weight:bold">4</span>)
 </span></span><span style="display:flex;"><span>    
@@ -922,7 +1014,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>重新绑定一个可变对象的引用</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># Rebind a mutable reference -&gt; no change</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># Rebind a mutable reference -&gt; no change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(a_list):
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f"># 赋值操作产生一个新的局部变量</span>
 </span></span><span style="display:flex;"><span>    a_list = [<span style="color:#ff0;font-weight:bold">50</span>, <span style="color:#ff0;font-weight:bold">60</span>, <span style="color:#ff0;font-weight:bold">70</span>] <span style="color:#007f7f"># a_list is now a new local variable within the function</span>
@@ -935,7 +1027,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>区分+=和=</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># another example with rebinding references:</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># another example with rebinding references:</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> foo(a_list):
 </span></span><span style="display:flex;"><span>    a_list += [<span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>] <span style="color:#007f7f"># this chanches the outer variable</span>
 </span></span><span style="display:flex;"><span>    
@@ -966,26 +1058,22 @@ if (!doNotTrack) {
 
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python-advanced-3/">
     <span class="title">« 上一页</span>
-    <br>
     <span>Python进阶下</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/ibus-input/">
     <span class="title">下一页 »</span>
-    <br>
     <span>Ubuntu20_04上使用ibus中文输入法</span>
   </a>
 </nav>
@@ -995,32 +1083,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -1047,25 +1137,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -1077,12 +1167,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

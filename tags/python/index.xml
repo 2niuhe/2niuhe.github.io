@@ -4,197 +4,184 @@
     <title>Python on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/python/</link>
     <description>Recent content in Python on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Thu, 10 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 10 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>跨语言JSON-RPC通信实现：Go与Python互操作Demo</title>
       <link>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</guid>
       <description>演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端</description>
     </item>
-    
     <item>
       <title>[AI]Python Fire: 告别繁琐，一键生成命令行界面</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/</link>
       <pubDate>Thu, 10 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python-fire-cli-intro/</guid>
       <description>介绍 Python Fire 库，它能将任何 Python 对象自动转换成 CLI，极大简化命令行工具的开发。</description>
     </item>
-    
     <item>
       <title>MCP技术开发与实践</title>
       <link>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</link>
       <pubDate>Mon, 09 Jun 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/mcp-development-guide/</guid>
       <description>Model Context Protocol (MCP) 技术开发指南与实践</description>
     </item>
-    
     <item>
       <title>UV 包管理器使用指南</title>
       <link>https://blog.niuhemoon.win/posts/tech/uv-guide/</link>
       <pubDate>Mon, 31 Mar 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/uv-guide/</guid>
       <description>UV是一个现代化的Python包管理器，提供更好的性能和依赖管理能力</description>
     </item>
-    
     <item>
       <title>Python创建自己的package</title>
       <link>https://blog.niuhemoon.win/posts/tech/create-pip-package/</link>
       <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/create-pip-package/</guid>
       <description>Python创建自己的pakcage，学习包管理机制</description>
     </item>
-    
     <item>
       <title>Pytorch模型可视化</title>
       <link>https://blog.niuhemoon.win/posts/tech/pytorch-model-view/</link>
       <pubDate>Wed, 10 Apr 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/pytorch-model-view/</guid>
       <description>Pytorch模型可视化</description>
     </item>
-    
     <item>
       <title>GDB调试Python代码</title>
       <link>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</link>
       <pubDate>Fri, 16 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/gdb-debug-python/</guid>
-      <description>Core Dump文件 凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。 Gdb可以附着在特定进程上调试，但</description>
+      <description>&lt;h3 id=&#34;core-dump文件&#34;&gt;Core Dump文件&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;凡事皆有两面性，OS在出Core的同时，虽然会终止掉当前进程，但是也会保留下第一手的现场数据，OS仿佛是一架被按下快门的相机，而照片就是产出的Core文件。里面含有当进程被终止时内存、CPU寄存器等信息，可以供后续开发人员进行调试。&lt;/p&gt;
+&lt;p&gt;Gdb可以附着在特定进程上调试，但是为了不影响运行中的进程，可以通过生成 core file 的方式来保存进程的当前信息。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Python进阶下</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-advanced-3/</link>
       <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-3/</guid>
       <description>Python进阶技巧总结,包含多线程和多进程基础</description>
     </item>
-    
     <item>
       <title>Python进阶中</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-advanced-2/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-2/</guid>
       <description>Python进阶技巧总结,包含Python装饰器、生成器、上下文管理器、函数和参数以及*运算符</description>
     </item>
-    
     <item>
       <title>正则表达式基本使用</title>
       <link>https://blog.niuhemoon.win/posts/tech/re-usage/</link>
       <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/re-usage/</guid>
       <description>正则表达式基本使用</description>
     </item>
-    
     <item>
       <title>编程工具之Git</title>
       <link>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</guid>
       <description>编程工具之Git</description>
     </item>
-    
     <item>
       <title>Python进阶上</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-advanced-1/</link>
       <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python-advanced-1/</guid>
       <description>Python进阶技巧总结,包含Python基本书据类型的使用</description>
     </item>
-    
+    <item>
+      <title>Python 生成ankidroid单词表/语音包</title>
+      <link>https://blog.niuhemoon.win/posts/tech/anki-python/</link>
+      <pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate>
+      <guid>https://blog.niuhemoon.win/posts/tech/anki-python/</guid>
+      <description>python来制作ankidroid单词包，给ankidroid单词添加发音并导出分享</description>
+    </item>
     <item>
       <title>Python3操作二维码图片</title>
       <link>https://blog.niuhemoon.win/posts/tech/python3-qrcode/</link>
       <pubDate>Sat, 27 Apr 2019 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python3-qrcode/</guid>
       <description>Decode/Encode QRcode Picture use python3</description>
     </item>
-    
     <item>
       <title>Pyserial快速上手</title>
       <link>https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/</link>
       <pubDate>Thu, 13 Sep 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/pyserial-tutorial/</guid>
       <description>python读取串口数据，快速测试</description>
     </item>
-    
     <item>
       <title>Python对称AES和DES加密算法</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/</link>
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/</guid>
       <description>&lt;p&gt;Python3实现AES和DES对称加密算法的&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Python实现MD5和Sha256</title>
       <link>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</link>
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/python-hash-experiment/</guid>
-      <description>Python3实现哈希散列算法，包含MD5和sha256。 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。 1.实验目的 熟悉MD5和SHA25</description>
+      <description>&lt;p&gt;Python3实现哈希散列算法，包含MD5和sha256。&lt;/p&gt;
+&lt;h2 id=&#34;hash函数算法编写&#34;&gt;Hash函数算法编写&lt;/h2&gt;
+&lt;p&gt;本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。&lt;br&gt;
+验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。&lt;/p&gt;
+&lt;h3 id=&#34;1实验目的&#34;&gt;1.实验目的&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;熟悉MD5和SHA256加密函数的原理和应用&lt;/li&gt;
+&lt;li&gt;实现MD5和SHA256加密函数并验证&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;2实验工具&#34;&gt;2.实验工具&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Jupyter Notebook&lt;/li&gt;
+&lt;li&gt;Python3.5&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;3实验环境&#34;&gt;3.实验环境&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Ubuntu16.04LTS操作系统&lt;/li&gt;
+&lt;li&gt;Python3标准库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4实验步骤&#34;&gt;4.实验步骤&lt;/h3&gt;
+&lt;h4 id=&#34;41-回顾课程查阅资料&#34;&gt;4.1 回顾课程，查阅资料&lt;/h4&gt;
+&lt;h4 id=&#34;42-熟悉md5的原理&#34;&gt;4.2 熟悉MD5的原理&lt;/h4&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。&lt;/em&gt;&lt;br&gt;
+MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。&lt;br&gt;
+填充的工作原理如下：&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>在Linux终端里浏览知乎日报</title>
       <link>https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/</link>
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/</guid>
       <description>可以在终端里浏览知乎日报的每日标题，如果有感兴趣的可以点开链接在浏览器中继续观看。方便使用，节省大家时间</description>
     </item>
-    
     <item>
       <title>wordcloud源码阅读2——Cython</title>
       <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</link>
       <pubDate>Tue, 17 Apr 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note2/</guid>
       <description>wordcloud源码1.2.1版阅读，Cython的用法</description>
     </item>
-    
     <item>
       <title>wordcloud源码阅读1——初探</title>
       <link>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</link>
       <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/wordcloud-src-note1/</guid>
       <description>wordcloud源码1.2.1版阅读笔记（大纲）</description>
     </item>
-    
     <item>
       <title>WordCloud文档中文翻译</title>
       <link>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</link>
       <pubDate>Sun, 08 Apr 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/word-cloud-doc-cn/</guid>
       <description>Python WordCloud模块的Api文档中文翻译</description>
     </item>
-    
-    <item>
-      <title>Python 生成ankidroid单词表/语音包</title>
-      <link>https://blog.niuhemoon.win/posts/tech/anki-python/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.niuhemoon.win/posts/tech/anki-python/</guid>
-      <description>python来制作ankidroid单词包，给ankidroid单词添加发音并导出分享</description>
-    </item>
-    
   </channel>
 </rss>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 <meta name="description" content="">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -18,7 +18,8 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/index.xml">
+<link rel="alternate" type="application/rss+xml" href="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/index.xml" title="rss">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
 <noscript>
     <style>
         #theme-toggle,
@@ -36,74 +37,147 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="树莓派" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/" />
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="树莓派"/>
-<meta name="twitter:description" content=""/>
-
-</head>
-
-<body class="list" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
+        document.querySelector("html").dataset.theme = 'dark';
     } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
+       document.querySelector("html").dataset.theme = 'light';
     } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
     }
 
 </script>
 
-<header class="header">
-    <nav class="nav">
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="树莓派">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="树莓派">
+
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -119,7 +193,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -154,7 +228,18 @@ if (!doNotTrack) {
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/tags/">Tags</a></div>
+<header class="page-header"><nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/tags/">Tags</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
   <h1>
     树莓派
   </h1>
@@ -162,104 +247,139 @@ if (!doNotTrack) {
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>LSM303_Doc
+    <h2 class="entry-hint-parent">LSM303_Doc
     </h2>
   </header>
   <div class="entry-content">
-    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C接口。 引脚定义 VIN 2.5-5.5V电压供电引脚，SCL和SDA引脚的高电平电压和VIN引脚的电压相同。 VDD 根据VIN引脚的连接情况，VDD引脚用...</p>
+    <p>简介 LSM303DLHC是一个三轴加速度和三轴磁场的传感器，具有倾斜补偿，工作电压在2.5-5.5V之间，工作电流10mA，数据接口是I2C接口。
+引脚定义 VIN 2.5-5.5V电压供电引脚，SCL和SDA引脚的高电平电压和VIN引脚的电压相同。
+VDD 根据VIN引脚的连接情况，VDD引脚用途不同，若VIN引脚连接了大于3.3V的电源，VDD可以想歪提供3.3V的电压和大约150mA的电流。如果VIN断开连接，可以使用2.5-3.3的电源连接VDD给LSM303DLHC模块供电。 注意：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-09-10 00:00:00 +0000 UTC'>2018-09-10</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;535 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-09-10 00:00:00 +0000 UTC'>2018-09-10</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>535 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to LSM303_Doc" href="https://blog.niuhemoon.win/posts/tech/lsm303dlhc-doc/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>远程ssh连接家中的树莓派
+    <h2 class="entry-hint-parent">远程ssh连接家中的树莓派
     </h2>
   </header>
   <div class="entry-content">
-    <p>在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。 VPS &#43; SSH远程...</p>
+    <p> 在局域网下可以通过扫描端口号，获得局域网下树莓派的ip地址，如192.168.1.118。之后通过ssh或者VNC等方法访问树莓派。那么如果我们离开局域网，怎么访问到家中的树莓派呢？ 公网IP相当于街道中的门牌号，如果远程访问到互联网中的设备，必须知道设备的公网IP。
+VPS &#43; SSH远程代理隧道 这是这篇文章重点，需要：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-09-04 00:00:00 +0000 UTC'>2018-09-04</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;1224 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-09-04 00:00:00 +0000 UTC'>2018-09-04</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1224 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 远程ssh连接家中的树莓派" href="https://blog.niuhemoon.win/posts/tech/raspi-remote-ssh-tunnel/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>Arduino简易示波器检测树莓派产生的方波
+    <h2 class="entry-hint-parent">Arduino简易示波器检测树莓派产生的方波
     </h2>
   </header>
   <div class="entry-content">
-    <p>在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。 产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。 树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)...</p>
+    <p> 在使用超声测距模块时，需要给超声模块一个方波信号。于是可以用树莓派的的PWM功能产生一个低频的方波信号。
+产生方波信号后，如果手边没有示波器，还可以使用Arduino的ADC采样功能，做一个简单的示波器。
+树莓派产生方波 树莓派的pin12、pin33(GPIO_18、GPIO_13)是树莓派提供的PWM硬件接口，可以产生高频的PWM信号。 由于我只需要产生一个大约50Hz的方波信号。用最简单的GPIO库就可以产生可用的方波。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;744 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-09-01 00:00:00 +0000 UTC'>2018-09-01</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>744 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to Arduino简易示波器检测树莓派产生的方波" href="https://blog.niuhemoon.win/posts/tech/arduino-raspberry-squrewave/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>树莓派连接LCD1602做一个电子钟
+    <h2 class="entry-hint-parent">树莓派连接LCD1602做一个电子钟
     </h2>
   </header>
   <div class="entry-content">
-    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。 通过源码安装： git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py install 将树莓派和LCD1602连接 连接的图如下所示： LCD电子钟程序 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as gpio #to add the LCD library import Adafruit_CharLCD as LCD import time gpio.setmode(gpio.BCM) #声明 LCD pins（对应BCM引脚...</p>
+    <p>安装LCD库 使用AdaFruit库来控制lcd库，这个库支持AdaFruit屏幕和使用HD44780的显示屏。
+通过源码安装：
+git clone https://github.com/adafruit/Adafruit_Python_CharLCD.git cd ./Adafruit_Python_CharLCD sudo python setup.py install 将树莓派和LCD1602连接 连接的图如下所示： LCD电子钟程序 #!/usr/bin/python3 # -*- coding: utf-8 -*- import RPi.GPIO as gpio #to add the LCD library import Adafruit_CharLCD as LCD import time gpio.setmode(gpio.BCM) #声明 LCD pins（对应BCM引脚） lcd_rs = 17 lcd_en = 18 lcd_d4 = 27 lcd_d5 = 22 lcd_d6 = 23 lcd_d7 = 10 lcd_backlight = 2 lcd_columns = 16 #Lcd column lcd_rows = 2 #number of LCD rows lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, \ lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows,\ lcd_backlight) lcd.set_cursor(0,0) lcd.message(&#39; CLOCK&#39;) while True: lcd.set_cursor(0,1) localtime = time.asctime( time.localtime(time.time()) )[4:-5] print(localtime) lcd.message(localtime) time.sleep(1) 效果图 显示的效果图如下，可以显示日期和时间，每秒钟刷新屏幕一次： </p>
   </div>
-  <footer class="entry-footer"><span title='2018-08-28 00:00:00 +0000 UTC'>2018-08-28</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;232 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-08-28 00:00:00 +0000 UTC'>2018-08-28</span>&nbsp;·&nbsp;<span>1 分钟</span>&nbsp;·&nbsp;<span>232 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 树莓派连接LCD1602做一个电子钟" href="https://blog.niuhemoon.win/posts/tech/raspberrypi-lcd-clock/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>树莓派3启用UART并连接GPS传感器
+    <h2 class="entry-hint-parent">树莓派3启用UART并连接GPS传感器
     </h2>
   </header>
   <div class="entry-content">
-    <p>在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。 树莓派3启用UART #####先更新系统 sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置： disable login shell over serial enable serial hardware port #####然后重启 sudo reboot #####编辑配置文件 sudo nano /boot/config.txt 在最后一段加上： dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt sudo...</p>
+    <p> 在树莓派3B&#43;里启用串口，并通过UART读取GPS模块的数据帧。
+树莓派3启用UART #####先更新系统
+sudo apt-get update sudo apt-get upgrade sudo raspi-config 在raspi-config中设置：
+disable login shell over serial enable serial hardware port #####然后重启
+sudo reboot #####编辑配置文件
+sudo nano /boot/config.txt 在最后一段加上：
+dtparam=spi=on dtoverlay=pi3-disable-bt core_freq=250 enable_uart=1 force_turbo=1 然后编辑cmdline.txt
+sudo cp boot/cmdline.txt boot/cmdline_backup.txt sudo nano /boot.cmdline.txt 将cmdline.txt的内容替换为： dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;539 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>539 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 树莓派3启用UART并连接GPS传感器" href="https://blog.niuhemoon.win/posts/tech/activate-serial-uart/"></a>
 </article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2>树莓派GPIO入门
+    <h2 class="entry-hint-parent">树莓派GPIO入门
     </h2>
   </header>
   <div class="entry-content">
-    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。 GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。 BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制G...</p>
+    <p>本文介绍树莓派上GPIO引脚的三种编号方式，同时介绍控制引脚的方式。并以BCM-17引脚为例，动手点亮led灯并使其闪烁。
+GPIO是通用输入输出接口。树莓派上有40个引脚，对这40个引脚主要有两种编号方式。
+BOARD 和引脚物理顺序一致 BCM wiringpi编号 wiringPi是一个用来控制GPIO的库，它对40个引脚的编号方式如下：
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;766 字&nbsp;·&nbsp;Niuhe</footer>
+  <footer class="entry-footer">
+
+<span title='2018-08-25 00:00:00 +0000 UTC'>2018-08-25</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>766 字</span>&nbsp;·&nbsp;<span>Niuhe</span></footer>
   <a class="entry-link" aria-label="post link to 树莓派GPIO入门" href="https://blog.niuhemoon.win/posts/tech/wiringpi-gpio/"></a>
 </article>
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -286,25 +406,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })

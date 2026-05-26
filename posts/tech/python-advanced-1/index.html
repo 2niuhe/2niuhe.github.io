@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,7 @@
 <meta name="description" content="Python进阶技巧总结,包含Python基本书据类型的使用">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/python-advanced-1/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,158 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="Python进阶上" />
-<meta property="og:description" content="Python进阶技巧总结,包含Python基本书据类型的使用" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-advanced-1/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-09-26T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-09-26T00:00:00+00:00" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Python进阶上"/>
-<meta name="twitter:description" content="Python进阶技巧总结,包含Python基本书据类型的使用"/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-advanced-1/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="Python进阶上">
+  <meta property="og:description" content="Python进阶技巧总结,包含Python基本书据类型的使用">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-09-26T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-09-26T00:00:00+00:00">
+    <meta property="article:tag" content="Python">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Python进阶上">
+  <meta name="twitter:description" content="Python进阶技巧总结,包含Python基本书据类型的使用">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "Python进阶上",
       "item": "https://blog.niuhemoon.win/posts/tech/python-advanced-1/"
     }
@@ -140,33 +228,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +258,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,92 +296,108 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       Python进阶上
     </h1>
     <div class="post-description">
       Python进阶技巧总结,包含Python基本书据类型的使用
     </div>
-    <div class="post-meta"><span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;3404 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2020-09-26 00:00:00 +0000 UTC'>2020-09-26</span>&nbsp;·&nbsp;<span>7 分钟</span>&nbsp;·&nbsp;<span>3404 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#list" aria-label="List">List</a><ul>
-                        
-                <li>
-                    <a href="#%e5%88%9b%e5%bb%ba%e5%88%97%e8%a1%a8" aria-label="创建列表">创建列表</a></li>
-                <li>
-                    <a href="#%e5%86%85%e7%bd%ae%e6%96%b9%e6%b3%95" aria-label="内置方法">内置方法</a></li>
-                <li>
-                    <a href="#%e5%a4%8d%e5%88%b6%e5%88%97%e8%a1%a8" aria-label="复制列表">复制列表</a></li>
-                <li>
-                    <a href="#%e5%88%97%e8%a1%a8%e5%88%87%e7%89%87" aria-label="列表切片">列表切片</a></li></ul>
-                </li>
-                <li>
-                    <a href="#tuple" aria-label="Tuple">Tuple</a><ul>
-                        
-                <li>
-                    <a href="#%e5%88%9b%e5%bb%ba%e5%85%83%e7%bb%84" aria-label="创建元组">创建元组</a></li>
-                <li>
-                    <a href="#%e4%b8%8d%e5%8f%af%e5%8f%98%e8%a7%a3%e9%87%8a" aria-label="不可变解释">不可变解释</a></li>
-                <li>
-                    <a href="#%e5%86%85%e7%bd%ae%e6%96%b9%e6%b3%95-1" aria-label="内置方法">内置方法</a></li>
-                <li>
-                    <a href="#%e5%85%83%e7%bb%84%e5%88%87%e7%89%87" aria-label="元组切片">元组切片</a></li>
-                <li>
-                    <a href="#%e5%85%83%e7%bb%84%e8%a7%a3%e5%8c%85" aria-label="元组解包">元组解包</a></li>
-                <li>
-                    <a href="#%e5%85%83%e7%bb%84%e5%88%97%e8%a1%a8%e5%af%b9%e6%af%94" aria-label="元组列表对比">元组列表对比</a></li></ul>
-                </li>
-                <li>
-                    <a href="#dictionary" aria-label="Dictionary">Dictionary</a><ul>
-                        
-                <li>
-                    <a href="#%e5%ad%97%e5%85%b8%e5%88%9b%e5%bb%ba" aria-label="字典创建">字典创建</a></li>
-                <li>
-                    <a href="#%e5%b8%b8%e7%94%a8%e6%96%b9%e6%b3%95" aria-label="常用方法">常用方法</a></li></ul>
-                </li>
-                <li>
-                    <a href="#sets" aria-label="Sets">Sets</a><ul>
-                        
-                <li>
-                    <a href="#%e5%88%9b%e5%bb%ba%e9%9b%86%e5%90%88" aria-label="创建集合">创建集合</a></li>
-                <li>
-                    <a href="#%e5%b8%b8%e7%94%a8%e6%96%b9%e6%b3%95-1" aria-label="常用方法">常用方法</a></li>
-                <li>
-                    <a href="#frozenset%e4%b8%8d%e5%8f%af%e5%8f%98%e9%9b%86%e5%90%88" aria-label="Frozenset不可变集合">Frozenset不可变集合</a></li></ul>
-                </li>
-                <li>
-                    <a href="#strings" aria-label="Strings">Strings</a><ul>
-                        
-                <li>
-                    <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2%e5%88%9b%e5%bb%ba" aria-label="字符串创建">字符串创建</a></li>
-                <li>
-                    <a href="#%e8%ae%bf%e9%97%ae%e5%ad%97%e7%ac%a6%e6%88%96%e8%80%85%e5%ad%90%e4%b8%b2" aria-label="访问字符或者子串">访问字符或者子串</a></li>
-                <li>
-                    <a href="#%e5%b8%b8%e7%94%a8%e6%96%b9%e6%b3%95-2" aria-label="常用方法">常用方法</a></li>
-                <li>
-                    <a href="#%e6%a0%bc%e5%bc%8f%e5%8c%96%e5%ad%97%e7%ac%a6%e4%b8%b2" aria-label="格式化字符串">格式化字符串</a></li>
-                <li>
-                    <a href="#more-on-immutability-and-concatenation" aria-label="More on immutability and concatenation">More on immutability and concatenation</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+    <div class="inner"><ul>
+            <li>
+                <a href="#list" aria-label="List">List</a><ul>
+                    
+            <li>
+                <a href="#%e5%88%9b%e5%bb%ba%e5%88%97%e8%a1%a8" aria-label="创建列表">创建列表</a></li>
+            <li>
+                <a href="#%e5%86%85%e7%bd%ae%e6%96%b9%e6%b3%95" aria-label="内置方法">内置方法</a></li>
+            <li>
+                <a href="#%e5%a4%8d%e5%88%b6%e5%88%97%e8%a1%a8" aria-label="复制列表">复制列表</a></li>
+            <li>
+                <a href="#%e5%88%97%e8%a1%a8%e5%88%87%e7%89%87" aria-label="列表切片">列表切片</a></li></ul>
+            </li>
+            <li>
+                <a href="#tuple" aria-label="Tuple">Tuple</a><ul>
+                    
+            <li>
+                <a href="#%e5%88%9b%e5%bb%ba%e5%85%83%e7%bb%84" aria-label="创建元组">创建元组</a></li>
+            <li>
+                <a href="#%e4%b8%8d%e5%8f%af%e5%8f%98%e8%a7%a3%e9%87%8a" aria-label="不可变解释">不可变解释</a></li>
+            <li>
+                <a href="#%e5%86%85%e7%bd%ae%e6%96%b9%e6%b3%95-1" aria-label="内置方法">内置方法</a></li>
+            <li>
+                <a href="#%e5%85%83%e7%bb%84%e5%88%87%e7%89%87" aria-label="元组切片">元组切片</a></li>
+            <li>
+                <a href="#%e5%85%83%e7%bb%84%e8%a7%a3%e5%8c%85" aria-label="元组解包">元组解包</a></li>
+            <li>
+                <a href="#%e5%85%83%e7%bb%84%e5%88%97%e8%a1%a8%e5%af%b9%e6%af%94" aria-label="元组列表对比">元组列表对比</a></li></ul>
+            </li>
+            <li>
+                <a href="#dictionary" aria-label="Dictionary">Dictionary</a><ul>
+                    
+            <li>
+                <a href="#%e5%ad%97%e5%85%b8%e5%88%9b%e5%bb%ba" aria-label="字典创建">字典创建</a></li>
+            <li>
+                <a href="#%e5%b8%b8%e7%94%a8%e6%96%b9%e6%b3%95" aria-label="常用方法">常用方法</a></li></ul>
+            </li>
+            <li>
+                <a href="#sets" aria-label="Sets">Sets</a><ul>
+                    
+            <li>
+                <a href="#%e5%88%9b%e5%bb%ba%e9%9b%86%e5%90%88" aria-label="创建集合">创建集合</a></li>
+            <li>
+                <a href="#%e5%b8%b8%e7%94%a8%e6%96%b9%e6%b3%95-1" aria-label="常用方法">常用方法</a></li>
+            <li>
+                <a href="#frozenset%e4%b8%8d%e5%8f%af%e5%8f%98%e9%9b%86%e5%90%88" aria-label="Frozenset不可变集合">Frozenset不可变集合</a></li></ul>
+            </li>
+            <li>
+                <a href="#strings" aria-label="Strings">Strings</a><ul>
+                    
+            <li>
+                <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2%e5%88%9b%e5%bb%ba" aria-label="字符串创建">字符串创建</a></li>
+            <li>
+                <a href="#%e8%ae%bf%e9%97%ae%e5%ad%97%e7%ac%a6%e6%88%96%e8%80%85%e5%ad%90%e4%b8%b2" aria-label="访问字符或者子串">访问字符或者子串</a></li>
+            <li>
+                <a href="#%e5%b8%b8%e7%94%a8%e6%96%b9%e6%b3%95-2" aria-label="常用方法">常用方法</a></li>
+            <li>
+                <a href="#%e6%a0%bc%e5%bc%8f%e5%8c%96%e5%ad%97%e7%ac%a6%e4%b8%b2" aria-label="格式化字符串">格式化字符串</a></li>
+            <li>
+                <a href="#more-on-immutability-and-concatenation" aria-label="More on immutability and concatenation">More on immutability and concatenation</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+            </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><p>Python种基本类型的比较：</p>
+  <div class="post-content md-content"><p>Python种基本类型的比较：</p>
 <ul>
 <li>List is a collection which is ordered and mutable. Allows duplicate members.</li>
 <li>Tuple is a collection which is ordered and immutable. Allows duplicate members.</li>
@@ -318,7 +410,7 @@ if (!doNotTrack) {
 <p>Python中的list是一个有序容器，容纳不同类型的数据（但推荐列表内数据类型相同)，同时其是可变类型的．</p>
 </blockquote>
 <h4 id="创建列表">创建列表<a hidden class="anchor" aria-hidden="true" href="#创建列表">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>list_1 = [<span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>]
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>list_1 = [<span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>]
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(list_1)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># Or create an empty list with the list function</span>
@@ -336,7 +428,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>修改列表的方法尽量使用内置方法，内置方法效率较高</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_list = [<span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>]
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_list = [<span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>]
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># len() : get the number of elements in a list</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#34;Length:&#34;</span>, <span style="color:#fff;font-weight:bold">len</span>(my_list))
@@ -389,7 +481,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>注意拷贝列表内容还是拷贝引用</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>list_org = [<span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>]
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># this just copies the reference to the list, so be careful</span>
@@ -413,7 +505,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(list_copy)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(list_org)
 </span></span></code></pre></div><h4 id="列表切片">列表切片<a hidden class="anchor" aria-hidden="true" href="#列表切片">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># a[start:stop:step], default step is 1</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># a[start:stop:step], default step is 1</span>
 </span></span><span style="display:flex;"><span>a = [<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">10</span>]
 </span></span><span style="display:flex;"><span>b = a[<span style="color:#ff0;font-weight:bold">1</span>:<span style="color:#ff0;font-weight:bold">3</span>] <span style="color:#007f7f"># Note that the last index is not included</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(b)
@@ -441,7 +533,7 @@ if (!doNotTrack) {
 </ul>
 </blockquote>
 <h4 id="创建元组">创建元组<a hidden class="anchor" aria-hidden="true" href="#创建元组">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>tuple_1 = (<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>tuple_1 = (<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>)
 </span></span><span style="display:flex;"><span>tuple_2 = <span style="color:#0ff;font-weight:bold">&#34;Linda&#34;</span>, <span style="color:#ff0;font-weight:bold">25</span>, <span style="color:#0ff;font-weight:bold">&#34;Miami&#34;</span> <span style="color:#007f7f"># Parentheses are optional</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># Special case: a tuple with only one element needs to have a comma at the end, </span>
@@ -462,7 +554,7 @@ if (!doNotTrack) {
 <p>python中对可变数据类型的定义为：<strong>当该数据类型的对应变量的值发生了改变，那么它对应的内存地址不发生改变，就称可变数据类型</strong>。包括：set（集合）、list（列表）、dict（字典）</p>
 </blockquote>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>In [<span style="color:#ff0;font-weight:bold">7</span>]: a = (<span style="color:#ff0;font-weight:bold">1</span>,[<span style="color:#ff0;font-weight:bold">2</span>,<span style="color:#ff0;font-weight:bold">3</span>])                                                           
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>In [<span style="color:#ff0;font-weight:bold">7</span>]: a = (<span style="color:#ff0;font-weight:bold">1</span>,[<span style="color:#ff0;font-weight:bold">2</span>,<span style="color:#ff0;font-weight:bold">3</span>])                                                           
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>In [<span style="color:#ff0;font-weight:bold">8</span>]: a[<span style="color:#ff0;font-weight:bold">1</span>]                                                                    
 </span></span><span style="display:flex;"><span>Out[<span style="color:#ff0;font-weight:bold">8</span>]: [<span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>]
@@ -482,7 +574,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><blockquote>
 <p>以此执行下面指令，可以理解一下浅拷贝和深拷贝</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>a = [<span style="color:#ff0;font-weight:bold">1</span>]
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>a = [<span style="color:#ff0;font-weight:bold">1</span>]
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># shadow copy</span>
 </span></span><span style="display:flex;"><span>b = a
 </span></span><span style="display:flex;"><span>b is a　　<span style="color:#007f7f"># True,has same address</span>
@@ -495,7 +587,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># b&#39;s address doesn&#39;t change</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">id</span>(b)
 </span></span></code></pre></div><h4 id="内置方法-1">内置方法<a hidden class="anchor" aria-hidden="true" href="#内置方法-1">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_tuple = (<span style="color:#0ff;font-weight:bold">&#39;a&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;p&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;p&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;l&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;e&#39;</span>,)
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_tuple = (<span style="color:#0ff;font-weight:bold">&#39;a&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;p&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;p&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;l&#39;</span>,<span style="color:#0ff;font-weight:bold">&#39;e&#39;</span>,)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># len() : get the number of elements in a tuple</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#fff;font-weight:bold">len</span>(my_tuple))
@@ -538,7 +630,7 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">(&#39;H&#39;, &#39;e&#39;, &#39;l&#39;, &#39;l&#39;, &#39;o&#39;)
 </span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">&#34;&#34;&#34;</span>
 </span></span></code></pre></div><h4 id="元组切片">元组切片<a hidden class="anchor" aria-hidden="true" href="#元组切片">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># a[start:stop:step], default step is 1</span>
 </span></span><span style="display:flex;"><span>a = (<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">10</span>)
 </span></span><span style="display:flex;"><span>b = a[<span style="color:#ff0;font-weight:bold">1</span>:<span style="color:#ff0;font-weight:bold">3</span>] <span style="color:#007f7f"># Note that the last index is not included</span>
@@ -567,7 +659,7 @@ if (!doNotTrack) {
 <p><code>a,b = b,a</code></p>
 <p>就是等号右侧将b,a自动打包为元组<code>(b,a)</code>，赋值给左侧后再自动解包，同样的，Python中函数返回多个值，也是隐式的将多个值打包为元组，并返回一个元组．</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># number of variables have to match number of tuple elements</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># number of variables have to match number of tuple elements</span>
 </span></span><span style="display:flex;"><span>tuple_1 = (<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>)
 </span></span><span style="display:flex;"><span>name, age, city = tuple_1
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(name)
@@ -594,7 +686,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>容纳同样的数据，元组的占用空间和迭代速度更高</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># compare the size</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># compare the size</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> sys
 </span></span><span style="display:flex;"><span>my_list = [<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#0ff;font-weight:bold">&#34;hello&#34;</span>, <span style="color:#fff;font-weight:bold">True</span>]
 </span></span><span style="display:flex;"><span>my_tuple = (<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#0ff;font-weight:bold">&#34;hello&#34;</span>, <span style="color:#fff;font-weight:bold">True</span>)
@@ -618,7 +710,7 @@ if (!doNotTrack) {
 <p>字典是无序的、可变的、可索引的一种数据类型。</p>
 </blockquote>
 <h4 id="字典创建">字典创建<a hidden class="anchor" aria-hidden="true" href="#字典创建">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(my_dict)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># or use the dict constructor, note: no quotes necessary for keys</span>
@@ -628,7 +720,7 @@ if (!doNotTrack) {
 <ul>
 <li>删除字典元素</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># delete a key-value pair</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">del</span> my_dict[<span style="color:#0ff;font-weight:bold">&#34;email&#34;</span>]
@@ -647,7 +739,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>检查key是否存在</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># use if .. in ..</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> <span style="color:#0ff;font-weight:bold">&#34;name&#34;</span> in my_dict:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(my_dict[<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>])
@@ -660,7 +752,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>迭代字典元素</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># loop over keys</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># loop over keys</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> key in my_dict:
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(key, my_dict[key])
 </span></span><span style="display:flex;"><span>
@@ -678,7 +770,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>复制字典</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dict_org = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dict_org = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;city&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;New York&#34;</span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># this just copies the reference to the dict, so be careful</span>
 </span></span><span style="display:flex;"><span>dict_copy = dict_org
@@ -701,7 +793,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>合并两个字典</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># Use the update() method to merge 2 dicts</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># Use the update() method to merge 2 dicts</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># existing keys are overwritten, new keys are added</span>
 </span></span><span style="display:flex;"><span>my_dict = {<span style="color:#0ff;font-weight:bold">&#34;name&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;Max&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;age&#34;</span>:<span style="color:#ff0;font-weight:bold">28</span>, <span style="color:#0ff;font-weight:bold">&#34;email&#34;</span>:<span style="color:#0ff;font-weight:bold">&#34;max@xyz.com&#34;</span>}
 </span></span><span style="display:flex;"><span>my_dict_2 = <span style="color:#fff;font-weight:bold">dict</span>(name=<span style="color:#0ff;font-weight:bold">&#34;Lisa&#34;</span>, age=<span style="color:#ff0;font-weight:bold">27</span>, city=<span style="color:#0ff;font-weight:bold">&#34;Boston&#34;</span>)
@@ -714,7 +806,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>任何不可变类型都可以作为字典的key，包括数字、字符串。元组如果所有元素都是不可变的，也可以作为key。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># use numbers as key, but be careful</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># use numbers as key, but be careful</span>
 </span></span><span style="display:flex;"><span>my_dict = {<span style="color:#ff0;font-weight:bold">3</span>: <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">6</span>: <span style="color:#ff0;font-weight:bold">36</span>, <span style="color:#ff0;font-weight:bold">9</span>:<span style="color:#ff0;font-weight:bold">81</span>}
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># do not mistake the keys as indices of a list, e.g my_dict[0] is not possible here</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(my_dict[<span style="color:#ff0;font-weight:bold">3</span>], my_dict[<span style="color:#ff0;font-weight:bold">6</span>], my_dict[<span style="color:#ff0;font-weight:bold">9</span>])
@@ -735,7 +827,7 @@ if (!doNotTrack) {
 <p>A Set is an unordered collection data type that is unindexed, mutable, and has no duplicate elements.</p>
 </blockquote>
 <h4 id="创建集合">创建集合<a hidden class="anchor" aria-hidden="true" href="#创建集合">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_set = {<span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_set = {<span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>}
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(my_set)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># or use the set function and create from an iterable, e.g. list, tuple, string</span>
@@ -756,7 +848,7 @@ if (!doNotTrack) {
 <ul>
 <li>添加元素</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_set = <span style="color:#fff;font-weight:bold">set</span>()
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_set = <span style="color:#fff;font-weight:bold">set</span>()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># use the add() method to add elements</span>
 </span></span><span style="display:flex;"><span>my_set.add(<span style="color:#ff0;font-weight:bold">42</span>)
@@ -772,7 +864,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>移除元素</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># remove(x): removes x, raises a KeyError if element is not present</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># remove(x): removes x, raises a KeyError if element is not present</span>
 </span></span><span style="display:flex;"><span>my_set = {<span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;banana&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;cherry&#34;</span>}
 </span></span><span style="display:flex;"><span>my_set.remove(<span style="color:#0ff;font-weight:bold">&#34;apple&#34;</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(my_set)
@@ -799,7 +891,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>不改变原有集合，只是会产生新的集合</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>odds = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">9</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>odds = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">9</span>}
 </span></span><span style="display:flex;"><span>evens = {<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">8</span>}
 </span></span><span style="display:flex;"><span>primes = {<span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">7</span>}
 </span></span><span style="display:flex;"><span>
@@ -820,7 +912,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>差集</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>setB = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">12</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>setB = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">12</span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># difference() : returns a set with all the elements from the setA that are not in setB.</span>
 </span></span><span style="display:flex;"><span>diff_set = setA.difference(setB)
@@ -840,7 +932,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>更新集合（交/并/差）</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>setA = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>setA = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">8</span>, <span style="color:#ff0;font-weight:bold">9</span>}
 </span></span><span style="display:flex;"><span>setB = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">12</span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># update() : Update the set by adding elements from another set.</span>
@@ -867,7 +959,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>复制集合</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>set_org = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>set_org = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># this just copies the reference to the set, so be careful</span>
 </span></span><span style="display:flex;"><span>set_copy = set_org
@@ -888,7 +980,7 @@ if (!doNotTrack) {
 </span></span></code></pre></div><ul>
 <li>子集/不相交</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>setA = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">6</span>}
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>setA = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">5</span>, <span style="color:#ff0;font-weight:bold">6</span>}
 </span></span><span style="display:flex;"><span>setB = {<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>}
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># issubset(setX): Returns True if setX contains the set</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(setA.issubset(setB))
@@ -906,7 +998,7 @@ if (!doNotTrack) {
 <blockquote>
 <p>Frozen set是一种不可变的集合，其在创建以后，集合中的元素id不可变</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>a = <span style="color:#fff;font-weight:bold">frozenset</span>([<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>])
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>a = <span style="color:#fff;font-weight:bold">frozenset</span>([<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">2</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">4</span>])
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># The following is not allowed:</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># a.add(5)</span>
@@ -928,7 +1020,7 @@ if (!doNotTrack) {
 <p>字符串是一个字符序列，是不可变类型，对于同一个id下的字符串不可变。</p>
 </blockquote>
 <h4 id="字符串创建">字符串创建<a hidden class="anchor" aria-hidden="true" href="#字符串创建">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span> <span style="color:#007f7f"># use singe or double quotes</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span> <span style="color:#007f7f"># use singe or double quotes</span>
 </span></span><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#39;Hello&#39;</span>
 </span></span><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;Hello&#34;</span>
 </span></span><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;I&#39; m  a &#39;Geek&#39;&#34;</span>
@@ -945,10 +1037,10 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># backslash if you want to continue in the next line</span>
 </span></span><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;Hello </span><span style="color:#0ff;font-weight:bold">\
-</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold"></span><span style="color:#0ff;font-weight:bold">World&#34;</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#0ff;font-weight:bold">World&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(my_string)
 </span></span></code></pre></div><h4 id="访问字符或者子串">访问字符或者子串<a hidden class="anchor" aria-hidden="true" href="#访问字符或者子串">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;Hello World&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;Hello World&#34;</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># get character by referring to index</span>
 </span></span><span style="display:flex;"><span>b = my_string[<span style="color:#ff0;font-weight:bold">0</span>]
@@ -966,7 +1058,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>b = my_string[::-<span style="color:#ff0;font-weight:bold">1</span>] <span style="color:#007f7f"># reverse the string with a negative step:</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(b)
 </span></span></code></pre></div><h4 id="常用方法-2">常用方法<a hidden class="anchor" aria-hidden="true" href="#常用方法-2">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;     Hello World &#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>my_string = <span style="color:#0ff;font-weight:bold">&#34;     Hello World &#34;</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># remove white space</span>
 </span></span><span style="display:flex;"><span>my_string = my_string.strip()
@@ -1008,7 +1100,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>a = <span style="color:#0ff;font-weight:bold">&#39; &#39;</span>.join(my_list) <span style="color:#007f7f"># the given string is the separator, e.g. &#39; &#39; between each argument</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(a)
 </span></span></code></pre></div><h4 id="格式化字符串">格式化字符串<a hidden class="anchor" aria-hidden="true" href="#格式化字符串">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># use braces as placeholders</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># use braces as placeholders</span>
 </span></span><span style="display:flex;"><span>a = <span style="color:#0ff;font-weight:bold">&#34;Hello </span><span style="color:#0ff;font-weight:bold">{0}</span><span style="color:#0ff;font-weight:bold"> and </span><span style="color:#0ff;font-weight:bold">{1}</span><span style="color:#0ff;font-weight:bold">&#34;</span>.format(<span style="color:#0ff;font-weight:bold">&#34;Bob&#34;</span>, <span style="color:#0ff;font-weight:bold">&#34;Tom&#34;</span>)
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(a)
 </span></span><span style="display:flex;"><span>
@@ -1047,7 +1139,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>a = <span style="color:#0ff;font-weight:bold">f</span><span style="color:#0ff;font-weight:bold">&#34;The value is </span><span style="color:#0ff;font-weight:bold">{</span><span style="color:#ff0;font-weight:bold">2</span>*<span style="color:#ff0;font-weight:bold">60</span><span style="color:#0ff;font-weight:bold">}</span><span style="color:#0ff;font-weight:bold">&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(a)
 </span></span></code></pre></div><h4 id="more-on-immutability-and-concatenation">More on immutability and concatenation<a hidden class="anchor" aria-hidden="true" href="#more-on-immutability-and-concatenation">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># since a string is immutable, adding strings with +,  or += always </span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># since a string is immutable, adding strings with +,  or += always </span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># creates a new string, and therefore is expensive for multiple operations</span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># --&gt; join method is much faster</span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">from</span> timeit <span style="color:#fff;font-weight:bold">import</span> default_timer <span style="color:#fff;font-weight:bold">as</span> timer
@@ -1071,26 +1163,22 @@ if (!doNotTrack) {
 
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/angular-devenv/">
     <span class="title">« 上一页</span>
-    <br>
     <span>Angular开发环境搭建</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/microstack-usage/">
     <span class="title">下一页 »</span>
-    <br>
     <span>Microstack 基本使用</span>
   </a>
 </nav>
@@ -1100,32 +1188,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -1152,25 +1242,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -1182,12 +1272,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

@@ -4,262 +4,243 @@
     <title>Linux on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/linux/</link>
     <description>Recent content in Linux on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Fri, 18 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 18 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>我的终端AI助手: Mods使用实践</title>
       <link>https://blog.niuhemoon.win/posts/tech/mods-usage/</link>
       <pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/mods-usage/</guid>
       <description>介绍如何结合Shell脚本与Charmbracelet/mods，打造个性化的终端AI工具集，实现快速翻译、代码解释和安全命令生成等功能。</description>
     </item>
-    
     <item>
       <title>FRP内网穿透与NoMachine远程桌面使用指南</title>
       <link>https://blog.niuhemoon.win/posts/tech/frp-nomachine-guide/</link>
       <pubDate>Fri, 30 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/frp-nomachine-guide/</guid>
       <description>通过FRP实现内网穿透并使用NoMachine进行远程桌面控制</description>
     </item>
-    
     <item>
       <title>局域网搭建文件分享服务</title>
       <link>https://blog.niuhemoon.win/posts/tech/ftp-http-file-share/</link>
       <pubDate>Sun, 21 Jul 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/ftp-http-file-share/</guid>
       <description>搭建内网文件共享服务</description>
     </item>
-    
     <item>
       <title>制作Docker镜像模拟服务器节点</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-fake-node/</link>
       <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-fake-node/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>奈飞文化手册</title>
       <link>https://blog.niuhemoon.win/posts/read/%E5%A5%88%E9%A3%9E%E6%96%87%E5%8C%96%E6%89%8B%E5%86%8C/</link>
       <pubDate>Sat, 07 Jan 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/read/%E5%A5%88%E9%A3%9E%E6%96%87%E5%8C%96%E6%89%8B%E5%86%8C/</guid>
       <description>&lt;p&gt;&lt;strong&gt;《奈飞文化手册》&lt;/strong&gt;
 范珂译&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>世界观</title>
       <link>https://blog.niuhemoon.win/posts/read/%E4%B8%96%E7%95%8C%E8%A7%82/</link>
       <pubDate>Sat, 07 Jan 2023 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/read/%E4%B8%96%E7%95%8C%E8%A7%82/</guid>
       <description>&lt;p&gt;《世界观：现代人必须要懂的科学哲学和科学史（原书第2版）》
 理查德·德威特（Richard DeWitt）&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>tmux-usage</title>
       <link>https://blog.niuhemoon.win/posts/tech/tmux-usage/</link>
       <pubDate>Mon, 26 Dec 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/tmux-usage/</guid>
       <description>tmux是将会话和窗口解绑的工具</description>
     </item>
-    
     <item>
       <title>docker基本使用</title>
       <link>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</link>
       <pubDate>Sat, 23 Jan 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/docker-tutorial/</guid>
-      <description>CheatSheet Docker 核心架构： 客户端 Client 服务器 Docker daemon 镜像 Image Registry 容器 Container 容器基本技术： cgroup 资源限额 namespace 资源隔离 Mount UTS IPC PID Network User Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个 host 上，客户端也可以通过 socket 或者 REST API 和远程服务器通信。docker 客户端是和服务器通信的命令</description>
+      <description>&lt;h3 id=&#34;cheatsheet&#34;&gt;CheatSheet&lt;/h3&gt;
+&lt;p&gt;Docker 核心架构：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;客户端 Client&lt;/li&gt;
+&lt;li&gt;服务器 Docker daemon&lt;/li&gt;
+&lt;li&gt;镜像 Image&lt;/li&gt;
+&lt;li&gt;Registry&lt;/li&gt;
+&lt;li&gt;容器 Container&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;容器基本技术：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cgroup 资源限额&lt;/li&gt;
+&lt;li&gt;namespace 资源隔离
+&lt;ul&gt;
+&lt;li&gt;Mount&lt;/li&gt;
+&lt;li&gt;UTS&lt;/li&gt;
+&lt;li&gt;IPC&lt;/li&gt;
+&lt;li&gt;PID&lt;/li&gt;
+&lt;li&gt;Network&lt;/li&gt;
+&lt;li&gt;User&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt=&#34;cheatsheet&#34; loading=&#34;lazy&#34; src=&#34;https://blog.niuhemoon.win/img/Docker%20commands%20cheat%20sheet%20by%20PhoenixNAP.jpeg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Docker 采用 C/S 架构，客户端向服务器发送请求，服务器负责构建、运行和分发容器。客户端和服务器可以运行在同一个 host 上，客户端也可以通过 socket 或者 REST API 和远程服务器通信。docker 客户端是和服务器通信的命令行工具。服务器负责创建、运行、监控容器，构建、存储镜像。镜像是一个只读模板，通过镜像可以创建容器。容器就是镜像运行的实例。Registry 是存放镜像的仓库。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>awk基本使用</title>
       <link>https://blog.niuhemoon.win/posts/tech/awk-usage/</link>
       <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/awk-usage/</guid>
       <description>Awk 命令基本使用</description>
     </item>
-    
     <item>
       <title>linux 101 Hackers 笔记</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-101-hackers/</link>
       <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-101-hackers/</guid>
       <description>linux 101 Hackers 笔记</description>
     </item>
-    
     <item>
       <title>vscode 快捷键和插件记录</title>
       <link>https://blog.niuhemoon.win/posts/tech/vscode-shortcut/</link>
       <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/vscode-shortcut/</guid>
       <description>vscode 常用快捷键</description>
     </item>
-    
     <item>
       <title>Openstack命令行基础</title>
       <link>https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/</link>
       <pubDate>Fri, 23 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/</guid>
       <description>Openstack命令行基础，汇总常用的命令行，主要是Nova相关的</description>
     </item>
-    
     <item>
       <title>tcpdump的基本使用【译】</title>
       <link>https://blog.niuhemoon.win/posts/tech/tcpdump-usage/</link>
       <pubDate>Mon, 19 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/tcpdump-usage/</guid>
       <description>翻译文，Tcpdump基本使用</description>
     </item>
-    
     <item>
       <title>Linux性能测试</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-peformence-test/</link>
       <pubDate>Sat, 17 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-peformence-test/</guid>
-      <description>简介 Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用 性能观测工具 ▪ 首先学习的Basic Tool有如下： uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。 ▪ 高级的命令如下： sar、net</description>
+      <description>&lt;h3 id=&#34;简介&#34;&gt;简介&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Linux上对系统进行性能检测的工具非常多，本文介绍一些常用工具的使用&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;性能观测工具&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;img&#34; loading=&#34;lazy&#34; src=&#34;img/f_3c65934a804b2cd6ec6dab02ccb33457.png&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;▪ 首先学习的Basic Tool有如下：
+uptime、top(htop)、mpstat、isstat、vmstat、free、ping、nicstat、dstat。&lt;/p&gt;
+&lt;p&gt;▪ 高级的命令如下：
+sar、netstat、pidstat、strace、tcpdump、blktrace、iotop、slabtop、sysctl、/proc。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Ubuntu20_04上使用ibus中文输入法</title>
       <link>https://blog.niuhemoon.win/posts/tech/ibus-input/</link>
       <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/ibus-input/</guid>
       <description>Ubuntu20.04 上使用 ibus 中文输入法</description>
     </item>
-    
     <item>
       <title>编程工具之Git</title>
       <link>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-git/</guid>
       <description>编程工具之Git</description>
     </item>
-    
     <item>
       <title>编程工具之Vim</title>
       <link>https://blog.niuhemoon.win/posts/tech/coding-tools-vim/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-vim/</guid>
       <description>编程工具之Vim</description>
     </item>
-    
     <item>
       <title>编程工具之问答</title>
       <link>https://blog.niuhemoon.win/posts/tech/coding-tools-qa/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-qa/</guid>
       <description>课程笔记</description>
     </item>
-    
     <item>
       <title>编程工具之杂烩</title>
       <link>https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/</link>
       <pubDate>Sun, 27 Sep 2020 19:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-foobar/</guid>
       <description>课程笔记</description>
     </item>
-    
     <item>
       <title>编程工具之调试和性能分析</title>
       <link>https://blog.niuhemoon.win/posts/tech/coding-tools-profile/</link>
       <pubDate>Sun, 27 Sep 2020 18:55:25 +0800</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/coding-tools-profile/</guid>
       <description>课程笔记</description>
     </item>
-    
     <item>
       <title>Linux进程——进程创建和同步控制</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-2/</link>
       <pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-process-2/</guid>
       <description>创建子进程，并进行父子进程同步控制</description>
     </item>
-    
     <item>
       <title>Linux进程——进程环境与加载可执行映像</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-3/</link>
       <pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-process-3/</guid>
       <description>介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像</description>
     </item>
-    
     <item>
       <title>Linux进程——地址空间</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-process-1/</link>
       <pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-process-1/</guid>
       <description>Linux进程地址空间和动态内存分配</description>
     </item>
-    
     <item>
       <title>Linux信号处理——发送信号</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/</link>
       <pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/</guid>
       <description>学习使用C语言向其他进程发送信号</description>
     </item>
-    
     <item>
       <title>Linux下glic库操作文件和目录</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-io/</link>
       <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-io/</guid>
       <description>使用glic操作linux的文件和目录</description>
     </item>
-    
     <item>
       <title>Linux信号处理——自定义信号处理函数</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-signal-1/</link>
       <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-signal-1/</guid>
       <description>学习使用C语言控制Linux信号，重定义信号处理函数；信号阻塞</description>
     </item>
-    
     <item>
       <title>Linux下创建和使用C语言函数库</title>
       <link>https://blog.niuhemoon.win/posts/tech/linux-c-lib/</link>
       <pubDate>Wed, 26 Sep 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/linux-c-lib/</guid>
       <description>使用C语言的函数库</description>
     </item>
-    
     <item>
       <title>Shell编程基础</title>
       <link>https://blog.niuhemoon.win/posts/tech/basic-shell/</link>
       <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/basic-shell/</guid>
-      <description>Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。 Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell 对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常 Shell 脚本结构</description>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Shell 是一种命令行解释器，目前 Linux 下最常用的是 bash 解释器。Shell 不仅可以解释用户输入的命令，还可以解释执行基于命令的 Shell 脚本语言。
+Shell 脚本是由命令、Shell 变量和控制语句灯语法元素构成的文本文件。默认情况下，Shell 对脚本中的内容逐行分析，并依次在不同的进程中解释执行。通常 Shell 脚本结构如下：&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

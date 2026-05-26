@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,7 @@
 <meta name="description" content="正则表达式基本使用">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/re-usage/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/re-usage/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,159 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script><meta property="og:title" content="正则表达式基本使用" />
-<meta property="og:description" content="正则表达式基本使用" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/re-usage/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-10-11T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-10-11T00:00:00+00:00" />
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="正则表达式基本使用"/>
-<meta name="twitter:description" content="正则表达式基本使用"/>
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/re-usage/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="正则表达式基本使用">
+  <meta property="og:description" content="正则表达式基本使用">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2020-10-11T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-10-11T00:00:00+00:00">
+    <meta property="article:tag" content="Regex">
+    <meta property="article:tag" content="Python">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="正则表达式基本使用">
+  <meta name="twitter:description" content="正则表达式基本使用">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "正则表达式基本使用",
       "item": "https://blog.niuhemoon.win/posts/tech/re-usage/"
     }
@@ -140,33 +229,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +259,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,277 +297,293 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       正则表达式基本使用
     </h1>
     <div class="post-description">
       正则表达式基本使用
     </div>
-    <div class="post-meta"><span title='2020-10-11 00:00:00 +0000 UTC'>2020-10-11</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;5265 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2020-10-11 00:00:00 +0000 UTC'>2020-10-11</span>&nbsp;·&nbsp;<span>11 分钟</span>&nbsp;·&nbsp;<span>5265 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#%e5%9f%ba%e7%a1%80" aria-label="基础">基础</a><ul>
-                        
-                <li>
-                    <a href="#11-%e5%ad%97%e7%ac%a6%e5%8c%b9%e9%85%8d" aria-label="1.1 字符匹配">1.1 字符匹配</a></li>
-                <li>
-                    <a href="#12-%e4%bd%8d%e7%bd%ae%e5%8c%b9%e9%85%8d" aria-label="1.2 位置匹配">1.2 位置匹配</a></li>
-                <li>
-                    <a href="#13-%e7%bb%84" aria-label="1.3 组">1.3 组</a></li>
-                <li>
-                    <a href="#14-%e5%85%88%e8%a1%8c%e6%96%ad%e8%a8%80" aria-label="1.4 先行断言">1.4 先行断言</a></li>
-                <li>
-                    <a href="#15-%e5%90%8e%e8%a1%8c%e6%96%ad%e8%a8%80" aria-label="1.5 后行断言">1.5 后行断言</a></li>
-                <li>
-                    <a href="#16-%e9%87%8f%e8%af%8d%e5%92%8c%e5%88%86%e6%94%af" aria-label="1.6 量词和分支">1.6 量词和分支</a></li>
-                <li>
-                    <a href="#17-%e5%88%86%e6%94%af" aria-label="1.7 分支">1.7 分支</a></li>
-                <li>
-                    <a href="#18-%e4%bf%ae%e9%a5%b0%e7%ac%a6" aria-label="1.8 修饰符">1.8 修饰符</a></li></ul>
-                </li>
-                <li>
-                    <a href="#2-%e8%bf%90%e7%ae%97%e7%ac%a6%e4%bc%98%e5%85%88%e7%ba%a7" aria-label="2. 运算符优先级">2. 运算符优先级</a></li>
-                <li>
-                    <a href="#%e4%bd%bf%e7%94%a8%e6%a1%88%e4%be%8b" aria-label="使用案例">使用案例</a><ul>
-                        
-                <li>
-                    <a href="#%e4%b8%8020-%e4%b8%aa%e6%9c%80%e5%b8%b8%e7%94%a8%e7%9a%84%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="一、20 个最常用的正则表达式">一、20 个最常用的正则表达式</a></li>
-                <li>
-                    <a href="#%e4%ba%8c%e6%a0%a1%e9%aa%8c%e6%95%b0%e5%ad%97%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="二、校验数字表达式">二、校验数字表达式</a></li>
-                <li>
-                    <a href="#%e4%b8%89%e6%a0%a1%e9%aa%8c%e5%ad%97%e7%ac%a6%e7%9a%84%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="三、校验字符的表达式">三、校验字符的表达式</a></li>
-                <li>
-                    <a href="#%e5%9b%9b%e7%89%b9%e6%ae%8a%e9%9c%80%e6%b1%82%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="四、特殊需求表达式">四、特殊需求表达式</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e5%8c%b9%e9%85%8d%e6%b5%8b%e8%af%95%e5%b7%a5%e5%85%b7" aria-label="匹配测试工具">匹配测试工具</a></li>
-                <li>
-                    <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+    <div class="inner"><ul>
+            <li>
+                <a href="#%e5%9f%ba%e7%a1%80" aria-label="基础">基础</a><ul>
+                    
+            <li>
+                <a href="#11-%e5%ad%97%e7%ac%a6%e5%8c%b9%e9%85%8d" aria-label="1.1 字符匹配">1.1 字符匹配</a></li>
+            <li>
+                <a href="#12-%e4%bd%8d%e7%bd%ae%e5%8c%b9%e9%85%8d" aria-label="1.2 位置匹配">1.2 位置匹配</a></li>
+            <li>
+                <a href="#13-%e7%bb%84" aria-label="1.3 组">1.3 组</a></li>
+            <li>
+                <a href="#14-%e5%85%88%e8%a1%8c%e6%96%ad%e8%a8%80" aria-label="1.4 先行断言">1.4 先行断言</a></li>
+            <li>
+                <a href="#15-%e5%90%8e%e8%a1%8c%e6%96%ad%e8%a8%80" aria-label="1.5 后行断言">1.5 后行断言</a></li>
+            <li>
+                <a href="#16-%e9%87%8f%e8%af%8d%e5%92%8c%e5%88%86%e6%94%af" aria-label="1.6 量词和分支">1.6 量词和分支</a></li>
+            <li>
+                <a href="#17-%e5%88%86%e6%94%af" aria-label="1.7 分支">1.7 分支</a></li>
+            <li>
+                <a href="#18-%e4%bf%ae%e9%a5%b0%e7%ac%a6" aria-label="1.8 修饰符">1.8 修饰符</a></li></ul>
+            </li>
+            <li>
+                <a href="#2-%e8%bf%90%e7%ae%97%e7%ac%a6%e4%bc%98%e5%85%88%e7%ba%a7" aria-label="2. 运算符优先级">2. 运算符优先级</a></li>
+            <li>
+                <a href="#%e4%bd%bf%e7%94%a8%e6%a1%88%e4%be%8b" aria-label="使用案例">使用案例</a><ul>
+                    
+            <li>
+                <a href="#%e4%b8%8020-%e4%b8%aa%e6%9c%80%e5%b8%b8%e7%94%a8%e7%9a%84%e6%ad%a3%e5%88%99%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="一、20 个最常用的正则表达式">一、20 个最常用的正则表达式</a></li>
+            <li>
+                <a href="#%e4%ba%8c%e6%a0%a1%e9%aa%8c%e6%95%b0%e5%ad%97%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="二、校验数字表达式">二、校验数字表达式</a></li>
+            <li>
+                <a href="#%e4%b8%89%e6%a0%a1%e9%aa%8c%e5%ad%97%e7%ac%a6%e7%9a%84%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="三、校验字符的表达式">三、校验字符的表达式</a></li>
+            <li>
+                <a href="#%e5%9b%9b%e7%89%b9%e6%ae%8a%e9%9c%80%e6%b1%82%e8%a1%a8%e8%be%be%e5%bc%8f" aria-label="四、特殊需求表达式">四、特殊需求表达式</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e5%8c%b9%e9%85%8d%e6%b5%8b%e8%af%95%e5%b7%a5%e5%85%b7" aria-label="匹配测试工具">匹配测试工具</a></li>
+            <li>
+                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
+            </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><h3 id="基础">基础<a hidden class="anchor" aria-hidden="true" href="#基础">#</a></h3>
+  <div class="post-content md-content"><h3 id="基础">基础<a hidden class="anchor" aria-hidden="true" href="#基础">#</a></h3>
 <h4 id="11-字符匹配">1.1 字符匹配<a hidden class="anchor" aria-hidden="true" href="#11-字符匹配">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>\</td>
-<td>转义符</td>
-</tr>
-<tr>
-<td>\d</td>
-<td>[0-9]。表示是一位数字。</td>
-</tr>
-<tr>
-<td>\D</td>
-<td>[^0-9]。表示除数字外的任意字符。</td>
-</tr>
-<tr>
-<td>\w</td>
-<td>[0-9a-zA-Z_]。表示数字、大小写字母和下划线。</td>
-</tr>
-<tr>
-<td>\W</td>
-<td>[^0-9a-za-z_]。非单词字符。</td>
-</tr>
-<tr>
-<td>\s</td>
-<td>[\t\v\n\r\f]。表示空白符，包括空格、水平制表符、 垂直制表符、换行符、回车符、换页符。</td>
-</tr>
-<tr>
-<td>\S</td>
-<td>[^\t\v\n\r\f]。非空白符。</td>
-</tr>
-<tr>
-<td>.</td>
-<td>[^\n\r\u2028\u2029]。通配符，表示几乎任意字符。 换行符、回车符、行分隔符和段分隔符除外。</td>
-</tr>
-<tr>
-<td>\uxxxx</td>
-<td>查找以十六进制数 xxxx 规定的 Unicode 字符。</td>
-</tr>
-<tr>
-<td>\f</td>
-<td>匹配一个换页符 (U+000C)。</td>
-</tr>
-<tr>
-<td>\n</td>
-<td>匹配一个换行符 (U+000A)。</td>
-</tr>
-<tr>
-<td>\r</td>
-<td>匹配一个回车符 (U+000D)。</td>
-</tr>
-<tr>
-<td>\t</td>
-<td>匹配一个水平制表符 (U+0009)。</td>
-</tr>
-<tr>
-<td>\v</td>
-<td>匹配一个垂直制表符 (U+000B)。</td>
-</tr>
-<tr>
-<td>\0</td>
-<td>匹配 NULL（U+0000）字符， 不要在这后面跟其它小数，因为 \0 是一个 八进制转义序列。</td>
-</tr>
-<tr>
-<td>[\b]</td>
-<td>匹配一个退格(U+0008)。（不要和\b 混淆了。）</td>
-</tr>
-<tr>
-<td>[abc]</td>
-<td>any of a, b, or c</td>
-</tr>
-<tr>
-<td>[^abc]</td>
-<td>not a, b, or c</td>
-</tr>
-<tr>
-<td>[a-g]</td>
-<td>character between a &amp; g</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>\</td>
+          <td>转义符</td>
+      </tr>
+      <tr>
+          <td>\d</td>
+          <td>[0-9]。表示是一位数字。</td>
+      </tr>
+      <tr>
+          <td>\D</td>
+          <td>[^0-9]。表示除数字外的任意字符。</td>
+      </tr>
+      <tr>
+          <td>\w</td>
+          <td>[0-9a-zA-Z_]。表示数字、大小写字母和下划线。</td>
+      </tr>
+      <tr>
+          <td>\W</td>
+          <td>[^0-9a-za-z_]。非单词字符。</td>
+      </tr>
+      <tr>
+          <td>\s</td>
+          <td>[\t\v\n\r\f]。表示空白符，包括空格、水平制表符、 垂直制表符、换行符、回车符、换页符。</td>
+      </tr>
+      <tr>
+          <td>\S</td>
+          <td>[^\t\v\n\r\f]。非空白符。</td>
+      </tr>
+      <tr>
+          <td>.</td>
+          <td>[^\n\r\u2028\u2029]。通配符，表示几乎任意字符。 换行符、回车符、行分隔符和段分隔符除外。</td>
+      </tr>
+      <tr>
+          <td>\uxxxx</td>
+          <td>查找以十六进制数 xxxx 规定的 Unicode 字符。</td>
+      </tr>
+      <tr>
+          <td>\f</td>
+          <td>匹配一个换页符 (U+000C)。</td>
+      </tr>
+      <tr>
+          <td>\n</td>
+          <td>匹配一个换行符 (U+000A)。</td>
+      </tr>
+      <tr>
+          <td>\r</td>
+          <td>匹配一个回车符 (U+000D)。</td>
+      </tr>
+      <tr>
+          <td>\t</td>
+          <td>匹配一个水平制表符 (U+0009)。</td>
+      </tr>
+      <tr>
+          <td>\v</td>
+          <td>匹配一个垂直制表符 (U+000B)。</td>
+      </tr>
+      <tr>
+          <td>\0</td>
+          <td>匹配 NULL（U+0000）字符， 不要在这后面跟其它小数，因为 \0 是一个 八进制转义序列。</td>
+      </tr>
+      <tr>
+          <td>[\b]</td>
+          <td>匹配一个退格(U+0008)。（不要和\b 混淆了。）</td>
+      </tr>
+      <tr>
+          <td>[abc]</td>
+          <td>any of a, b, or c</td>
+      </tr>
+      <tr>
+          <td>[^abc]</td>
+          <td>not a, b, or c</td>
+      </tr>
+      <tr>
+          <td>[a-g]</td>
+          <td>character between a &amp; g</td>
+      </tr>
+  </tbody>
 </table>
 <h4 id="12-位置匹配">1.2 位置匹配<a hidden class="anchor" aria-hidden="true" href="#12-位置匹配">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>\b</td>
-<td>是单词边界，具体就是\w 和\W 之间的位置，也包括\w 和 ^ 之间的位置， 也包括\w 和 之间的位置。</td>
-</tr>
-<tr>
-<td>\B</td>
-<td>是\b 的反面的意思，非单词边界。例如在字符串中所有位置中，扣掉\b， 剩下的都是\B 的。</td>
-</tr>
-<tr>
-<td>^abc$</td>
-<td>字符串开始、结束的位置</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>\b</td>
+          <td>是单词边界，具体就是\w 和\W 之间的位置，也包括\w 和 ^ 之间的位置， 也包括\w 和 之间的位置。</td>
+      </tr>
+      <tr>
+          <td>\B</td>
+          <td>是\b 的反面的意思，非单词边界。例如在字符串中所有位置中，扣掉\b， 剩下的都是\B 的。</td>
+      </tr>
+      <tr>
+          <td>^abc$</td>
+          <td>字符串开始、结束的位置</td>
+      </tr>
+  </tbody>
 </table>
 <h4 id="13-组">1.3 组<a hidden class="anchor" aria-hidden="true" href="#13-组">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>(abc)</td>
-<td>capture group，捕获组</td>
-</tr>
-<tr>
-<td>\n</td>
-<td>backreference to group #n，分组引用，引用第 n 个捕获组匹配的内容, 其中 n 是正整数</td>
-</tr>
-<tr>
-<td>(?:abc)</td>
-<td>non-capturing group，非捕获组</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>(abc)</td>
+          <td>capture group，捕获组</td>
+      </tr>
+      <tr>
+          <td>\n</td>
+          <td>backreference to group #n，分组引用，引用第 n 个捕获组匹配的内容, 其中 n 是正整数</td>
+      </tr>
+      <tr>
+          <td>(?:abc)</td>
+          <td>non-capturing group，非捕获组</td>
+      </tr>
+  </tbody>
 </table>
 <h4 id="14-先行断言">1.4 先行断言<a hidden class="anchor" aria-hidden="true" href="#14-先行断言">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>a(?=b)</td>
-<td>positive lookahead，先行断言，a 只有在 b 前面才匹配</td>
-</tr>
-<tr>
-<td>a(?!b)</td>
-<td>negative lookahead，先行否定断言，a 只有不在 b 前面才匹配</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>a(?=b)</td>
+          <td>positive lookahead，先行断言，a 只有在 b 前面才匹配</td>
+      </tr>
+      <tr>
+          <td>a(?!b)</td>
+          <td>negative lookahead，先行否定断言，a 只有不在 b 前面才匹配</td>
+      </tr>
+  </tbody>
 </table>
 <h4 id="15-后行断言">1.5 后行断言<a hidden class="anchor" aria-hidden="true" href="#15-后行断言">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>(?&lt;=b)a</td>
-<td>positive lookbehind，后行断言，a 只有在 b 后面才匹配</td>
-</tr>
-<tr>
-<td>(?&lt;!b)a</td>
-<td>negative lookbehind，后行否定断言，a 只有不在 b 后面才匹配</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>(?&lt;=b)a</td>
+          <td>positive lookbehind，后行断言，a 只有在 b 后面才匹配</td>
+      </tr>
+      <tr>
+          <td>(?&lt;!b)a</td>
+          <td>negative lookbehind，后行否定断言，a 只有不在 b 后面才匹配</td>
+      </tr>
+  </tbody>
 </table>
 <h4 id="16-量词和分支">1.6 量词和分支<a hidden class="anchor" aria-hidden="true" href="#16-量词和分支">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>a*</td>
-<td>0 or more</td>
-</tr>
-<tr>
-<td>a+</td>
-<td>1 or more</td>
-</tr>
-<tr>
-<td>a?</td>
-<td>0 or 1</td>
-</tr>
-<tr>
-<td>a{5}</td>
-<td>exactly five</td>
-</tr>
-<tr>
-<td>a{2,}</td>
-<td>two or more</td>
-</tr>
-<tr>
-<td>a{1,3}</td>
-<td>between one &amp; three</td>
-</tr>
-<tr>
-<td>a+? a{2,}?</td>
-<td>match as few as possible，惰性匹配，就是尽可能少的匹配</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>a*</td>
+          <td>0 or more</td>
+      </tr>
+      <tr>
+          <td>a+</td>
+          <td>1 or more</td>
+      </tr>
+      <tr>
+          <td>a?</td>
+          <td>0 or 1</td>
+      </tr>
+      <tr>
+          <td>a{5}</td>
+          <td>exactly five</td>
+      </tr>
+      <tr>
+          <td>a{2,}</td>
+          <td>two or more</td>
+      </tr>
+      <tr>
+          <td>a{1,3}</td>
+          <td>between one &amp; three</td>
+      </tr>
+      <tr>
+          <td>a+? a{2,}?</td>
+          <td>match as few as possible，惰性匹配，就是尽可能少的匹配</td>
+      </tr>
+  </tbody>
 </table>
 <p>以下都是惰性匹配：
 {m,n}?
@@ -500,87 +593,86 @@ if (!doNotTrack) {
 *?</p>
 <h4 id="17-分支">1.7 分支<a hidden class="anchor" aria-hidden="true" href="#17-分支">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ab|cd</td>
-<td>match ab or cd，匹配&rsquo;ab&rsquo;或者&rsquo;cd&rsquo;字符子串</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>ab|cd</td>
+          <td>match ab or cd，匹配&rsquo;ab&rsquo;或者&rsquo;cd&rsquo;字符子串</td>
+      </tr>
+  </tbody>
 </table>
 <h4 id="18-修饰符">1.8 修饰符<a hidden class="anchor" aria-hidden="true" href="#18-修饰符">#</a></h4>
 <table>
-<thead>
-<tr>
-<th>字符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>i</td>
-<td>执行对大小写不敏感的匹配。</td>
-</tr>
-<tr>
-<td>g</td>
-<td>执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。</td>
-</tr>
-<tr>
-<td>m</td>
-<td>执行多行匹配。</td>
-</tr>
-<tr>
-<td>u</td>
-<td>开启&quot;Unicode 模式&quot;，用来正确处理大于\uFFFF 的 Unicode 字符。也就是说，会正确处理四个字节的 UTF-16 编码。</td>
-</tr>
-<tr>
-<td>s</td>
-<td>允许 . 匹配换行符。</td>
-</tr>
-<tr>
-<td>y</td>
-<td>y 修饰符的作用与 g 修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始。不同之处在于，g 修饰符只要剩余位置中存在匹配就可，而 y 修饰符确保匹配必须从剩余的第一个位置开始，这也就是&quot;粘连&quot;的涵义</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>字符</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>i</td>
+          <td>执行对大小写不敏感的匹配。</td>
+      </tr>
+      <tr>
+          <td>g</td>
+          <td>执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。</td>
+      </tr>
+      <tr>
+          <td>m</td>
+          <td>执行多行匹配。</td>
+      </tr>
+      <tr>
+          <td>u</td>
+          <td>开启&quot;Unicode 模式&quot;，用来正确处理大于\uFFFF 的 Unicode 字符。也就是说，会正确处理四个字节的 UTF-16 编码。</td>
+      </tr>
+      <tr>
+          <td>s</td>
+          <td>允许 . 匹配换行符。</td>
+      </tr>
+      <tr>
+          <td>y</td>
+          <td>y 修饰符的作用与 g 修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始。不同之处在于，g 修饰符只要剩余位置中存在匹配就可，而 y 修饰符确保匹配必须从剩余的第一个位置开始，这也就是&quot;粘连&quot;的涵义</td>
+      </tr>
+  </tbody>
 </table>
 <h3 id="2-运算符优先级">2. 运算符优先级<a hidden class="anchor" aria-hidden="true" href="#2-运算符优先级">#</a></h3>
 <table>
-<thead>
-<tr>
-<th>运算符</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>\</td>
-<td>转义符</td>
-</tr>
-<tr>
-<td>(), (?:), (?=), []</td>
-<td>圆括号和方括号</td>
-</tr>
-<tr>
-<td>*, +, ?, {n}, {n,}, {n,m}</td>
-<td>限定符</td>
-</tr>
-<tr>
-<td>^, $, \任何元字符、任何字符</td>
-<td>定位点和序列（即：位置和顺序）</td>
-</tr>
-<tr>
-<td>|</td>
-<td>替换，&ldquo;或&quot;操作 字符具有高于替换运算符的优先级，使得&quot;m|food&quot;匹配&quot;m&quot;或&quot;food&rdquo;。若要匹配&quot;mood&quot;或&quot;food&quot;，请使用括号创建子表达式，从而产生&quot;(m|f)ood&quot;。</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>运算符</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>\</td>
+          <td>转义符</td>
+      </tr>
+      <tr>
+          <td>(), (?:), (?=), []</td>
+          <td>圆括号和方括号</td>
+      </tr>
+      <tr>
+          <td>*, +, ?, {n}, {n,}, {n,m}</td>
+          <td>限定符</td>
+      </tr>
+      <tr>
+          <td>^, $, \任何元字符、任何字符</td>
+          <td>定位点和序列（即：位置和顺序）</td>
+      </tr>
+      <tr>
+          <td>|</td>
+          <td>替换，&ldquo;或&quot;操作 字符具有高于替换运算符的优先级，使得&quot;m|food&quot;匹配&quot;m&quot;或&quot;food&rdquo;。若要匹配&quot;mood&quot;或&quot;food&quot;，请使用括号创建子表达式，从而产生&quot;(m|f)ood&quot;。</td>
+      </tr>
+  </tbody>
 </table>
-<p><img loading="lazy" src="/img/regex_basic.png" alt="正则表达式"  />
-</p>
+<p><img alt="正则表达式" loading="lazy" src="/img/regex_basic.png"></p>
 <h3 id="使用案例">使用案例<a hidden class="anchor" aria-hidden="true" href="#使用案例">#</a></h3>
 <h4 id="一20-个最常用的正则表达式">一、20 个最常用的正则表达式<a hidden class="anchor" aria-hidden="true" href="#一20-个最常用的正则表达式">#</a></h4>
 <pre tabindex="0"><code>#1 . 校验密码强度：密码的强度必须是包含大小写字母和数字的组合，不能使用特殊字符，长度在8-10之间
@@ -780,7 +872,7 @@ if (!s.match(/^[a-zA-Z]+:\\/\\//))
 </code></pre><ul>
 <li><strong>排除特定字符串</strong></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 不以com结尾的</span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 不以com结尾的</span>
 </span></span><span style="display:flex;"><span>^.*?(?&lt;!com)$
 </span></span><span style="display:flex;"><span><span style="color:#007f7f"># 以com结尾</span>
 </span></span><span style="display:flex;"><span>^.*?(?&lt;=com)$
@@ -818,27 +910,23 @@ if (!s.match(/^[a-zA-Z]+:\\/\\//))
 
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="https://blog.niuhemoon.win/tags/regex/">Regex</a></li>
       <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/ibus-input/">
     <span class="title">« 上一页</span>
-    <br>
     <span>Ubuntu20_04上使用ibus中文输入法</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/plantuml-sequence/">
     <span class="title">下一页 »</span>
-    <br>
     <span>PlantUML画时序图</span>
   </a>
 </nav>
@@ -848,32 +936,34 @@ if (!s.match(/^[a-zA-Z]+:\\/\\//))
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -900,25 +990,25 @@ if (!s.match(/^[a-zA-Z]+:\\/\\//))
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -930,12 +1020,12 @@ if (!s.match(/^[a-zA-Z]+:\\/\\//))
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

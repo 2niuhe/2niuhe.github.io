@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" dir="auto">
+<html lang="zh" dir="auto" data-theme="auto">
 
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,9 +10,7 @@
 <meta name="description" content="基本的GPIO配置和中断、定时器例程">
 <meta name="author" content="Niuhe">
 <link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/stm32-example-1/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.3613efbd0b1772781e8f49935e973cae632a7f61471c05b17be155505ccf87b5.css" integrity="sha256-NhPvvQsXcngej0mTXpc8rmMqf2FHHAWxe&#43;FVUFzPh7U=" rel="preload stylesheet" as="style">
-<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
-    onload="hljs.initHighlightingOnLoad();"></script>
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
@@ -20,6 +18,7 @@
 <link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/stm32-example-1/">
 <noscript>
     <style>
         #theme-toggle,
@@ -37,69 +36,159 @@
                 --secondary: rgb(155, 156, 157);
                 --tertiary: rgb(65, 66, 68);
                 --content: rgb(196, 196, 197);
-                --hljs-bg: rgb(46, 46, 51);
+                --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
-            }
-
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+            .toc {
+                background: var(--entry);
             }
         }
 
     </style>
 </noscript>
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-116933089-1', 'auto');
-	
-	ga('send', 'pageview');
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
 }
-</script><meta property="og:title" content="STM32笔记" />
-<meta property="og:description" content="基本的GPIO配置和中断、定时器例程" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/stm32-example-1/" /><meta property="article:section" content="posts" />
 
-<meta property="article:modified_time" content="2025-07-11T22:29:58+08:00" />
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="STM32笔记"/>
-<meta name="twitter:description" content="基本的GPIO配置和中断、定时器例程"/>
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/stm32-example-1/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="STM32笔记">
+  <meta property="og:description" content="基本的GPIO配置和中断、定时器例程">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-05-12T00:00:00+00:00">
+    <meta property="article:modified_time" content="2019-05-12T00:00:00+00:00">
+    <meta property="article:tag" content="C">
+    <meta property="article:tag" content="STM32">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="STM32笔记">
+  <meta name="twitter:description" content="基本的GPIO配置和中断、定时器例程">
 
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": [, 
+  "itemListElement": [
     {
       "@type": "ListItem",
-      "position":  2 ,
+      "position":  1 ,
       "name": "📚文章",
       "item": "https://blog.niuhemoon.win/posts/"
     }, 
     {
       "@type": "ListItem",
-      "position":  3 ,
+      "position":  2 ,
       "name": "👨🏻‍💻 技术",
       "item": "https://blog.niuhemoon.win/posts/tech/"
     }, 
     {
       "@type": "ListItem",
-      "position":  4 ,
+      "position":  3 ,
       "name": "STM32笔记",
       "item": "https://blog.niuhemoon.win/posts/tech/stm32-example-1/"
     }
@@ -119,8 +208,8 @@ if (!doNotTrack) {
   "articleBody": "STM32F103学习笔记 GPIO初始化和读写操作 STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。\nLED灯实验 #include \"stm32f10x.h\" #define LED GPIO_Pin_All\tvoid delay(u32 i) { while(i--); } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,\u0026GPIO_InitStructure);\t//初始化GPIO } void led_display() { GPIO_SetBits(GPIOC,LED); delay(6000000); GPIO_ResetBits(GPIOC,LED); delay(6000000); } int main() { LED_Init(); while(1) { led_display(); } } 蜂鸣器实验 使用无源蜂鸣器\n#include \"stm32f10x.h\" #define BZ GPIO_Pin_5 //PB5\t定义端口PB5 void delay(u32 i) { while(i--); } void BEEP_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = BZ; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOB,\u0026GPIO_InitStructure);\t//初始化GPIO } void sound(u32 i) // i= 5000救护车，i=1000电动车 { while(i--) { GPIO_SetBits(GPIOB,BZ); delay(i); GPIO_ResetBits(GPIOB,BZ); delay(i); } } int main() {\tBEEP_Init();\t//端口初始化 while(1) { sound(5000);\t}\t} SysTick实验 系统滴答计时器比延时函数更加精确，可移植性更高。systick定时器是24位的定时器，当定时器计数到0时，将自动从RELOAD寄存器中重装定时器初值，如果开启了中断，此时还会产生异常中断信号。\n定时器必须要一个时钟来驱动，systick定时器的时钟来源时系统时钟，不过它的时钟可以选择成直接取自系统时钟，也可以将系统时钟8分频后再赋给systick定时器。\nsystick定时器的操作步骤：\n设置systick定时器的时钟源 设置systick定时器的重装初始值（若使用中断，就将中断使能打开） 清零systick定时器计数器的值 打开systick定时器 #include \"stm32f10x.h\" #define LED GPIO_Pin_All void delay_us(u32 i) { u32 temp; SysTick-\u003eLOAD = 9*i;\t//设置重装数值 72MHz时 SysTick-\u003eCTRL = 0x01;\t//使能，减到零时无动作，采用外部时钟源(8分频系统时钟) SysTick-\u003eVAL = 0;\t//清零计数器 do { temp = SysTick-\u003eCTRL;\t//读取当前计数值 } while((temp \u0026 0x01) \u0026\u0026 (!(temp \u0026(1\u003c\u003c16))));\t//与运算取出指定位的数值 //实际上就是CTRL寄存器的第1位为0或第16位为1时，退出循环 SysTick-\u003eCTRL=0;\t//关闭计数器 SysTick-\u003eVAL = 0;\t//清空计数器 } void delay_ms(u32 i) { u32 temp; SysTick-\u003eLOAD=9000*i;\t//设置重装数值, 72MHZ时 SysTick-\u003eCTRL=0x01;\t//使能，减到零是无动作，采用外部时钟源 SysTick-\u003eVAL=0;\t//清零计数器 do { temp=SysTick-\u003eCTRL;\t//读取当前倒计数值 } while((temp\u00260x01)\u0026\u0026(!(temp\u0026(1\u003c\u003c16))));\t//等待时间到达 SysTick-\u003eCTRL=0;\t//关闭计数器 SysTick-\u003eVAL=0;\t//清空计数器 } //LED的GPIO初始化程序 void LED_Init() { GPIO_InitTypeDef GPIO_InitStructure; //GPIO时钟初始化 SystemInit(); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE); //配置GPIO模式和端口 GPIO_InitStructure.GPIO_Pin = LED; GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //推挽模式 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; GPIO_Init(GPIOC,\u0026GPIO_InitStructure);\t//初始化GPIO } int main() { u8 i; LED_Init(); while(1) { for(i=0;i\u003c8;i++) { GPIO_Write(GPIOC,(u16)~(0x01\u003c",
   "wordCount" : "3645",
   "inLanguage": "zh",
-  "datePublished": "0001-01-01T00:00:00Z",
-  "dateModified": "2025-07-11T22:29:58.622308359+08:00",
+  "datePublished": "2019-05-12T00:00:00Z",
+  "dateModified": "2019-05-12T00:00:00Z",
   "author":{
     "@type": "Person",
     "name": "Niuhe"
@@ -140,33 +229,21 @@ if (!doNotTrack) {
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
         <div class="logo">
-            <a href="https://blog.niuhemoon.win" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
                 <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
                     height="35">Niuhe&#39;s Blog</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -182,7 +259,7 @@ if (!doNotTrack) {
                 </button>
             </div>
         </div>
-        <ul id="menu">
+        <ul id="menu" class="menu">
             <li>
                 <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
                     <span>🔍搜索</span>
@@ -220,89 +297,105 @@ if (!doNotTrack) {
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="https://blog.niuhemoon.win">🏠主页</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/">📚文章</a>&nbsp;»&nbsp;<a href="https://blog.niuhemoon.win/posts/tech/">👨🏻‍💻 技术</a></div>
-    <h1 class="post-title">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
       STM32笔记
     </h1>
     <div class="post-description">
       基本的GPIO配置和中断、定时器例程
     </div>
-    <div class="post-meta">8 min&nbsp;·&nbsp;3645 字&nbsp;·&nbsp;Niuhe
+    <div class="post-meta">
+
+<span title='2019-05-12 00:00:00 +0000 UTC'>2019-05-12</span>&nbsp;·&nbsp;<span>8 分钟</span>&nbsp;·&nbsp;<span>3645 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">文章目录</span>
-        </summary>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#stm32f103%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0" aria-label="STM32F103学习笔记">STM32F103学习笔记</a><ul>
-                        
-                <li>
-                    <a href="#gpio%e5%88%9d%e5%a7%8b%e5%8c%96%e5%92%8c%e8%af%bb%e5%86%99%e6%93%8d%e4%bd%9c" aria-label="GPIO初始化和读写操作">GPIO初始化和读写操作</a><ul>
-                        
-                <li>
-                    <a href="#led%e7%81%af%e5%ae%9e%e9%aa%8c" aria-label="LED灯实验">LED灯实验</a></li>
-                <li>
-                    <a href="#%e8%9c%82%e9%b8%a3%e5%99%a8%e5%ae%9e%e9%aa%8c" aria-label="蜂鸣器实验">蜂鸣器实验</a></li>
-                <li>
-                    <a href="#systick%e5%ae%9e%e9%aa%8c" aria-label="SysTick实验">SysTick实验</a></li>
-                <li>
-                    <a href="#%e7%b3%bb%e7%bb%9f%e6%97%b6%e9%92%9f%e5%ae%9e%e9%aa%8c" aria-label="系统时钟实验">系统时钟实验</a></li>
-                <li>
-                    <a href="#%e6%8c%89%e9%94%ae%e5%ae%9e%e9%aa%8c" aria-label="按键实验">按键实验</a></li>
-                <li>
-                    <a href="#%e6%95%b0%e7%a0%81%e7%ae%a1%e5%ae%9e%e9%aa%8c" aria-label="数码管实验">数码管实验</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e4%b8%ad%e6%96%ad%e5%92%8c%e5%ae%9a%e6%97%b6%e5%99%a8" aria-label="中断和定时器">中断和定时器</a><ul>
-                        
-                <li>
-                    <a href="#%e5%a4%96%e9%83%a8%e4%b8%ad%e6%96%ad%e5%ae%9e%e9%aa%8c" aria-label="外部中断实验">外部中断实验</a></li>
-                <li>
-                    <a href="#%e5%ae%9a%e6%97%b6%e5%99%a8%e5%ae%9e%e9%aa%8c" aria-label="定时器实验">定时器实验</a>
-                </li>
-            </ul>
+    <div class="inner"><ul>
+            <li>
+                <a href="#stm32f103%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0" aria-label="STM32F103学习笔记">STM32F103学习笔记</a><ul>
+                    
+            <li>
+                <a href="#gpio%e5%88%9d%e5%a7%8b%e5%8c%96%e5%92%8c%e8%af%bb%e5%86%99%e6%93%8d%e4%bd%9c" aria-label="GPIO初始化和读写操作">GPIO初始化和读写操作</a><ul>
+                    
+            <li>
+                <a href="#led%e7%81%af%e5%ae%9e%e9%aa%8c" aria-label="LED灯实验">LED灯实验</a></li>
+            <li>
+                <a href="#%e8%9c%82%e9%b8%a3%e5%99%a8%e5%ae%9e%e9%aa%8c" aria-label="蜂鸣器实验">蜂鸣器实验</a></li>
+            <li>
+                <a href="#systick%e5%ae%9e%e9%aa%8c" aria-label="SysTick实验">SysTick实验</a></li>
+            <li>
+                <a href="#%e7%b3%bb%e7%bb%9f%e6%97%b6%e9%92%9f%e5%ae%9e%e9%aa%8c" aria-label="系统时钟实验">系统时钟实验</a></li>
+            <li>
+                <a href="#%e6%8c%89%e9%94%ae%e5%ae%9e%e9%aa%8c" aria-label="按键实验">按键实验</a></li>
+            <li>
+                <a href="#%e6%95%b0%e7%a0%81%e7%ae%a1%e5%ae%9e%e9%aa%8c" aria-label="数码管实验">数码管实验</a></li></ul>
             </li>
-            </ul>
+            <li>
+                <a href="#%e4%b8%ad%e6%96%ad%e5%92%8c%e5%ae%9a%e6%97%b6%e5%99%a8" aria-label="中断和定时器">中断和定时器</a><ul>
+                    
+            <li>
+                <a href="#%e5%a4%96%e9%83%a8%e4%b8%ad%e6%96%ad%e5%ae%9e%e9%aa%8c" aria-label="外部中断实验">外部中断实验</a></li>
+            <li>
+                <a href="#%e5%ae%9a%e6%97%b6%e5%99%a8%e5%ae%9e%e9%aa%8c" aria-label="定时器实验">定时器实验</a>
             </li>
-            </ul>
-        </div>
-    </details>
-</div>
+        </ul>
+        </li>
+        </ul>
+        </li>
+        </ul>
+    </div>
+</details>
 
-  <div class="post-content"><h2 id="stm32f103学习笔记">STM32F103学习笔记<a hidden class="anchor" aria-hidden="true" href="#stm32f103学习笔记">#</a></h2>
+  <div class="post-content md-content"><h2 id="stm32f103学习笔记">STM32F103学习笔记<a hidden class="anchor" aria-hidden="true" href="#stm32f103学习笔记">#</a></h2>
 <h3 id="gpio初始化和读写操作">GPIO初始化和读写操作<a hidden class="anchor" aria-hidden="true" href="#gpio初始化和读写操作">#</a></h3>
 <blockquote>
 <p>STM32的GPIO引脚有多种模式使用，在使用前需要进行配置。</p>
 </blockquote>
 <hr>
 <h4 id="led灯实验">LED灯实验<a hidden class="anchor" aria-hidden="true" href="#led灯实验">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define LED GPIO_Pin_All	
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span>(i--);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//LED的GPIO初始化程序
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">void</span> LED_Init()
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> LED_Init()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//GPIO时钟初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SystemInit();
+</span></span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//配置GPIO模式和端口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Pin = LED;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = LED;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  <span style="color:#007f7f">//推挽模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOC,&amp;GPIO_InitStructure);	 	<span style="color:#007f7f">//初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> led_display()
 </span></span><span style="display:flex;"><span>{
@@ -324,10 +417,10 @@ if (!doNotTrack) {
 <blockquote>
 <p>使用无源蜂鸣器</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define BZ GPIO_Pin_5 </span><span style="color:#007f7f">//PB5	 定义端口PB5
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span>(i--);
@@ -337,18 +430,18 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//GPIO时钟初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SystemInit();
+</span></span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//配置GPIO模式和端口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Pin = BZ;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = BZ;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  <span style="color:#007f7f">//推挽模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOB,&amp;GPIO_InitStructure);	 	<span style="color:#007f7f">//初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> sound(u32 i)  <span style="color:#007f7f">// i= 5000救护车，i=1000电动车
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>{
+</span></span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span>(i--)
 </span></span><span style="display:flex;"><span>    {
 </span></span><span style="display:flex;"><span>        GPIO_SetBits(GPIOB,BZ);
@@ -361,7 +454,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{	
 </span></span><span style="display:flex;"><span>	BEEP_Init();	<span style="color:#007f7f">//端口初始化  
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		sound(<span style="color:#ff0;font-weight:bold">5000</span>);				
 </span></span><span style="display:flex;"><span>	}	
@@ -379,55 +472,55 @@ if (!doNotTrack) {
 <li>打开systick定时器</li>
 </ol>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define LED GPIO_Pin_All
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span><span style="color:#fff;font-weight:bold">void</span> delay_us(u32 i)
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay_us(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    u32 temp;
 </span></span><span style="display:flex;"><span>    SysTick-&gt;LOAD = <span style="color:#ff0;font-weight:bold">9</span>*i;		<span style="color:#007f7f">//设置重装数值 72MHz时
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SysTick-&gt;CTRL = <span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零时无动作，采用外部时钟源(8分频系统时钟)
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SysTick-&gt;VAL = <span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    <span style="color:#fff;font-weight:bold">do</span>
+</span></span></span><span style="display:flex;"><span>    SysTick-&gt;CTRL = <span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零时无动作，采用外部时钟源(8分频系统时钟)
+</span></span></span><span style="display:flex;"><span>    SysTick-&gt;VAL = <span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
+</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">do</span>
 </span></span><span style="display:flex;"><span>    {
 </span></span><span style="display:flex;"><span>        temp = SysTick-&gt;CTRL;	<span style="color:#007f7f">//读取当前计数值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    }
+</span></span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span>((temp &amp; <span style="color:#ff0;font-weight:bold">0x01</span>) &amp;&amp; (!(temp &amp;(<span style="color:#ff0;font-weight:bold">1</span>&lt;&lt;<span style="color:#ff0;font-weight:bold">16</span>))));	
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//与运算取出指定位的数值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    <span style="color:#007f7f">//实际上就是CTRL寄存器的第1位为0或第16位为1时，退出循环
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//关闭计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SysTick-&gt;VAL = <span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清空计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//实际上就是CTRL寄存器的第1位为0或第16位为1时，退出循环
+</span></span></span><span style="display:flex;"><span>    SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//关闭计数器
+</span></span></span><span style="display:flex;"><span>    SysTick-&gt;VAL = <span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清空计数器
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay_ms(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	u32 temp;
 </span></span><span style="display:flex;"><span>	SysTick-&gt;LOAD=<span style="color:#ff0;font-weight:bold">9000</span>*i;	  <span style="color:#007f7f">//设置重装数值, 72MHZ时
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">do</span>
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">do</span>
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		temp=SysTick-&gt;CTRL;	   <span style="color:#007f7f">//读取当前倒计数值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}
+</span></span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>((temp&amp;<span style="color:#ff0;font-weight:bold">0x01</span>)&amp;&amp;(!(temp&amp;(<span style="color:#ff0;font-weight:bold">1</span>&lt;&lt;<span style="color:#ff0;font-weight:bold">16</span>))));	<span style="color:#007f7f">//等待时间到达
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//LED的GPIO初始化程序
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">void</span> LED_Init()
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> LED_Init()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//GPIO时钟初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SystemInit();
+</span></span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//配置GPIO模式和端口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Pin = LED;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = LED;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  <span style="color:#007f7f">//推挽模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOC,&amp;GPIO_InitStructure);	 	<span style="color:#007f7f">//初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{
@@ -439,7 +532,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        {
 </span></span><span style="display:flex;"><span>            GPIO_Write(GPIOC,(u16)~(<span style="color:#ff0;font-weight:bold">0x01</span>&lt;&lt;i));
 </span></span><span style="display:flex;"><span>            delay_ms(<span style="color:#ff0;font-weight:bold">1000</span>);		<span style="color:#007f7f">//精确延时1秒
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        }
+</span></span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h4 id="系统时钟实验">系统时钟实验<a hidden class="anchor" aria-hidden="true" href="#系统时钟实验">#</a></h4>
@@ -475,34 +568,34 @@ if (!doNotTrack) {
 </ol>
 </blockquote>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//在上一个实验基础上
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//在上一个实验基础上
 </span></span></span><span style="display:flex;"><span><span style="color:#007f7f">//自定义系统时钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">void</span> RCC_HSE_Configuration()
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> RCC_HSE_Configuration()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    RCC_DeInit();				<span style="color:#007f7f">//重置RCC外设寄存器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    RCC_HSEConfig(RCC_HSE_ON);	<span style="color:#007f7f">//设置外部高速晶振（HSE）
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    <span style="color:#fff;font-weight:bold">if</span>(RCC_WaitForHSEStartUp() == SUCCESS)		<span style="color:#007f7f">//等待HSE起振
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    {
+</span></span></span><span style="display:flex;"><span>    RCC_HSEConfig(RCC_HSE_ON);	<span style="color:#007f7f">//设置外部高速晶振（HSE）
+</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(RCC_WaitForHSEStartUp() == SUCCESS)		<span style="color:#007f7f">//等待HSE起振
+</span></span></span><span style="display:flex;"><span>    {
 </span></span><span style="display:flex;"><span>        RCC_HCLKConfig(RCC_SYSCLK_Div1);	<span style="color:#007f7f">//设置AHB时钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        RCC_PCLK1Config(RCC_HCLK_Div2);		<span style="color:#007f7f">//设置低速AHB时钟（PCLK1）
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        RCC_PCLK2Config(RCC_HCLK_Div1);		<span style="color:#007f7f">//设置高速AHB时钟（PCLK2）
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        RCC_PLLConfig(RCC_PLLSource_HSE_Div2,RCC_PLLMul_9);<span style="color:#007f7f">//设置PLL时钟源及倍频系数，实际系统时钟36MHz
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        RCC_PLLCmd(ENABLE);					<span style="color:#007f7f">//PLL使能
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        <span style="color:#fff;font-weight:bold">while</span>(RCC_GetFlagStatus(RCC_FLAG_PLLRDY)==RESET);<span style="color:#007f7f">//检查指定的RCC标志位设置与否，PLL就绪
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);	<span style="color:#007f7f">//设置系统时钟（SYSCLK）
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        <span style="color:#fff;font-weight:bold">while</span>(RCC_GetSYSCLKSource()<span style="color:#f00">网易</span> != <span style="color:#ff0;font-weight:bold">0x08</span>);		<span style="color:#007f7f">//返回用作系统时钟的时钟源，0x08，PLL作为系统时钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    }
+</span></span></span><span style="display:flex;"><span>        RCC_PCLK1Config(RCC_HCLK_Div2);		<span style="color:#007f7f">//设置低速AHB时钟（PCLK1）
+</span></span></span><span style="display:flex;"><span>        RCC_PCLK2Config(RCC_HCLK_Div1);		<span style="color:#007f7f">//设置高速AHB时钟（PCLK2）
+</span></span></span><span style="display:flex;"><span>        RCC_PLLConfig(RCC_PLLSource_HSE_Div2,RCC_PLLMul_9);<span style="color:#007f7f">//设置PLL时钟源及倍频系数，实际系统时钟36MHz
+</span></span></span><span style="display:flex;"><span>        RCC_PLLCmd(ENABLE);					<span style="color:#007f7f">//PLL使能
+</span></span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">while</span>(RCC_GetFlagStatus(RCC_FLAG_PLLRDY)==RESET);<span style="color:#007f7f">//检查指定的RCC标志位设置与否，PLL就绪
+</span></span></span><span style="display:flex;"><span>        RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);	<span style="color:#007f7f">//设置系统时钟（SYSCLK）
+</span></span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">while</span>(RCC_GetSYSCLKSource()<span style="color:#f00">网易</span> != <span style="color:#ff0;font-weight:bold">0x08</span>);		<span style="color:#007f7f">//返回用作系统时钟的时钟源，0x08，PLL作为系统时钟
+</span></span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    LED_Init();
 </span></span><span style="display:flex;"><span>    RCC_HSE_Configuration();	<span style="color:#007f7f">//自定义系统时钟，修改倍频或分频参数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    <span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
 </span></span><span style="display:flex;"><span>    {
 </span></span><span style="display:flex;"><span>        GPIO_SetBits(GPIOC,LED);
 </span></span><span style="display:flex;"><span>        delay_ms(<span style="color:#ff0;font-weight:bold">500</span>);			<span style="color:#007f7f">//精确延时0.5s，实际延时1s
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>        GPIO_ResetBits(GPIOC,LED);
+</span></span></span><span style="display:flex;"><span>        GPIO_ResetBits(GPIOC,LED);
 </span></span><span style="display:flex;"><span>        delay_ms(<span style="color:#ff0;font-weight:bold">500</span>);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
@@ -510,83 +603,83 @@ if (!doNotTrack) {
 <blockquote>
 <p>注意按键5ms-10ms左右的延时消抖，注意按键的上拉还是下拉</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define K_UP GPIO_Pin_0 </span><span style="color:#007f7f">//PA0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#define K_DOWN GPIO_Pin_3 </span><span style="color:#007f7f">//PE3
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#define K_LEFT GPIO_Pin_2 </span><span style="color:#007f7f">//PE2
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#define K_RIGHT GPIO_Pin_4 </span><span style="color:#007f7f">//PE4
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define K_DOWN GPIO_Pin_3 </span><span style="color:#007f7f">//PE3
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define K_LEFT GPIO_Pin_2 </span><span style="color:#007f7f">//PE2
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define K_RIGHT GPIO_Pin_4 </span><span style="color:#007f7f">//PE4
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define k_up GPIO_ReadInputDataBit(GPIOA,K_UP)		  </span><span style="color:#007f7f">//获取按键的状态
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#define k_down GPIO_ReadInputDataBit(GPIOE,K_DOWN)
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define k_down GPIO_ReadInputDataBit(GPIOE,K_DOWN)
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define k_left GPIO_ReadInputDataBit(GPIOE,K_LEFT)
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define k_right GPIO_ReadInputDataBit(GPIOE,K_RIGHT)
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define LED GPIO_Pin_All	
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay_ms(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	u32 temp;
 </span></span><span style="display:flex;"><span>	SysTick-&gt;LOAD=<span style="color:#ff0;font-weight:bold">9000</span>*i;	  <span style="color:#007f7f">//设置重装数值, 72MHZ时
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">do</span>
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">do</span>
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		temp=SysTick-&gt;CTRL;	   <span style="color:#007f7f">//读取当前倒计数值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}
+</span></span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>((temp&amp;<span style="color:#ff0;font-weight:bold">0x01</span>)&amp;&amp;(!(temp&amp;(<span style="color:#ff0;font-weight:bold">1</span>&lt;&lt;<span style="color:#ff0;font-weight:bold">16</span>))));	<span style="color:#007f7f">//等待时间到达
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//LED的GPIO初始化程序
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">void</span> LED_Init()
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> LED_Init()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//GPIO时钟初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SystemInit();
+</span></span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//配置GPIO模式和端口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Pin = LED;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = LED;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  <span style="color:#007f7f">//推挽模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOC,&amp;GPIO_InitStructure);	 	<span style="color:#007f7f">//初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> key_init(<span style="color:#fff;font-weight:bold">void</span>)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//开启GPIO时钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOE,ENABLE);
+</span></span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOE,ENABLE);
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">/*  配置GPIO的模式和IO口 */</span>
 </span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Pin=K_UP;	   <span style="color:#007f7f">//选择你要设置的IO口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IPD;<span style="color:#007f7f">//下拉输入  
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;	   <span style="color:#007f7f">//设置传输速率
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	GPIO_Init(GPIOA,&amp;GPIO_InitStructure);		  <span style="color:#007f7f">/* 初始化GPIO */</span>
+</span></span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IPD;<span style="color:#007f7f">//下拉输入  
+</span></span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;	   <span style="color:#007f7f">//设置传输速率
+</span></span></span><span style="display:flex;"><span>	GPIO_Init(GPIOA,&amp;GPIO_InitStructure);		  <span style="color:#007f7f">/* 初始化GPIO */</span>
 </span></span><span style="display:flex;"><span>	
 </span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Pin=K_DOWN|K_LEFT|K_RIGHT;
 </span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IPU;	<span style="color:#007f7f">//上拉输入
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>	GPIO_Init(GPIOE,&amp;GPIO_InitStructure);
 </span></span><span style="display:flex;"><span>				
 </span></span><span style="display:flex;"><span>	GPIO_ResetBits(GPIOA,K_UP);	<span style="color:#007f7f">//对K_UP初始化输出0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    
+</span></span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> key_pros()	  <span style="color:#007f7f">//按键处理函数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>{
+</span></span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span>(k_up==<span style="color:#ff0;font-weight:bold">1</span>)	  <span style="color:#007f7f">//判断按键k_up是否按下
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	{
+</span></span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		delay_ms(<span style="color:#ff0;font-weight:bold">10</span>); <span style="color:#007f7f">//消抖处理
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>		<span style="color:#fff;font-weight:bold">if</span>(k_up==<span style="color:#ff0;font-weight:bold">1</span>)	 <span style="color:#007f7f">//再次判断按键k_up是否按下
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>		{
+</span></span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span>(k_up==<span style="color:#ff0;font-weight:bold">1</span>)	 <span style="color:#007f7f">//再次判断按键k_up是否按下
+</span></span></span><span style="display:flex;"><span>		{
 </span></span><span style="display:flex;"><span>			GPIO_Write(GPIOC,(u16)<span style="color:#ff0;font-weight:bold">0xfe</span>);			
 </span></span><span style="display:flex;"><span>		}
 </span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">while</span>(k_up); <span style="color:#007f7f">//等待按键松开
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}
+</span></span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span>(k_down==<span style="color:#ff0;font-weight:bold">0</span>)
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		delay_ms(<span style="color:#ff0;font-weight:bold">10</span>);
@@ -619,51 +712,51 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{		  
 </span></span><span style="display:flex;"><span>	LED_Init();	<span style="color:#007f7f">//LED初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	key_init();		 <span style="color:#007f7f">//按键端口初始化函数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	GPIO_Write(GPIOC,(u16)(<span style="color:#ff0;font-weight:bold">0xff</span>));
+</span></span></span><span style="display:flex;"><span>	key_init();		 <span style="color:#007f7f">//按键端口初始化函数
+</span></span></span><span style="display:flex;"><span>	GPIO_Write(GPIOC,(u16)(<span style="color:#ff0;font-weight:bold">0xff</span>));
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
 </span></span><span style="display:flex;"><span>	{	
 </span></span><span style="display:flex;"><span>		key_pros();	<span style="color:#007f7f">//按键处理函数						
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}	
+</span></span></span><span style="display:flex;"><span>	}	
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h4 id="数码管实验">数码管实验<a hidden class="anchor" aria-hidden="true" href="#数码管实验">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define smg_duan (GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7)</span><span style="color:#007f7f">//PC0~PC7 
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>u8 smgduan[<span style="color:#ff0;font-weight:bold">16</span>]={<span style="color:#ff0;font-weight:bold">0x3F</span>, <span style="color:#ff0;font-weight:bold">0x06</span>, <span style="color:#ff0;font-weight:bold">0x5B</span>, <span style="color:#ff0;font-weight:bold">0x4F</span>, <span style="color:#ff0;font-weight:bold">0x66</span>, <span style="color:#ff0;font-weight:bold">0x6D</span>, <span style="color:#ff0;font-weight:bold">0x7D</span>, <span style="color:#ff0;font-weight:bold">0x07</span>,
 </span></span><span style="display:flex;"><span>             <span style="color:#ff0;font-weight:bold">0x7F</span>, <span style="color:#ff0;font-weight:bold">0x6F</span>, <span style="color:#ff0;font-weight:bold">0x77</span>, <span style="color:#ff0;font-weight:bold">0x7C</span>, <span style="color:#ff0;font-weight:bold">0x39</span>, <span style="color:#ff0;font-weight:bold">0x5E</span>, <span style="color:#ff0;font-weight:bold">0x79</span>, <span style="color:#ff0;font-weight:bold">0x71</span>};<span style="color:#007f7f">//0~F 数码管段选数据
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay_ms(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	u32 temp;
 </span></span><span style="display:flex;"><span>	SysTick-&gt;LOAD=<span style="color:#ff0;font-weight:bold">9000</span>*i;	  <span style="color:#007f7f">//设置重装数值, 72MHZ时
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">do</span>
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">do</span>
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		temp=SysTick-&gt;CTRL;	   <span style="color:#007f7f">//读取当前倒计数值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}
+</span></span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>((temp&amp;<span style="color:#ff0;font-weight:bold">0x01</span>)&amp;&amp;(!(temp&amp;(<span style="color:#ff0;font-weight:bold">1</span>&lt;&lt;<span style="color:#ff0;font-weight:bold">16</span>))));	<span style="color:#007f7f">//等待时间到达
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> smg_init()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	GPIO_InitTypeDef GPIO_InitStructure;  <span style="color:#007f7f">//声明一个结构体变量，用来初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#007f7f">/* 开启GPIO时钟 */</span>
+</span></span></span><span style="display:flex;"><span>	<span style="color:#007f7f">/* 开启GPIO时钟 */</span>
 </span></span><span style="display:flex;"><span>	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	
 </span></span><span style="display:flex;"><span>	<span style="color:#007f7f">/*  配置GPIO的模式和IO口 */</span>
 </span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Pin=smg_duan;	  <span style="color:#007f7f">//选择你要设置的IO口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
+</span></span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
 </span></span><span style="display:flex;"><span>	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>	GPIO_Init(GPIOC,&amp;GPIO_InitStructure);		<span style="color:#007f7f">/* 初始化GPIO */</span>
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> static_smg_display()	<span style="color:#007f7f">//静态数码管显示
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>{	
+</span></span></span><span style="display:flex;"><span>{	
 </span></span><span style="display:flex;"><span>	u8 i;
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">for</span>(i=<span style="color:#ff0;font-weight:bold">0</span>;i&lt;<span style="color:#ff0;font-weight:bold">16</span>;i++)
 </span></span><span style="display:flex;"><span>	{
@@ -675,112 +768,112 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
 </span></span><span style="display:flex;"><span>{		  
 </span></span><span style="display:flex;"><span>	smg_init();	 <span style="color:#007f7f">//数码管端口初始化函数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		static_smg_display();	<span style="color:#007f7f">//静态数码管显示
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}	
+</span></span></span><span style="display:flex;"><span>	}	
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h3 id="中断和定时器">中断和定时器<a hidden class="anchor" aria-hidden="true" href="#中断和定时器">#</a></h3>
 <h4 id="外部中断实验">外部中断实验<a hidden class="anchor" aria-hidden="true" href="#外部中断实验">#</a></h4>
 <blockquote>
 <p>注意将端口引脚映射到外部中断线路上，注意配置中断优先级</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x_exti.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;misc.h&#34;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define k_left GPIO_Pin_2
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define LED GPIO_Pin_All
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> delay_ms(u32 i)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	u32 temp;
 </span></span><span style="display:flex;"><span>	SysTick-&gt;LOAD=<span style="color:#ff0;font-weight:bold">9000</span>*i;	  <span style="color:#007f7f">//设置重装数值, 72MHZ时
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	<span style="color:#fff;font-weight:bold">do</span>
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0x01</span>;		<span style="color:#007f7f">//使能，减到零是无动作，采用外部时钟源
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//清零计数器
+</span></span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">do</span>
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>		temp=SysTick-&gt;CTRL;	   <span style="color:#007f7f">//读取当前倒计数值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}
+</span></span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">while</span>((temp&amp;<span style="color:#ff0;font-weight:bold">0x01</span>)&amp;&amp;(!(temp&amp;(<span style="color:#ff0;font-weight:bold">1</span>&lt;&lt;<span style="color:#ff0;font-weight:bold">16</span>))));	<span style="color:#007f7f">//等待时间到达
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>}
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;CTRL=<span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//关闭计数器
+</span></span></span><span style="display:flex;"><span>	SysTick-&gt;VAL=<span style="color:#ff0;font-weight:bold">0</span>;		<span style="color:#007f7f">//清空计数器
+</span></span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//LED的GPIO初始化程序
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">void</span> led_init(<span style="color:#fff;font-weight:bold">void</span>)
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> led_init(<span style="color:#fff;font-weight:bold">void</span>)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//GPIO时钟初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SystemInit();
+</span></span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//配置GPIO模式和端口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Pin = LED;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = LED;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  <span style="color:#007f7f">//推挽模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOC,&amp;GPIO_InitStructure);	 	<span style="color:#007f7f">//初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    
+</span></span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    GPIO_SetBits(GPIOC,LED);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> exti_init(<span style="color:#fff;font-weight:bold">void</span>)		<span style="color:#007f7f">//外部中断初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>{
+</span></span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    EXTI_InitTypeDef EXTI_InitStructure;
 </span></span><span style="display:flex;"><span>    NVIC_InitTypeDef NVIC_InitStructure;
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//开启GPIO时钟，用到了时引脚复用功能，开启复用时钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
+</span></span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = k_left;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	<span style="color:#007f7f">//上拉输入
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOE,&amp;GPIO_InitStructure);
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//选择外部中断线路对应的GPIO管脚，此处是PE2
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource2);
+</span></span></span><span style="display:flex;"><span>    GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource2);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//设置外部中断的模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+</span></span></span><span style="display:flex;"><span>    EXTI_InitStructure.EXTI_Line = EXTI_Line2;
 </span></span><span style="display:flex;"><span>    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 </span></span><span style="display:flex;"><span>    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;	<span style="color:#007f7f">//下降沿触发
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+</span></span></span><span style="display:flex;"><span>    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 </span></span><span style="display:flex;"><span>    EXTI_Init(&amp;EXTI_InitStructure);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//设置NVIC参数（nested vector interrupt config)
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+</span></span></span><span style="display:flex;"><span>    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 </span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;	<span style="color:#007f7f">//打开EXTI2的全局中断
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = <span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//抢占优先级为0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitStructure.NVIC_IRQChannelSubPriority = <span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//响应优先级为0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;				<span style="color:#007f7f">//使能
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_Init(&amp;NVIC_InitStructure);
+</span></span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = <span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//抢占优先级为0
+</span></span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannelSubPriority = <span style="color:#ff0;font-weight:bold">0</span>;			<span style="color:#007f7f">//响应优先级为0
+</span></span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;				<span style="color:#007f7f">//使能
+</span></span></span><span style="display:flex;"><span>    NVIC_Init(&amp;NVIC_InitStructure);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> EXTI2_IRQHandler(<span style="color:#fff;font-weight:bold">void</span>)	   <span style="color:#007f7f">//外部中断2中断处理函数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>{
+</span></span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">if</span>(EXTI_GetITStatus(EXTI_Line2)==SET)
 </span></span><span style="display:flex;"><span>	{
 </span></span><span style="display:flex;"><span>   		EXTI_ClearITPendingBit(EXTI_Line2);<span style="color:#007f7f">//清除EXTI2线路挂起位
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>		delay_ms(<span style="color:#ff0;font-weight:bold">10</span>);<span style="color:#007f7f">//消抖
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>		<span style="color:#fff;font-weight:bold">if</span>(GPIO_ReadInputDataBit(GPIOE,k_left)==Bit_RESET)	   <span style="color:#007f7f">//k_left按下
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>		{
+</span></span></span><span style="display:flex;"><span>		delay_ms(<span style="color:#ff0;font-weight:bold">10</span>);<span style="color:#007f7f">//消抖
+</span></span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">if</span>(GPIO_ReadInputDataBit(GPIOE,k_left)==Bit_RESET)	   <span style="color:#007f7f">//k_left按下
+</span></span></span><span style="display:flex;"><span>		{
 </span></span><span style="display:flex;"><span>			delay_ms(<span style="color:#ff0;font-weight:bold">10</span>);<span style="color:#007f7f">//消抖
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>			<span style="color:#fff;font-weight:bold">if</span>(GPIO_ReadOutputDataBit(GPIOC,GPIO_Pin_0)==Bit_RESET)
+</span></span></span><span style="display:flex;"><span>			<span style="color:#fff;font-weight:bold">if</span>(GPIO_ReadOutputDataBit(GPIOC,GPIO_Pin_0)==Bit_RESET)
 </span></span><span style="display:flex;"><span>			{
 </span></span><span style="display:flex;"><span>				<span style="color:#007f7f">//LED熄灭
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>			   GPIO_SetBits(GPIOC,GPIO_Pin_0);	
+</span></span></span><span style="display:flex;"><span>			   GPIO_SetBits(GPIOC,GPIO_Pin_0);	
 </span></span><span style="display:flex;"><span>			}
 </span></span><span style="display:flex;"><span>			<span style="color:#fff;font-weight:bold">else</span>
 </span></span><span style="display:flex;"><span>			{
 </span></span><span style="display:flex;"><span>			   <span style="color:#007f7f">//LED发光
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>				GPIO_ResetBits(GPIOC,GPIO_Pin_0);
+</span></span></span><span style="display:flex;"><span>				GPIO_ResetBits(GPIOC,GPIO_Pin_0);
 </span></span><span style="display:flex;"><span>			}
 </span></span><span style="display:flex;"><span>		} 
 </span></span><span style="display:flex;"><span>		<span style="color:#fff;font-weight:bold">while</span>(GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_2)==<span style="color:#ff0;font-weight:bold">0</span>);	<span style="color:#007f7f">//等待按键松开
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>	}		
+</span></span></span><span style="display:flex;"><span>	}		
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
@@ -802,61 +895,61 @@ if (!doNotTrack) {
 </ul>
 <p><strong>注</strong>:TIM2-TIM7的时钟由APB1产生，TIM1和TIM8是由APB2产生时钟</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//实现1s流水灯实验
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//实现1s流水灯实验
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x_tim.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;stm32f10x_exti.h&#34;</span><span style="color:#0f0;font-weight:bold">
 </span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;misc.h&#34;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define LED GPIO_Pin_All
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold"></span>
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#007f7f">//LED的GPIO初始化程序
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">void</span> led_init(<span style="color:#fff;font-weight:bold">void</span>)
+</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> led_init(<span style="color:#fff;font-weight:bold">void</span>)
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    GPIO_InitTypeDef GPIO_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//GPIO时钟初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    SystemInit();
+</span></span></span><span style="display:flex;"><span>    SystemInit();
 </span></span><span style="display:flex;"><span>    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//配置GPIO模式和端口
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Pin = LED;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Pin = LED;
 </span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  <span style="color:#007f7f">//推挽模式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+</span></span></span><span style="display:flex;"><span>    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 </span></span><span style="display:flex;"><span>    GPIO_Init(GPIOC,&amp;GPIO_InitStructure);	 	<span style="color:#007f7f">//初始化GPIO
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    
+</span></span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> time_init()
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;	<span style="color:#007f7f">//定时器初始化结构体
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitTypeDef NVIC_InitStructure;
+</span></span></span><span style="display:flex;"><span>    NVIC_InitTypeDef NVIC_InitStructure;
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//开启定时器3时钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
+</span></span></span><span style="display:flex;"><span>    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    TIM_ClearITPendingBit(TIM3,TIM_IT_Update);	<span style="color:#007f7f">//清除TIMx的中断待处理位：TIM中断源
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    
+</span></span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    TIM_TimeBaseInitStructure.TIM_Period = <span style="color:#ff0;font-weight:bold">2000</span>;<span style="color:#007f7f">//设置自动重装寄存器周期的值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    TIM_TimeBaseInitStructure.TIM_Prescaler = <span style="color:#ff0;font-weight:bold">36000</span>-<span style="color:#ff0;font-weight:bold">1</span>;<span style="color:#007f7f">//设置作为TIMx时钟频率的预分频值，2Khz计数频率
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    TIM_TimeBaseInitStructure.TIM_ClockDivision = <span style="color:#ff0;font-weight:bold">0</span>;<span style="color:#007f7f">//设置时钟分割：TDTS = Tck_tim
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;<span style="color:#007f7f">//向上计数模式 
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    TIM_TimeBaseInit(TIM3,&amp;TIM_TimeBaseInitStructure);
+</span></span></span><span style="display:flex;"><span>    TIM_TimeBaseInitStructure.TIM_Prescaler = <span style="color:#ff0;font-weight:bold">36000</span>-<span style="color:#ff0;font-weight:bold">1</span>;<span style="color:#007f7f">//设置作为TIMx时钟频率的预分频值，2Khz计数频率
+</span></span></span><span style="display:flex;"><span>    TIM_TimeBaseInitStructure.TIM_ClockDivision = <span style="color:#ff0;font-weight:bold">0</span>;<span style="color:#007f7f">//设置时钟分割：TDTS = Tck_tim
+</span></span></span><span style="display:flex;"><span>    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;<span style="color:#007f7f">//向上计数模式 
+</span></span></span><span style="display:flex;"><span>    TIM_TimeBaseInit(TIM3,&amp;TIM_TimeBaseInitStructure);
 </span></span><span style="display:flex;"><span>    TIM_Cmd(TIM3,ENABLE);	<span style="color:#007f7f">//使能或失能TIMx外设
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    
+</span></span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//设置中断参数，并打开中断
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);	<span style="color:#007f7f">//使能或失能指定的TIM中断
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    
+</span></span></span><span style="display:flex;"><span>    TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);	<span style="color:#007f7f">//使能或失能指定的TIM中断
+</span></span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//设置NVIC参数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+</span></span></span><span style="display:flex;"><span>    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 </span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;	<span style="color:#007f7f">//打开EXTI2的全局中断
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = <span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//抢占优先级为0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitStructure.NVIC_IRQChannelSubPriority = <span style="color:#ff0;font-weight:bold">1</span>;			<span style="color:#007f7f">//响应优先级为1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;				<span style="color:#007f7f">//使能
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>    NVIC_Init(&amp;NVIC_InitStructure);
+</span></span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = <span style="color:#ff0;font-weight:bold">0</span>;	<span style="color:#007f7f">//抢占优先级为0
+</span></span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannelSubPriority = <span style="color:#ff0;font-weight:bold">1</span>;			<span style="color:#007f7f">//响应优先级为1
+</span></span></span><span style="display:flex;"><span>    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;				<span style="color:#007f7f">//使能
+</span></span></span><span style="display:flex;"><span>    NVIC_Init(&amp;NVIC_InitStructure);
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> TIM3_IRQHandler()		<span style="color:#007f7f">//定时器3的中断处理函数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"></span>{
+</span></span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">static</span> u8 i = <span style="color:#ff0;font-weight:bold">0</span>;
 </span></span><span style="display:flex;"><span>    TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
 </span></span><span style="display:flex;"><span>    GPIO_Write(GPIOC,(u16)~(<span style="color:#ff0;font-weight:bold">0x01</span>&lt;&lt;i++));
@@ -872,27 +965,23 @@ if (!doNotTrack) {
 </span></span></code></pre></div>
 
   </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="https://blog.niuhemoon.win/tags/c/">C</a></li>
       <li><a href="https://blog.niuhemoon.win/tags/stm32/">STM32</a></li>
     </ul>
-<div class="footer-comments">
-  <p>For comments, please   <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">
-    send an email
-</a> to me</p>
-
-</div>
 <nav class="paginav">
   <a class="prev" href="https://blog.niuhemoon.win/posts/tech/anki-python/">
     <span class="title">« 上一页</span>
-    <br>
     <span>Python 生成ankidroid单词表/语音包</span>
   </a>
   <a class="next" href="https://blog.niuhemoon.win/posts/tech/virual-lidar/">
     <span class="title">下一页 »</span>
-    <br>
     <span>Virtualbox虚拟机连接雷达和UART串口</span>
   </a>
 </nav>
@@ -902,32 +991,34 @@ if (!doNotTrack) {
     </main>
     
 <footer class="footer">
-      
-    <span>&copy; 2025 <a href="https://blog.niuhemoon.win">Niuhe&#39;s Blog</a></span>
-    <span xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
-        Licensed under
-        <a
-          href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1"
-          target="_blank"
-          rel="license noopener noreferrer"
-          style="display:inline-block;"
-          >CC BY-NC-SA 4.0 </a></span>
+        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
     <span>
         Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
     </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
     </svg>
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -954,25 +1045,25 @@ if (!doNotTrack) {
 
 </script>
 <script>
-    var mybutton = document.getElementById("top-link");
+    var toplink = document.getElementById("top-link");
     window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
         } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
+            toplink.classList.add("hidden");
         }
     };
 
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
@@ -984,12 +1075,12 @@ if (!doNotTrack) {
 
         const copybutton = document.createElement('button');
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '📄复制';
+        copybutton.innerHTML = '复制';
 
         function copyingDone() {
-            copybutton.innerHTML = '👌🏻已复制!';
+            copybutton.innerHTML = '已复制！';
             setTimeout(() => {
-                copybutton.innerHTML = '📄复制';
+                copybutton.innerHTML = '复制';
             }, 2000);
         }
 

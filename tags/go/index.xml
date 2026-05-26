@@ -4,35 +4,70 @@
     <title>Go on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/go/</link>
     <description>Recent content in Go on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 13 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 13 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>跨语言JSON-RPC通信实现：Go与Python互操作Demo</title>
       <link>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</link>
       <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/cross-language-json-rpc-go-python/</guid>
       <description>演示如何在Go和Python之间实现JSON-RPC通信，包括两种场景：Go服务器&#43;Python客户端，Python服务器&#43;Go客户端</description>
     </item>
-    
     <item>
       <title>golang限制函数同时调用次数</title>
       <link>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</link>
       <pubDate>Thu, 04 Mar 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/</guid>
-      <description>使用select语句和带缓冲区的channel来控制函数并发执行次数 package main import ( &amp;#34;fmt&amp;#34; &amp;#34;time&amp;#34; ) // cocurrency number of the do func const cnum = 3 func main() { var jobs = make(chan bool, cnum) for { for i := 0; i &amp;lt; 10; i++ { go frqLimit(do, jobs, i) } time.Sleep(4e9) } } func frqLimit(f func(), jobChan chan bool, i int) { select { case jobChan &amp;lt;- true: f() &amp;lt;-jobChan default: fmt.Println(&amp;#34;job channel is full. pass &amp;#34;, i) } fmt.Println(&amp;#34;jobs&amp;#34;, i, &amp;#34;exit&amp;#34;) } func do() { time.Sleep(3e9) fmt.Println(&amp;#34;job done&amp;#34;) }</description>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;使用select语句和带缓冲区的channel来控制函数并发执行次数&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#0ff;font-weight:bold&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#0ff;font-weight:bold&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007f7f&#34;&gt;// cocurrency number of the do func&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;const&lt;/span&gt; cnum = &lt;span style=&#34;color:#ff0;font-weight:bold&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;func&lt;/span&gt; main() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;var&lt;/span&gt; jobs = &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;chan&lt;/span&gt; &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;bool&lt;/span&gt;, cnum)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;for&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;for&lt;/span&gt; i := &lt;span style=&#34;color:#ff0;font-weight:bold&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span style=&#34;color:#ff0;font-weight:bold&#34;&gt;10&lt;/span&gt;; i++ {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;go&lt;/span&gt; frqLimit(do, jobs, i)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		time.Sleep(&lt;span style=&#34;color:#ff0;font-weight:bold&#34;&gt;4e9&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;func&lt;/span&gt; frqLimit(f &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;func&lt;/span&gt;(), jobChan &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;chan&lt;/span&gt; &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;bool&lt;/span&gt;, i &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;select&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;case&lt;/span&gt; jobChan &amp;lt;- &lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;true&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		f()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&amp;lt;-jobChan
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;default&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		fmt.Println(&lt;span style=&#34;color:#0ff;font-weight:bold&#34;&gt;&amp;#34;job channel is full. pass &amp;#34;&lt;/span&gt;, i)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.Println(&lt;span style=&#34;color:#0ff;font-weight:bold&#34;&gt;&amp;#34;jobs&amp;#34;&lt;/span&gt;, i, &lt;span style=&#34;color:#0ff;font-weight:bold&#34;&gt;&amp;#34;exit&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#fff;font-weight:bold&#34;&gt;func&lt;/span&gt; do() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	time.Sleep(&lt;span style=&#34;color:#ff0;font-weight:bold&#34;&gt;3e9&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.Println(&lt;span style=&#34;color:#0ff;font-weight:bold&#34;&gt;&amp;#34;job done&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
-    
     <item>
       <title>Go语言和Makefile</title>
       <link>https://blog.niuhemoon.win/posts/tech/golang-makefile/</link>
       <pubDate>Sat, 27 Feb 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/golang-makefile/</guid>
       <description>Makefile基础和Golang的Makefile模板</description>
     </item>
-    
   </channel>
 </rss>

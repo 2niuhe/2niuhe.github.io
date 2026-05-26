@@ -4,17 +4,16 @@
     <title>Frp on Niuhe&#39;s Blog</title>
     <link>https://blog.niuhemoon.win/tags/frp/</link>
     <description>Recent content in Frp on Niuhe&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <lastBuildDate>Fri, 30 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.niuhemoon.win/tags/frp/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 May 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.niuhemoon.win/tags/frp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>FRP内网穿透与NoMachine远程桌面使用指南</title>
       <link>https://blog.niuhemoon.win/posts/tech/frp-nomachine-guide/</link>
       <pubDate>Fri, 30 May 2025 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.niuhemoon.win/posts/tech/frp-nomachine-guide/</guid>
       <description>通过FRP实现内网穿透并使用NoMachine进行远程桌面控制</description>
     </item>
-    
   </channel>
 </rss>
