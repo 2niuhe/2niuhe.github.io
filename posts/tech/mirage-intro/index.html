@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Mirage技术分析 | Niuhe&#39;s Blog</title>
+<meta name="keywords" content="Mirage, GPU">
+<meta name="description" content="介绍Mirage项目">
+<meta name="author" content="Niuhe">
+<link rel="canonical" href="http://localhost:1313/posts/tech/mirage-intro/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/base/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/base/favicon.ico">
+<link rel="apple-touch-icon" href="http://localhost:1313/base/avatar.jpeg">
+<link rel="mask-icon" href="http://localhost:1313/base/avatar.jpeg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/posts/tech/mirage-intro/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+
+<style>
+.notice {
+    --root-color: #444;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #c33;
+    --warning-content: #fee;
+    --info-title: #fb7;
+    --info-content: #fec;
+    --note-title: #6be;
+    --note-content: #e7f2fa;
+    --tip-title: #5a5;
+    --tip-content: #efe;
+    padding: 18px;
+    line-height: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: var(--root-color);
+    background: var(--root-background);
+}
+
+html[data-theme="dark"] .notice {
+    --root-color: #ddd;
+    --root-background: #eff;
+    --title-color: #fff;
+    --title-background: #7bd;
+    --warning-title: #800;
+    --warning-content: #400;
+    --info-title: #a50;
+    --info-content: #420;
+    --note-title: #069;
+    --note-content: #023;
+    --tip-title: #363;
+    --tip-content: #121;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.notice-title {
+    margin: -18px -18px 12px;
+    padding: 4px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    color: var(--title-color);
+    background: var(--title-background);
+}
+
+.notice.warning .notice-title { background: var(--warning-title); }
+.notice.warning { background: var(--warning-content); }
+.notice.info .notice-title { background: var(--info-title); }
+.notice.info { background: var(--info-content); }
+.notice.note .notice-title { background: var(--note-title); }
+.notice.note { background: var(--note-content); }
+.notice.tip .notice-title { background: var(--tip-title); }
+.notice.tip { background: var(--tip-content); }
+
+.icon-notice {
+    display: inline-flex;
+    align-self: center;
+    margin-right: 8px;
+}
+
+.icon-notice svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.icon-notice.baseline svg {
+    position: relative;
+    top: .125em;
+}
+
+.mermaid-wrapper {
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.mermaid-wrapper .mermaid {
+    background: transparent;
+    text-align: center;
+}
+</style>
+<meta property="og:url" content="http://localhost:1313/posts/tech/mirage-intro/">
+  <meta property="og:site_name" content="Niuhe&#39;s Blog">
+  <meta property="og:title" content="Mirage技术分析">
+  <meta property="og:description" content="介绍Mirage项目">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-10-04T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-10-04T00:00:00+00:00">
+    <meta property="article:tag" content="Mirage">
+    <meta property="article:tag" content="GPU">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Mirage技术分析">
+  <meta name="twitter:description" content="介绍Mirage项目">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "📚文章",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "👨🏻‍💻 技术",
+      "item": "http://localhost:1313/posts/tech/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Mirage技术分析",
+      "item": "http://localhost:1313/posts/tech/mirage-intro/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Mirage技术分析",
+  "name": "Mirage技术分析",
+  "description": "介绍Mirage项目\n",
+  "keywords": [
+    "Mirage", "GPU"
+  ],
+  "articleBody": "介绍Mirage项目\nMirage 技术分析 论文 现状 手动设计 依赖专家大量工程努力，可能无法发现所有可能的优化，特别是多个计算层次需要协调的优化 基于调度的优化 代表：Halide、TVM（Tensor Virtual Machine）、Ansor 等 基于算法和调度分离的思想，主要关注在计算不同层次的调度变换，通常不考虑算法级别变换，因此限制了优化的可能性 基于代数变换的优化 代表：TASO、Grappler、Tensat、PET 等。 关注算法级别的代数变换，例如将卷积转换成matmul，但需要程序员手动去定义和实现可用的内核，实际性能受限于程序员的工程实践 现有的super optimizer 主要关注Kernel层的代数变换，不能发现在GPU多计算层次中联合代数变换和调度变换的复杂优化 主要内容 提出$\\mu Graph$ 多层次图表示，分成三个层次：\nKernel Graph Thread Block Graph Thread Graph 通过$\\mu Graph$表示法统一捕捉代数和调度变换，在三个层次中进行联合优化，能够发现更深层次的优化机会。\n对tensor program做如下步骤\n代数表达式分解 SMT求解(z3 solver)、图生成 概率等价验证，获得一系列Valid Graph Transpiler代码生成cuda代码（优化Layout等内容） Mirage的include目录提供了生成的cuda代码依赖的runtime文件 测试生成代码性能，选择最优的 nvcc将cuda代码编译成so文件 python module加载so 运行测试时间后保留性能最强的 输入PyTorch程序：Mirage的工作流程从输入一个PyTorch程序开始。\nuGraph生成器搜索：\nMirage的uGraph生成器会自动搜索与输入功能匹配的可能uGraph。\n该搜索过程会捕获内核、线程块和线程级别的一系列GPU优化。\n等价验证：\n每个在此过程中生成的候选uGraph都会被转发到等价验证器。\n等价验证器检查uGraph是否与输入等价。\nuGraph转译：\nuGraph转译器将所有经过验证的uGraph转换为CUDA内核。 通过profile识别性能最佳内核并返回\n和传统的CUDA或者现在的Triton编程相比，是一种范式的改变，作者提出三大优势（这个技术路线可能做到的，不是现在已经做到）：\n更高的生产力 在Pytorch级别指定想要的计算，后面Mirage接管，自动生成适合各种GPU架构的高性能内核 将程序员从低级、特定体系架构的繁重任务中解放出来 更高的性能：自动搜索可能的优化，生成内核 正确性更强：形式化验证技术自动验证GPU内核的正确性 和Triton对比\nTriton的算法是程序开发者决定，不会做代数层面的优化 Triton通过编译器优化，基于一些预定义规则和启发式方法 Triton调度层面autotune优化策略依赖于自定义，搜索空间有限 Group Query Attention分析 Mirage相比Flash Decoding，性能提升达 2.2 倍\n项目分析 mirage-project/mirage: A multi-level tensor algebra superoptimizer\n项目的长期目标是让ML工程师通过指定数学运算过程，就可以在现代GPU上实现ML Model，通过Mirage的优化技术，自动转换成高度优化的GPU实现。\nLanguage files blank comment code ------------------------------------------------------------------------------- C++ 69 924 1217 10999 C/C++ Header 101 1212 1565 7850 SVG 7 0 0 3448 CUDA 15 127 378 1992 JSON 2 0 0 1873 Python 24 290 187 1564 CSS 1 303 81 1472 Cython 2 95 53 594 reStructuredText 12 199 207 532 CMake 5 47 68 304 Markdown 6 141 0 284 YAML 2 6 16 190 Bourne Shell 3 19 31 90 XML 6 0 0 83 HTML 2 2 23 58 DOS Batch 1 8 1 26 Dockerfile 1 7 15 20 Text 2 0 0 12 make 1 5 7 12 TOML 1 0 0 7 ------------------------------------------------------------------------------- SUM: 263 3385 3849 31410 ------------------------------------------------------------------------------ 当前状态 实验性阶段 只看到有推理场景的应用 发布了0.2版本，开发不太活跃，还没有形成社区 较多bug，没有稳定的API接口， 代码中很多案例跑不起来 当前没有相关的生态和应用 文档内容少，比较旧，对应的是早期的代码，目前文档中例子很多无法运行 未来发展方向 完善Python封装 作为代码生成器，将$\\mu Graph$ 转换成cuda或者triton代码 支持NVIDIA更多架构的GPU 支持AMD 支持混合精度 Python接口 当前发现问题 superoptimzer优化后给出的Kernel可以运行，但是结果不正确， 并且同样的输入多次运行，会有不同的输出 部分Graph，用superoptimzer无法生成Kernel 代码中支持从$\\mu Graph$生成Triton代码, 实际不可行 代码中声称支持的jit功能，一跑就core dump报错（Transpiler代码问题） 作者案例 RMS Norm + MatMul 利用代数的交换律，将除法移动到MatMul之后，重新排列功能等效，但减少了device memory的访问\n效果 Attention with Query-Key Normalization 例如QK-Norm这种Attention的变体，标准的Attention中不包含这个LayerNorm的计算过程，需要单独启动Kernel，这时就涉及device memory的访问。Mirage自动融合并生成自定义内核。\n性能 实际案例 给出实际测试的案例，更能体现Mirage的用法和现状\n手写Graph (RMSNorm + MatMul) torch实现 rms_norm = torch.nn.RMSNorm(4096, device='cuda:0', dtype=torch.float16) #@torch.compile def torch_rms_norm(X, W): D = rms_norm(X) E = torch.matmul(D, W) return E mirage实现 # generate code graph = mi.new_kernel_graph() X = graph.new_input(dims=(16, 4096), dtype=mi.float16) W = graph.new_input(dims=(4096, 4096), dtype=mi.float16) tb_graph = mi.new_threadblock_graph(grid_dim=(64,1,1), block_dim=(128,1,1), forloop_range=64, reduction_dimx=64) tX = tb_graph.new_input(dtensor=X, input_map=(-1, -1, -1), forloop_dim=1) tW = tb_graph.new_input(dtensor=W, input_map=(1, -1, -1), forloop_dim=0) tM = tb_graph.matmul(tX, tW) tAccX = tb_graph.forloop_accum(tX, \"rms\") tAccM = tb_graph.forloop_accum(tM) tO = tb_graph.div(tAccM, tAccX) tb_graph.new_output(stensor=tO, output_map=(1, -1, -1)) O = graph.customized([X, W], tb_graph) torch.random.manual_seed(0) input_tensors = [ torch.randn(16, 4096, dtype=torch.float16, device='cuda:0'), torch.randn(4096, 4096, dtype=torch.float16, device='cuda:0'), ] input_strides = [tensor.stride() for tensor in input_tensors] p = mi.generate_cuda_program(graph.cygraph, target_cc=80, input_strides=input_strides, output_tensors=O) print(p[\"code\"]) 生成的cuda代码 #define NUM_GPUS 1 #define USE_NVSHMEM false #include \"runtime.h\" using namespace cute; __global__ void __launch_bounds__(128) custom_kernel_0(half_t* __restrict__ dtensor10000005_ptr, half_t const* __restrict__ dtensor10000003_ptr, half_t const* __restrict__ dtensor10000004_ptr) { int thread_idx = threadIdx.x; static constexpr int NUM_THREADS = 128; // STensors extern __shared__ char buf[]; half_t *stensor20000031_ptr = (half_t*)(buf + 128); half_t *stensor20000029_ptr = (half_t*)(buf + 4224); half_t *stensor20000030_ptr = (half_t*)(buf + 2176); half_t *stensor20000023_ptr = (half_t*)(buf + 14464); half_t *stensor20000022_ptr = (half_t*)(buf + 12416); half_t *stensor30000023_ptr = (half_t*)(buf + 4224); half_t *stensor30000022_ptr = (half_t*)(buf + 2176); half_t *stensor20000027_ptr = (half_t*)(buf + 128); *((uint128_t*)buf) = 0ul; // G-\u003eS copy atoms // Copy for G-\u003eS: dtensor 10000003 -\u003e stensor 20000022 const half_t *dtensor10000003_tile_ptr = dtensor10000003_ptr ; using DTensor10000003TileLayout = Layout",
+  "wordCount" : "2918",
+  "inLanguage": "zh",
+  "datePublished": "2024-10-04T00:00:00Z",
+  "dateModified": "2024-10-04T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Niuhe"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/tech/mirage-intro/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Niuhe's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/base/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
+                <img src="http://localhost:1313/base/avatar.jpeg" alt="" aria-label="logo"
+                    height="35">Niuhe&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
+                    <span>🔍搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/" title="🏠主页">
+                    <span>🏠主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts" title="📚文章">
+                    <span>📚文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags" title="🔖标签">
+                    <span>🔖标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="⏱时间轴">
+                    <span>⏱时间轴</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="🙋🏻‍♂️关于">
+                    <span>🙋🏻‍♂️关于</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">主页</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">📚文章</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/tech/">👨🏻‍💻 技术</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      Mirage技术分析
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-meta">
+
+<span title='2024-10-04 00:00:00 +0000 UTC'>2024-10-04</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2918 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
+
+</div>
+  </header> <details class="toc"  open>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">目录</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#mirage-%e6%8a%80%e6%9c%af%e5%88%86%e6%9e%90" aria-label="Mirage 技术分析">Mirage 技术分析</a><ul>
+                    <ul>
+                    
+            <li>
+                <a href="#%e8%ae%ba%e6%96%87" aria-label="论文">论文</a><ul>
+                    
+            <li>
+                <a href="#%e7%8e%b0%e7%8a%b6" aria-label="现状">现状</a></li>
+            <li>
+                <a href="#%e4%b8%bb%e8%a6%81%e5%86%85%e5%ae%b9" aria-label="主要内容">主要内容</a></li>
+            <li>
+                <a href="#group-query-attention%e5%88%86%e6%9e%90" aria-label="Group Query Attention分析">Group Query Attention分析</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e9%a1%b9%e7%9b%ae%e5%88%86%e6%9e%90" aria-label="项目分析">项目分析</a><ul>
+                    
+            <li>
+                <a href="#%e5%bd%93%e5%89%8d%e7%8a%b6%e6%80%81" aria-label="当前状态">当前状态</a></li>
+            <li>
+                <a href="#%e6%9c%aa%e6%9d%a5%e5%8f%91%e5%b1%95%e6%96%b9%e5%90%91" aria-label="未来发展方向">未来发展方向</a></li>
+            <li>
+                <a href="#python%e6%8e%a5%e5%8f%a3" aria-label="Python接口">Python接口</a></li>
+            <li>
+                <a href="#%e5%bd%93%e5%89%8d%e5%8f%91%e7%8e%b0%e9%97%ae%e9%a2%98" aria-label="当前发现问题">当前发现问题</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e4%bd%9c%e8%80%85%e6%a1%88%e4%be%8b" aria-label="作者案例">作者案例</a><ul>
+                    
+            <li>
+                <a href="#rms-norm--matmul" aria-label="RMS Norm &#43; MatMul">RMS Norm + MatMul</a></li>
+            <li>
+                <a href="#attention-with-query-key-normalization" aria-label="Attention with Query-Key Normalization">Attention with Query-Key Normalization</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e5%ae%9e%e9%99%85%e6%a1%88%e4%be%8b" aria-label="实际案例">实际案例</a><ul>
+                    
+            <li>
+                <a href="#%e6%89%8b%e5%86%99graph-rmsnorm--matmul" aria-label="手写Graph (RMSNorm &#43; MatMul)">手写Graph (RMSNorm + MatMul)</a></li>
+            <li>
+                <a href="#%e5%af%bb%e6%89%be%e6%9c%80%e4%bc%98%e7%9a%84graph" aria-label="寻找最优的graph">寻找最优的graph</a></li></ul>
+            </li>
+            <li>
+                <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+            </li>
+        </ul>
+        </ul>
+        </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><p>介绍Mirage项目</p>
+<h1 id="mirage-技术分析">Mirage 技术分析<a hidden class="anchor" aria-hidden="true" href="#mirage-技术分析">#</a></h1>
+<h3 id="论文">论文<a hidden class="anchor" aria-hidden="true" href="#论文">#</a></h3>
+<h4 id="现状">现状<a hidden class="anchor" aria-hidden="true" href="#现状">#</a></h4>
+<blockquote>
+<ul>
+<li>手动设计
+<ul>
+<li>依赖专家大量工程努力，可能无法发现所有可能的优化，特别是多个计算层次需要协调的优化</li>
+</ul>
+</li>
+<li>基于调度的优化
+<ul>
+<li><strong>代表</strong>：Halide、TVM（Tensor Virtual Machine）、Ansor 等</li>
+<li>基于算法和调度分离的思想，主要关注在计算不同层次的调度变换，通常不考虑算法级别变换，因此限制了优化的可能性</li>
+</ul>
+</li>
+<li>基于代数变换的优化
+<ul>
+<li><strong>代表</strong>：TASO、Grappler、Tensat、PET 等。</li>
+<li>关注算法级别的代数变换，例如将卷积转换成matmul，但需要程序员手动去定义和实现可用的内核，实际性能受限于程序员的工程实践</li>
+</ul>
+</li>
+<li>现有的super optimizer
+<ul>
+<li>主要关注Kernel层的代数变换，不能发现在GPU多计算层次中联合代数变换和调度变换的复杂优化</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h4 id="主要内容">主要内容<a hidden class="anchor" aria-hidden="true" href="#主要内容">#</a></h4>
+<blockquote>
+<p>提出$\mu Graph$ 多层次图表示，分成三个层次：</p>
+<ul>
+<li>Kernel Graph</li>
+<li>Thread Block Graph</li>
+<li>Thread Graph</li>
+</ul>
+<p>通过$\mu Graph$表示法统一捕捉代数和调度变换，在三个层次中进行联合优化，能够发现更深层次的优化机会。</p>
+</blockquote>
+<p><img alt="img" loading="lazy" src="/img/1*kn1RIuYWwpefnZrghM6jqQ.png"></p>
+<blockquote>
+<p>对tensor program做如下步骤</p>
+<ul>
+<li>代数表达式分解</li>
+<li>SMT求解(z3 solver)、图生成</li>
+<li>概率等价验证，获得一系列Valid Graph</li>
+<li>Transpiler代码生成cuda代码（优化Layout等内容）
+<ul>
+<li>Mirage的include目录提供了生成的cuda代码依赖的runtime文件</li>
+</ul>
+</li>
+<li>测试生成代码性能，选择最优的
+<ul>
+<li>nvcc将cuda代码编译成so文件</li>
+<li>python module加载so</li>
+<li>运行测试时间后保留性能最强的</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p><img alt="image-20241013233608159" loading="lazy" src="/img/image-20241013233608159.png"></p>
+<p><img alt="img" loading="lazy" src="/img/1*vTJxGAuXA5vTJ7pN8SgBig.png"></p>
+<ul>
+<li>
+<p><strong>输入PyTorch程序</strong>：Mirage的工作流程从输入一个PyTorch程序开始。</p>
+</li>
+<li>
+<p><strong>uGraph生成器搜索</strong>：</p>
+<ul>
+<li>
+<p>Mirage的uGraph生成器会自动搜索与输入功能匹配的可能uGraph。</p>
+</li>
+<li>
+<p>该搜索过程会捕获内核、线程块和线程级别的一系列GPU优化。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>等价验证</strong>：</p>
+<ul>
+<li>
+<p>每个在此过程中生成的候选uGraph都会被转发到等价验证器。</p>
+</li>
+<li>
+<p>等价验证器检查uGraph是否与输入等价。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>uGraph转译</strong>：</p>
+<ul>
+<li>uGraph转译器将所有经过验证的uGraph转换为CUDA内核。</li>
+</ul>
+</li>
+<li>
+<p><strong>通过profile识别性能最佳内核并返回</strong></p>
+</li>
+</ul>
+<p>和传统的CUDA或者现在的Triton编程相比，是一种范式的改变，作者提出三大优势（<strong>这个技术路线可能做到的，不是现在已经做到</strong>）：</p>
+<ul>
+<li>更高的生产力
+<ul>
+<li>在Pytorch级别指定想要的计算，后面Mirage接管，自动生成适合各种GPU架构的高性能内核</li>
+<li>将程序员从低级、特定体系架构的繁重任务中解放出来</li>
+</ul>
+</li>
+<li>更高的性能：自动搜索可能的优化，生成内核</li>
+<li>正确性更强：形式化验证技术自动验证GPU内核的正确性</li>
+</ul>
+<p>和Triton对比</p>
+<ul>
+<li>Triton的算法是程序开发者决定，不会做代数层面的优化</li>
+<li>Triton通过编译器优化，基于一些预定义规则和启发式方法</li>
+<li>Triton调度层面autotune优化策略依赖于自定义，搜索空间有限</li>
+</ul>
+<h4 id="group-query-attention分析">Group Query Attention分析<a hidden class="anchor" aria-hidden="true" href="#group-query-attention分析">#</a></h4>
+<blockquote>
+<p>Mirage相比Flash Decoding，性能提升达 2.2 倍</p>
+</blockquote>
+<p><img alt="image-20241014024405280" loading="lazy" src="/img/image-20241014024405280.png"></p>
+<p><img alt="img" loading="lazy" src="/img/mugraph_gqa.png"></p>
+<h3 id="项目分析">项目分析<a hidden class="anchor" aria-hidden="true" href="#项目分析">#</a></h3>
+<p><a href="https://github.com/mirage-project/mirage">mirage-project/mirage: A multi-level tensor algebra superoptimizer</a></p>
+<blockquote>
+<p>项目的长期目标是让ML工程师通过指定数学运算过程，就可以在现代GPU上实现ML Model，通过Mirage的优化技术，自动转换成高度优化的GPU实现。</p>
+</blockquote>
+<p><img alt="image-20241014002227652" loading="lazy" src="/img/image-20241014002227652.png"></p>
+<pre tabindex="0"><code>Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C++                             69            924           1217          10999
+C/C++ Header                   101           1212           1565           7850
+SVG                              7              0              0           3448
+CUDA                            15            127            378           1992
+JSON                             2              0              0           1873
+Python                          24            290            187           1564
+CSS                              1            303             81           1472
+Cython                           2             95             53            594
+reStructuredText                12            199            207            532
+CMake                            5             47             68            304
+Markdown                         6            141              0            284
+YAML                             2              6             16            190
+Bourne Shell                     3             19             31             90
+XML                              6              0              0             83
+HTML                             2              2             23             58
+DOS Batch                        1              8              1             26
+Dockerfile                       1              7             15             20
+Text                             2              0              0             12
+make                             1              5              7             12
+TOML                             1              0              0              7
+-------------------------------------------------------------------------------
+SUM:                           263           3385           3849          31410
+------------------------------------------------------------------------------
+</code></pre><h4 id="当前状态">当前状态<a hidden class="anchor" aria-hidden="true" href="#当前状态">#</a></h4>
+<ul>
+<li>实验性阶段</li>
+<li>只看到有推理场景的应用</li>
+<li>发布了0.2版本，开发不太活跃，还没有形成社区</li>
+<li>较多bug，没有稳定的API接口， 代码中很多案例跑不起来</li>
+<li>当前没有相关的生态和应用</li>
+<li>文档内容少，比较旧，对应的是早期的代码，目前文档中例子很多无法运行</li>
+</ul>
+<h4 id="未来发展方向">未来发展方向<a hidden class="anchor" aria-hidden="true" href="#未来发展方向">#</a></h4>
+<ul>
+<li>完善Python封装</li>
+<li>作为代码生成器，将$\mu Graph$ 转换成cuda或者triton代码</li>
+<li>支持NVIDIA更多架构的GPU</li>
+<li>支持AMD</li>
+<li>支持混合精度</li>
+</ul>
+<h4 id="python接口">Python接口<a hidden class="anchor" aria-hidden="true" href="#python接口">#</a></h4>
+<p><img alt="image-20241014011359954" loading="lazy" src="/img/image-20241014011359954.png"></p>
+<p><img alt="image-20241014011456191" loading="lazy" src="/img/image-20241014011456191.png"></p>
+<h4 id="当前发现问题">当前发现问题<a hidden class="anchor" aria-hidden="true" href="#当前发现问题">#</a></h4>
+<ul>
+<li>superoptimzer优化后给出的Kernel可以运行，但是结果不正确， 并且同样的输入多次运行，会有不同的输出</li>
+<li>部分Graph，用superoptimzer无法生成Kernel</li>
+<li>代码中支持从$\mu Graph$生成Triton代码, 实际不可行</li>
+<li>代码中声称支持的jit功能，一跑就core dump报错（Transpiler代码问题）</li>
+</ul>
+<h3 id="作者案例">作者案例<a hidden class="anchor" aria-hidden="true" href="#作者案例">#</a></h3>
+<h4 id="rms-norm--matmul">RMS Norm + MatMul<a hidden class="anchor" aria-hidden="true" href="#rms-norm--matmul">#</a></h4>
+<p>利用代数的交换律，将除法移动到MatMul之后，重新排列功能等效，但减少了device memory的访问</p>
+<p><img alt="img" loading="lazy" src="/img/1*fudTF5ryIJvKkIynd7iwCA.png"></p>
+<ul>
+<li>效果</li>
+</ul>
+<p><img alt="img" loading="lazy" src="/img/1*-PUJTCMXvRvXNbaw8TN7mA.png"></p>
+<h4 id="attention-with-query-key-normalization">Attention with Query-Key Normalization<a hidden class="anchor" aria-hidden="true" href="#attention-with-query-key-normalization">#</a></h4>
+<blockquote>
+<p>例如QK-Norm这种Attention的变体，标准的Attention中不包含这个LayerNorm的计算过程，需要单独启动Kernel，这时就涉及device memory的访问。Mirage自动融合并生成自定义内核。</p>
+</blockquote>
+<p><img alt="img" loading="lazy" src="/img/1*kaKZVhAld_cUHF0gwv0Ceg.png"></p>
+<ul>
+<li>性能</li>
+</ul>
+<p><img alt="img" loading="lazy" src="/img/1*MHiD3VeKNY-EOMFZBmPsAQ.png"></p>
+<h3 id="实际案例">实际案例<a hidden class="anchor" aria-hidden="true" href="#实际案例">#</a></h3>
+<blockquote>
+<p>给出实际测试的案例，更能体现Mirage的用法和现状</p>
+</blockquote>
+<h4 id="手写graph-rmsnorm--matmul">手写Graph (RMSNorm + MatMul)<a hidden class="anchor" aria-hidden="true" href="#手写graph-rmsnorm--matmul">#</a></h4>
+<ul>
+<li>torch实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>rms_norm = torch.nn.RMSNorm(<span style="color:#ff0;font-weight:bold">4096</span>, device=<span style="color:#0ff;font-weight:bold">&#39;cuda:0&#39;</span>, dtype=torch.float16)
+</span></span><span style="display:flex;"><span><span style="color:#007f7f">#@torch.compile</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> torch_rms_norm(X, W):
+</span></span><span style="display:flex;"><span>    D = rms_norm(X)
+</span></span><span style="display:flex;"><span>    E = torch.matmul(D, W)
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> E
+</span></span></code></pre></div><ul>
+<li>mirage实现</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># generate code</span>
+</span></span><span style="display:flex;"><span>graph = mi.new_kernel_graph()
+</span></span><span style="display:flex;"><span>X = graph.new_input(dims=(<span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">4096</span>), dtype=mi.float16)
+</span></span><span style="display:flex;"><span>W = graph.new_input(dims=(<span style="color:#ff0;font-weight:bold">4096</span>, <span style="color:#ff0;font-weight:bold">4096</span>), dtype=mi.float16)
+</span></span><span style="display:flex;"><span>tb_graph = mi.new_threadblock_graph(grid_dim=(<span style="color:#ff0;font-weight:bold">64</span>,<span style="color:#ff0;font-weight:bold">1</span>,<span style="color:#ff0;font-weight:bold">1</span>), block_dim=(<span style="color:#ff0;font-weight:bold">128</span>,<span style="color:#ff0;font-weight:bold">1</span>,<span style="color:#ff0;font-weight:bold">1</span>), forloop_range=<span style="color:#ff0;font-weight:bold">64</span>, reduction_dimx=<span style="color:#ff0;font-weight:bold">64</span>)
+</span></span><span style="display:flex;"><span>tX = tb_graph.new_input(dtensor=X, input_map=(-<span style="color:#ff0;font-weight:bold">1</span>, -<span style="color:#ff0;font-weight:bold">1</span>, -<span style="color:#ff0;font-weight:bold">1</span>), forloop_dim=<span style="color:#ff0;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>tW = tb_graph.new_input(dtensor=W, input_map=(<span style="color:#ff0;font-weight:bold">1</span>, -<span style="color:#ff0;font-weight:bold">1</span>, -<span style="color:#ff0;font-weight:bold">1</span>), forloop_dim=<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>tM = tb_graph.matmul(tX, tW)
+</span></span><span style="display:flex;"><span>tAccX = tb_graph.forloop_accum(tX, <span style="color:#0ff;font-weight:bold">&#34;rms&#34;</span>)
+</span></span><span style="display:flex;"><span>tAccM = tb_graph.forloop_accum(tM)
+</span></span><span style="display:flex;"><span>tO = tb_graph.div(tAccM, tAccX)
+</span></span><span style="display:flex;"><span>tb_graph.new_output(stensor=tO, output_map=(<span style="color:#ff0;font-weight:bold">1</span>, -<span style="color:#ff0;font-weight:bold">1</span>, -<span style="color:#ff0;font-weight:bold">1</span>))
+</span></span><span style="display:flex;"><span>O = graph.customized([X, W], tb_graph)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>torch.random.manual_seed(<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>input_tensors = [
+</span></span><span style="display:flex;"><span>    torch.randn(<span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">4096</span>, dtype=torch.float16, device=<span style="color:#0ff;font-weight:bold">&#39;cuda:0&#39;</span>),
+</span></span><span style="display:flex;"><span>    torch.randn(<span style="color:#ff0;font-weight:bold">4096</span>, <span style="color:#ff0;font-weight:bold">4096</span>, dtype=torch.float16, device=<span style="color:#0ff;font-weight:bold">&#39;cuda:0&#39;</span>),
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>input_strides = [tensor.stride() <span style="color:#fff;font-weight:bold">for</span> tensor in input_tensors]
+</span></span><span style="display:flex;"><span>p = mi.generate_cuda_program(graph.cygraph, target_cc=<span style="color:#ff0;font-weight:bold">80</span>, input_strides=input_strides, output_tensors=O)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(p[<span style="color:#0ff;font-weight:bold">&#34;code&#34;</span>])
+</span></span></code></pre></div><ul>
+<li>生成的cuda代码</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define NUM_GPUS 1
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#define USE_NVSHMEM false
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&#34;runtime.h&#34;</span><span style="color:#0f0;font-weight:bold">
+</span></span></span><span style="display:flex;"><span>using namespace cute;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#fff;font-weight:bold">void</span> __launch_bounds__(<span style="color:#ff0;font-weight:bold">128</span>) custom_kernel_0(<span style="color:#fff;font-weight:bold">half_t</span>* __restrict__ dtensor10000005_ptr, <span style="color:#fff;font-weight:bold">half_t</span> <span style="color:#fff;font-weight:bold">const</span>* __restrict__ dtensor10000003_ptr, <span style="color:#fff;font-weight:bold">half_t</span> <span style="color:#fff;font-weight:bold">const</span>* __restrict__ dtensor10000004_ptr) {
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">int</span> thread_idx = threadIdx.x;
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">static</span> constexpr <span style="color:#fff;font-weight:bold">int</span> NUM_THREADS = <span style="color:#ff0;font-weight:bold">128</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// STensors
+</span></span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">extern</span> __shared__ <span style="color:#fff;font-weight:bold">char</span> buf[];
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000031_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">128</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000029_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">4224</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000030_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">2176</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000023_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">14464</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000022_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">12416</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor30000023_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">4224</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor30000022_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">2176</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000027_ptr = (<span style="color:#fff;font-weight:bold">half_t</span>*)(buf + <span style="color:#ff0;font-weight:bold">128</span>);
+</span></span><span style="display:flex;"><span>  *((<span style="color:#fff;font-weight:bold">uint128_t</span>*)buf) = <span style="color:#ff0;font-weight:bold">0ul</span>;
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// G-&gt;S copy atoms
+</span></span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// Copy for G-&gt;S: dtensor 10000003 -&gt; stensor 20000022
+</span></span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">half_t</span> *dtensor10000003_tile_ptr = dtensor10000003_ptr ;
+</span></span><span style="display:flex;"><span>  using DTensor10000003TileLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">4096</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>  using STensor20000022InputAtom = tb::InputChunkedAsyncCopy&lt;<span style="color:#fff;font-weight:bold">half_t</span>, decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;&gt;{})), DTensor10000003TileLayout, NUM_THREADS&gt;;
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000022_async_copy_buf = stensor30000022_ptr;
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// Copy for G-&gt;S: dtensor 10000004 -&gt; stensor 20000023
+</span></span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">half_t</span> *dtensor10000004_tile_ptr = dtensor10000004_ptr  + blockIdx.x*<span style="color:#ff0;font-weight:bold">64</span>*<span style="color:#ff0;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>  using DTensor10000004TileLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">4096</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>  using STensor20000023InputAtom = tb::InputChunkedAsyncCopy&lt;<span style="color:#fff;font-weight:bold">half_t</span>, decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;&gt;{})), DTensor10000004TileLayout, NUM_THREADS&gt;;
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *stensor20000023_async_copy_buf = stensor30000023_ptr;
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// S-&gt;G copy atoms
+</span></span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// Copy for S-&gt;G: stensor 20000031 -&gt; dtensor 10000005
+</span></span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">half_t</span> *dtensor10000005_tile_ptr = dtensor10000005_ptr  + blockIdx.x*<span style="color:#ff0;font-weight:bold">64</span>*<span style="color:#ff0;font-weight:bold">16</span>;
+</span></span><span style="display:flex;"><span>  using DTensor10000005TileLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>  using STensor20000031OutputAtom = tb::OutputChunkedSyncCopy&lt;<span style="color:#fff;font-weight:bold">half_t</span>, DTensor10000005TileLayout, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;, NUM_THREADS&gt;;
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  tb::ClearAccumlatorKernel&lt;<span style="color:#fff;font-weight:bold">half_t</span>, <span style="color:#ff0;font-weight:bold">1024</span>, NUM_THREADS&gt;::run(stensor20000027_ptr, thread_idx);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  using Matmul20000030LayoutA = decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;&gt;{}));
+</span></span><span style="display:flex;"><span>  using Matmul20000030LayoutB = decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;&gt;{}));
+</span></span><span style="display:flex;"><span>  using Matmul20000030LayoutC = decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;&gt;&gt;{}));
+</span></span><span style="display:flex;"><span>  using Matmul20000030Kernel = tb::Matmul&lt;<span style="color:#fff;font-weight:bold">half_t</span>, SM80_16x8x16_F16F16F16F16_TN, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">4</span>&gt;, _1&gt;&gt;, <span style="color:#fff;font-weight:bold">true</span>, <span style="color:#fff;font-weight:bold">false</span>, Matmul20000030LayoutA, Matmul20000030LayoutB, Matmul20000030LayoutC, NUM_THREADS, <span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#fff;font-weight:bold">false</span>&gt;;
+</span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">auto</span> matmul_20000030_accum = Matmul20000030Kernel::get_mma_rC(thread_idx);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  __syncthreads();
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    STensor20000023InputAtom::run(stensor20000023_async_copy_buf, dtensor10000004_tile_ptr, thread_idx);
+</span></span><span style="display:flex;"><span>    STensor20000022InputAtom::run(stensor20000022_async_copy_buf, dtensor10000003_tile_ptr, thread_idx);
+</span></span><span style="display:flex;"><span>    cute::cp_async_fence();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// The main loop
+</span></span></span><span style="display:flex;"><span>  <span style="color:#fff;font-weight:bold">for</span> (<span style="color:#fff;font-weight:bold">int</span> for_idx = <span style="color:#ff0;font-weight:bold">0</span>; for_idx &lt; <span style="color:#ff0;font-weight:bold">64</span>; for_idx++) {
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#007f7f">// Issue async copies for the next round
+</span></span></span><span style="display:flex;"><span>      <span style="color:#fff;font-weight:bold">if</span> (for_idx+<span style="color:#ff0;font-weight:bold">1</span> != <span style="color:#ff0;font-weight:bold">64</span>) {
+</span></span><span style="display:flex;"><span>        STensor20000023InputAtom::run(stensor20000023_ptr, dtensor10000004_tile_ptr + <span style="color:#ff0;font-weight:bold">262144</span>*(for_idx+<span style="color:#ff0;font-weight:bold">1</span>), thread_idx);
+</span></span><span style="display:flex;"><span>        STensor20000022InputAtom::run(stensor20000022_ptr, dtensor10000003_tile_ptr + <span style="color:#ff0;font-weight:bold">64</span>*(for_idx+<span style="color:#ff0;font-weight:bold">1</span>), thread_idx);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      cute::cp_async_fence();
+</span></span><span style="display:flex;"><span>      <span style="color:#007f7f">// Wait for the async copies in the last round to finish
+</span></span></span><span style="display:flex;"><span>      cute::cp_async_wait&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;();
+</span></span><span style="display:flex;"><span>      <span style="color:#007f7f">// Switch buffers
+</span></span></span><span style="display:flex;"><span>      SWAP(stensor20000023_ptr, stensor20000023_async_copy_buf);
+</span></span><span style="display:flex;"><span>      SWAP(stensor20000022_ptr, stensor20000022_async_copy_buf);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    __syncthreads();
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#007f7f">// OP type: tb_matmul_op
+</span></span></span><span style="display:flex;"><span>      Matmul20000030Kernel::run(matmul_20000030_accum, stensor20000022_ptr, stensor20000023_ptr, (<span style="color:#fff;font-weight:bold">char</span>*)(buf+<span style="color:#ff0;font-weight:bold">0</span>), thread_idx);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#007f7f">// OP type: tb_square_op
+</span></span></span><span style="display:flex;"><span>      using InLayout = decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;&gt;&gt;{}));
+</span></span><span style="display:flex;"><span>      using OutLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>      using Kernel = tb::ElementUnaryKernel&lt;<span style="color:#fff;font-weight:bold">half_t</span>, tb::ElementUnaryOpType::SQUARE, OutLayout, InLayout, NUM_THREADS, tb::EpilogueMulScalar&lt;<span style="color:#fff;font-weight:bold">half_t</span>, tb::EpilogueStoreAccum&lt;<span style="color:#fff;font-weight:bold">half_t</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>      <span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">float</span> scalars[] = {<span style="color:#ff0;font-weight:bold">0.000244f</span>, <span style="color:#ff0;font-weight:bold">0.0f</span>};
+</span></span><span style="display:flex;"><span>      Kernel::run(stensor20000027_ptr, stensor20000022_ptr, thread_idx, <span style="color:#ff0;font-weight:bold">0.000000</span>, scalars);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// Write back in-register accumulators
+</span></span></span><span style="display:flex;"><span>  __syncthreads();
+</span></span><span style="display:flex;"><span>  Matmul20000030Kernel::write_back_mma_rC(stensor20000030_ptr, matmul_20000030_accum, thread_idx);
+</span></span><span style="display:flex;"><span>  <span style="color:#007f7f">// The epilogue (kernels outside the loop)
+</span></span></span><span style="display:flex;"><span>  __syncthreads();
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">// OP type: tb_reduction_1_op
+</span></span></span><span style="display:flex;"><span>    using InLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>    using OutLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>    using Kernel = tb::ReductionKernel&lt;<span style="color:#fff;font-weight:bold">half_t</span>, OutLayout, InLayout, <span style="color:#ff0;font-weight:bold">1</span>, NUM_THREADS, tb::EpilogueSqrt&lt;<span style="color:#fff;font-weight:bold">half_t</span>, tb::EpilogueStore&lt;<span style="color:#fff;font-weight:bold">half_t</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">float</span> scalars[] = {<span style="color:#ff0;font-weight:bold">0.0f</span>};
+</span></span><span style="display:flex;"><span>    Kernel::run(stensor20000029_ptr, stensor20000027_ptr, thread_idx, scalars);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  __syncthreads();
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">// OP type: tb_div_op
+</span></span></span><span style="display:flex;"><span>    using In0Layout = decltype(composition(Swizzle&lt;<span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">3</span>, <span style="color:#ff0;font-weight:bold">3</span>&gt;{}, Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;{}));
+</span></span><span style="display:flex;"><span>    using In1Layout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>    using OutLayout = Layout&lt;Shape&lt;Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">64</span>&gt;&gt;, Stride&lt;Int&lt;<span style="color:#ff0;font-weight:bold">1</span>&gt;, Int&lt;<span style="color:#ff0;font-weight:bold">16</span>&gt;&gt;&gt;;
+</span></span><span style="display:flex;"><span>    using Kernel = tb::ElementBinaryKernel&lt;<span style="color:#fff;font-weight:bold">half_t</span>, tb::ElementBinaryOpType::DIV, OutLayout, In0Layout, In1Layout, NUM_THREADS, tb::EpilogueStore&lt;<span style="color:#fff;font-weight:bold">half_t</span>&gt;&gt;;
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">float</span> scalars[] = {<span style="color:#ff0;font-weight:bold">0.0f</span>};
+</span></span><span style="display:flex;"><span>    Kernel::run(stensor20000031_ptr, stensor20000030_ptr, stensor20000029_ptr, thread_idx, scalars);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  __syncthreads();
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">// OP type: tb_output_op
+</span></span></span><span style="display:flex;"><span>    STensor20000031OutputAtom::run(dtensor10000005_tile_ptr, stensor20000031_ptr, thread_idx);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">static</span> <span style="color:#fff;font-weight:bold">void</span> _init() {
+</span></span><span style="display:flex;"><span>  cudaFuncSetAttribute(custom_kernel_0, cudaFuncAttributeMaxDynamicSharedMemorySize, <span style="color:#ff0;font-weight:bold">22656</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">static</span> <span style="color:#fff;font-weight:bold">void</span> _execute_mugraph(std::vector&lt;<span style="color:#fff;font-weight:bold">void</span> <span style="color:#fff;font-weight:bold">const</span> *&gt; input_tensors, std::vector&lt;<span style="color:#fff;font-weight:bold">void</span>*&gt; output_tensors, <span style="color:#fff;font-weight:bold">void</span>* buf) {
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">// OP type: kn_input_op
+</span></span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">// OP type: kn_input_op
+</span></span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">// OP type: kn_customized_op
+</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">half_t</span> *dtensor10000005 = (<span style="color:#fff;font-weight:bold">half_t</span>*)output_tensors.at(<span style="color:#ff0;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">half_t</span> *dtensor10000003 = (<span style="color:#fff;font-weight:bold">half_t</span>*)input_tensors.at(<span style="color:#ff0;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">half_t</span> *dtensor10000004 = (<span style="color:#fff;font-weight:bold">half_t</span>*)input_tensors.at(<span style="color:#ff0;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    dim3 grid_dim(<span style="color:#ff0;font-weight:bold">64</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    dim3 block_dim(<span style="color:#ff0;font-weight:bold">128</span>, <span style="color:#ff0;font-weight:bold">1</span>, <span style="color:#ff0;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">size_t</span> smem_size = <span style="color:#ff0;font-weight:bold">22656</span>;
+</span></span><span style="display:flex;"><span>    custom_kernel_0&lt;&lt;&lt;grid_dim, block_dim, smem_size&gt;&gt;&gt;(dtensor10000005, dtensor10000003, dtensor10000004);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>
+<p>benchtest结果</p>
+<ul>
+<li>
+<p>Mirage  3.1204658203125</p>
+</li>
+<li>
+<p>Torch  5.09928955078125</p>
+</li>
+<li>
+<p>Torch Compile 8.65345703125</p>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># benchmark</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>loop_times = <span style="color:#ff0;font-weight:bold">50000</span>
+</span></span><span style="display:flex;"><span>torch.random.manual_seed(<span style="color:#ff0;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>input_tensors = [
+</span></span><span style="display:flex;"><span>    torch.randn(<span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">4096</span>, dtype=torch.float16, device=<span style="color:#0ff;font-weight:bold">&#39;cuda:0&#39;</span>),
+</span></span><span style="display:flex;"><span>    torch.randn(<span style="color:#ff0;font-weight:bold">4096</span>, <span style="color:#ff0;font-weight:bold">4096</span>, dtype=torch.float16, device=<span style="color:#0ff;font-weight:bold">&#39;cuda:0&#39;</span>),
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>torch.cuda.synchronize()
+</span></span><span style="display:flex;"><span>starter, ender = torch.cuda.Event(enable_timing=<span style="color:#fff;font-weight:bold">True</span>), torch.cuda.Event(enable_timing=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span>starter.record()
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> _ in <span style="color:#fff;font-weight:bold">range</span>(loop_times):
+</span></span><span style="display:flex;"><span>    graph(inputs=input_tensors, outputs=O)
+</span></span><span style="display:flex;"><span>ender.record()
+</span></span><span style="display:flex;"><span>torch.cuda.synchronize()
+</span></span><span style="display:flex;"><span>curr_time = starter.elapsed_time(ender)
+</span></span><span style="display:flex;"><span>mean_syn = curr_time / <span style="color:#ff0;font-weight:bold">1000</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(mean_syn)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;-&#39;</span> *<span style="color:#ff0;font-weight:bold">20</span>)
+</span></span><span style="display:flex;"><span>torch.cuda.synchronize()
+</span></span><span style="display:flex;"><span>starter, ender = torch.cuda.Event(enable_timing=<span style="color:#fff;font-weight:bold">True</span>), torch.cuda.Event(enable_timing=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span>starter.record()
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> _ in <span style="color:#fff;font-weight:bold">range</span>(loop_times):
+</span></span><span style="display:flex;"><span>    torch_rms_norm(input_tensors[<span style="color:#ff0;font-weight:bold">0</span>], input_tensors[<span style="color:#ff0;font-weight:bold">1</span>])
+</span></span><span style="display:flex;"><span>ender.record()
+</span></span><span style="display:flex;"><span>torch.cuda.synchronize()
+</span></span><span style="display:flex;"><span>curr_time = starter.elapsed_time(ender)
+</span></span><span style="display:flex;"><span>mean_syn = curr_time / <span style="color:#ff0;font-weight:bold">1000</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(mean_syn)
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;-&#39;</span> *<span style="color:#ff0;font-weight:bold">20</span>)
+</span></span><span style="display:flex;"><span>compiled_torch_rms_norm = torch.compile(torch_rms_norm)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>torch.cuda.synchronize()
+</span></span><span style="display:flex;"><span>starter, ender = torch.cuda.Event(enable_timing=<span style="color:#fff;font-weight:bold">True</span>), torch.cuda.Event(enable_timing=<span style="color:#fff;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span>starter.record()
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> _ in <span style="color:#fff;font-weight:bold">range</span>(loop_times):
+</span></span><span style="display:flex;"><span>    compiled_torch_rms_norm(input_tensors[<span style="color:#ff0;font-weight:bold">0</span>], input_tensors[<span style="color:#ff0;font-weight:bold">1</span>])
+</span></span><span style="display:flex;"><span>ender.record()
+</span></span><span style="display:flex;"><span>torch.cuda.synchronize()
+</span></span><span style="display:flex;"><span>curr_time = starter.elapsed_time(ender)
+</span></span><span style="display:flex;"><span>mean_syn = curr_time / <span style="color:#ff0;font-weight:bold">1000</span>
+</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">print</span>(mean_syn)
+</span></span></code></pre></div><h4 id="寻找最优的graph">寻找最优的graph<a hidden class="anchor" aria-hidden="true" href="#寻找最优的graph">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#007f7f"># rms_norm</span>
+</span></span><span style="display:flex;"><span>graph = mi.new_kernel_graph()
+</span></span><span style="display:flex;"><span>X = graph.new_input(dims=(<span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">4096</span>), dtype=mi.float16)
+</span></span><span style="display:flex;"><span>W = graph.new_input(dims=(<span style="color:#ff0;font-weight:bold">4096</span>, <span style="color:#ff0;font-weight:bold">4096</span>), dtype=mi.float16)
+</span></span><span style="display:flex;"><span>D = graph.rms_norm(X, normalized_shape=(<span style="color:#ff0;font-weight:bold">4096</span>,))
+</span></span><span style="display:flex;"><span>O = graph.matmul(D, W)
+</span></span><span style="display:flex;"><span>optimized_graph = graph.superoptimize(config=<span style="color:#0ff;font-weight:bold">&#34;mlp&#34;</span>)
+</span></span></code></pre></div><ul>
+<li>执行过程</li>
+</ul>
+<p>问题：生成的kernel执行结果不对</p>
+<p><img alt="image-20241014020937298" loading="lazy" src="/img/image-20241014020937298.png"></p>
+<h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>Mirage超级优化器和Transpliler的技术路线具有很高的价值，从架构设计层面考虑，理论上可以拓展到其它厂家的GPU上，<strong>现在成熟度比较低</strong>，值得持续研究并关注进展。</p>
+
+  </div>
+<div class="footer-comments">
+    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
+</div>
+
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/mirage/">Mirage</a></li>
+      <li><a href="http://localhost:1313/tags/gpu/">GPU</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/read/%E7%A9%BF%E8%B6%8A%E9%9D%9E%E6%B4%B2200%E5%B9%B4/">
+    <span class="title">« 上一页</span>
+    <span>穿越非洲200年</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/tech/pytorch-mnist-tutorial/">
+    <span class="title">下一页 »</span>
+    <span>使用 PyTorch 进行 MNIST 手写数字识别</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Niuhe&#39;s Blog</a></span> · 
+        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
