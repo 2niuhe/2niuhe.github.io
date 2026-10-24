@@ -1,393 +1,54 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>linux 101 Hackers 笔记 | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="Linux">
-<meta name="description" content="linux 101 Hackers 笔记">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-101-hackers/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/linux-101-hackers/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-101-hackers/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="linux 101 Hackers 笔记">
-  <meta property="og:description" content="linux 101 Hackers 笔记">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2020-12-05T00:00:00+00:00">
-    <meta property="article:modified_time" content="2020-12-05T00:00:00+00:00">
-    <meta property="article:tag" content="Linux">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="linux 101 Hackers 笔记">
-  <meta name="twitter:description" content="linux 101 Hackers 笔记">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "linux 101 Hackers 笔记",
-      "item": "https://blog.niuhemoon.win/posts/tech/linux-101-hackers/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "linux 101 Hackers 笔记",
-  "name": "linux 101 Hackers 笔记",
-  "description": "linux 101 Hackers 笔记",
-  "keywords": [
-    "Linux"
-  ],
-  "articleBody": "# 创建目录并进入 function mkdircd () { mkdir -p \"$@\" \u0026\u0026 eval cd \"\\\"\\$$#\\\"\"; } 查找文件 # 找到大于100M的文件 find / -type f -size +100M # 找到文件名中含有mail的文件/文件夹 find /etc -name \"*mail*\" # 找到修改时间在60天之前的文件 find . -mtime +60 # 找到修改时间在2天内的文件 find . -mtime -2 # 批量显示TS后缀且大于100M文件的详情 find . -type f -name '*.TS' -size +100M -exec ls -l {} \\; # 批量删除TS后缀且大于100M的文件 find . -type f -name '*.TS' -size +100M -exec rm -f {} \\; # 查找修改时间60天前的文件并打包 find /home/jsmith -type f -mtime +60 | xargs tar -cvf /tmp/`date '+%d%m%Y'_archive.tar` 输出重定向 # 标准输出重定向，只显示error信息 ./shell-script.sh \u003e /dev/null # 标准错误信息重定向 ./shell-script.sh 2\u003e /dev/null # 标准错误和输出都重定向 ./shell-script.sh \u003e /dev/null 2\u003e\u00261 # 将所有大写转化为小写 tr A-Z a-z \u003c department.txt # 将所有小写转化为大写 tr a-z A-Z \u003c employee.txt xargs 基本使用 # 删除log文件 find ~ -name '*.log' -print0 | xargs -0 rm -f find /etc -name \"*.conf\" | xargs ls -l cat url-list.txt | xargs wget -c find / -name *.jpg -type f -print | xargs tar -cvzf images.tar.gz ls *.jpg | xargs -n1 -i cp {} /external-harddrive/directory 文件中截取列 # 以:分割，第一列 cut -d: -f 1 /etc/passwd # 以:分割，第1和第3列 cut -d: -f 1,3 /etc/passwd # 截取每行前边1-8个字符 cut -c 1-8 /etc/passwd 后台运行 nohup ./backup.sh \u0026 screen -S backup # 以特定间隔时间执行命令 watch df -h sed 基础 # thegeekstuff.txt # Instruction Guides 1. Linux Sysadmin, Linux Scripting etc. 2. Databases - Oracle, mySQL etc. 3. Security (Firewall, Network, Online Security etc) 4. Storage in Linux 5. Productivity (Too many technologies to explore, not much time available) # Additional FAQS 6. Windows- Sysadmin, reboot etc. # 将第一个Linux替换为Linux-Unix sed 's/Linux/Linux-Unix/' thegeekstuff.txt # 将所有Linux替换为Linux-Unix sed 's/Linux/Linux-Unix/g' thegeekstuff.txt # 将第2个出现的Linux替换为Linux-Unix sed 's/Linux/Linux-Unix/2' thegeekstuff.txt # 输出修改行并写入指定的output文件 sed -n 's/Linux/Linux-Unix/gpw output' thegeekstuff.txt # 行正则匹配到-，则从-到行尾的字符被替换为空 sed '/\\-/s/\\-.*//g' thegeekstuff.txt # 删除每行的后3个字符 sed 's/...$//' thegeekstuff.txt # 直接修改源文件，去除#开头的注释 sed -e 's/#.*//' thegeekstuff.txt # 直接修改源文件，去除#开头的注释并去除空行 sed -e 's/#.*//;/^$/d' thegeekstuff.txt # 去除html的箭头标签 sed -e 's/\u003c[^\u003e]*\u003e//g' # 同时显示多个文件的日志 tail -f /var/log/syslog -f /var/log/auth.log # 修改命令行提示符号 export PS1=\"\\u@\\h \\w\u003e \" # 修改系统时间 date {mmddhhmiyyyy.ss} # Jan 31st 2009, 10:19 p.m, 53 seconds date 013122192009.53 date +%Y%m%d -s \"20090131\" date +%T -s \"22:19:53\" date -s \"01/31/2009 22:19:53\" # 显示时间 date +\"%d-%m-%Y\" 01-01-2009 date +\"%d/%m/%Y\" # 01/01/2009 date +\"%A,%B %d %Y\" # Thursday,January 01 2009 压缩和解压 zip var-log-files.zip /var/log/* zip -r var-log-dir.zip /var/log/ unzip var-log.zip unzip -v var-log.zip unzip -l var-log.zip unzip -t var-log.zip zip -P mysecurepwd var-log-protected.zip /var/log/* unzip var-log-protected.zip tar [options] [tar-archive-name] [other-file-names] # 压缩文件 tar cvf /tmp/my_home_directory.tar /home/jsmith # 显示压缩文件目录 tar tvf /tmp/my_home_directory.tar # 提取压缩文件 tar xvf /tmp/my_home_directory.tar # 指定提取目录 tar xvfz /tmp/my_home_directory.tar.gz -C /home/ramesh # gzip压缩文件(*.tar.gz) tar cvfz /tmp/my_home_directory.tar.gz /home/jsmith tar xvfz /tmp/my_home_directory.tar.gz tar tvfz /tmp/my_home_directory.tar.gz # bzip压缩文件(*.tar.bz2) tar cvfj /tmp/my_home_directory.tar.bz2 /home/jsmith tar xvfj /tmp/my_home_directory.tar.bz2 tar tvfj /tmp/my_home_directory.tar.bz2 命令行历史 # CTRL+r 查找匹配历史 # CTRL+p 上一条命令 history -c # 清除历史 # 忽略重复命令 export HISTCONTROL=ignoredups # 忽略以空格开头的命令 export HISTCONTROL=ignorespace # 不记录历史 export HISTSIZE=0 系统管理 # 创建swap分区 dd if=/dev/zero of=/home/swap-fs bs=1M count=512 ls -l /home/swap-fs mkswap /home/swap-fs swapon /home/swap-fs # edit in /etc/fstab /home/swap-fs swap swap defaults 0 0 # 生成ssh公钥 ssh-keygen ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host # 定时任务管理 crontab -e {minute} {hour} {day-of-month} {month} {day-of-week} {full-path-to-shell-script} # run at 00:01am 1 0 * * * /root/bin/backup.sh # run at weekday 11:59pm 59 11 * * 1,2,3,4,5 /root/bin/backup.sh 59 11 * * 1-5 /root/bin/backup.sh # run every 5 minute */5 * * * * /root/bin/check-status.sh # run at 13:10pm on lst of every month 10 13 1 * * /root/bin/full-backup.sh # run at 11:00pm every weekday 0 23 * * 1-5 /root/bin/incremental-backup.sh # 同步文件 rsync options source destination # sync two directory in a local computer # -z enable compression # -v verbose # -r recursive # -a archive mode:will preserve symbolic link/permission/timestamp/owner/group rsync -zvr /var/opt/installation/inventory/ /root/temp # sync one file rsync -v /var/lib/rpm/Pubkeys /root/temp/ # sync to remote machine rsync -avz /root/temp/ thegeekstuff@192.168.200.10:/home/thegeekstuff/temp/ # sync from remote to local rsync -avz thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp # netcat命令nc # 从server1拷贝文件到server2 # 1. 在server2(102.168.200.27)上监听 nc -l 2222 \u003e 1234.txt # 2. 在server1上开启传输 nc -w 1 102.168.200.27 2222 \u003c abc.txt # 网络拷贝硬盘 # 1. server2(102.168.200.27)监听 nc -l -p 2222 | dd of=/dev/sda # 2. server1执行传输 dd if=/dev/sda | nc 102.168.200.27 2222 # nc端口扫描 # 扫描20-30端口 nc -v -w 1 192.168.200.29 -z 20-30 系统性能监控 ps axl ps aux ps axuf ps U niuhe netstat -tap netstat --route # 路由表 sar lsof ",
-  "wordCount" : "1346",
-  "inLanguage": "zh",
-  "datePublished": "2020-12-05T00:00:00Z",
-  "dateModified": "2020-12-05T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/linux-101-hackers/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      linux 101 Hackers 笔记
-    </h1>
-    <div class="post-description">
-      linux 101 Hackers 笔记
-    </div>
-    <div class="post-meta">
-
-<span title='2020-12-05 00:00:00 +0000 UTC'>2020-12-05</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1346 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> 
-
-  <div class="post-content md-content"><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 创建目录并进入</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">function</span> mkdircd () { mkdir -p <span style="color:#0ff;font-weight:bold">&#34;</span>$@<span style="color:#0ff;font-weight:bold">&#34;</span> &amp;&amp; <span style="color:#fff;font-weight:bold">eval</span> <span style="color:#fff;font-weight:bold">cd</span> <span style="color:#0ff;font-weight:bold">&#34;\&#34;\$</span>$#<span style="color:#0ff;font-weight:bold">\&#34;&#34;</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><ul>
-<li>查找文件</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 找到大于100M的文件</span>
-</span></span><span style="display:flex;"><span>find / -type f -size +100M
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 找到文件名中含有mail的文件/文件夹</span>
-</span></span><span style="display:flex;"><span>find /etc -name <span style="color:#0ff;font-weight:bold">&#34;*mail*&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 找到修改时间在60天之前的文件</span>
-</span></span><span style="display:flex;"><span>find . -mtime +60
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 找到修改时间在2天内的文件</span>
-</span></span><span style="display:flex;"><span>find . -mtime -2
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 批量显示TS后缀且大于100M文件的详情</span>
-</span></span><span style="display:flex;"><span>find . -type f -name <span style="color:#0ff;font-weight:bold">&#39;*.TS&#39;</span> -size +100M -exec ls -l {} <span style="color:#0ff;font-weight:bold">\;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 批量删除TS后缀且大于100M的文件</span>
-</span></span><span style="display:flex;"><span>find . -type f -name <span style="color:#0ff;font-weight:bold">&#39;*.TS&#39;</span> -size +100M -exec rm -f {} <span style="color:#0ff;font-weight:bold">\;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 查找修改时间60天前的文件并打包</span>
-</span></span><span style="display:flex;"><span>find /home/jsmith -type f -mtime +60 | xargs tar -cvf /tmp/<span style="color:#0ff;font-weight:bold">`</span>date <span style="color:#0ff;font-weight:bold">&#39;+%d%m%Y&#39;</span>_archive.tar<span style="color:#0ff;font-weight:bold">`</span>
-</span></span></code></pre></div><ul>
-<li>输出重定向</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 标准输出重定向，只显示error信息</span>
-</span></span><span style="display:flex;"><span>./shell-script.sh &gt; /dev/null
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 标准错误信息重定向</span>
-</span></span><span style="display:flex;"><span>./shell-script.sh 2&gt; /dev/null
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 标准错误和输出都重定向</span>
-</span></span><span style="display:flex;"><span>./shell-script.sh &gt; /dev/null 2&gt;&amp;<span style="color:#ff0;font-weight:bold">1</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 将所有大写转化为小写</span>
-</span></span><span style="display:flex;"><span>tr A-Z a-z &lt; department.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 将所有小写转化为大写</span>
-</span></span><span style="display:flex;"><span>tr a-z A-Z &lt; employee.txt
-</span></span></code></pre></div><ul>
-<li>xargs 基本使用</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 删除log文件</span>
-</span></span><span style="display:flex;"><span>find ~ -name <span style="color:#0ff;font-weight:bold">&#39;*.log&#39;</span> -print0 | xargs -0 rm -f
-</span></span><span style="display:flex;"><span>find /etc -name <span style="color:#0ff;font-weight:bold">&#34;*.conf&#34;</span> | xargs ls -l
-</span></span><span style="display:flex;"><span>cat url-list.txt | xargs wget -c
-</span></span><span style="display:flex;"><span>find / -name *.jpg -type f -print | xargs tar -cvzf images.tar.gz
-</span></span><span style="display:flex;"><span>ls *.jpg | xargs -n1 -i cp {} /external-harddrive/directory
-</span></span></code></pre></div><ul>
-<li>文件中截取列</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 以:分割，第一列</span>
-</span></span><span style="display:flex;"><span>cut -d: -f <span style="color:#ff0;font-weight:bold">1</span> /etc/passwd
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 以:分割，第1和第3列</span>
-</span></span><span style="display:flex;"><span>cut -d: -f 1,3 /etc/passwd
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 截取每行前边1-8个字符</span>
-</span></span><span style="display:flex;"><span>cut -c 1-8 /etc/passwd
-</span></span></code></pre></div><ul>
-<li>后台运行</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>nohup ./backup.sh &amp;
-</span></span><span style="display:flex;"><span>screen -S backup
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 以特定间隔时间执行命令</span>
-</span></span><span style="display:flex;"><span>watch df -h
-</span></span></code></pre></div><ul>
-<li>sed 基础</li>
-</ul>
-<pre tabindex="0"><code># thegeekstuff.txt
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>linux 101 Hackers 笔记 | Niuhe's Blog</title><meta name=keywords content="Linux"><meta name=description content="linux 101 Hackers 笔记"><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/linux-101-hackers/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/linux-101-hackers/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-101-hackers/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="linux 101 Hackers 笔记"><meta property="og:description" content="linux 101 Hackers 笔记"><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-12-05T00:00:00+00:00"><meta property="article:modified_time" content="2020-12-05T00:00:00+00:00"><meta property="article:tag" content="Linux"><meta name=twitter:card content="summary"><meta name=twitter:title content="linux 101 Hackers 笔记"><meta name=twitter:description content="linux 101 Hackers 笔记"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"linux 101 Hackers 笔记","item":"https://blog.niuhemoon.win/posts/tech/linux-101-hackers/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"linux 101 Hackers 笔记","name":"linux 101 Hackers 笔记","description":"linux 101 Hackers 笔记","keywords":["Linux"],"articleBody":"# 创建目录并进入 function mkdircd () { mkdir -p \"$@\" \u0026\u0026 eval cd \"\\\"\\$$#\\\"\"; } 查找文件 # 找到大于100M的文件 find / -type f -size +100M # 找到文件名中含有mail的文件/文件夹 find /etc -name \"*mail*\" # 找到修改时间在60天之前的文件 find . -mtime +60 # 找到修改时间在2天内的文件 find . -mtime -2 # 批量显示TS后缀且大于100M文件的详情 find . -type f -name '*.TS' -size +100M -exec ls -l {} \\; # 批量删除TS后缀且大于100M的文件 find . -type f -name '*.TS' -size +100M -exec rm -f {} \\; # 查找修改时间60天前的文件并打包 find /home/jsmith -type f -mtime +60 | xargs tar -cvf /tmp/`date '+%d%m%Y'_archive.tar` 输出重定向 # 标准输出重定向，只显示error信息 ./shell-script.sh \u003e /dev/null # 标准错误信息重定向 ./shell-script.sh 2\u003e /dev/null # 标准错误和输出都重定向 ./shell-script.sh \u003e /dev/null 2\u003e\u00261 # 将所有大写转化为小写 tr A-Z a-z \u003c department.txt # 将所有小写转化为大写 tr a-z A-Z \u003c employee.txt xargs 基本使用 # 删除log文件 find ~ -name '*.log' -print0 | xargs -0 rm -f find /etc -name \"*.conf\" | xargs ls -l cat url-list.txt | xargs wget -c find / -name *.jpg -type f -print | xargs tar -cvzf images.tar.gz ls *.jpg | xargs -n1 -i cp {} /external-harddrive/directory 文件中截取列 # 以:分割，第一列 cut -d: -f 1 /etc/passwd # 以:分割，第1和第3列 cut -d: -f 1,3 /etc/passwd # 截取每行前边1-8个字符 cut -c 1-8 /etc/passwd 后台运行 nohup ./backup.sh \u0026 screen -S backup # 以特定间隔时间执行命令 watch df -h sed 基础 # thegeekstuff.txt # Instruction Guides 1. Linux Sysadmin, Linux Scripting etc. 2. Databases - Oracle, mySQL etc. 3. Security (Firewall, Network, Online Security etc) 4. Storage in Linux 5. Productivity (Too many technologies to explore, not much time available) # Additional FAQS 6. Windows- Sysadmin, reboot etc. # 将第一个Linux替换为Linux-Unix sed 's/Linux/Linux-Unix/' thegeekstuff.txt # 将所有Linux替换为Linux-Unix sed 's/Linux/Linux-Unix/g' thegeekstuff.txt # 将第2个出现的Linux替换为Linux-Unix sed 's/Linux/Linux-Unix/2' thegeekstuff.txt # 输出修改行并写入指定的output文件 sed -n 's/Linux/Linux-Unix/gpw output' thegeekstuff.txt # 行正则匹配到-，则从-到行尾的字符被替换为空 sed '/\\-/s/\\-.*//g' thegeekstuff.txt # 删除每行的后3个字符 sed 's/...$//' thegeekstuff.txt # 直接修改源文件，去除#开头的注释 sed -e 's/#.*//' thegeekstuff.txt # 直接修改源文件，去除#开头的注释并去除空行 sed -e 's/#.*//;/^$/d' thegeekstuff.txt # 去除html的箭头标签 sed -e 's/\u003c[^\u003e]*\u003e//g' # 同时显示多个文件的日志 tail -f /var/log/syslog -f /var/log/auth.log # 修改命令行提示符号 export PS1=\"\\u@\\h \\w\u003e \" # 修改系统时间 date {mmddhhmiyyyy.ss} # Jan 31st 2009, 10:19 p.m, 53 seconds date 013122192009.53 date +%Y%m%d -s \"20090131\" date +%T -s \"22:19:53\" date -s \"01/31/2009 22:19:53\" # 显示时间 date +\"%d-%m-%Y\" 01-01-2009 date +\"%d/%m/%Y\" # 01/01/2009 date +\"%A,%B %d %Y\" # Thursday,January 01 2009 压缩和解压 zip var-log-files.zip /var/log/* zip -r var-log-dir.zip /var/log/ unzip var-log.zip unzip -v var-log.zip unzip -l var-log.zip unzip -t var-log.zip zip -P mysecurepwd var-log-protected.zip /var/log/* unzip var-log-protected.zip tar [options] [tar-archive-name] [other-file-names] # 压缩文件 tar cvf /tmp/my_home_directory.tar /home/jsmith # 显示压缩文件目录 tar tvf /tmp/my_home_directory.tar # 提取压缩文件 tar xvf /tmp/my_home_directory.tar # 指定提取目录 tar xvfz /tmp/my_home_directory.tar.gz -C /home/ramesh # gzip压缩文件(*.tar.gz) tar cvfz /tmp/my_home_directory.tar.gz /home/jsmith tar xvfz /tmp/my_home_directory.tar.gz tar tvfz /tmp/my_home_directory.tar.gz # bzip压缩文件(*.tar.bz2) tar cvfj /tmp/my_home_directory.tar.bz2 /home/jsmith tar xvfj /tmp/my_home_directory.tar.bz2 tar tvfj /tmp/my_home_directory.tar.bz2 命令行历史 # CTRL+r 查找匹配历史 # CTRL+p 上一条命令 history -c # 清除历史 # 忽略重复命令 export HISTCONTROL=ignoredups # 忽略以空格开头的命令 export HISTCONTROL=ignorespace # 不记录历史 export HISTSIZE=0 系统管理 # 创建swap分区 dd if=/dev/zero of=/home/swap-fs bs=1M count=512 ls -l /home/swap-fs mkswap /home/swap-fs swapon /home/swap-fs # edit in /etc/fstab /home/swap-fs swap swap defaults 0 0 # 生成ssh公钥 ssh-keygen ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host # 定时任务管理 crontab -e {minute} {hour} {day-of-month} {month} {day-of-week} {full-path-to-shell-script} # run at 00:01am 1 0 * * * /root/bin/backup.sh # run at weekday 11:59pm 59 11 * * 1,2,3,4,5 /root/bin/backup.sh 59 11 * * 1-5 /root/bin/backup.sh # run every 5 minute */5 * * * * /root/bin/check-status.sh # run at 13:10pm on lst of every month 10 13 1 * * /root/bin/full-backup.sh # run at 11:00pm every weekday 0 23 * * 1-5 /root/bin/incremental-backup.sh # 同步文件 rsync options source destination # sync two directory in a local computer # -z enable compression # -v verbose # -r recursive # -a archive mode:will preserve symbolic link/permission/timestamp/owner/group rsync -zvr /var/opt/installation/inventory/ /root/temp # sync one file rsync -v /var/lib/rpm/Pubkeys /root/temp/ # sync to remote machine rsync -avz /root/temp/ thegeekstuff@192.168.200.10:/home/thegeekstuff/temp/ # sync from remote to local rsync -avz thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp # netcat命令nc # 从server1拷贝文件到server2 # 1. 在server2(102.168.200.27)上监听 nc -l 2222 \u003e 1234.txt # 2. 在server1上开启传输 nc -w 1 102.168.200.27 2222 \u003c abc.txt # 网络拷贝硬盘 # 1. server2(102.168.200.27)监听 nc -l -p 2222 | dd of=/dev/sda # 2. server1执行传输 dd if=/dev/sda | nc 102.168.200.27 2222 # nc端口扫描 # 扫描20-30端口 nc -v -w 1 192.168.200.29 -z 20-30 系统性能监控 ps axl ps aux ps axuf ps U niuhe netstat -tap netstat --route # 路由表 sar lsof ","wordCount":"1346","inLanguage":"zh","datePublished":"2020-12-05T00:00:00Z","dateModified":"2020-12-05T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/linux-101-hackers/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">linux 101 Hackers 笔记</h1><div class=post-description>linux 101 Hackers 笔记</div><div class=post-meta><span title='2020-12-05 00:00:00 +0000 UTC'>2020-12-05</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1346 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><div class="post-content md-content"><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 创建目录并进入</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>function</span> mkdircd () { mkdir -p <span style=color:#0ff;font-weight:700>&#34;</span>$@<span style=color:#0ff;font-weight:700>&#34;</span> &amp;&amp; <span style=color:#fff;font-weight:700>eval</span> <span style=color:#fff;font-weight:700>cd</span> <span style=color:#0ff;font-weight:700>&#34;\&#34;\$</span>$#<span style=color:#0ff;font-weight:700>\&#34;&#34;</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ul><li>查找文件</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 找到大于100M的文件</span>
+</span></span><span style=display:flex><span>find / -type f -size +100M
+</span></span><span style=display:flex><span><span style=color:#007f7f># 找到文件名中含有mail的文件/文件夹</span>
+</span></span><span style=display:flex><span>find /etc -name <span style=color:#0ff;font-weight:700>&#34;*mail*&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 找到修改时间在60天之前的文件</span>
+</span></span><span style=display:flex><span>find . -mtime +60
+</span></span><span style=display:flex><span><span style=color:#007f7f># 找到修改时间在2天内的文件</span>
+</span></span><span style=display:flex><span>find . -mtime -2
+</span></span><span style=display:flex><span><span style=color:#007f7f># 批量显示TS后缀且大于100M文件的详情</span>
+</span></span><span style=display:flex><span>find . -type f -name <span style=color:#0ff;font-weight:700>&#39;*.TS&#39;</span> -size +100M -exec ls -l {} <span style=color:#0ff;font-weight:700>\;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 批量删除TS后缀且大于100M的文件</span>
+</span></span><span style=display:flex><span>find . -type f -name <span style=color:#0ff;font-weight:700>&#39;*.TS&#39;</span> -size +100M -exec rm -f {} <span style=color:#0ff;font-weight:700>\;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 查找修改时间60天前的文件并打包</span>
+</span></span><span style=display:flex><span>find /home/jsmith -type f -mtime +60 | xargs tar -cvf /tmp/<span style=color:#0ff;font-weight:700>`</span>date <span style=color:#0ff;font-weight:700>&#39;+%d%m%Y&#39;</span>_archive.tar<span style=color:#0ff;font-weight:700>`</span>
+</span></span></code></pre></div><ul><li>输出重定向</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 标准输出重定向，只显示error信息</span>
+</span></span><span style=display:flex><span>./shell-script.sh &gt; /dev/null
+</span></span><span style=display:flex><span><span style=color:#007f7f># 标准错误信息重定向</span>
+</span></span><span style=display:flex><span>./shell-script.sh 2&gt; /dev/null
+</span></span><span style=display:flex><span><span style=color:#007f7f># 标准错误和输出都重定向</span>
+</span></span><span style=display:flex><span>./shell-script.sh &gt; /dev/null 2&gt;&amp;<span style=color:#ff0;font-weight:700>1</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 将所有大写转化为小写</span>
+</span></span><span style=display:flex><span>tr A-Z a-z &lt; department.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 将所有小写转化为大写</span>
+</span></span><span style=display:flex><span>tr a-z A-Z &lt; employee.txt
+</span></span></code></pre></div><ul><li>xargs 基本使用</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 删除log文件</span>
+</span></span><span style=display:flex><span>find ~ -name <span style=color:#0ff;font-weight:700>&#39;*.log&#39;</span> -print0 | xargs -0 rm -f
+</span></span><span style=display:flex><span>find /etc -name <span style=color:#0ff;font-weight:700>&#34;*.conf&#34;</span> | xargs ls -l
+</span></span><span style=display:flex><span>cat url-list.txt | xargs wget -c
+</span></span><span style=display:flex><span>find / -name *.jpg -type f -print | xargs tar -cvzf images.tar.gz
+</span></span><span style=display:flex><span>ls *.jpg | xargs -n1 -i cp {} /external-harddrive/directory
+</span></span></code></pre></div><ul><li>文件中截取列</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 以:分割，第一列</span>
+</span></span><span style=display:flex><span>cut -d: -f <span style=color:#ff0;font-weight:700>1</span> /etc/passwd
+</span></span><span style=display:flex><span><span style=color:#007f7f># 以:分割，第1和第3列</span>
+</span></span><span style=display:flex><span>cut -d: -f 1,3 /etc/passwd
+</span></span><span style=display:flex><span><span style=color:#007f7f># 截取每行前边1-8个字符</span>
+</span></span><span style=display:flex><span>cut -c 1-8 /etc/passwd
+</span></span></code></pre></div><ul><li>后台运行</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>nohup ./backup.sh &amp;
+</span></span><span style=display:flex><span>screen -S backup
+</span></span><span style=display:flex><span><span style=color:#007f7f># 以特定间隔时间执行命令</span>
+</span></span><span style=display:flex><span>watch df -h
+</span></span></code></pre></div><ul><li>sed 基础</li></ul><pre tabindex=0><code># thegeekstuff.txt
 # Instruction Guides
 1. Linux Sysadmin, Linux Scripting etc.
 2. Databases - Oracle, mySQL etc.
@@ -397,312 +58,153 @@ html[data-theme="dark"] .notice {
 much time available)
 # Additional FAQS
 6. Windows- Sysadmin, reboot etc.
-</code></pre><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 将第一个Linux替换为Linux-Unix</span>
-</span></span><span style="display:flex;"><span>sed <span style="color:#0ff;font-weight:bold">&#39;s/Linux/Linux-Unix/&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 将所有Linux替换为Linux-Unix</span>
-</span></span><span style="display:flex;"><span>sed <span style="color:#0ff;font-weight:bold">&#39;s/Linux/Linux-Unix/g&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 将第2个出现的Linux替换为Linux-Unix</span>
-</span></span><span style="display:flex;"><span>sed <span style="color:#0ff;font-weight:bold">&#39;s/Linux/Linux-Unix/2&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 输出修改行并写入指定的output文件</span>
-</span></span><span style="display:flex;"><span>sed -n <span style="color:#0ff;font-weight:bold">&#39;s/Linux/Linux-Unix/gpw output&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 行正则匹配到-，则从-到行尾的字符被替换为空</span>
-</span></span><span style="display:flex;"><span>sed <span style="color:#0ff;font-weight:bold">&#39;/\-/s/\-.*//g&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 删除每行的后3个字符</span>
-</span></span><span style="display:flex;"><span>sed <span style="color:#0ff;font-weight:bold">&#39;s/...$//&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 直接修改源文件，去除#开头的注释</span>
-</span></span><span style="display:flex;"><span>sed -e <span style="color:#0ff;font-weight:bold">&#39;s/#.*//&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 直接修改源文件，去除#开头的注释并去除空行</span>
-</span></span><span style="display:flex;"><span>sed -e <span style="color:#0ff;font-weight:bold">&#39;s/#.*//;/^$/d&#39;</span> thegeekstuff.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 去除html的箭头标签</span>
-</span></span><span style="display:flex;"><span>sed -e <span style="color:#0ff;font-weight:bold">&#39;s/&lt;[^&gt;]*&gt;//g&#39;</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 同时显示多个文件的日志</span>
-</span></span><span style="display:flex;"><span>tail -f /var/log/syslog -f /var/log/auth.log
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 修改命令行提示符号</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">export</span> PS1=<span style="color:#0ff;font-weight:bold">&#34;\u@\h \w&gt; &#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 修改系统时间</span>
-</span></span><span style="display:flex;"><span>date {mmddhhmiyyyy.ss}
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Jan 31st 2009, 10:19 p.m, 53 seconds</span>
-</span></span><span style="display:flex;"><span>date 013122192009.53
-</span></span><span style="display:flex;"><span>date +%Y%m%d -s <span style="color:#0ff;font-weight:bold">&#34;20090131&#34;</span>
-</span></span><span style="display:flex;"><span>date +%T -s <span style="color:#0ff;font-weight:bold">&#34;22:19:53&#34;</span>
-</span></span><span style="display:flex;"><span>date -s <span style="color:#0ff;font-weight:bold">&#34;01/31/2009 22:19:53&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 显示时间</span>
-</span></span><span style="display:flex;"><span>date +<span style="color:#0ff;font-weight:bold">&#34;%d-%m-%Y&#34;</span>
-</span></span><span style="display:flex;"><span>01-01-2009
-</span></span><span style="display:flex;"><span>date +<span style="color:#0ff;font-weight:bold">&#34;%d/%m/%Y&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 01/01/2009</span>
-</span></span><span style="display:flex;"><span>date +<span style="color:#0ff;font-weight:bold">&#34;%A,%B %d %Y&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Thursday,January 01 2009</span>
-</span></span></code></pre></div><ul>
-<li>压缩和解压</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>zip var-log-files.zip /var/log/*
-</span></span><span style="display:flex;"><span>zip -r var-log-dir.zip /var/log/
-</span></span><span style="display:flex;"><span>unzip var-log.zip
-</span></span><span style="display:flex;"><span>unzip -v var-log.zip
-</span></span><span style="display:flex;"><span>unzip -l var-log.zip
-</span></span><span style="display:flex;"><span>unzip -t var-log.zip
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>zip -P mysecurepwd var-log-protected.zip /var/log/*
-</span></span><span style="display:flex;"><span>unzip var-log-protected.zip
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>tar [options] [tar-archive-name] [other-file-names]
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 压缩文件</span>
-</span></span><span style="display:flex;"><span>tar cvf /tmp/my_home_directory.tar /home/jsmith
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 显示压缩文件目录</span>
-</span></span><span style="display:flex;"><span>tar tvf /tmp/my_home_directory.tar
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 提取压缩文件</span>
-</span></span><span style="display:flex;"><span>tar xvf /tmp/my_home_directory.tar
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 指定提取目录</span>
-</span></span><span style="display:flex;"><span>tar xvfz /tmp/my_home_directory.tar.gz -C /home/ramesh
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># gzip压缩文件(*.tar.gz)</span>
-</span></span><span style="display:flex;"><span>tar cvfz /tmp/my_home_directory.tar.gz /home/jsmith
-</span></span><span style="display:flex;"><span>tar xvfz /tmp/my_home_directory.tar.gz
-</span></span><span style="display:flex;"><span>tar tvfz /tmp/my_home_directory.tar.gz
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># bzip压缩文件(*.tar.bz2)</span>
-</span></span><span style="display:flex;"><span>tar cvfj /tmp/my_home_directory.tar.bz2 /home/jsmith
-</span></span><span style="display:flex;"><span>tar xvfj /tmp/my_home_directory.tar.bz2
-</span></span><span style="display:flex;"><span>tar tvfj /tmp/my_home_directory.tar.bz2
-</span></span></code></pre></div><ul>
-<li>命令行历史</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># CTRL+r 查找匹配历史</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># CTRL+p 上一条命令</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">history</span> -c <span style="color:#007f7f"># 清除历史</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 忽略重复命令</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">export</span> HISTCONTROL=ignoredups
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 忽略以空格开头的命令</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">export</span> HISTCONTROL=ignorespace
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 不记录历史</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">export</span> HISTSIZE=<span style="color:#ff0;font-weight:bold">0</span>
-</span></span></code></pre></div><ul>
-<li>系统管理</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 创建swap分区</span>
-</span></span><span style="display:flex;"><span>dd <span style="color:#fff;font-weight:bold">if</span>=/dev/zero of=/home/swap-fs bs=1M count=<span style="color:#ff0;font-weight:bold">512</span>
-</span></span><span style="display:flex;"><span>ls -l /home/swap-fs
-</span></span><span style="display:flex;"><span>mkswap /home/swap-fs
-</span></span><span style="display:flex;"><span>swapon /home/swap-fs
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># edit in /etc/fstab</span>
-</span></span><span style="display:flex;"><span>/home/swap-fs swap swap defaults <span style="color:#ff0;font-weight:bold">0</span> <span style="color:#ff0;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 生成ssh公钥</span>
-</span></span><span style="display:flex;"><span>ssh-keygen
-</span></span><span style="display:flex;"><span>ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 定时任务管理</span>
-</span></span><span style="display:flex;"><span>crontab -e
-</span></span><span style="display:flex;"><span>{minute} {hour} {day-of-month} {month} {day-of-week} {full-path-to-shell-script}
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># run at 00:01am</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">1</span> <span style="color:#ff0;font-weight:bold">0</span> * * * /root/bin/backup.sh
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># run at weekday 11:59pm</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">59</span> <span style="color:#ff0;font-weight:bold">11</span> * * 1,2,3,4,5 /root/bin/backup.sh
-</span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">59</span> <span style="color:#ff0;font-weight:bold">11</span> * * 1-5 /root/bin/backup.sh
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># run every 5 minute</span>
-</span></span><span style="display:flex;"><span>*/5 * * * * /root/bin/check-status.sh
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># run at 13:10pm on lst of every month</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">10</span> <span style="color:#ff0;font-weight:bold">13</span> <span style="color:#ff0;font-weight:bold">1</span> * * /root/bin/full-backup.sh
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># run at 11:00pm every weekday</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff0;font-weight:bold">0</span> <span style="color:#ff0;font-weight:bold">23</span> * * 1-5 /root/bin/incremental-backup.sh
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 同步文件</span>
-</span></span><span style="display:flex;"><span>rsync options <span style="color:#fff;font-weight:bold">source</span> destination
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># sync two directory in a local computer</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># -z enable compression</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># -v verbose</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># -r recursive</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># -a archive mode:will preserve symbolic link/permission/timestamp/owner/group</span>
-</span></span><span style="display:flex;"><span>rsync -zvr /var/opt/installation/inventory/ /root/temp
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># sync one file</span>
-</span></span><span style="display:flex;"><span>rsync -v /var/lib/rpm/Pubkeys /root/temp/
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># sync to remote machine</span>
-</span></span><span style="display:flex;"><span>rsync -avz /root/temp/ thegeekstuff@192.168.200.10:/home/thegeekstuff/temp/
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># sync from remote to local</span>
-</span></span><span style="display:flex;"><span>rsync -avz thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># netcat命令nc</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 从server1拷贝文件到server2</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 1. 在server2(102.168.200.27)上监听</span>
-</span></span><span style="display:flex;"><span>nc -l <span style="color:#ff0;font-weight:bold">2222</span> &gt; 1234.txt
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 2. 在server1上开启传输</span>
-</span></span><span style="display:flex;"><span>nc -w <span style="color:#ff0;font-weight:bold">1</span> 102.168.200.27 <span style="color:#ff0;font-weight:bold">2222</span> &lt; abc.txt
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 网络拷贝硬盘</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 1. server2(102.168.200.27)监听</span>
-</span></span><span style="display:flex;"><span>nc -l -p <span style="color:#ff0;font-weight:bold">2222</span> | dd of=/dev/sda
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 2. server1执行传输</span>
-</span></span><span style="display:flex;"><span>dd <span style="color:#fff;font-weight:bold">if</span>=/dev/sda | nc 102.168.200.27 <span style="color:#ff0;font-weight:bold">2222</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># nc端口扫描</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 扫描20-30端口</span>
-</span></span><span style="display:flex;"><span>nc -v -w <span style="color:#ff0;font-weight:bold">1</span> 192.168.200.29 -z 20-30
-</span></span></code></pre></div><ul>
-<li>系统性能监控</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ps axl
-</span></span><span style="display:flex;"><span>ps aux
-</span></span><span style="display:flex;"><span>ps axuf
-</span></span><span style="display:flex;"><span>ps U niuhe
-</span></span><span style="display:flex;"><span>netstat -tap
-</span></span><span style="display:flex;"><span>netstat --route  <span style="color:#007f7f"># 路由表</span>
-</span></span><span style="display:flex;"><span>sar
-</span></span><span style="display:flex;"><span>lsof
-</span></span></code></pre></div>
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/awk-usage/">
-    <span class="title">« 上一页</span>
-    <span>awk基本使用</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/vscode-shortcut/">
-    <span class="title">下一页 »</span>
-    <span>vscode 快捷键和插件记录</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+</code></pre><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 将第一个Linux替换为Linux-Unix</span>
+</span></span><span style=display:flex><span>sed <span style=color:#0ff;font-weight:700>&#39;s/Linux/Linux-Unix/&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 将所有Linux替换为Linux-Unix</span>
+</span></span><span style=display:flex><span>sed <span style=color:#0ff;font-weight:700>&#39;s/Linux/Linux-Unix/g&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 将第2个出现的Linux替换为Linux-Unix</span>
+</span></span><span style=display:flex><span>sed <span style=color:#0ff;font-weight:700>&#39;s/Linux/Linux-Unix/2&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 输出修改行并写入指定的output文件</span>
+</span></span><span style=display:flex><span>sed -n <span style=color:#0ff;font-weight:700>&#39;s/Linux/Linux-Unix/gpw output&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 行正则匹配到-，则从-到行尾的字符被替换为空</span>
+</span></span><span style=display:flex><span>sed <span style=color:#0ff;font-weight:700>&#39;/\-/s/\-.*//g&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 删除每行的后3个字符</span>
+</span></span><span style=display:flex><span>sed <span style=color:#0ff;font-weight:700>&#39;s/...$//&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 直接修改源文件，去除#开头的注释</span>
+</span></span><span style=display:flex><span>sed -e <span style=color:#0ff;font-weight:700>&#39;s/#.*//&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 直接修改源文件，去除#开头的注释并去除空行</span>
+</span></span><span style=display:flex><span>sed -e <span style=color:#0ff;font-weight:700>&#39;s/#.*//;/^$/d&#39;</span> thegeekstuff.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 去除html的箭头标签</span>
+</span></span><span style=display:flex><span>sed -e <span style=color:#0ff;font-weight:700>&#39;s/&lt;[^&gt;]*&gt;//g&#39;</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 同时显示多个文件的日志</span>
+</span></span><span style=display:flex><span>tail -f /var/log/syslog -f /var/log/auth.log
+</span></span><span style=display:flex><span><span style=color:#007f7f># 修改命令行提示符号</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>export</span> PS1=<span style=color:#0ff;font-weight:700>&#34;\u@\h \w&gt; &#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 修改系统时间</span>
+</span></span><span style=display:flex><span>date {mmddhhmiyyyy.ss}
+</span></span><span style=display:flex><span><span style=color:#007f7f># Jan 31st 2009, 10:19 p.m, 53 seconds</span>
+</span></span><span style=display:flex><span>date 013122192009.53
+</span></span><span style=display:flex><span>date +%Y%m%d -s <span style=color:#0ff;font-weight:700>&#34;20090131&#34;</span>
+</span></span><span style=display:flex><span>date +%T -s <span style=color:#0ff;font-weight:700>&#34;22:19:53&#34;</span>
+</span></span><span style=display:flex><span>date -s <span style=color:#0ff;font-weight:700>&#34;01/31/2009 22:19:53&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 显示时间</span>
+</span></span><span style=display:flex><span>date +<span style=color:#0ff;font-weight:700>&#34;%d-%m-%Y&#34;</span>
+</span></span><span style=display:flex><span>01-01-2009
+</span></span><span style=display:flex><span>date +<span style=color:#0ff;font-weight:700>&#34;%d/%m/%Y&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 01/01/2009</span>
+</span></span><span style=display:flex><span>date +<span style=color:#0ff;font-weight:700>&#34;%A,%B %d %Y&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># Thursday,January 01 2009</span>
+</span></span></code></pre></div><ul><li>压缩和解压</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>zip var-log-files.zip /var/log/*
+</span></span><span style=display:flex><span>zip -r var-log-dir.zip /var/log/
+</span></span><span style=display:flex><span>unzip var-log.zip
+</span></span><span style=display:flex><span>unzip -v var-log.zip
+</span></span><span style=display:flex><span>unzip -l var-log.zip
+</span></span><span style=display:flex><span>unzip -t var-log.zip
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>zip -P mysecurepwd var-log-protected.zip /var/log/*
+</span></span><span style=display:flex><span>unzip var-log-protected.zip
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>tar [options] [tar-archive-name] [other-file-names]
+</span></span><span style=display:flex><span><span style=color:#007f7f># 压缩文件</span>
+</span></span><span style=display:flex><span>tar cvf /tmp/my_home_directory.tar /home/jsmith
+</span></span><span style=display:flex><span><span style=color:#007f7f># 显示压缩文件目录</span>
+</span></span><span style=display:flex><span>tar tvf /tmp/my_home_directory.tar
+</span></span><span style=display:flex><span><span style=color:#007f7f># 提取压缩文件</span>
+</span></span><span style=display:flex><span>tar xvf /tmp/my_home_directory.tar
+</span></span><span style=display:flex><span><span style=color:#007f7f># 指定提取目录</span>
+</span></span><span style=display:flex><span>tar xvfz /tmp/my_home_directory.tar.gz -C /home/ramesh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># gzip压缩文件(*.tar.gz)</span>
+</span></span><span style=display:flex><span>tar cvfz /tmp/my_home_directory.tar.gz /home/jsmith
+</span></span><span style=display:flex><span>tar xvfz /tmp/my_home_directory.tar.gz
+</span></span><span style=display:flex><span>tar tvfz /tmp/my_home_directory.tar.gz
+</span></span><span style=display:flex><span><span style=color:#007f7f># bzip压缩文件(*.tar.bz2)</span>
+</span></span><span style=display:flex><span>tar cvfj /tmp/my_home_directory.tar.bz2 /home/jsmith
+</span></span><span style=display:flex><span>tar xvfj /tmp/my_home_directory.tar.bz2
+</span></span><span style=display:flex><span>tar tvfj /tmp/my_home_directory.tar.bz2
+</span></span></code></pre></div><ul><li>命令行历史</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># CTRL+r 查找匹配历史</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># CTRL+p 上一条命令</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>history</span> -c <span style=color:#007f7f># 清除历史</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 忽略重复命令</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>export</span> HISTCONTROL=ignoredups
+</span></span><span style=display:flex><span><span style=color:#007f7f># 忽略以空格开头的命令</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>export</span> HISTCONTROL=ignorespace
+</span></span><span style=display:flex><span><span style=color:#007f7f># 不记录历史</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>export</span> HISTSIZE=<span style=color:#ff0;font-weight:700>0</span>
+</span></span></code></pre></div><ul><li>系统管理</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 创建swap分区</span>
+</span></span><span style=display:flex><span>dd <span style=color:#fff;font-weight:700>if</span>=/dev/zero of=/home/swap-fs bs=1M count=<span style=color:#ff0;font-weight:700>512</span>
+</span></span><span style=display:flex><span>ls -l /home/swap-fs
+</span></span><span style=display:flex><span>mkswap /home/swap-fs
+</span></span><span style=display:flex><span>swapon /home/swap-fs
+</span></span><span style=display:flex><span><span style=color:#007f7f># edit in /etc/fstab</span>
+</span></span><span style=display:flex><span>/home/swap-fs swap swap defaults <span style=color:#ff0;font-weight:700>0</span> <span style=color:#ff0;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 生成ssh公钥</span>
+</span></span><span style=display:flex><span>ssh-keygen
+</span></span><span style=display:flex><span>ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 定时任务管理</span>
+</span></span><span style=display:flex><span>crontab -e
+</span></span><span style=display:flex><span>{minute} {hour} {day-of-month} {month} {day-of-week} {full-path-to-shell-script}
+</span></span><span style=display:flex><span><span style=color:#007f7f># run at 00:01am</span>
+</span></span><span style=display:flex><span><span style=color:#ff0;font-weight:700>1</span> <span style=color:#ff0;font-weight:700>0</span> * * * /root/bin/backup.sh
+</span></span><span style=display:flex><span><span style=color:#007f7f># run at weekday 11:59pm</span>
+</span></span><span style=display:flex><span><span style=color:#ff0;font-weight:700>59</span> <span style=color:#ff0;font-weight:700>11</span> * * 1,2,3,4,5 /root/bin/backup.sh
+</span></span><span style=display:flex><span><span style=color:#ff0;font-weight:700>59</span> <span style=color:#ff0;font-weight:700>11</span> * * 1-5 /root/bin/backup.sh
+</span></span><span style=display:flex><span><span style=color:#007f7f># run every 5 minute</span>
+</span></span><span style=display:flex><span>*/5 * * * * /root/bin/check-status.sh
+</span></span><span style=display:flex><span><span style=color:#007f7f># run at 13:10pm on lst of every month</span>
+</span></span><span style=display:flex><span><span style=color:#ff0;font-weight:700>10</span> <span style=color:#ff0;font-weight:700>13</span> <span style=color:#ff0;font-weight:700>1</span> * * /root/bin/full-backup.sh
+</span></span><span style=display:flex><span><span style=color:#007f7f># run at 11:00pm every weekday</span>
+</span></span><span style=display:flex><span><span style=color:#ff0;font-weight:700>0</span> <span style=color:#ff0;font-weight:700>23</span> * * 1-5 /root/bin/incremental-backup.sh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 同步文件</span>
+</span></span><span style=display:flex><span>rsync options <span style=color:#fff;font-weight:700>source</span> destination
+</span></span><span style=display:flex><span><span style=color:#007f7f># sync two directory in a local computer</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># -z enable compression</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># -v verbose</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># -r recursive</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># -a archive mode:will preserve symbolic link/permission/timestamp/owner/group</span>
+</span></span><span style=display:flex><span>rsync -zvr /var/opt/installation/inventory/ /root/temp
+</span></span><span style=display:flex><span><span style=color:#007f7f># sync one file</span>
+</span></span><span style=display:flex><span>rsync -v /var/lib/rpm/Pubkeys /root/temp/
+</span></span><span style=display:flex><span><span style=color:#007f7f># sync to remote machine</span>
+</span></span><span style=display:flex><span>rsync -avz /root/temp/ thegeekstuff@192.168.200.10:/home/thegeekstuff/temp/
+</span></span><span style=display:flex><span><span style=color:#007f7f># sync from remote to local</span>
+</span></span><span style=display:flex><span>rsync -avz thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># netcat命令nc</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 从server1拷贝文件到server2</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 1. 在server2(102.168.200.27)上监听</span>
+</span></span><span style=display:flex><span>nc -l <span style=color:#ff0;font-weight:700>2222</span> &gt; 1234.txt
+</span></span><span style=display:flex><span><span style=color:#007f7f># 2. 在server1上开启传输</span>
+</span></span><span style=display:flex><span>nc -w <span style=color:#ff0;font-weight:700>1</span> 102.168.200.27 <span style=color:#ff0;font-weight:700>2222</span> &lt; abc.txt
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 网络拷贝硬盘</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 1. server2(102.168.200.27)监听</span>
+</span></span><span style=display:flex><span>nc -l -p <span style=color:#ff0;font-weight:700>2222</span> | dd of=/dev/sda
+</span></span><span style=display:flex><span><span style=color:#007f7f># 2. server1执行传输</span>
+</span></span><span style=display:flex><span>dd <span style=color:#fff;font-weight:700>if</span>=/dev/sda | nc 102.168.200.27 <span style=color:#ff0;font-weight:700>2222</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># nc端口扫描</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 扫描20-30端口</span>
+</span></span><span style=display:flex><span>nc -v -w <span style=color:#ff0;font-weight:700>1</span> 192.168.200.29 -z 20-30
+</span></span></code></pre></div><ul><li>系统性能监控</li></ul><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>ps axl
+</span></span><span style=display:flex><span>ps aux
+</span></span><span style=display:flex><span>ps axuf
+</span></span><span style=display:flex><span>ps U niuhe
+</span></span><span style=display:flex><span>netstat -tap
+</span></span><span style=display:flex><span>netstat --route  <span style=color:#007f7f># 路由表</span>
+</span></span><span style=display:flex><span>sar
+</span></span><span style=display:flex><span>lsof
+</span></span></code></pre></div></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/linux/>Linux</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/awk-usage/><span class=title>« 上一页</span>
+<span>awk基本使用</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/vscode-shortcut/><span class=title>下一页 »</span>
+<span>vscode 快捷键和插件记录</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

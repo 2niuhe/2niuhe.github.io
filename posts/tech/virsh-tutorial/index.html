@@ -1,945 +1,333 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Virsh命令和虚拟机 | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="KVM, Openstack">
-<meta name="description" content="虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="Virsh命令和虚拟机">
-  <meta property="og:description" content="虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2020-10-22T00:00:00+00:00">
-    <meta property="article:modified_time" content="2020-10-22T00:00:00+00:00">
-    <meta property="article:tag" content="KVM">
-    <meta property="article:tag" content="Openstack">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Virsh命令和虚拟机">
-  <meta name="twitter:description" content="虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "Virsh命令和虚拟机",
-      "item": "https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Virsh命令和虚拟机",
-  "name": "Virsh命令和虚拟机",
-  "description": "虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容",
-  "keywords": [
-    "KVM", "Openstack"
-  ],
-  "articleBody": "环境搭建和准备 # 查看cpu是否支持硬件虚拟化 grep -E -c \"vmx|svm\" /proc/cpuinfo sudo apt install -y qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst # if centos # yum install -y kvm virt-manager libvirt libvirt-python python-virtinst virt-install qemu-kvm lsmod | grep -i kvm sudo systemctl status libvirtd.service # 如果服务未启动 sudo systemctl enable libvirtd --now # 配置网桥使得libvirt可以从外部访问 cat /etc/netplan/00-installer-config.yaml # 可选，GUI管理工具 sudo apt-get install virt-manager python-spice-client-gtk 下载调试镜像： 从官方地址下载cirros镜像，用来调试虚拟机，用户名和密码如下\nuser:cirros pass:cubswin:) # 不同版本密码不同 通常将cirros镜像放置到/var/lib/libvirt/boot路径下\n可以查看镜像信息\nqemu-img info cirros-0.5.0-x86_64-disk.img 至此，vrish学习的基本环境就搭建完成\nLibvirt基本概念 virsh命令大概分组\nDomain Management（域管理） Domain Monitoring（域监控） Host and Hypervisor（主机及虚拟化） Interface（网卡接口） Network Filter（网络防火墙） Networking（网络） Node Device（节点设备驱动）存在 Secret Snapshot（快照） Storage Pool（存储池或存储策略） Storage Volume（存储卷） Virsh itself（virsh shell自身相关） 定义过的或者能够被libvirt感知到的虚机的配置文件都在/etc/libvirt目录下\n虚拟机文件和其它的相关文件都保存在 /var/lib/libvirt/ 下\n镜像的默认路径是 /var/lib/libvirt/boot/。\n上图时一个libvirt虚拟机的生命周期图，虚拟机分为两种：\n持久性的 短暂性的 持久性虚拟机会一直存在，直到被删除；\n短暂性的虚拟机只有在虚拟机被关机或重启前存在\n虚拟机常用命令 virsh和qemu的命令非常多，下面罗列一些常用的命令\nvirsh help\t# 查看帮助信息 virsh version\t# 查看qemu版本 virsh help \u003c特定命令\u003e\t# 查看特定命令帮助信息 virsh \u003c特定命令\u003e --help\t# 查看特定命令帮助信息 virsh nodeinfo\t# 查看宿主机信息 virsh uri # 查看当前主机hyperviso的连接路径； virsh connect # 连接到特定hypervisor,默认qemu:///system virsh sysinfo\t# 查看hypervisro信息 virsh start \u003c虚拟机名称\u003e # 启动一个之前已经定义define过的虚拟机（domain) virsh shutdown \u003c虚拟机名称\u003e\t# 关闭虚拟机,类似虚拟机内执行关机 virsh reboot \u003c虚拟机名称\u003e\t# 重启虚拟机 virsh destroy \u003c虚拟机名称\u003e\t# 强制关闭虚拟机，类似于断电 virsh suspend \u003c虚拟机名称\u003e # 挂起虚拟机，将当前状态保存在内存中 virsh resume \u003c虚拟机名称\u003e\t# 恢复虚拟机挂起状态，从内存中恢复虚拟机状态 virsh save \u003c虚拟机名称\u003e # 暂停虚拟机，将虚拟机状态保存在磁盘镜像文件中 virsh restore #重新载入暂停的虚拟机 virsh autostart \u003c虚拟机名称\u003e\t# 虚拟机随着物理机启动自动启动 virsh autostart \u003c虚拟机名称\u003e --disable\t# 禁止开机启动 virsh dominfo \u003c虚拟机名称\u003e\t# 查看虚拟机domain信息 virsh domblklist \u003c虚拟机名称\u003e\t# 列出虚拟机所有块存储设备 virsh console \u003c虚拟机名称\u003e\t# 控制台连接虚拟机 virsh dumpxml \u003c虚拟机名称\u003e\t# 查看虚拟机xml文件 virsh edit \u003c虚拟机名称\u003e\t# 编辑虚拟机xml文件 virsh managedsave \u003c虚拟机名称\u003e\t# 保存状态save并关闭虚拟机，下次启动会恢复到之前保存的状态 virsh start \u003c虚拟机名称\u003e\t# 启动并恢复managedsave保存的状态 virsh reset \u003c虚拟机名称\u003e\t# 对虚拟机执行强制重启，类似重置电源按钮 virsh create \u003c虚拟机xml文件\u003e # 从xml文件中创建domain，创建完成后会自动启动； # 一个xml对应一个domain虚拟机 virsh define \u003c虚拟机xml文件\u003e\t# 从xml文件定义define新的domain，不会自动启动 virsh undefine \u003c虚拟机名称\u003e\t# 对于运行中的持久性虚拟机，将状态转换为暂时的，关机后virsh无法感知其存在 # 对于非活动的虚拟机，undefine后virsh将无法感知其存在 # undefine后磁盘依然存在，只是删除虚拟机的配置文件/etc/libvirt/qemu virsh undefine \u003c虚拟机名称\u003e --remove-all-storage\t# 删除虚拟机并删除所有磁盘文件 virsh snapshot-create-as \u003c虚拟机名称\u003e --name \u003c快照名称\u003e # 从命令行创建快照 virsh snapshot-create \u003c虚拟机名称\u003e\t# 从xml文件创建快照 virsh snapshot-list \u003c虚拟机名称\u003e\t# 查看虚拟机快照列表 virsh snapshot-parent \u003c虚拟机名称\u003e --current\t# 查看当前快照的上一级快照 virsh snapshot-edit \u003c虚拟机名称\u003e --snapshotname \u003c快照名\u003e\t# 编辑快照 virsh snapshot-revert \u003c虚拟机名称\u003e --snapshotname \u003c快照名\u003e\t# 恢复快照 virsh snapshot-delete \u003c虚拟机名称\u003e --snapshotname \u003c快照名\u003e\t# 删除快照 virsh list\t# 查看活动虚拟机状态 virsh list --all\t# 查看所有虚拟机状态 virsh setvcpus \u003c虚拟机名称\u003e 4 --maximum --config # 设置最大vcpu数（只能用--config，下次运行生效） virsh setvcpus \u003c虚拟机名称\u003e 4 --config # 下次启动使用vcpu数 virsh vcpuinfo \u003c虚拟机名称\u003e # 查看vcpu信息 virsh vcpupin \u003c虚拟机名称\u003e\t# 查询域 vcpu亲和性,即vcpu和物理cpu之间关系 virsh maxvcpus\t# 显示本机vcpu最大值 virsh setmaxmem \u003c虚拟机名称\u003e [--size] 2G --current # 设置最大内存限制值 virsh setmem \u003c虚拟机名称\u003e [--size] 2G --current # 设置内存分配 virsh domblklist cirros\t# 查看虚拟机的存储块设备 创建磁盘文件 #qcow2是文件类型，test1-add1.qcow2是磁盘文件，5G是大小 qemu-img create -f qcow2 /var/lib/libvirt/images/test1-add1.qcow2 5G qemu-img info \u003c虚拟机镜像\u003e\t# 查看镜像信息 virt-install \u003c命令行\u003e # 通过命令行指定来创建虚拟机 virsh attach-disk \u003c虚拟机名称\u003e virsh attach-device \u003c虚拟机名称\u003e /etc/libvirt/qemu/test2-add.xml --persistent\t# 从XML文件附加设备 virsh detach-device \u003c虚拟机名称\u003e /etc/libvirt/qemu/test2-add.xml --persistent\t# 卸载设备 虚拟机操作实践 实验1：修改虚拟机vcpu 修改虚拟机的最大vcpu数量，可以修改maximum config 和current config的值\n# 查看vcpu配置 ➜ ~ virsh vcpucount cirros maximum config 2\t# 指定下次重启虚拟机后可用的最大vcpu数量 maximum live 2\t# 指定运行/暂停状态下虚拟机可用的最大vcpu数量,重启后和maximum config一致 current config 2\t# 下次重启时虚拟机使用的vcpu数量 current live 2\t# 正在运行的虚拟机vcpu实际数量 通过修改xml文件修改vcpu数量\nvirsh edit cirros # 2 # 修改为 'static'\u003e3 关闭并重新启动虚拟机\nvirsh shutdown cirros virsh list --all # 确认已经是shut off状态 virsh start cirros 再次查看vcpu数量，发现已经改变\n➜ ~ virsh vcpucount cirros maximum config 3 maximum live 3 current config 3 current live 3 同样方式，修改xml文件，恢复为2个vcpu，执行virsh reboot 后并没释放vcpu\n➜ ~ virsh vcpucount cirros maximum config 2 maximum live 3 current config 2 current live 3 必须执行shutdown或者destory，然后重新start才能改变运行时的vcpu\n➜ ~ virsh vcpucount cirros maximum config 2 maximum live 2 current config 2 current live 2 还可以通过命令行修改vcpu的各个配置值\n➜ ~ virsh setvcpus cirros 3 --maximum --config ➜ ~ virsh vcpucount cirros maximum config 3 maximum live 2 current config 2 current live 2 ➜ ~ virsh setvcpus cirros 3 --config # 修改current config ➜ ~ virsh vcpucount cirros maximum config 3 maximum live 2 current config 3 current live 2 # 重启虚拟机使其生效 ➜ ~ virsh shutdown cirros ➜ ~ virsh start cirros ➜ ~ virsh vcpucount cirros maximum config 3 maximum live 3 current config 3 current live 3 在宿主机上无法设置vcpu的current live小于current config，只能在虚拟机内部执行chcpu指令来修改，使得vcpu离线\n也可以将最大可用vcpu设置较大，方便后续在虚拟机运行时可以动态调整vcpu的数量\n➜ ~ virsh setvcpus cirros 5 --maximum --config ➜ ~ virsh setvcpus cirros 2 --config ➜ ~ virsh shutdown cirros ➜ ~ virsh start cirros ➜ ~ virsh vcpucount cirros maximum config 5 maximum live 5 current config 2 current live 2 ➜ ~ virsh setvcpus cirros 3\t# 动态调整vcpu数量，调整范围[current config，比maximum config] ➜ ~ virsh vcpucount cirros maximum config 5 maximum live 5 current config 2 current live 3 ➜ ~ virsh setvcpus cirros 2\t➜ ~ virsh vcpucount cirros maximum config 5 maximum live 5 current config 2 current live 2 ➜ ~ virsh vcpuinfo cirros\t# 查看vcpu运行状态 实验2：修改虚拟机的内存 通过修改xml配置文件并重新启动虚拟机\n# 修改项，修改完成后 'KiB'\u003e462144\t# 启动后最大允许可用内存 'KiB'\u003e262144# 启动时使用的内存大小 在最大可用内存范围内，可以在虚拟机运行时调整内存使用\n虚拟机最大内存只能在虚拟机关闭状态更改，重启后生效\n使用virsh setmaxmem命令，和直接修改xml文件等效\n➜ ~ virsh dominfo cirros | grep memory # 虚拟机启动时显示的used memory不准确 Max memory: 462144 KiB Used memory: 262144 KiB ➜ ~ virsh setmem cirros 300000 ➜ ~ virsh dominfo cirros | grep memory Max memory: 462144 KiB Used memory: 300000 KiB ➜ ~ virsh shutdown cirros ➜ ~ virsh setmaxmem cirros 700000 实验3：调整虚拟机的磁盘 虚拟机支持在虚拟机开机时动态挂载新的磁盘\n➜ ~ qemu-img create -f qcow2 -o size=20M,preallocation=metadata /var/lib/libvirt/boot/second.qcow2 Formatting '/var/lib/libvirt/boot/second.qcow2', fmt=qcow2 size=20971520 cluster_size=65536 preallocation=metadata lazy_refcounts=off refcount_bits=16 ➜ ~ qemu-img info /var/lib/libvirt/boot/second.qcow2 image: /var/lib/libvirt/boot/second.qcow2 file format: qcow2 virtual size: 20 MiB (20971520 bytes) disk size: 260 KiB cluster_size: 65536 Format specific information: compat: 1.1 lazy refcounts: false refcount bits: 16 corrupt: false virsh attach-disk cirros /images/cirros/second.qcow2 vda --targetbus virtio # 卸载磁盘（前提时没有分区或者挂载 virsh detach-disk 26 vda 也可以手动修改xml文件，然后重启虚拟机\n# 首先创建一个qcow2磁盘或者raw磁盘 # dd命令创建一个非稀疏的磁盘 dd if=/dev/zero of=/vm-images/vm1-add.img bs=1M count=1024 # 在xml文件中加入一个新的xml段 'file' device='disk'\u003e 'qemu' type='raw' cache='none' io='threads'/\u003e \u003csource file='/vm-images/vm1-add.img'/\u003e 'vdb' bus='virtio'/\u003e 'pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/\u003e 实验4：创建虚拟机 virt-install --name=cirros --ram=256 --vcpus=1 --disk path=/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img,format=qcow2 --import --network network:default --vnc --vncport=5920 # 也可以通过xml文件来创建 实验5：复制虚拟机 可以通过命令行复制一个虚拟机，也可以通过拷贝并修改配置文件和存储卷文件进行复制\n# 通过virt-clone命令复制 # virt-clone -o \u003c虚拟机名称\u003e -n \u003c新虚拟机名称\u003e -f /var/lib/libvirt/images/test4.qcow2 # qcow2磁盘不需要预先创建，创建完成后需要进虚拟机手动改变ip地址和用户名 ➜ ~ virt-clone -o cirros -n cirros1 -f /var/lib/libvirt/boot/cirros1.qcow2 # 自动生产不一样的mac地址和uuid ➜ ~ diff cirros.xml cirros1.xml \u003c cirros \u003c 874fe199-47ea-45d1-a25d-98d0535dddb3 --- \u003e cirros1 \u003e fba2f776-432d-4870-a7ec-bbf73fa1b086 39c39 \u003c \u003csource file='/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img'/\u003e --- \u003e \u003csource file='/var/lib/libvirt/boot/cirros1.qcow2'/\u003e 63c63 \u003c '52:54:00:fa:5c:d3'/\u003e --- \u003e '52:54:00:29:8d:06'/\u003e 81c81 \u003c 'vnc' port='5921' autoport='no'\u003e --- \u003e 'vnc' port='-1' autoport='yes'\u003e #virt-clone -f指定的文件不要事先创建，如果有多个磁盘文件就用多个-f选项 如 virt-clone -o \u003c虚拟机名称\u003e -n \u003c新虚拟机名称\u003e -f /home/lib/libvirt/images/test4.qcow2 -f /mnt/images/test4-add1.qcow2 可以手动复制xml文件和磁盘镜像来复制\n➜ qemu cp cirros.xml cirros3.xml # 修改xml文件中的domain name和mac地址等信息 ➜ qemu vim cirros3.xml ➜ qemu cd /var/lib/libvirt/boot # 在define新的克隆虚拟机之前准备好所需的磁盘 ➜ boot cp cirros-0.5.0-x86_64-disk.img cirros3.img ➜ boot qemu-img info cirros3.img image: cirros3.img file format: qcow2 virtual size: 112 MiB (117440512 bytes) disk size: 198 MiB cluster_size: 65536 Snapshot list: ID TAG VM SIZE DATE VM CLOCK 1 1603292226 101 MiB 2020-10-21 22:57:06 94:39:31.435 Format specific information: compat: 1.1 lazy refcounts: false refcount bits: 16 corrupt: false ➜ ~ virsh define /etc/libvirt/qemu/cirros3.xml Domain cirros3 defined from /etc/libvirt/qemu/cirros3.xml ➜ ~ virsh list --all Id Name State -------------------------- 2 cirros running - cirros3 shut off ➜ ~ virsh start cirros3 Domain cirros3 started # 此时，一个新的克隆虚拟机就创建完成 # 需要手动修改IP和hostname 实验6：误删虚拟机恢复 # 误删除虚拟机 ➜ ~ virsh undefine cirros1 Domain cirros1 has been undefined ➜ ~ virsh dominfo cirros1 Id: 1 Name: cirros1 UUID: fba2f776-432d-4870-a7ec-bbf73fa1b086 OS Type: hvm State: running CPU(s): 2 CPU time: 41.7s Max memory: 700416 KiB Used memory: 262144 KiB Persistent: no\t# 已经变为非持久化的，无法重新启动 Autostart: disable Managed save: no Security model: apparmor Security DOI: 0 Security label: libvirt-fba2f776-432d-4870-a7ec-bbf73fa1b086 (enforcing) ➜ ~ virsh shutdown cirros1 # 关机后再也启动不了了 ➜ ~ ls /etc/libvirt/qemu # cirros1的xml文件已经不存在 ➜ ~ ls /var/lib/libvirt/boot # cirros1的qcow2镜像仍然存在 # 需要在关闭虚拟机之前，重新定义define一个配置文件即可恢复 virsh dumpxml centos-C \u003e /etc/libvirt/qemu/centos-C.xml virsh define /etc/libvirt/qemu/centos-C.xml # 如果是在关闭着的服务器上执行的virsh undefine centos-C 删除命令，则会把对应的配置文件清空，虚拟机再也启动不了，重新定义也不行 对于 参考 在 Ubuntu 的 KVM 中安装 Windows 系统\nvirsh使用总结\nkvm管理和基础命令\nkvm命令总结和虚机器备份迁移\nHow to Install KVM on Ubuntu 20.04 LTS Server (Focal Fossa)\nLibvirt虚拟机生命周期\nModify cpu number ",
-  "wordCount" : "4338",
-  "inLanguage": "zh",
-  "datePublished": "2020-10-22T00:00:00Z",
-  "dateModified": "2020-10-22T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      Virsh命令和虚拟机
-    </h1>
-    <div class="post-description">
-      虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容
-    </div>
-    <div class="post-meta">
-
-<span title='2020-10-22 00:00:00 +0000 UTC'>2020-10-22</span>&nbsp;·&nbsp;<span>9 分钟</span>&nbsp;·&nbsp;<span>4338 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> <details class="toc"  open>
-    <summary accesskey="c" title="(Alt + C)">
-        <span class="title">目录</span>
-    </summary>
-
-    <div class="inner"><ul>
-            <li>
-                <a href="#%e7%8e%af%e5%a2%83%e6%90%ad%e5%bb%ba%e5%92%8c%e5%87%86%e5%a4%87" aria-label="环境搭建和准备">环境搭建和准备</a></li>
-            <li>
-                <a href="#libvirt%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5" aria-label="Libvirt基本概念">Libvirt基本概念</a></li>
-            <li>
-                <a href="#%e8%99%9a%e6%8b%9f%e6%9c%ba%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4" aria-label="虚拟机常用命令">虚拟机常用命令</a></li>
-            <li>
-                <a href="#%e8%99%9a%e6%8b%9f%e6%9c%ba%e6%93%8d%e4%bd%9c%e5%ae%9e%e8%b7%b5" aria-label="虚拟机操作实践">虚拟机操作实践</a><ul>
-                    
-            <li>
-                <a href="#%e5%ae%9e%e9%aa%8c1%e4%bf%ae%e6%94%b9%e8%99%9a%e6%8b%9f%e6%9c%bavcpu" aria-label="实验1：修改虚拟机vcpu">实验1：修改虚拟机vcpu</a></li>
-            <li>
-                <a href="#%e5%ae%9e%e9%aa%8c2%e4%bf%ae%e6%94%b9%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%9a%84%e5%86%85%e5%ad%98" aria-label="实验2：修改虚拟机的内存">实验2：修改虚拟机的内存</a></li>
-            <li>
-                <a href="#%e5%ae%9e%e9%aa%8c3%e8%b0%83%e6%95%b4%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%9a%84%e7%a3%81%e7%9b%98" aria-label="实验3：调整虚拟机的磁盘">实验3：调整虚拟机的磁盘</a></li>
-            <li>
-                <a href="#%e5%ae%9e%e9%aa%8c4%e5%88%9b%e5%bb%ba%e8%99%9a%e6%8b%9f%e6%9c%ba" aria-label="实验4：创建虚拟机">实验4：创建虚拟机</a></li>
-            <li>
-                <a href="#%e5%ae%9e%e9%aa%8c5%e5%a4%8d%e5%88%b6%e8%99%9a%e6%8b%9f%e6%9c%ba" aria-label="实验5：复制虚拟机">实验5：复制虚拟机</a></li>
-            <li>
-                <a href="#%e5%ae%9e%e9%aa%8c6%e8%af%af%e5%88%a0%e8%99%9a%e6%8b%9f%e6%9c%ba%e6%81%a2%e5%a4%8d" aria-label="实验6：误删虚拟机恢复">实验6：误删虚拟机恢复</a></li></ul>
-            </li>
-            <li>
-                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
-            </li>
-        </ul>
-    </div>
-</details>
-
-  <div class="post-content md-content"><h3 id="环境搭建和准备">环境搭建和准备<a hidden class="anchor" aria-hidden="true" href="#环境搭建和准备">#</a></h3>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span> <span style="color:#007f7f"># 查看cpu是否支持硬件虚拟化</span>
-</span></span><span style="display:flex;"><span> grep -E -c <span style="color:#0ff;font-weight:bold">&#34;vmx|svm&#34;</span> /proc/cpuinfo
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> sudo apt install -y qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># if centos</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># yum install -y kvm virt-manager libvirt libvirt-python python-virtinst virt-install qemu-kvm</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span> lsmod | grep -i kvm
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> sudo systemctl status libvirtd.service
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> <span style="color:#007f7f"># 如果服务未启动</span>
-</span></span><span style="display:flex;"><span> sudo systemctl <span style="color:#fff;font-weight:bold">enable</span> libvirtd --now
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> <span style="color:#007f7f"># 配置网桥使得libvirt可以从外部访问</span>
-</span></span><span style="display:flex;"><span> cat /etc/netplan/00-installer-config.yaml
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span> <span style="color:#007f7f"># 可选，GUI管理工具</span>
-</span></span><span style="display:flex;"><span> sudo apt-get install virt-manager python-spice-client-gtk
-</span></span><span style="display:flex;"><span> 
-</span></span></code></pre></div><blockquote>
-<p>下载调试镜像：
-从<a href="https://download.cirros-cloud.net/">官方地址</a>下载cirros镜像，用来调试虚拟机，用户名和密码如下</p>
-</blockquote>
-<pre tabindex="0"><code>user:cirros
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Virsh命令和虚拟机 | Niuhe's Blog</title><meta name=keywords content="KVM,Openstack"><meta name=description content="虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容"><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/virsh-tutorial/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/virsh-tutorial/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="Virsh命令和虚拟机"><meta property="og:description" content="虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容"><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-10-22T00:00:00+00:00"><meta property="article:modified_time" content="2020-10-22T00:00:00+00:00"><meta property="article:tag" content="KVM"><meta property="article:tag" content="Openstack"><meta name=twitter:card content="summary"><meta name=twitter:title content="Virsh命令和虚拟机"><meta name=twitter:description content="虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"Virsh命令和虚拟机","item":"https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Virsh命令和虚拟机","name":"Virsh命令和虚拟机","description":"虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容","keywords":["KVM","Openstack"],"articleBody":"环境搭建和准备 # 查看cpu是否支持硬件虚拟化 grep -E -c \"vmx|svm\" /proc/cpuinfo sudo apt install -y qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst # if centos # yum install -y kvm virt-manager libvirt libvirt-python python-virtinst virt-install qemu-kvm lsmod | grep -i kvm sudo systemctl status libvirtd.service # 如果服务未启动 sudo systemctl enable libvirtd --now # 配置网桥使得libvirt可以从外部访问 cat /etc/netplan/00-installer-config.yaml # 可选，GUI管理工具 sudo apt-get install virt-manager python-spice-client-gtk 下载调试镜像： 从官方地址下载cirros镜像，用来调试虚拟机，用户名和密码如下\nuser:cirros pass:cubswin:) # 不同版本密码不同 通常将cirros镜像放置到/var/lib/libvirt/boot路径下\n可以查看镜像信息\nqemu-img info cirros-0.5.0-x86_64-disk.img 至此，vrish学习的基本环境就搭建完成\nLibvirt基本概念 virsh命令大概分组\nDomain Management（域管理） Domain Monitoring（域监控） Host and Hypervisor（主机及虚拟化） Interface（网卡接口） Network Filter（网络防火墙） Networking（网络） Node Device（节点设备驱动）存在 Secret Snapshot（快照） Storage Pool（存储池或存储策略） Storage Volume（存储卷） Virsh itself（virsh shell自身相关） 定义过的或者能够被libvirt感知到的虚机的配置文件都在/etc/libvirt目录下\n虚拟机文件和其它的相关文件都保存在 /var/lib/libvirt/ 下\n镜像的默认路径是 /var/lib/libvirt/boot/。\n上图时一个libvirt虚拟机的生命周期图，虚拟机分为两种：\n持久性的 短暂性的 持久性虚拟机会一直存在，直到被删除；\n短暂性的虚拟机只有在虚拟机被关机或重启前存在\n虚拟机常用命令 virsh和qemu的命令非常多，下面罗列一些常用的命令\nvirsh help\t# 查看帮助信息 virsh version\t# 查看qemu版本 virsh help \u003c特定命令\u003e\t# 查看特定命令帮助信息 virsh \u003c特定命令\u003e --help\t# 查看特定命令帮助信息 virsh nodeinfo\t# 查看宿主机信息 virsh uri # 查看当前主机hyperviso的连接路径； virsh connect # 连接到特定hypervisor,默认qemu:///system virsh sysinfo\t# 查看hypervisro信息 virsh start \u003c虚拟机名称\u003e # 启动一个之前已经定义define过的虚拟机（domain) virsh shutdown \u003c虚拟机名称\u003e\t# 关闭虚拟机,类似虚拟机内执行关机 virsh reboot \u003c虚拟机名称\u003e\t# 重启虚拟机 virsh destroy \u003c虚拟机名称\u003e\t# 强制关闭虚拟机，类似于断电 virsh suspend \u003c虚拟机名称\u003e # 挂起虚拟机，将当前状态保存在内存中 virsh resume \u003c虚拟机名称\u003e\t# 恢复虚拟机挂起状态，从内存中恢复虚拟机状态 virsh save \u003c虚拟机名称\u003e # 暂停虚拟机，将虚拟机状态保存在磁盘镜像文件中 virsh restore #重新载入暂停的虚拟机 virsh autostart \u003c虚拟机名称\u003e\t# 虚拟机随着物理机启动自动启动 virsh autostart \u003c虚拟机名称\u003e --disable\t# 禁止开机启动 virsh dominfo \u003c虚拟机名称\u003e\t# 查看虚拟机domain信息 virsh domblklist \u003c虚拟机名称\u003e\t# 列出虚拟机所有块存储设备 virsh console \u003c虚拟机名称\u003e\t# 控制台连接虚拟机 virsh dumpxml \u003c虚拟机名称\u003e\t# 查看虚拟机xml文件 virsh edit \u003c虚拟机名称\u003e\t# 编辑虚拟机xml文件 virsh managedsave \u003c虚拟机名称\u003e\t# 保存状态save并关闭虚拟机，下次启动会恢复到之前保存的状态 virsh start \u003c虚拟机名称\u003e\t# 启动并恢复managedsave保存的状态 virsh reset \u003c虚拟机名称\u003e\t# 对虚拟机执行强制重启，类似重置电源按钮 virsh create \u003c虚拟机xml文件\u003e # 从xml文件中创建domain，创建完成后会自动启动； # 一个xml对应一个domain虚拟机 virsh define \u003c虚拟机xml文件\u003e\t# 从xml文件定义define新的domain，不会自动启动 virsh undefine \u003c虚拟机名称\u003e\t# 对于运行中的持久性虚拟机，将状态转换为暂时的，关机后virsh无法感知其存在 # 对于非活动的虚拟机，undefine后virsh将无法感知其存在 # undefine后磁盘依然存在，只是删除虚拟机的配置文件/etc/libvirt/qemu virsh undefine \u003c虚拟机名称\u003e --remove-all-storage\t# 删除虚拟机并删除所有磁盘文件 virsh snapshot-create-as \u003c虚拟机名称\u003e --name \u003c快照名称\u003e # 从命令行创建快照 virsh snapshot-create \u003c虚拟机名称\u003e\t# 从xml文件创建快照 virsh snapshot-list \u003c虚拟机名称\u003e\t# 查看虚拟机快照列表 virsh snapshot-parent \u003c虚拟机名称\u003e --current\t# 查看当前快照的上一级快照 virsh snapshot-edit \u003c虚拟机名称\u003e --snapshotname \u003c快照名\u003e\t# 编辑快照 virsh snapshot-revert \u003c虚拟机名称\u003e --snapshotname \u003c快照名\u003e\t# 恢复快照 virsh snapshot-delete \u003c虚拟机名称\u003e --snapshotname \u003c快照名\u003e\t# 删除快照 virsh list\t# 查看活动虚拟机状态 virsh list --all\t# 查看所有虚拟机状态 virsh setvcpus \u003c虚拟机名称\u003e 4 --maximum --config # 设置最大vcpu数（只能用--config，下次运行生效） virsh setvcpus \u003c虚拟机名称\u003e 4 --config # 下次启动使用vcpu数 virsh vcpuinfo \u003c虚拟机名称\u003e # 查看vcpu信息 virsh vcpupin \u003c虚拟机名称\u003e\t# 查询域 vcpu亲和性,即vcpu和物理cpu之间关系 virsh maxvcpus\t# 显示本机vcpu最大值 virsh setmaxmem \u003c虚拟机名称\u003e [--size] 2G --current # 设置最大内存限制值 virsh setmem \u003c虚拟机名称\u003e [--size] 2G --current # 设置内存分配 virsh domblklist cirros\t# 查看虚拟机的存储块设备 创建磁盘文件 #qcow2是文件类型，test1-add1.qcow2是磁盘文件，5G是大小 qemu-img create -f qcow2 /var/lib/libvirt/images/test1-add1.qcow2 5G qemu-img info \u003c虚拟机镜像\u003e\t# 查看镜像信息 virt-install \u003c命令行\u003e # 通过命令行指定来创建虚拟机 virsh attach-disk \u003c虚拟机名称\u003e virsh attach-device \u003c虚拟机名称\u003e /etc/libvirt/qemu/test2-add.xml --persistent\t# 从XML文件附加设备 virsh detach-device \u003c虚拟机名称\u003e /etc/libvirt/qemu/test2-add.xml --persistent\t# 卸载设备 虚拟机操作实践 实验1：修改虚拟机vcpu 修改虚拟机的最大vcpu数量，可以修改maximum config 和current config的值\n# 查看vcpu配置 ➜ ~ virsh vcpucount cirros maximum config 2\t# 指定下次重启虚拟机后可用的最大vcpu数量 maximum live 2\t# 指定运行/暂停状态下虚拟机可用的最大vcpu数量,重启后和maximum config一致 current config 2\t# 下次重启时虚拟机使用的vcpu数量 current live 2\t# 正在运行的虚拟机vcpu实际数量 通过修改xml文件修改vcpu数量\nvirsh edit cirros # 2 # 修改为 'static'\u003e3 关闭并重新启动虚拟机\nvirsh shutdown cirros virsh list --all # 确认已经是shut off状态 virsh start cirros 再次查看vcpu数量，发现已经改变\n➜ ~ virsh vcpucount cirros maximum config 3 maximum live 3 current config 3 current live 3 同样方式，修改xml文件，恢复为2个vcpu，执行virsh reboot 后并没释放vcpu\n➜ ~ virsh vcpucount cirros maximum config 2 maximum live 3 current config 2 current live 3 必须执行shutdown或者destory，然后重新start才能改变运行时的vcpu\n➜ ~ virsh vcpucount cirros maximum config 2 maximum live 2 current config 2 current live 2 还可以通过命令行修改vcpu的各个配置值\n➜ ~ virsh setvcpus cirros 3 --maximum --config ➜ ~ virsh vcpucount cirros maximum config 3 maximum live 2 current config 2 current live 2 ➜ ~ virsh setvcpus cirros 3 --config # 修改current config ➜ ~ virsh vcpucount cirros maximum config 3 maximum live 2 current config 3 current live 2 # 重启虚拟机使其生效 ➜ ~ virsh shutdown cirros ➜ ~ virsh start cirros ➜ ~ virsh vcpucount cirros maximum config 3 maximum live 3 current config 3 current live 3 在宿主机上无法设置vcpu的current live小于current config，只能在虚拟机内部执行chcpu指令来修改，使得vcpu离线\n也可以将最大可用vcpu设置较大，方便后续在虚拟机运行时可以动态调整vcpu的数量\n➜ ~ virsh setvcpus cirros 5 --maximum --config ➜ ~ virsh setvcpus cirros 2 --config ➜ ~ virsh shutdown cirros ➜ ~ virsh start cirros ➜ ~ virsh vcpucount cirros maximum config 5 maximum live 5 current config 2 current live 2 ➜ ~ virsh setvcpus cirros 3\t# 动态调整vcpu数量，调整范围[current config，比maximum config] ➜ ~ virsh vcpucount cirros maximum config 5 maximum live 5 current config 2 current live 3 ➜ ~ virsh setvcpus cirros 2\t➜ ~ virsh vcpucount cirros maximum config 5 maximum live 5 current config 2 current live 2 ➜ ~ virsh vcpuinfo cirros\t# 查看vcpu运行状态 实验2：修改虚拟机的内存 通过修改xml配置文件并重新启动虚拟机\n# 修改项，修改完成后 'KiB'\u003e462144\t# 启动后最大允许可用内存 'KiB'\u003e262144# 启动时使用的内存大小 在最大可用内存范围内，可以在虚拟机运行时调整内存使用\n虚拟机最大内存只能在虚拟机关闭状态更改，重启后生效\n使用virsh setmaxmem命令，和直接修改xml文件等效\n➜ ~ virsh dominfo cirros | grep memory # 虚拟机启动时显示的used memory不准确 Max memory: 462144 KiB Used memory: 262144 KiB ➜ ~ virsh setmem cirros 300000 ➜ ~ virsh dominfo cirros | grep memory Max memory: 462144 KiB Used memory: 300000 KiB ➜ ~ virsh shutdown cirros ➜ ~ virsh setmaxmem cirros 700000 实验3：调整虚拟机的磁盘 虚拟机支持在虚拟机开机时动态挂载新的磁盘\n➜ ~ qemu-img create -f qcow2 -o size=20M,preallocation=metadata /var/lib/libvirt/boot/second.qcow2 Formatting '/var/lib/libvirt/boot/second.qcow2', fmt=qcow2 size=20971520 cluster_size=65536 preallocation=metadata lazy_refcounts=off refcount_bits=16 ➜ ~ qemu-img info /var/lib/libvirt/boot/second.qcow2 image: /var/lib/libvirt/boot/second.qcow2 file format: qcow2 virtual size: 20 MiB (20971520 bytes) disk size: 260 KiB cluster_size: 65536 Format specific information: compat: 1.1 lazy refcounts: false refcount bits: 16 corrupt: false virsh attach-disk cirros /images/cirros/second.qcow2 vda --targetbus virtio # 卸载磁盘（前提时没有分区或者挂载 virsh detach-disk 26 vda 也可以手动修改xml文件，然后重启虚拟机\n# 首先创建一个qcow2磁盘或者raw磁盘 # dd命令创建一个非稀疏的磁盘 dd if=/dev/zero of=/vm-images/vm1-add.img bs=1M count=1024 # 在xml文件中加入一个新的xml段 'file' device='disk'\u003e 'qemu' type='raw' cache='none' io='threads'/\u003e \u003csource file='/vm-images/vm1-add.img'/\u003e 'vdb' bus='virtio'/\u003e 'pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/\u003e 实验4：创建虚拟机 virt-install --name=cirros --ram=256 --vcpus=1 --disk path=/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img,format=qcow2 --import --network network:default --vnc --vncport=5920 # 也可以通过xml文件来创建 实验5：复制虚拟机 可以通过命令行复制一个虚拟机，也可以通过拷贝并修改配置文件和存储卷文件进行复制\n# 通过virt-clone命令复制 # virt-clone -o \u003c虚拟机名称\u003e -n \u003c新虚拟机名称\u003e -f /var/lib/libvirt/images/test4.qcow2 # qcow2磁盘不需要预先创建，创建完成后需要进虚拟机手动改变ip地址和用户名 ➜ ~ virt-clone -o cirros -n cirros1 -f /var/lib/libvirt/boot/cirros1.qcow2 # 自动生产不一样的mac地址和uuid ➜ ~ diff cirros.xml cirros1.xml \u003c cirros \u003c 874fe199-47ea-45d1-a25d-98d0535dddb3 --- \u003e cirros1 \u003e fba2f776-432d-4870-a7ec-bbf73fa1b086 39c39 \u003c \u003csource file='/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img'/\u003e --- \u003e \u003csource file='/var/lib/libvirt/boot/cirros1.qcow2'/\u003e 63c63 \u003c '52:54:00:fa:5c:d3'/\u003e --- \u003e '52:54:00:29:8d:06'/\u003e 81c81 \u003c 'vnc' port='5921' autoport='no'\u003e --- \u003e 'vnc' port='-1' autoport='yes'\u003e #virt-clone -f指定的文件不要事先创建，如果有多个磁盘文件就用多个-f选项 如 virt-clone -o \u003c虚拟机名称\u003e -n \u003c新虚拟机名称\u003e -f /home/lib/libvirt/images/test4.qcow2 -f /mnt/images/test4-add1.qcow2 可以手动复制xml文件和磁盘镜像来复制\n➜ qemu cp cirros.xml cirros3.xml # 修改xml文件中的domain name和mac地址等信息 ➜ qemu vim cirros3.xml ➜ qemu cd /var/lib/libvirt/boot # 在define新的克隆虚拟机之前准备好所需的磁盘 ➜ boot cp cirros-0.5.0-x86_64-disk.img cirros3.img ➜ boot qemu-img info cirros3.img image: cirros3.img file format: qcow2 virtual size: 112 MiB (117440512 bytes) disk size: 198 MiB cluster_size: 65536 Snapshot list: ID TAG VM SIZE DATE VM CLOCK 1 1603292226 101 MiB 2020-10-21 22:57:06 94:39:31.435 Format specific information: compat: 1.1 lazy refcounts: false refcount bits: 16 corrupt: false ➜ ~ virsh define /etc/libvirt/qemu/cirros3.xml Domain cirros3 defined from /etc/libvirt/qemu/cirros3.xml ➜ ~ virsh list --all Id Name State -------------------------- 2 cirros running - cirros3 shut off ➜ ~ virsh start cirros3 Domain cirros3 started # 此时，一个新的克隆虚拟机就创建完成 # 需要手动修改IP和hostname 实验6：误删虚拟机恢复 # 误删除虚拟机 ➜ ~ virsh undefine cirros1 Domain cirros1 has been undefined ➜ ~ virsh dominfo cirros1 Id: 1 Name: cirros1 UUID: fba2f776-432d-4870-a7ec-bbf73fa1b086 OS Type: hvm State: running CPU(s): 2 CPU time: 41.7s Max memory: 700416 KiB Used memory: 262144 KiB Persistent: no\t# 已经变为非持久化的，无法重新启动 Autostart: disable Managed save: no Security model: apparmor Security DOI: 0 Security label: libvirt-fba2f776-432d-4870-a7ec-bbf73fa1b086 (enforcing) ➜ ~ virsh shutdown cirros1 # 关机后再也启动不了了 ➜ ~ ls /etc/libvirt/qemu # cirros1的xml文件已经不存在 ➜ ~ ls /var/lib/libvirt/boot # cirros1的qcow2镜像仍然存在 # 需要在关闭虚拟机之前，重新定义define一个配置文件即可恢复 virsh dumpxml centos-C \u003e /etc/libvirt/qemu/centos-C.xml virsh define /etc/libvirt/qemu/centos-C.xml # 如果是在关闭着的服务器上执行的virsh undefine centos-C 删除命令，则会把对应的配置文件清空，虚拟机再也启动不了，重新定义也不行 对于 参考 在 Ubuntu 的 KVM 中安装 Windows 系统\nvirsh使用总结\nkvm管理和基础命令\nkvm命令总结和虚机器备份迁移\nHow to Install KVM on Ubuntu 20.04 LTS Server (Focal Fossa)\nLibvirt虚拟机生命周期\nModify cpu number ","wordCount":"4338","inLanguage":"zh","datePublished":"2020-10-22T00:00:00Z","dateModified":"2020-10-22T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/virsh-tutorial/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Virsh命令和虚拟机</h1><div class=post-description>虚拟机生命周期和virsh基本命令行操作，包含cpu、内存和存储，不包括网络内容</div><div class=post-meta><span title='2020-10-22 00:00:00 +0000 UTC'>2020-10-22</span>&nbsp;·&nbsp;<span>9 分钟</span>&nbsp;·&nbsp;<span>4338 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><details class=toc open><summary accesskey=c title="(Alt + C)"><span class=title>目录</span></summary><div class=inner><ul><li><a href=#%e7%8e%af%e5%a2%83%e6%90%ad%e5%bb%ba%e5%92%8c%e5%87%86%e5%a4%87 aria-label=环境搭建和准备>环境搭建和准备</a></li><li><a href=#libvirt%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5 aria-label=Libvirt基本概念>Libvirt基本概念</a></li><li><a href=#%e8%99%9a%e6%8b%9f%e6%9c%ba%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4 aria-label=虚拟机常用命令>虚拟机常用命令</a></li><li><a href=#%e8%99%9a%e6%8b%9f%e6%9c%ba%e6%93%8d%e4%bd%9c%e5%ae%9e%e8%b7%b5 aria-label=虚拟机操作实践>虚拟机操作实践</a><ul><li><a href=#%e5%ae%9e%e9%aa%8c1%e4%bf%ae%e6%94%b9%e8%99%9a%e6%8b%9f%e6%9c%bavcpu aria-label=实验1：修改虚拟机vcpu>实验1：修改虚拟机vcpu</a></li><li><a href=#%e5%ae%9e%e9%aa%8c2%e4%bf%ae%e6%94%b9%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%9a%84%e5%86%85%e5%ad%98 aria-label=实验2：修改虚拟机的内存>实验2：修改虚拟机的内存</a></li><li><a href=#%e5%ae%9e%e9%aa%8c3%e8%b0%83%e6%95%b4%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%9a%84%e7%a3%81%e7%9b%98 aria-label=实验3：调整虚拟机的磁盘>实验3：调整虚拟机的磁盘</a></li><li><a href=#%e5%ae%9e%e9%aa%8c4%e5%88%9b%e5%bb%ba%e8%99%9a%e6%8b%9f%e6%9c%ba aria-label=实验4：创建虚拟机>实验4：创建虚拟机</a></li><li><a href=#%e5%ae%9e%e9%aa%8c5%e5%a4%8d%e5%88%b6%e8%99%9a%e6%8b%9f%e6%9c%ba aria-label=实验5：复制虚拟机>实验5：复制虚拟机</a></li><li><a href=#%e5%ae%9e%e9%aa%8c6%e8%af%af%e5%88%a0%e8%99%9a%e6%8b%9f%e6%9c%ba%e6%81%a2%e5%a4%8d aria-label=实验6：误删虚拟机恢复>实验6：误删虚拟机恢复</a></li></ul></li><li><a href=#%e5%8f%82%e8%80%83 aria-label=参考>参考</a></li></ul></div></details><div class="post-content md-content"><h3 id=环境搭建和准备>环境搭建和准备<a hidden class=anchor aria-hidden=true href=#环境搭建和准备>#</a></h3><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span> <span style=color:#007f7f># 查看cpu是否支持硬件虚拟化</span>
+</span></span><span style=display:flex><span> grep -E -c <span style=color:#0ff;font-weight:700>&#34;vmx|svm&#34;</span> /proc/cpuinfo
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> sudo apt install -y qemu qemu-kvm libvirt-daemon bridge-utils virt-manager virtinst
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># if centos</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># yum install -y kvm virt-manager libvirt libvirt-python python-virtinst virt-install qemu-kvm</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span> lsmod | grep -i kvm
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> sudo systemctl status libvirtd.service
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> <span style=color:#007f7f># 如果服务未启动</span>
+</span></span><span style=display:flex><span> sudo systemctl <span style=color:#fff;font-weight:700>enable</span> libvirtd --now
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> <span style=color:#007f7f># 配置网桥使得libvirt可以从外部访问</span>
+</span></span><span style=display:flex><span> cat /etc/netplan/00-installer-config.yaml
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> <span style=color:#007f7f># 可选，GUI管理工具</span>
+</span></span><span style=display:flex><span> sudo apt-get install virt-manager python-spice-client-gtk
+</span></span><span style=display:flex><span> 
+</span></span></code></pre></div><blockquote><p>下载调试镜像：
+从<a href=https://download.cirros-cloud.net/>官方地址</a>下载cirros镜像，用来调试虚拟机，用户名和密码如下</p></blockquote><pre tabindex=0><code>user:cirros
 pass:cubswin:)   # 不同版本密码不同
-</code></pre><blockquote>
-<p>通常将cirros镜像放置到<code>/var/lib/libvirt/boot</code>路径下</p>
-<p>可以查看镜像信息</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>qemu-img info cirros-0.5.0-x86_64-disk.img
-</span></span></code></pre></div><blockquote>
-<p>至此，vrish学习的基本环境就搭建完成</p>
-</blockquote>
-<h3 id="libvirt基本概念">Libvirt基本概念<a hidden class="anchor" aria-hidden="true" href="#libvirt基本概念">#</a></h3>
-<blockquote>
-<p>virsh命令大概分组</p>
-<ul>
-<li>Domain Management（域管理）</li>
-<li>Domain Monitoring（域监控）</li>
-<li>Host and Hypervisor（主机及虚拟化）</li>
-<li>Interface（网卡接口）</li>
-<li>Network Filter（网络防火墙）</li>
-<li>Networking（网络）</li>
-<li>Node Device（节点设备驱动）存在</li>
-<li>Secret</li>
-<li>Snapshot（快照）</li>
-<li>Storage Pool（存储池或存储策略）</li>
-<li>Storage Volume（存储卷）</li>
-<li>Virsh itself（virsh shell自身相关）</li>
-</ul>
-</blockquote>
-<hr>
-<blockquote>
-<p>定义过的或者能够被libvirt感知到的虚机的配置文件都在<code>/etc/libvirt</code>目录下</p>
-<p>虚拟机文件和其它的相关文件都保存在 <code>/var/lib/libvirt/</code> 下</p>
-<p>镜像的默认路径是 <code>/var/lib/libvirt/boot/</code>。</p>
-</blockquote>
-<p><img alt="Vm lifecycle graph.png" loading="lazy" src="/img/Vm_lifecycle_graph.png"></p>
-<blockquote>
-<p>上图时一个libvirt虚拟机的生命周期图，虚拟机分为两种：</p>
-<ul>
-<li>持久性的</li>
-<li>短暂性的</li>
-</ul>
-<p>持久性虚拟机会一直存在，直到被删除；</p>
-<p>短暂性的虚拟机只有在虚拟机被关机或重启前存在</p>
-</blockquote>
-<h3 id="虚拟机常用命令">虚拟机常用命令<a hidden class="anchor" aria-hidden="true" href="#虚拟机常用命令">#</a></h3>
-<blockquote>
-<p>virsh和qemu的命令非常多，下面罗列一些常用的命令</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>virsh <span style="color:#fff;font-weight:bold">help</span>									<span style="color:#007f7f"># 查看帮助信息</span>
-</span></span><span style="display:flex;"><span>virsh version								<span style="color:#007f7f"># 查看qemu版本</span>
-</span></span><span style="display:flex;"><span>virsh <span style="color:#fff;font-weight:bold">help</span> &lt;特定命令&gt;						<span style="color:#007f7f"># 查看特定命令帮助信息</span>
-</span></span><span style="display:flex;"><span>virsh &lt;特定命令&gt; --help						<span style="color:#007f7f"># 查看特定命令帮助信息</span>
-</span></span><span style="display:flex;"><span>virsh nodeinfo								<span style="color:#007f7f"># 查看宿主机信息</span>
-</span></span><span style="display:flex;"><span>virsh uri                                  <span style="color:#007f7f"># 查看当前主机hyperviso的连接路径；</span>
-</span></span><span style="display:flex;"><span>virsh connect &lt;hypervisor uri&gt;			   <span style="color:#007f7f"># 连接到特定hypervisor,默认qemu:///system</span>
-</span></span><span style="display:flex;"><span>virsh sysinfo								<span style="color:#007f7f"># 查看hypervisro信息</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh start &lt;虚拟机名称&gt;             		<span style="color:#007f7f"># 启动一个之前已经定义define过的虚拟机（domain)</span>
-</span></span><span style="display:flex;"><span>virsh shutdown &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 关闭虚拟机,类似虚拟机内执行关机</span>
-</span></span><span style="display:flex;"><span>virsh reboot &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 重启虚拟机</span>
-</span></span><span style="display:flex;"><span>virsh destroy &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 强制关闭虚拟机，类似于断电</span>
-</span></span><span style="display:flex;"><span>virsh <span style="color:#fff;font-weight:bold">suspend</span> &lt;虚拟机名称&gt;   				<span style="color:#007f7f"># 挂起虚拟机，将当前状态保存在内存中</span>
-</span></span><span style="display:flex;"><span>virsh resume &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 恢复虚拟机挂起状态，从内存中恢复虚拟机状态</span>
-</span></span><span style="display:flex;"><span>virsh save &lt;虚拟机名称&gt; &lt;img镜像文件名&gt;	 	 <span style="color:#007f7f"># 暂停虚拟机，将虚拟机状态保存在磁盘镜像文件中</span>
-</span></span><span style="display:flex;"><span>virsh restore &lt;img镜像文件名&gt;			 　　<span style="color:#007f7f">#重新载入暂停的虚拟机</span>
-</span></span><span style="display:flex;"><span>virsh autostart &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 虚拟机随着物理机启动自动启动</span>
-</span></span><span style="display:flex;"><span>virsh autostart &lt;虚拟机名称&gt; --disable		<span style="color:#007f7f"># 禁止开机启动</span>
-</span></span><span style="display:flex;"><span>virsh dominfo &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 查看虚拟机domain信息</span>
-</span></span><span style="display:flex;"><span>virsh domblklist &lt;虚拟机名称&gt;				<span style="color:#007f7f"># 列出虚拟机所有块存储设备</span>
-</span></span><span style="display:flex;"><span>virsh console &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 控制台连接虚拟机</span>
-</span></span><span style="display:flex;"><span>virsh dumpxml &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 查看虚拟机xml文件</span>
-</span></span><span style="display:flex;"><span>virsh edit &lt;虚拟机名称&gt;						<span style="color:#007f7f"># 编辑虚拟机xml文件</span>
-</span></span><span style="display:flex;"><span>virsh managedsave &lt;虚拟机名称&gt;				<span style="color:#007f7f"># 保存状态save并关闭虚拟机，下次启动会恢复到之前保存的状态</span>
-</span></span><span style="display:flex;"><span>virsh start &lt;虚拟机名称&gt;						<span style="color:#007f7f"># 启动并恢复managedsave保存的状态</span>
-</span></span><span style="display:flex;"><span>virsh reset &lt;虚拟机名称&gt;						<span style="color:#007f7f"># 对虚拟机执行强制重启，类似重置电源按钮</span>
-</span></span><span style="display:flex;"><span>virsh create &lt;虚拟机xml文件&gt;                 <span style="color:#007f7f"># 从xml文件中创建domain，创建完成后会自动启动；</span>
-</span></span><span style="display:flex;"><span>											<span style="color:#007f7f"># 一个xml对应一个domain虚拟机</span>
-</span></span><span style="display:flex;"><span>virsh define &lt;虚拟机xml文件&gt;					<span style="color:#007f7f"># 从xml文件定义define新的domain，不会自动启动</span>
-</span></span><span style="display:flex;"><span>virsh undefine &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 对于运行中的持久性虚拟机，将状态转换为暂时的，关机后virsh无法感知其存在</span>
-</span></span><span style="display:flex;"><span>											<span style="color:#007f7f"># 对于非活动的虚拟机，undefine后virsh将无法感知其存在</span>
-</span></span><span style="display:flex;"><span>											<span style="color:#007f7f"># undefine后磁盘依然存在，只是删除虚拟机的配置文件/etc/libvirt/qemu</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh undefine &lt;虚拟机名称&gt; --remove-all-storage		<span style="color:#007f7f"># 删除虚拟机并删除所有磁盘文件</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh snapshot-create-as &lt;虚拟机名称&gt; --name &lt;快照名称&gt;  <span style="color:#007f7f"># 从命令行创建快照</span>
-</span></span><span style="display:flex;"><span>virsh snapshot-create &lt;虚拟机名称&gt;					<span style="color:#007f7f"># 从xml文件创建快照</span>
-</span></span><span style="display:flex;"><span>virsh snapshot-list &lt;虚拟机名称&gt;						<span style="color:#007f7f"># 查看虚拟机快照列表</span>
-</span></span><span style="display:flex;"><span>virsh snapshot-parent &lt;虚拟机名称&gt; --current			<span style="color:#007f7f"># 查看当前快照的上一级快照</span>
-</span></span><span style="display:flex;"><span>virsh snapshot-edit &lt;虚拟机名称&gt; --snapshotname &lt;快照名&gt;	<span style="color:#007f7f"># 编辑快照</span>
-</span></span><span style="display:flex;"><span>virsh snapshot-revert &lt;虚拟机名称&gt; --snapshotname &lt;快照名&gt;	<span style="color:#007f7f"># 恢复快照</span>
-</span></span><span style="display:flex;"><span>virsh snapshot-delete &lt;虚拟机名称&gt; --snapshotname &lt;快照名&gt;	<span style="color:#007f7f"># 删除快照</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh list									<span style="color:#007f7f"># 查看活动虚拟机状态</span>
-</span></span><span style="display:flex;"><span>virsh list --all							<span style="color:#007f7f"># 查看所有虚拟机状态</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh setvcpus &lt;虚拟机名称&gt; <span style="color:#ff0;font-weight:bold">4</span> --maximum --config <span style="color:#007f7f"># 设置最大vcpu数（只能用--config，下次运行生效）</span>
-</span></span><span style="display:flex;"><span>virsh setvcpus &lt;虚拟机名称&gt; <span style="color:#ff0;font-weight:bold">4</span> --config   		<span style="color:#007f7f"># 下次启动使用vcpu数</span>
-</span></span><span style="display:flex;"><span>virsh vcpuinfo &lt;虚拟机名称&gt;    					<span style="color:#007f7f"># 查看vcpu信息</span>
-</span></span><span style="display:flex;"><span>virsh vcpupin &lt;虚拟机名称&gt;						<span style="color:#007f7f"># 查询域 vcpu亲和性,即vcpu和物理cpu之间关系</span>
-</span></span><span style="display:flex;"><span>virsh maxvcpus								   <span style="color:#007f7f"># 显示本机vcpu最大值</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh setmaxmem &lt;虚拟机名称&gt; [--size] 2G --current  <span style="color:#007f7f"># 设置最大内存限制值</span>
-</span></span><span style="display:flex;"><span>virsh setmem &lt;虚拟机名称&gt; [--size] 2G --current     <span style="color:#007f7f"># 设置内存分配</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh domblklist cirros							<span style="color:#007f7f"># 查看虚拟机的存储块设备</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>创建磁盘文件
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">#qcow2是文件类型，test1-add1.qcow2是磁盘文件，5G是大小</span>
-</span></span><span style="display:flex;"><span>qemu-img create -f qcow2 /var/lib/libvirt/images/test1-add1.qcow2 5G
-</span></span><span style="display:flex;"><span>qemu-img info &lt;虚拟机镜像&gt;			<span style="color:#007f7f"># 查看镜像信息</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virt-install &lt;命令行&gt; 	<span style="color:#007f7f"># 通过命令行指定来创建虚拟机</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh attach-disk &lt;虚拟机名称&gt; 
-</span></span><span style="display:flex;"><span>virsh attach-device &lt;虚拟机名称&gt; /etc/libvirt/qemu/test2-add.xml --persistent		<span style="color:#007f7f"># 从XML文件附加设备</span>
-</span></span><span style="display:flex;"><span>virsh detach-device &lt;虚拟机名称&gt; /etc/libvirt/qemu/test2-add.xml --persistent		<span style="color:#007f7f"># 卸载设备</span>
-</span></span></code></pre></div><h3 id="虚拟机操作实践">虚拟机操作实践<a hidden class="anchor" aria-hidden="true" href="#虚拟机操作实践">#</a></h3>
-<h4 id="实验1修改虚拟机vcpu">实验1：修改虚拟机vcpu<a hidden class="anchor" aria-hidden="true" href="#实验1修改虚拟机vcpu">#</a></h4>
-<blockquote>
-<p>修改虚拟机的最大vcpu数量，可以修改maximum config 和current config的值</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 查看vcpu配置</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros
-</span></span><span style="display:flex;"><span>maximum      config         2			<span style="color:#007f7f"># 指定下次重启虚拟机后可用的最大vcpu数量</span>
-</span></span><span style="display:flex;"><span>maximum      live           2			<span style="color:#007f7f"># 指定运行/暂停状态下虚拟机可用的最大vcpu数量,重启后和maximum config一致</span>
-</span></span><span style="display:flex;"><span>current      config         2			<span style="color:#007f7f"># 下次重启时虚拟机使用的vcpu数量</span>
-</span></span><span style="display:flex;"><span>current      live           2			<span style="color:#007f7f"># 正在运行的虚拟机vcpu实际数量</span>
-</span></span></code></pre></div><blockquote>
-<p><strong>通过修改xml文件修改vcpu数量</strong></p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>virsh edit cirros
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">#  &lt;vcpu placement=&#39;static&#39;&gt;2&lt;/vcpu&gt;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 修改为</span>
-</span></span><span style="display:flex;"><span> &lt;vcpu placement=<span style="color:#0ff;font-weight:bold">&#39;static&#39;</span>&gt;3&lt;/vcpu&gt;
-</span></span></code></pre></div><blockquote>
-<p>关闭并重新启动虚拟机</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>virsh shutdown cirros
-</span></span><span style="display:flex;"><span>virsh list --all   <span style="color:#007f7f"># 确认已经是shut off状态</span>
-</span></span><span style="display:flex;"><span>virsh start cirros
-</span></span></code></pre></div><blockquote>
-<p>再次查看vcpu数量，发现已经改变</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span></code></pre></div><blockquote>
-<p>同样方式，修改xml文件，恢复为2个vcpu，执行virsh reboot 后并没释放vcpu</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span></code></pre></div><blockquote>
-<p>必须执行shutdown或者destory，然后重新start才能改变运行时的vcpu</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span></code></pre></div><blockquote>
-<p>还可以通过命令行修改vcpu的各个配置值</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ virsh setvcpus cirros <span style="color:#ff0;font-weight:bold">3</span> --maximum --config 
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros                    
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh setvcpus cirros <span style="color:#ff0;font-weight:bold">3</span> --config  <span style="color:#007f7f"># 修改current config</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros          
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 重启虚拟机使其生效</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh shutdown cirros
-</span></span><span style="display:flex;"><span>➜  ~ virsh start cirros
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span></code></pre></div><blockquote>
-<p><strong>在宿主机上无法设置vcpu的current live小于current config</strong>，只能在虚拟机内部执行<code>chcpu</code>指令来修改，使得vcpu离线</p>
-<p>也可以将最大可用vcpu设置较大，方便后续在虚拟机运行时可以动态调整vcpu的数量</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ virsh setvcpus cirros <span style="color:#ff0;font-weight:bold">5</span> --maximum --config 
-</span></span><span style="display:flex;"><span>➜  ~  virsh setvcpus cirros <span style="color:#ff0;font-weight:bold">2</span> --config 
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh shutdown cirros
-</span></span><span style="display:flex;"><span>➜  ~ virsh start cirros
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">5</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">5</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh setvcpus cirros 3			<span style="color:#007f7f"># 动态调整vcpu数量，调整范围[current config，比maximum config]</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros 
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">5</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">5</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">3</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh setvcpus cirros 2			
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpucount cirros 
-</span></span><span style="display:flex;"><span>maximum      config         <span style="color:#ff0;font-weight:bold">5</span>
-</span></span><span style="display:flex;"><span>maximum      live           <span style="color:#ff0;font-weight:bold">5</span>
-</span></span><span style="display:flex;"><span>current      config         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>current      live           <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh vcpuinfo cirros				<span style="color:#007f7f"># 查看vcpu运行状态</span>
-</span></span></code></pre></div><h4 id="实验2修改虚拟机的内存">实验2：修改虚拟机的内存<a hidden class="anchor" aria-hidden="true" href="#实验2修改虚拟机的内存">#</a></h4>
-<blockquote>
-<p>通过修改xml配置文件并重新启动虚拟机</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 修改项，修改完成后</span>
-</span></span><span style="display:flex;"><span>&lt;memory unit=<span style="color:#0ff;font-weight:bold">&#39;KiB&#39;</span>&gt;462144&lt;/memory&gt;				<span style="color:#007f7f"># 启动后最大允许可用内存</span>
-</span></span><span style="display:flex;"><span>&lt;currentMemory unit=<span style="color:#0ff;font-weight:bold">&#39;KiB&#39;</span>&gt;262144&lt;/currentMemory&gt;# 启动时使用的内存大小
-</span></span></code></pre></div><blockquote>
-<p>在最大可用内存范围内，可以在虚拟机运行时调整内存使用</p>
-<p>虚拟机最大内存只能在虚拟机关闭状态更改，重启后生效</p>
-<p>使用virsh setmaxmem命令，和直接修改xml文件等效</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ virsh dominfo cirros | grep memory    <span style="color:#007f7f"># 虚拟机启动时显示的used memory不准确</span>
-</span></span><span style="display:flex;"><span>Max memory:     <span style="color:#ff0;font-weight:bold">462144</span> KiB
-</span></span><span style="display:flex;"><span>Used memory:    <span style="color:#ff0;font-weight:bold">262144</span> KiB
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh setmem cirros <span style="color:#ff0;font-weight:bold">300000</span>        
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh dominfo cirros | grep memory
-</span></span><span style="display:flex;"><span>Max memory:     <span style="color:#ff0;font-weight:bold">462144</span> KiB
-</span></span><span style="display:flex;"><span>Used memory:    <span style="color:#ff0;font-weight:bold">300000</span> KiB
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh shutdown cirros
-</span></span><span style="display:flex;"><span>➜  ~ virsh setmaxmem cirros <span style="color:#ff0;font-weight:bold">700000</span>
-</span></span></code></pre></div><h4 id="实验3调整虚拟机的磁盘">实验3：调整虚拟机的磁盘<a hidden class="anchor" aria-hidden="true" href="#实验3调整虚拟机的磁盘">#</a></h4>
-<blockquote>
-<p>虚拟机支持在虚拟机开机时动态挂载新的磁盘</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  ~ qemu-img create -f qcow2 -o size=20M,preallocation=metadata /var/lib/libvirt/boot/second.qcow2
-</span></span><span style="display:flex;"><span>Formatting <span style="color:#0ff;font-weight:bold">&#39;/var/lib/libvirt/boot/second.qcow2&#39;</span>, fmt=qcow2 size=<span style="color:#ff0;font-weight:bold">20971520</span> cluster_size=<span style="color:#ff0;font-weight:bold">65536</span> preallocation=metadata lazy_refcounts=off refcount_bits=<span style="color:#ff0;font-weight:bold">16</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ qemu-img info /var/lib/libvirt/boot/second.qcow2
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>image: /var/lib/libvirt/boot/second.qcow2
-</span></span><span style="display:flex;"><span>file format: qcow2
-</span></span><span style="display:flex;"><span>virtual size: <span style="color:#ff0;font-weight:bold">20</span> MiB (<span style="color:#ff0;font-weight:bold">20971520</span> bytes)
-</span></span><span style="display:flex;"><span>disk size: <span style="color:#ff0;font-weight:bold">260</span> KiB
-</span></span><span style="display:flex;"><span>cluster_size: <span style="color:#ff0;font-weight:bold">65536</span>
-</span></span><span style="display:flex;"><span>Format specific information:
-</span></span><span style="display:flex;"><span>    compat: 1.1
-</span></span><span style="display:flex;"><span>    lazy refcounts: <span style="color:#fff;font-weight:bold">false</span>
-</span></span><span style="display:flex;"><span>    refcount bits: <span style="color:#ff0;font-weight:bold">16</span>
-</span></span><span style="display:flex;"><span>    corrupt: <span style="color:#fff;font-weight:bold">false</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>virsh attach-disk cirros /images/cirros/second.qcow2 vda --targetbus virtio 
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 卸载磁盘（前提时没有分区或者挂载</span>
-</span></span><span style="display:flex;"><span>virsh detach-disk <span style="color:#ff0;font-weight:bold">26</span> vda
-</span></span></code></pre></div><blockquote>
-<p>也可以手动修改xml文件，然后重启虚拟机</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 首先创建一个qcow2磁盘或者raw磁盘</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># dd命令创建一个非稀疏的磁盘</span>
-</span></span><span style="display:flex;"><span>dd <span style="color:#fff;font-weight:bold">if</span>=/dev/zero of=/vm-images/vm1-add.img bs=1M count=<span style="color:#ff0;font-weight:bold">1024</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 在xml文件中加入一个新的xml段</span>
-</span></span><span style="display:flex;"><span>&lt;disk type=<span style="color:#0ff;font-weight:bold">&#39;file&#39;</span> device=<span style="color:#0ff;font-weight:bold">&#39;disk&#39;</span>&gt;
-</span></span><span style="display:flex;"><span>     &lt;driver name=<span style="color:#0ff;font-weight:bold">&#39;qemu&#39;</span> type=<span style="color:#0ff;font-weight:bold">&#39;raw&#39;</span> cache=<span style="color:#0ff;font-weight:bold">&#39;none&#39;</span> io=<span style="color:#0ff;font-weight:bold">&#39;threads&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>     &lt;<span style="color:#fff;font-weight:bold">source</span> file=<span style="color:#0ff;font-weight:bold">&#39;/vm-images/vm1-add.img&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>     &lt;target dev=<span style="color:#0ff;font-weight:bold">&#39;vdb&#39;</span> bus=<span style="color:#0ff;font-weight:bold">&#39;virtio&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>     &lt;address type=<span style="color:#0ff;font-weight:bold">&#39;pci&#39;</span> domain=<span style="color:#0ff;font-weight:bold">&#39;0x0000&#39;</span> bus=<span style="color:#0ff;font-weight:bold">&#39;0x00&#39;</span> slot=<span style="color:#0ff;font-weight:bold">&#39;0x06&#39;</span> <span style="color:#fff;font-weight:bold">function</span>=<span style="color:#0ff;font-weight:bold">&#39;0x0&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span> &lt;/disk&gt;
-</span></span></code></pre></div><h4 id="实验4创建虚拟机">实验4：创建虚拟机<a hidden class="anchor" aria-hidden="true" href="#实验4创建虚拟机">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>virt-install  --name=cirros --ram=<span style="color:#ff0;font-weight:bold">256</span> --vcpus=<span style="color:#ff0;font-weight:bold">1</span> --disk path=/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img,format=qcow2 --import --network network:default --vnc --vncport=<span style="color:#ff0;font-weight:bold">5920</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 也可以通过xml文件来创建</span>
-</span></span></code></pre></div><h4 id="实验5复制虚拟机">实验5：复制虚拟机<a hidden class="anchor" aria-hidden="true" href="#实验5复制虚拟机">#</a></h4>
-<blockquote>
-<p>可以通过命令行复制一个虚拟机，也可以通过拷贝并修改配置文件和存储卷文件进行复制</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 通过virt-clone命令复制</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># virt-clone -o &lt;虚拟机名称&gt; -n &lt;新虚拟机名称&gt; -f /var/lib/libvirt/images/test4.qcow2</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># qcow2磁盘不需要预先创建，创建完成后需要进虚拟机手动改变ip地址和用户名</span>
-</span></span><span style="display:flex;"><span>➜  ~ virt-clone -o cirros -n cirros1 -f /var/lib/libvirt/boot/cirros1.qcow2
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 自动生产不一样的mac地址和uuid</span>
-</span></span><span style="display:flex;"><span>➜  ~ diff cirros.xml cirros1.xml
-</span></span><span style="display:flex;"><span>        &lt;   &lt;name&gt;cirros&lt;/name&gt;
-</span></span><span style="display:flex;"><span>        &lt;   &lt;uuid&gt;874fe199-47ea-45d1-a25d-98d0535dddb3&lt;/uuid&gt;
-</span></span><span style="display:flex;"><span>        ---
-</span></span><span style="display:flex;"><span>        &gt;   &lt;name&gt;cirros1&lt;/name&gt;
-</span></span><span style="display:flex;"><span>        &gt;   &lt;uuid&gt;fba2f776-432d-4870-a7ec-bbf73fa1b086&lt;/uuid&gt;
-</span></span><span style="display:flex;"><span>        39c39
-</span></span><span style="display:flex;"><span>        &lt;       &lt;<span style="color:#fff;font-weight:bold">source</span> file=<span style="color:#0ff;font-weight:bold">&#39;/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>        ---
-</span></span><span style="display:flex;"><span>        &gt;       &lt;<span style="color:#fff;font-weight:bold">source</span> file=<span style="color:#0ff;font-weight:bold">&#39;/var/lib/libvirt/boot/cirros1.qcow2&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>        63c63
-</span></span><span style="display:flex;"><span>        &lt;       &lt;mac address=<span style="color:#0ff;font-weight:bold">&#39;52:54:00:fa:5c:d3&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>        ---
-</span></span><span style="display:flex;"><span>        &gt;       &lt;mac address=<span style="color:#0ff;font-weight:bold">&#39;52:54:00:29:8d:06&#39;</span>/&gt;
-</span></span><span style="display:flex;"><span>        81c81
-</span></span><span style="display:flex;"><span>        &lt;     &lt;graphics type=<span style="color:#0ff;font-weight:bold">&#39;vnc&#39;</span> port=<span style="color:#0ff;font-weight:bold">&#39;5921&#39;</span> autoport=<span style="color:#0ff;font-weight:bold">&#39;no&#39;</span>&gt;
-</span></span><span style="display:flex;"><span>        ---
-</span></span><span style="display:flex;"><span>        &gt;     &lt;graphics type=<span style="color:#0ff;font-weight:bold">&#39;vnc&#39;</span> port=<span style="color:#0ff;font-weight:bold">&#39;-1&#39;</span> autoport=<span style="color:#0ff;font-weight:bold">&#39;yes&#39;</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">#virt-clone -f指定的文件不要事先创建，如果有多个磁盘文件就用多个-f选项 如</span>
-</span></span><span style="display:flex;"><span>virt-clone -o &lt;虚拟机名称&gt; -n &lt;新虚拟机名称&gt; -f /home/lib/libvirt/images/test4.qcow2 -f /mnt/images/test4-add1.qcow2
-</span></span></code></pre></div><blockquote>
-<p>可以手动复制xml文件和磁盘镜像来复制</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>➜  qemu cp cirros.xml cirros3.xml
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 修改xml文件中的domain name和mac地址等信息</span>
-</span></span><span style="display:flex;"><span>➜  qemu vim cirros3.xml 
-</span></span><span style="display:flex;"><span>➜  qemu <span style="color:#fff;font-weight:bold">cd</span> /var/lib/libvirt/boot 
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 在define新的克隆虚拟机之前准备好所需的磁盘</span>
-</span></span><span style="display:flex;"><span>➜  boot cp cirros-0.5.0-x86_64-disk.img cirros3.img
-</span></span><span style="display:flex;"><span>➜  boot qemu-img info cirros3.img 
-</span></span><span style="display:flex;"><span>        image: cirros3.img
-</span></span><span style="display:flex;"><span>        file format: qcow2
-</span></span><span style="display:flex;"><span>        virtual size: <span style="color:#ff0;font-weight:bold">112</span> MiB (<span style="color:#ff0;font-weight:bold">117440512</span> bytes)
-</span></span><span style="display:flex;"><span>        disk size: <span style="color:#ff0;font-weight:bold">198</span> MiB
-</span></span><span style="display:flex;"><span>        cluster_size: <span style="color:#ff0;font-weight:bold">65536</span>
-</span></span><span style="display:flex;"><span>        Snapshot list:
-</span></span><span style="display:flex;"><span>        ID        TAG                     VM SIZE                DATE       VM CLOCK
-</span></span><span style="display:flex;"><span>        <span style="color:#ff0;font-weight:bold">1</span>         <span style="color:#ff0;font-weight:bold">1603292226</span>              <span style="color:#ff0;font-weight:bold">101</span> MiB 2020-10-21 22:57:06   94:39:31.435
-</span></span><span style="display:flex;"><span>        Format specific information:
-</span></span><span style="display:flex;"><span>            compat: 1.1
-</span></span><span style="display:flex;"><span>            lazy refcounts: <span style="color:#fff;font-weight:bold">false</span>
-</span></span><span style="display:flex;"><span>            refcount bits: <span style="color:#ff0;font-weight:bold">16</span>
-</span></span><span style="display:flex;"><span>            corrupt: <span style="color:#fff;font-weight:bold">false</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh define /etc/libvirt/qemu/cirros3.xml 
-</span></span><span style="display:flex;"><span>	Domain cirros3 defined from /etc/libvirt/qemu/cirros3.xml
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh list --all
-</span></span><span style="display:flex;"><span>     Id   Name      State
-</span></span><span style="display:flex;"><span>    --------------------------
-</span></span><span style="display:flex;"><span>     <span style="color:#ff0;font-weight:bold">2</span>    cirros    running
-</span></span><span style="display:flex;"><span>     -    cirros3   shut off
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>➜  ~ virsh start cirros3 
-</span></span><span style="display:flex;"><span>	Domain cirros3 started
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 此时，一个新的克隆虚拟机就创建完成</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 需要手动修改IP和hostname</span>
-</span></span></code></pre></div><h4 id="实验6误删虚拟机恢复">实验6：误删虚拟机恢复<a hidden class="anchor" aria-hidden="true" href="#实验6误删虚拟机恢复">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#007f7f"># 误删除虚拟机</span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh undefine cirros1
-</span></span><span style="display:flex;"><span>Domain cirros1 has been undefined
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh dominfo cirros1
-</span></span><span style="display:flex;"><span>Id:             <span style="color:#ff0;font-weight:bold">1</span>
-</span></span><span style="display:flex;"><span>Name:           cirros1
-</span></span><span style="display:flex;"><span>UUID:           fba2f776-432d-4870-a7ec-bbf73fa1b086
-</span></span><span style="display:flex;"><span>OS Type:        hvm
-</span></span><span style="display:flex;"><span>State:          running
-</span></span><span style="display:flex;"><span>CPU(s):         <span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>CPU time:       41.7s
-</span></span><span style="display:flex;"><span>Max memory:     <span style="color:#ff0;font-weight:bold">700416</span> KiB
-</span></span><span style="display:flex;"><span>Used memory:    <span style="color:#ff0;font-weight:bold">262144</span> KiB
-</span></span><span style="display:flex;"><span>Persistent:     no								<span style="color:#007f7f"># 已经变为非持久化的，无法重新启动</span>
-</span></span><span style="display:flex;"><span>Autostart:      disable
-</span></span><span style="display:flex;"><span>Managed save:   no
-</span></span><span style="display:flex;"><span>Security model: apparmor
-</span></span><span style="display:flex;"><span>Security DOI:   <span style="color:#ff0;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>Security label: libvirt-fba2f776-432d-4870-a7ec-bbf73fa1b086 (enforcing)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ virsh shutdown cirros1    <span style="color:#007f7f"># 关机后再也启动不了了</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>➜  ~ ls /etc/libvirt/qemu      <span style="color:#007f7f"># cirros1的xml文件已经不存在</span>
-</span></span><span style="display:flex;"><span>➜  ~ ls /var/lib/libvirt/boot  <span style="color:#007f7f"># cirros1的qcow2镜像仍然存在</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 需要在关闭虚拟机之前，重新定义define一个配置文件即可恢复</span>
-</span></span><span style="display:flex;"><span>virsh  dumpxml   centos-C  &gt; /etc/libvirt/qemu/centos-C.xml       
-</span></span><span style="display:flex;"><span>virsh define /etc/libvirt/qemu/centos-C.xml 
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 如果是在关闭着的服务器上执行的virsh undefine  centos-C 删除命令，则会把对应的配置文件清空，虚拟机再也启动不了，重新定义也不行</span>
-</span></span><span style="display:flex;"><span>对于
-</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
-<p><a href="https://www.jianshu.com/p/6cccc7f3e1f9">在 Ubuntu 的 KVM 中安装 Windows 系统</a></p>
-<p><a href="https://www.cnblogs.com/wn1m/p/11280804.html">virsh使用总结</a></p>
-<p><a href="https://www.cnblogs.com/qiuhom-1874/p/13508231.html">kvm管理和基础命令</a></p>
-<p><a href="https://www.cnblogs.com/yangsirs/p/6651798.html">kvm命令总结和虚机器备份迁移</a></p>
-<p><a href="https://www.linuxtechi.com/install-kvm-on-ubuntu-20-04-lts-server/">How to Install KVM on Ubuntu 20.04 LTS Server (Focal Fossa)</a></p>
-<p><a href="https://www.cnblogs.com/sammyliu/p/4486712.html">Libvirt虚拟机生命周期</a></p>
-<p><a href="https://www.ibm.com/support/knowledgecenter/linuxonibm/com.ibm.linux.z.ldva/ldva_t_modifyingCPUNumber.html">Modify cpu number </a></p>
-
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/kvm/">KVM</a></li>
-      <li><a href="https://blog.niuhemoon.win/tags/openstack/">Openstack</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/">
-    <span class="title">« 上一页</span>
-    <span>Openstack命令行基础</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/tcpdump-usage/">
-    <span class="title">下一页 »</span>
-    <span>tcpdump的基本使用【译】</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+</code></pre><blockquote><p>通常将cirros镜像放置到<code>/var/lib/libvirt/boot</code>路径下</p><p>可以查看镜像信息</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>qemu-img info cirros-0.5.0-x86_64-disk.img
+</span></span></code></pre></div><blockquote><p>至此，vrish学习的基本环境就搭建完成</p></blockquote><h3 id=libvirt基本概念>Libvirt基本概念<a hidden class=anchor aria-hidden=true href=#libvirt基本概念>#</a></h3><blockquote><p>virsh命令大概分组</p><ul><li>Domain Management（域管理）</li><li>Domain Monitoring（域监控）</li><li>Host and Hypervisor（主机及虚拟化）</li><li>Interface（网卡接口）</li><li>Network Filter（网络防火墙）</li><li>Networking（网络）</li><li>Node Device（节点设备驱动）存在</li><li>Secret</li><li>Snapshot（快照）</li><li>Storage Pool（存储池或存储策略）</li><li>Storage Volume（存储卷）</li><li>Virsh itself（virsh shell自身相关）</li></ul></blockquote><hr><blockquote><p>定义过的或者能够被libvirt感知到的虚机的配置文件都在<code>/etc/libvirt</code>目录下</p><p>虚拟机文件和其它的相关文件都保存在 <code>/var/lib/libvirt/</code> 下</p><p>镜像的默认路径是 <code>/var/lib/libvirt/boot/</code>。</p></blockquote><p><img alt="Vm lifecycle graph.png" loading=lazy src=/img/Vm_lifecycle_graph.png></p><blockquote><p>上图时一个libvirt虚拟机的生命周期图，虚拟机分为两种：</p><ul><li>持久性的</li><li>短暂性的</li></ul><p>持久性虚拟机会一直存在，直到被删除；</p><p>短暂性的虚拟机只有在虚拟机被关机或重启前存在</p></blockquote><h3 id=虚拟机常用命令>虚拟机常用命令<a hidden class=anchor aria-hidden=true href=#虚拟机常用命令>#</a></h3><blockquote><p>virsh和qemu的命令非常多，下面罗列一些常用的命令</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>virsh <span style=color:#fff;font-weight:700>help</span>									<span style=color:#007f7f># 查看帮助信息</span>
+</span></span><span style=display:flex><span>virsh version								<span style=color:#007f7f># 查看qemu版本</span>
+</span></span><span style=display:flex><span>virsh <span style=color:#fff;font-weight:700>help</span> &lt;特定命令&gt;						<span style=color:#007f7f># 查看特定命令帮助信息</span>
+</span></span><span style=display:flex><span>virsh &lt;特定命令&gt; --help						<span style=color:#007f7f># 查看特定命令帮助信息</span>
+</span></span><span style=display:flex><span>virsh nodeinfo								<span style=color:#007f7f># 查看宿主机信息</span>
+</span></span><span style=display:flex><span>virsh uri                                  <span style=color:#007f7f># 查看当前主机hyperviso的连接路径；</span>
+</span></span><span style=display:flex><span>virsh connect &lt;hypervisor uri&gt;			   <span style=color:#007f7f># 连接到特定hypervisor,默认qemu:///system</span>
+</span></span><span style=display:flex><span>virsh sysinfo								<span style=color:#007f7f># 查看hypervisro信息</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh start &lt;虚拟机名称&gt;             		<span style=color:#007f7f># 启动一个之前已经定义define过的虚拟机（domain)</span>
+</span></span><span style=display:flex><span>virsh shutdown &lt;虚拟机名称&gt;					<span style=color:#007f7f># 关闭虚拟机,类似虚拟机内执行关机</span>
+</span></span><span style=display:flex><span>virsh reboot &lt;虚拟机名称&gt;					<span style=color:#007f7f># 重启虚拟机</span>
+</span></span><span style=display:flex><span>virsh destroy &lt;虚拟机名称&gt;					<span style=color:#007f7f># 强制关闭虚拟机，类似于断电</span>
+</span></span><span style=display:flex><span>virsh <span style=color:#fff;font-weight:700>suspend</span> &lt;虚拟机名称&gt;   				<span style=color:#007f7f># 挂起虚拟机，将当前状态保存在内存中</span>
+</span></span><span style=display:flex><span>virsh resume &lt;虚拟机名称&gt;					<span style=color:#007f7f># 恢复虚拟机挂起状态，从内存中恢复虚拟机状态</span>
+</span></span><span style=display:flex><span>virsh save &lt;虚拟机名称&gt; &lt;img镜像文件名&gt;	 	 <span style=color:#007f7f># 暂停虚拟机，将虚拟机状态保存在磁盘镜像文件中</span>
+</span></span><span style=display:flex><span>virsh restore &lt;img镜像文件名&gt;			 　　<span style=color:#007f7f>#重新载入暂停的虚拟机</span>
+</span></span><span style=display:flex><span>virsh autostart &lt;虚拟机名称&gt;					<span style=color:#007f7f># 虚拟机随着物理机启动自动启动</span>
+</span></span><span style=display:flex><span>virsh autostart &lt;虚拟机名称&gt; --disable		<span style=color:#007f7f># 禁止开机启动</span>
+</span></span><span style=display:flex><span>virsh dominfo &lt;虚拟机名称&gt;					<span style=color:#007f7f># 查看虚拟机domain信息</span>
+</span></span><span style=display:flex><span>virsh domblklist &lt;虚拟机名称&gt;				<span style=color:#007f7f># 列出虚拟机所有块存储设备</span>
+</span></span><span style=display:flex><span>virsh console &lt;虚拟机名称&gt;					<span style=color:#007f7f># 控制台连接虚拟机</span>
+</span></span><span style=display:flex><span>virsh dumpxml &lt;虚拟机名称&gt;					<span style=color:#007f7f># 查看虚拟机xml文件</span>
+</span></span><span style=display:flex><span>virsh edit &lt;虚拟机名称&gt;						<span style=color:#007f7f># 编辑虚拟机xml文件</span>
+</span></span><span style=display:flex><span>virsh managedsave &lt;虚拟机名称&gt;				<span style=color:#007f7f># 保存状态save并关闭虚拟机，下次启动会恢复到之前保存的状态</span>
+</span></span><span style=display:flex><span>virsh start &lt;虚拟机名称&gt;						<span style=color:#007f7f># 启动并恢复managedsave保存的状态</span>
+</span></span><span style=display:flex><span>virsh reset &lt;虚拟机名称&gt;						<span style=color:#007f7f># 对虚拟机执行强制重启，类似重置电源按钮</span>
+</span></span><span style=display:flex><span>virsh create &lt;虚拟机xml文件&gt;                 <span style=color:#007f7f># 从xml文件中创建domain，创建完成后会自动启动；</span>
+</span></span><span style=display:flex><span>											<span style=color:#007f7f># 一个xml对应一个domain虚拟机</span>
+</span></span><span style=display:flex><span>virsh define &lt;虚拟机xml文件&gt;					<span style=color:#007f7f># 从xml文件定义define新的domain，不会自动启动</span>
+</span></span><span style=display:flex><span>virsh undefine &lt;虚拟机名称&gt;					<span style=color:#007f7f># 对于运行中的持久性虚拟机，将状态转换为暂时的，关机后virsh无法感知其存在</span>
+</span></span><span style=display:flex><span>											<span style=color:#007f7f># 对于非活动的虚拟机，undefine后virsh将无法感知其存在</span>
+</span></span><span style=display:flex><span>											<span style=color:#007f7f># undefine后磁盘依然存在，只是删除虚拟机的配置文件/etc/libvirt/qemu</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh undefine &lt;虚拟机名称&gt; --remove-all-storage		<span style=color:#007f7f># 删除虚拟机并删除所有磁盘文件</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh snapshot-create-as &lt;虚拟机名称&gt; --name &lt;快照名称&gt;  <span style=color:#007f7f># 从命令行创建快照</span>
+</span></span><span style=display:flex><span>virsh snapshot-create &lt;虚拟机名称&gt;					<span style=color:#007f7f># 从xml文件创建快照</span>
+</span></span><span style=display:flex><span>virsh snapshot-list &lt;虚拟机名称&gt;						<span style=color:#007f7f># 查看虚拟机快照列表</span>
+</span></span><span style=display:flex><span>virsh snapshot-parent &lt;虚拟机名称&gt; --current			<span style=color:#007f7f># 查看当前快照的上一级快照</span>
+</span></span><span style=display:flex><span>virsh snapshot-edit &lt;虚拟机名称&gt; --snapshotname &lt;快照名&gt;	<span style=color:#007f7f># 编辑快照</span>
+</span></span><span style=display:flex><span>virsh snapshot-revert &lt;虚拟机名称&gt; --snapshotname &lt;快照名&gt;	<span style=color:#007f7f># 恢复快照</span>
+</span></span><span style=display:flex><span>virsh snapshot-delete &lt;虚拟机名称&gt; --snapshotname &lt;快照名&gt;	<span style=color:#007f7f># 删除快照</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh list									<span style=color:#007f7f># 查看活动虚拟机状态</span>
+</span></span><span style=display:flex><span>virsh list --all							<span style=color:#007f7f># 查看所有虚拟机状态</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh setvcpus &lt;虚拟机名称&gt; <span style=color:#ff0;font-weight:700>4</span> --maximum --config <span style=color:#007f7f># 设置最大vcpu数（只能用--config，下次运行生效）</span>
+</span></span><span style=display:flex><span>virsh setvcpus &lt;虚拟机名称&gt; <span style=color:#ff0;font-weight:700>4</span> --config   		<span style=color:#007f7f># 下次启动使用vcpu数</span>
+</span></span><span style=display:flex><span>virsh vcpuinfo &lt;虚拟机名称&gt;    					<span style=color:#007f7f># 查看vcpu信息</span>
+</span></span><span style=display:flex><span>virsh vcpupin &lt;虚拟机名称&gt;						<span style=color:#007f7f># 查询域 vcpu亲和性,即vcpu和物理cpu之间关系</span>
+</span></span><span style=display:flex><span>virsh maxvcpus								   <span style=color:#007f7f># 显示本机vcpu最大值</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh setmaxmem &lt;虚拟机名称&gt; [--size] 2G --current  <span style=color:#007f7f># 设置最大内存限制值</span>
+</span></span><span style=display:flex><span>virsh setmem &lt;虚拟机名称&gt; [--size] 2G --current     <span style=color:#007f7f># 设置内存分配</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh domblklist cirros							<span style=color:#007f7f># 查看虚拟机的存储块设备</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>创建磁盘文件
+</span></span><span style=display:flex><span><span style=color:#007f7f>#qcow2是文件类型，test1-add1.qcow2是磁盘文件，5G是大小</span>
+</span></span><span style=display:flex><span>qemu-img create -f qcow2 /var/lib/libvirt/images/test1-add1.qcow2 5G
+</span></span><span style=display:flex><span>qemu-img info &lt;虚拟机镜像&gt;			<span style=color:#007f7f># 查看镜像信息</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virt-install &lt;命令行&gt; 	<span style=color:#007f7f># 通过命令行指定来创建虚拟机</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh attach-disk &lt;虚拟机名称&gt; 
+</span></span><span style=display:flex><span>virsh attach-device &lt;虚拟机名称&gt; /etc/libvirt/qemu/test2-add.xml --persistent		<span style=color:#007f7f># 从XML文件附加设备</span>
+</span></span><span style=display:flex><span>virsh detach-device &lt;虚拟机名称&gt; /etc/libvirt/qemu/test2-add.xml --persistent		<span style=color:#007f7f># 卸载设备</span>
+</span></span></code></pre></div><h3 id=虚拟机操作实践>虚拟机操作实践<a hidden class=anchor aria-hidden=true href=#虚拟机操作实践>#</a></h3><h4 id=实验1修改虚拟机vcpu>实验1：修改虚拟机vcpu<a hidden class=anchor aria-hidden=true href=#实验1修改虚拟机vcpu>#</a></h4><blockquote><p>修改虚拟机的最大vcpu数量，可以修改maximum config 和current config的值</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 查看vcpu配置</span>
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros
+</span></span><span style=display:flex><span>maximum      config         2			<span style=color:#007f7f># 指定下次重启虚拟机后可用的最大vcpu数量</span>
+</span></span><span style=display:flex><span>maximum      live           2			<span style=color:#007f7f># 指定运行/暂停状态下虚拟机可用的最大vcpu数量,重启后和maximum config一致</span>
+</span></span><span style=display:flex><span>current      config         2			<span style=color:#007f7f># 下次重启时虚拟机使用的vcpu数量</span>
+</span></span><span style=display:flex><span>current      live           2			<span style=color:#007f7f># 正在运行的虚拟机vcpu实际数量</span>
+</span></span></code></pre></div><blockquote><p><strong>通过修改xml文件修改vcpu数量</strong></p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>virsh edit cirros
+</span></span><span style=display:flex><span><span style=color:#007f7f>#  &lt;vcpu placement=&#39;static&#39;&gt;2&lt;/vcpu&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 修改为</span>
+</span></span><span style=display:flex><span> &lt;vcpu placement=<span style=color:#0ff;font-weight:700>&#39;static&#39;</span>&gt;3&lt;/vcpu&gt;
+</span></span></code></pre></div><blockquote><p>关闭并重新启动虚拟机</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>virsh shutdown cirros
+</span></span><span style=display:flex><span>virsh list --all   <span style=color:#007f7f># 确认已经是shut off状态</span>
+</span></span><span style=display:flex><span>virsh start cirros
+</span></span></code></pre></div><blockquote><p>再次查看vcpu数量，发现已经改变</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ virsh vcpucount cirros
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span></code></pre></div><blockquote><p>同样方式，修改xml文件，恢复为2个vcpu，执行virsh reboot 后并没释放vcpu</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ virsh vcpucount cirros
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span></code></pre></div><blockquote><p>必须执行shutdown或者destory，然后重新start才能改变运行时的vcpu</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ virsh vcpucount cirros
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span></code></pre></div><blockquote><p>还可以通过命令行修改vcpu的各个配置值</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ virsh setvcpus cirros <span style=color:#ff0;font-weight:700>3</span> --maximum --config 
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros                    
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh setvcpus cirros <span style=color:#ff0;font-weight:700>3</span> --config  <span style=color:#007f7f># 修改current config</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros          
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 重启虚拟机使其生效</span>
+</span></span><span style=display:flex><span>➜  ~ virsh shutdown cirros
+</span></span><span style=display:flex><span>➜  ~ virsh start cirros
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span></code></pre></div><blockquote><p><strong>在宿主机上无法设置vcpu的current live小于current config</strong>，只能在虚拟机内部执行<code>chcpu</code>指令来修改，使得vcpu离线</p><p>也可以将最大可用vcpu设置较大，方便后续在虚拟机运行时可以动态调整vcpu的数量</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ virsh setvcpus cirros <span style=color:#ff0;font-weight:700>5</span> --maximum --config 
+</span></span><span style=display:flex><span>➜  ~  virsh setvcpus cirros <span style=color:#ff0;font-weight:700>2</span> --config 
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh shutdown cirros
+</span></span><span style=display:flex><span>➜  ~ virsh start cirros
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>5</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>5</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh setvcpus cirros 3			<span style=color:#007f7f># 动态调整vcpu数量，调整范围[current config，比maximum config]</span>
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros 
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>5</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>5</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>3</span>
+</span></span><span style=display:flex><span>➜  ~ virsh setvcpus cirros 2			
+</span></span><span style=display:flex><span>➜  ~ virsh vcpucount cirros 
+</span></span><span style=display:flex><span>maximum      config         <span style=color:#ff0;font-weight:700>5</span>
+</span></span><span style=display:flex><span>maximum      live           <span style=color:#ff0;font-weight:700>5</span>
+</span></span><span style=display:flex><span>current      config         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>current      live           <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>➜  ~ virsh vcpuinfo cirros				<span style=color:#007f7f># 查看vcpu运行状态</span>
+</span></span></code></pre></div><h4 id=实验2修改虚拟机的内存>实验2：修改虚拟机的内存<a hidden class=anchor aria-hidden=true href=#实验2修改虚拟机的内存>#</a></h4><blockquote><p>通过修改xml配置文件并重新启动虚拟机</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 修改项，修改完成后</span>
+</span></span><span style=display:flex><span>&lt;memory unit=<span style=color:#0ff;font-weight:700>&#39;KiB&#39;</span>&gt;462144&lt;/memory&gt;				<span style=color:#007f7f># 启动后最大允许可用内存</span>
+</span></span><span style=display:flex><span>&lt;currentMemory unit=<span style=color:#0ff;font-weight:700>&#39;KiB&#39;</span>&gt;262144&lt;/currentMemory&gt;# 启动时使用的内存大小
+</span></span></code></pre></div><blockquote><p>在最大可用内存范围内，可以在虚拟机运行时调整内存使用</p><p>虚拟机最大内存只能在虚拟机关闭状态更改，重启后生效</p><p>使用virsh setmaxmem命令，和直接修改xml文件等效</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ virsh dominfo cirros | grep memory    <span style=color:#007f7f># 虚拟机启动时显示的used memory不准确</span>
+</span></span><span style=display:flex><span>Max memory:     <span style=color:#ff0;font-weight:700>462144</span> KiB
+</span></span><span style=display:flex><span>Used memory:    <span style=color:#ff0;font-weight:700>262144</span> KiB
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh setmem cirros <span style=color:#ff0;font-weight:700>300000</span>        
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh dominfo cirros | grep memory
+</span></span><span style=display:flex><span>Max memory:     <span style=color:#ff0;font-weight:700>462144</span> KiB
+</span></span><span style=display:flex><span>Used memory:    <span style=color:#ff0;font-weight:700>300000</span> KiB
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh shutdown cirros
+</span></span><span style=display:flex><span>➜  ~ virsh setmaxmem cirros <span style=color:#ff0;font-weight:700>700000</span>
+</span></span></code></pre></div><h4 id=实验3调整虚拟机的磁盘>实验3：调整虚拟机的磁盘<a hidden class=anchor aria-hidden=true href=#实验3调整虚拟机的磁盘>#</a></h4><blockquote><p>虚拟机支持在虚拟机开机时动态挂载新的磁盘</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  ~ qemu-img create -f qcow2 -o size=20M,preallocation=metadata /var/lib/libvirt/boot/second.qcow2
+</span></span><span style=display:flex><span>Formatting <span style=color:#0ff;font-weight:700>&#39;/var/lib/libvirt/boot/second.qcow2&#39;</span>, fmt=qcow2 size=<span style=color:#ff0;font-weight:700>20971520</span> cluster_size=<span style=color:#ff0;font-weight:700>65536</span> preallocation=metadata lazy_refcounts=off refcount_bits=<span style=color:#ff0;font-weight:700>16</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ qemu-img info /var/lib/libvirt/boot/second.qcow2
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>image: /var/lib/libvirt/boot/second.qcow2
+</span></span><span style=display:flex><span>file format: qcow2
+</span></span><span style=display:flex><span>virtual size: <span style=color:#ff0;font-weight:700>20</span> MiB (<span style=color:#ff0;font-weight:700>20971520</span> bytes)
+</span></span><span style=display:flex><span>disk size: <span style=color:#ff0;font-weight:700>260</span> KiB
+</span></span><span style=display:flex><span>cluster_size: <span style=color:#ff0;font-weight:700>65536</span>
+</span></span><span style=display:flex><span>Format specific information:
+</span></span><span style=display:flex><span>    compat: 1.1
+</span></span><span style=display:flex><span>    lazy refcounts: <span style=color:#fff;font-weight:700>false</span>
+</span></span><span style=display:flex><span>    refcount bits: <span style=color:#ff0;font-weight:700>16</span>
+</span></span><span style=display:flex><span>    corrupt: <span style=color:#fff;font-weight:700>false</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>virsh attach-disk cirros /images/cirros/second.qcow2 vda --targetbus virtio 
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 卸载磁盘（前提时没有分区或者挂载</span>
+</span></span><span style=display:flex><span>virsh detach-disk <span style=color:#ff0;font-weight:700>26</span> vda
+</span></span></code></pre></div><blockquote><p>也可以手动修改xml文件，然后重启虚拟机</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 首先创建一个qcow2磁盘或者raw磁盘</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># dd命令创建一个非稀疏的磁盘</span>
+</span></span><span style=display:flex><span>dd <span style=color:#fff;font-weight:700>if</span>=/dev/zero of=/vm-images/vm1-add.img bs=1M count=<span style=color:#ff0;font-weight:700>1024</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 在xml文件中加入一个新的xml段</span>
+</span></span><span style=display:flex><span>&lt;disk type=<span style=color:#0ff;font-weight:700>&#39;file&#39;</span> device=<span style=color:#0ff;font-weight:700>&#39;disk&#39;</span>&gt;
+</span></span><span style=display:flex><span>     &lt;driver name=<span style=color:#0ff;font-weight:700>&#39;qemu&#39;</span> type=<span style=color:#0ff;font-weight:700>&#39;raw&#39;</span> cache=<span style=color:#0ff;font-weight:700>&#39;none&#39;</span> io=<span style=color:#0ff;font-weight:700>&#39;threads&#39;</span>/&gt;
+</span></span><span style=display:flex><span>     &lt;<span style=color:#fff;font-weight:700>source</span> file=<span style=color:#0ff;font-weight:700>&#39;/vm-images/vm1-add.img&#39;</span>/&gt;
+</span></span><span style=display:flex><span>     &lt;target dev=<span style=color:#0ff;font-weight:700>&#39;vdb&#39;</span> bus=<span style=color:#0ff;font-weight:700>&#39;virtio&#39;</span>/&gt;
+</span></span><span style=display:flex><span>     &lt;address type=<span style=color:#0ff;font-weight:700>&#39;pci&#39;</span> domain=<span style=color:#0ff;font-weight:700>&#39;0x0000&#39;</span> bus=<span style=color:#0ff;font-weight:700>&#39;0x00&#39;</span> slot=<span style=color:#0ff;font-weight:700>&#39;0x06&#39;</span> <span style=color:#fff;font-weight:700>function</span>=<span style=color:#0ff;font-weight:700>&#39;0x0&#39;</span>/&gt;
+</span></span><span style=display:flex><span> &lt;/disk&gt;
+</span></span></code></pre></div><h4 id=实验4创建虚拟机>实验4：创建虚拟机<a hidden class=anchor aria-hidden=true href=#实验4创建虚拟机>#</a></h4><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>virt-install  --name=cirros --ram=<span style=color:#ff0;font-weight:700>256</span> --vcpus=<span style=color:#ff0;font-weight:700>1</span> --disk path=/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img,format=qcow2 --import --network network:default --vnc --vncport=<span style=color:#ff0;font-weight:700>5920</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 也可以通过xml文件来创建</span>
+</span></span></code></pre></div><h4 id=实验5复制虚拟机>实验5：复制虚拟机<a hidden class=anchor aria-hidden=true href=#实验5复制虚拟机>#</a></h4><blockquote><p>可以通过命令行复制一个虚拟机，也可以通过拷贝并修改配置文件和存储卷文件进行复制</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 通过virt-clone命令复制</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># virt-clone -o &lt;虚拟机名称&gt; -n &lt;新虚拟机名称&gt; -f /var/lib/libvirt/images/test4.qcow2</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># qcow2磁盘不需要预先创建，创建完成后需要进虚拟机手动改变ip地址和用户名</span>
+</span></span><span style=display:flex><span>➜  ~ virt-clone -o cirros -n cirros1 -f /var/lib/libvirt/boot/cirros1.qcow2
+</span></span><span style=display:flex><span><span style=color:#007f7f># 自动生产不一样的mac地址和uuid</span>
+</span></span><span style=display:flex><span>➜  ~ diff cirros.xml cirros1.xml
+</span></span><span style=display:flex><span>        &lt;   &lt;name&gt;cirros&lt;/name&gt;
+</span></span><span style=display:flex><span>        &lt;   &lt;uuid&gt;874fe199-47ea-45d1-a25d-98d0535dddb3&lt;/uuid&gt;
+</span></span><span style=display:flex><span>        ---
+</span></span><span style=display:flex><span>        &gt;   &lt;name&gt;cirros1&lt;/name&gt;
+</span></span><span style=display:flex><span>        &gt;   &lt;uuid&gt;fba2f776-432d-4870-a7ec-bbf73fa1b086&lt;/uuid&gt;
+</span></span><span style=display:flex><span>        39c39
+</span></span><span style=display:flex><span>        &lt;       &lt;<span style=color:#fff;font-weight:700>source</span> file=<span style=color:#0ff;font-weight:700>&#39;/var/lib/libvirt/boot/cirros-0.5.0-x86_64-disk.img&#39;</span>/&gt;
+</span></span><span style=display:flex><span>        ---
+</span></span><span style=display:flex><span>        &gt;       &lt;<span style=color:#fff;font-weight:700>source</span> file=<span style=color:#0ff;font-weight:700>&#39;/var/lib/libvirt/boot/cirros1.qcow2&#39;</span>/&gt;
+</span></span><span style=display:flex><span>        63c63
+</span></span><span style=display:flex><span>        &lt;       &lt;mac address=<span style=color:#0ff;font-weight:700>&#39;52:54:00:fa:5c:d3&#39;</span>/&gt;
+</span></span><span style=display:flex><span>        ---
+</span></span><span style=display:flex><span>        &gt;       &lt;mac address=<span style=color:#0ff;font-weight:700>&#39;52:54:00:29:8d:06&#39;</span>/&gt;
+</span></span><span style=display:flex><span>        81c81
+</span></span><span style=display:flex><span>        &lt;     &lt;graphics type=<span style=color:#0ff;font-weight:700>&#39;vnc&#39;</span> port=<span style=color:#0ff;font-weight:700>&#39;5921&#39;</span> autoport=<span style=color:#0ff;font-weight:700>&#39;no&#39;</span>&gt;
+</span></span><span style=display:flex><span>        ---
+</span></span><span style=display:flex><span>        &gt;     &lt;graphics type=<span style=color:#0ff;font-weight:700>&#39;vnc&#39;</span> port=<span style=color:#0ff;font-weight:700>&#39;-1&#39;</span> autoport=<span style=color:#0ff;font-weight:700>&#39;yes&#39;</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>#virt-clone -f指定的文件不要事先创建，如果有多个磁盘文件就用多个-f选项 如</span>
+</span></span><span style=display:flex><span>virt-clone -o &lt;虚拟机名称&gt; -n &lt;新虚拟机名称&gt; -f /home/lib/libvirt/images/test4.qcow2 -f /mnt/images/test4-add1.qcow2
+</span></span></code></pre></div><blockquote><p>可以手动复制xml文件和磁盘镜像来复制</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span>➜  qemu cp cirros.xml cirros3.xml
+</span></span><span style=display:flex><span><span style=color:#007f7f># 修改xml文件中的domain name和mac地址等信息</span>
+</span></span><span style=display:flex><span>➜  qemu vim cirros3.xml 
+</span></span><span style=display:flex><span>➜  qemu <span style=color:#fff;font-weight:700>cd</span> /var/lib/libvirt/boot 
+</span></span><span style=display:flex><span><span style=color:#007f7f># 在define新的克隆虚拟机之前准备好所需的磁盘</span>
+</span></span><span style=display:flex><span>➜  boot cp cirros-0.5.0-x86_64-disk.img cirros3.img
+</span></span><span style=display:flex><span>➜  boot qemu-img info cirros3.img 
+</span></span><span style=display:flex><span>        image: cirros3.img
+</span></span><span style=display:flex><span>        file format: qcow2
+</span></span><span style=display:flex><span>        virtual size: <span style=color:#ff0;font-weight:700>112</span> MiB (<span style=color:#ff0;font-weight:700>117440512</span> bytes)
+</span></span><span style=display:flex><span>        disk size: <span style=color:#ff0;font-weight:700>198</span> MiB
+</span></span><span style=display:flex><span>        cluster_size: <span style=color:#ff0;font-weight:700>65536</span>
+</span></span><span style=display:flex><span>        Snapshot list:
+</span></span><span style=display:flex><span>        ID        TAG                     VM SIZE                DATE       VM CLOCK
+</span></span><span style=display:flex><span>        <span style=color:#ff0;font-weight:700>1</span>         <span style=color:#ff0;font-weight:700>1603292226</span>              <span style=color:#ff0;font-weight:700>101</span> MiB 2020-10-21 22:57:06   94:39:31.435
+</span></span><span style=display:flex><span>        Format specific information:
+</span></span><span style=display:flex><span>            compat: 1.1
+</span></span><span style=display:flex><span>            lazy refcounts: <span style=color:#fff;font-weight:700>false</span>
+</span></span><span style=display:flex><span>            refcount bits: <span style=color:#ff0;font-weight:700>16</span>
+</span></span><span style=display:flex><span>            corrupt: <span style=color:#fff;font-weight:700>false</span>
+</span></span><span style=display:flex><span>➜  ~ virsh define /etc/libvirt/qemu/cirros3.xml 
+</span></span><span style=display:flex><span>	Domain cirros3 defined from /etc/libvirt/qemu/cirros3.xml
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh list --all
+</span></span><span style=display:flex><span>     Id   Name      State
+</span></span><span style=display:flex><span>    --------------------------
+</span></span><span style=display:flex><span>     <span style=color:#ff0;font-weight:700>2</span>    cirros    running
+</span></span><span style=display:flex><span>     -    cirros3   shut off
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>➜  ~ virsh start cirros3 
+</span></span><span style=display:flex><span>	Domain cirros3 started
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 此时，一个新的克隆虚拟机就创建完成</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 需要手动修改IP和hostname</span>
+</span></span></code></pre></div><h4 id=实验6误删虚拟机恢复>实验6：误删虚拟机恢复<a hidden class=anchor aria-hidden=true href=#实验6误删虚拟机恢复>#</a></h4><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#007f7f># 误删除虚拟机</span>
+</span></span><span style=display:flex><span>➜  ~ virsh undefine cirros1
+</span></span><span style=display:flex><span>Domain cirros1 has been undefined
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh dominfo cirros1
+</span></span><span style=display:flex><span>Id:             <span style=color:#ff0;font-weight:700>1</span>
+</span></span><span style=display:flex><span>Name:           cirros1
+</span></span><span style=display:flex><span>UUID:           fba2f776-432d-4870-a7ec-bbf73fa1b086
+</span></span><span style=display:flex><span>OS Type:        hvm
+</span></span><span style=display:flex><span>State:          running
+</span></span><span style=display:flex><span>CPU(s):         <span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>CPU time:       41.7s
+</span></span><span style=display:flex><span>Max memory:     <span style=color:#ff0;font-weight:700>700416</span> KiB
+</span></span><span style=display:flex><span>Used memory:    <span style=color:#ff0;font-weight:700>262144</span> KiB
+</span></span><span style=display:flex><span>Persistent:     no								<span style=color:#007f7f># 已经变为非持久化的，无法重新启动</span>
+</span></span><span style=display:flex><span>Autostart:      disable
+</span></span><span style=display:flex><span>Managed save:   no
+</span></span><span style=display:flex><span>Security model: apparmor
+</span></span><span style=display:flex><span>Security DOI:   <span style=color:#ff0;font-weight:700>0</span>
+</span></span><span style=display:flex><span>Security label: libvirt-fba2f776-432d-4870-a7ec-bbf73fa1b086 (enforcing)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ virsh shutdown cirros1    <span style=color:#007f7f># 关机后再也启动不了了</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>➜  ~ ls /etc/libvirt/qemu      <span style=color:#007f7f># cirros1的xml文件已经不存在</span>
+</span></span><span style=display:flex><span>➜  ~ ls /var/lib/libvirt/boot  <span style=color:#007f7f># cirros1的qcow2镜像仍然存在</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 需要在关闭虚拟机之前，重新定义define一个配置文件即可恢复</span>
+</span></span><span style=display:flex><span>virsh  dumpxml   centos-C  &gt; /etc/libvirt/qemu/centos-C.xml       
+</span></span><span style=display:flex><span>virsh define /etc/libvirt/qemu/centos-C.xml 
+</span></span><span style=display:flex><span><span style=color:#007f7f># 如果是在关闭着的服务器上执行的virsh undefine  centos-C 删除命令，则会把对应的配置文件清空，虚拟机再也启动不了，重新定义也不行</span>
+</span></span><span style=display:flex><span>对于
+</span></span></code></pre></div><h3 id=参考>参考<a hidden class=anchor aria-hidden=true href=#参考>#</a></h3><p><a href=https://www.jianshu.com/p/6cccc7f3e1f9>在 Ubuntu 的 KVM 中安装 Windows 系统</a></p><p><a href=https://www.cnblogs.com/wn1m/p/11280804.html>virsh使用总结</a></p><p><a href=https://www.cnblogs.com/qiuhom-1874/p/13508231.html>kvm管理和基础命令</a></p><p><a href=https://www.cnblogs.com/yangsirs/p/6651798.html>kvm命令总结和虚机器备份迁移</a></p><p><a href=https://www.linuxtechi.com/install-kvm-on-ubuntu-20-04-lts-server/>How to Install KVM on Ubuntu 20.04 LTS Server (Focal Fossa)</a></p><p><a href=https://www.cnblogs.com/sammyliu/p/4486712.html>Libvirt虚拟机生命周期</a></p><p><a href=https://www.ibm.com/support/knowledgecenter/linuxonibm/com.ibm.linux.z.ldva/ldva_t_modifyingCPUNumber.html>Modify cpu number</a></p></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/kvm/>KVM</a></li><li><a href=https://blog.niuhemoon.win/tags/openstack/>Openstack</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/openstack-command-tutorial/><span class=title>« 上一页</span>
+<span>Openstack命令行基础</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/tcpdump-usage/><span class=title>下一页 »</span>
+<span>tcpdump的基本使用【译】</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

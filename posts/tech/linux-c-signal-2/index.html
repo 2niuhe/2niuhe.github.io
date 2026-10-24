@@ -1,664 +1,151 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Linux信号处理——发送信号 | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="Linux, C">
-<meta name="description" content="学习使用C语言向其他进程发送信号">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="Linux信号处理——发送信号">
-  <meta property="og:description" content="学习使用C语言向其他进程发送信号">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2018-10-07T00:00:00+00:00">
-    <meta property="article:modified_time" content="2018-10-07T00:00:00+00:00">
-    <meta property="article:tag" content="Linux">
-    <meta property="article:tag" content="C">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Linux信号处理——发送信号">
-  <meta name="twitter:description" content="学习使用C语言向其他进程发送信号">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "Linux信号处理——发送信号",
-      "item": "https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Linux信号处理——发送信号",
-  "name": "Linux信号处理——发送信号",
-  "description": "学习使用C语言向其他进程发送信号",
-  "keywords": [
-    "Linux", "C"
-  ],
-  "articleBody": " Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进程智能向属于同一个回话或同一个用户的进程发送信号。\n###发送信号\n常用的函数原型如下\n/* 向进程发送信号 pid\u003e0 进程ID为pid的进程 pid=0 同一进程组的进程 pid\u003c0 \u0026\u0026 pid!=-1 进程组ID为-pid的所有进程 pid=-1 除发送给进程自身外，还发送给所有进程ID\u003e1的进程 成功返回0，否则-1 */ int kill(pid_t pid,int signo); /*向进程本身发送信号，等价于kill(getpid(),sig),成功返回0，否则-1*/ int raise(int signo); /*向进程发送SIGABORT信号,默认情况下进程会退出*/ void abort(void); /* 向进程发送实时信号 pid 接收信号的进程ID，只能向一个进程发送信号 sig 指定即将发送的信号 val指定信号传递的参数 成功返回0，否则-1 */ int sigqueue(pid_t pid,int sig,const union sigval val); union sigval { int sival_int;\t//传送一个整形数 void *sival_ptr;\t//传送任何数据结构的指针 }; typedef struct { int si_signo; int si_code; union sigval si_value; int si_errno; pid_t si_pid; uid_t si_uid; void *si_addr; int si_status; int si_band; } siginfo_t; 案例:使用sigqueue发送带参数的信号\n#include #include #include void SigHandler(int signo,siginfo_t *info,void *context) { printf(\"%s\\n\",(char *)info-\u003esi_value.sival_ptr); } int main() { struct sigaction sigAct; sigval_t val; char *pMsg = \"i still believe\"; sigAct.sa_flags = SA_SIGINFO; sigAct.sa_sigaction=SigHandler; if(sigaction(SIGUSR1,\u0026sigAct,NULL)==-1) { printf(\"fail set sig_handler\"); return 1; } val.sival_ptr=pMsg; if(sigqueue(getpid(),SIGUSR1,val)==-1) { printf(\"fail send sigqueue\"); return 2; } sleep(3); } ###sleep睡眠延时\n可以使用sleep函数将程序延迟一段时间后继续执行，其实现机制是：\n调用alarm函数设置延迟时间 调用pause函数挂起进程，等待系统发送SIGALARM信号，当SIGALARM信号到达进程时，进程被唤醒。 /* 设置时间闹钟 seconds表示闹钟间隔时间，原有闹钟无效 若调用alarm函数前，进程已经设置了闹钟，则返回上一个闹钟剩余时间，否则返回0 */ unsigned int alarm(unsigned int seconds); //等待信号,进程收到信号后，执行信号处理函数，pause函数返回，原进程继续执行 void pause(); 案例：实现sleep函数\n#include #include #include #include void alarmhandler(int signum) { printf(\"Alarm received from kernel\\n\"); } int mysleep(unsigned int time) { printf(\"about to sleep for %d seconds\\n\",time); signal(SIGALRM,alarmhandler); alarm(time); pause(); printf(\"continue from alarm \\n\"); return 0; } int main(int argc,char *argv[]) { printf(\"start run the program.\\n\"); unsigned int time = atoi(argv[1]); mysleep(time); printf(\"i am awake,haha\\n\"); return 0; } 间隔计时器 alarm函数计时单位是秒，当延迟时间到来，只能触发一次。不能满足需要高精度时间、有周期性定时需求的需求。为此，引入间隔计时器，其原理是：\n当等待时间来到，内核向处于等待状态的进程发送信号，同时，再次设置时间间隔。间隔计时器属于面向进程的计时器。\n进程运行时间\n通常，LInux系统最小时钟间隔是10ms，意味着每秒产生100个时钟中断。进程以时间片的形式分享CPU，进程的执行有两种模式：用户态和内核态。当进程执行的是用户地址空间的代码，称进程运行在用户态；当进程进入系统调用或硬件中断，称进程运行在内核态。此外，进程还有休眠态，即将CPU交给其他进程。所以进程并非时刻都在运行，而是在用户态、内核态、休眠态之间切换。\n由此内核提供三种计时器：\n真实时间\t用户态+内核态+休眠态时间 虚拟时间\t用户态时间 实用时间\t用户态+内核态时间 /* 获得当前进程中指定类型间隔计时器的值 which 计时器类型 ITIMER_REAL\t真实时间，经过指定时间，内核发送SIGALRM限号 ITIMER_VIRTUAL\t用户态时间，经过指定时间，内核发送SIGVTALRM信号 ITIMER_PROF\t实用时间，经过指定时间，内核发送SIGPRT信号 value 存储获得的间隔计时器的值 */ int getitimer(int which,struct itmerval *value); struct itimerval { struct timeval it_interval;\t//下一个值 struct timeval it_value\t//当前值 }; struct timeval { long tv_sec;\t//秒 long tv_usec;\t//微秒 }; /* 设置间隔计时器 which 指定定时器类型 newval指向被设置值 oldval指向被替换设置值 成功返回0，否则-1 若oldval不为NULL，之前计时器的值将被复制到oldval */ int setitimer(int which,const struct itimerval *newval,struct itimerval *oldval); ",
-  "wordCount" : "1401",
-  "inLanguage": "zh",
-  "datePublished": "2018-10-07T00:00:00Z",
-  "dateModified": "2018-10-07T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      Linux信号处理——发送信号
-    </h1>
-    <div class="post-description">
-      学习使用C语言向其他进程发送信号
-    </div>
-    <div class="post-meta">
-
-<span title='2018-10-07 00:00:00 +0000 UTC'>2018-10-07</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1401 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> <details class="toc"  open>
-    <summary accesskey="c" title="(Alt + C)">
-        <span class="title">目录</span>
-    </summary>
-
-    <div class="inner"><ul>
-            <li>
-                <a href="#%e9%97%b4%e9%9a%94%e8%ae%a1%e6%97%b6%e5%99%a8" aria-label="间隔计时器">间隔计时器</a>
-            </li>
-        </ul>
-    </div>
-</details>
-
-  <div class="post-content md-content"><blockquote>
-<p>Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进程智能向属于同一个回话或同一个用户的进程发送信号。</p>
-</blockquote>
-<p>###发送信号</p>
-<blockquote>
-<p>常用的函数原型如下</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">向进程发送信号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	pid&gt;0 进程ID为pid的进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	pid=0 同一进程组的进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	pid&lt;0 &amp;&amp; pid!=-1 进程组ID为-pid的所有进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	pid=-1 除发送给进程自身外，还发送给所有进程ID&gt;1的进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回0，否则-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> kill(<span style="color:#fff;font-weight:bold">pid_t</span> pid,<span style="color:#fff;font-weight:bold">int</span> signo);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*向进程本身发送信号，等价于kill(getpid(),sig),成功返回0，否则-1*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> raise(<span style="color:#fff;font-weight:bold">int</span> signo);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*向进程发送SIGABORT信号,默认情况下进程会退出*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> abort(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">向进程发送实时信号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	pid 接收信号的进程ID，只能向一个进程发送信号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	sig 指定即将发送的信号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	val指定信号传递的参数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回0，否则-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> sigqueue(<span style="color:#fff;font-weight:bold">pid_t</span> pid,<span style="color:#fff;font-weight:bold">int</span> sig,<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">union</span> sigval val);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">union</span> sigval
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">int</span> sival_int;		<span style="color:#007f7f">//传送一个整形数
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">void</span> *sival_ptr;	<span style="color:#007f7f">//传送任何数据结构的指针
-</span></span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">typedef</span> <span style="color:#fff;font-weight:bold">struct</span> {
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> si_signo;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> si_code;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">union</span> sigval si_value;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> si_errno;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">pid_t</span> si_pid;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">uid_t</span> si_uid;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">void</span> *si_addr;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> si_status;
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">int</span> si_band;
-</span></span><span style="display:flex;"><span>} <span style="color:#fff;font-weight:bold">siginfo_t</span>;
-</span></span></code></pre></div><p><strong>案例:使用sigqueue发送带参数的信号</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;signal.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> SigHandler(<span style="color:#fff;font-weight:bold">int</span> signo,<span style="color:#fff;font-weight:bold">siginfo_t</span> *info,<span style="color:#fff;font-weight:bold">void</span> *context)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;%s</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,(<span style="color:#fff;font-weight:bold">char</span> *)info-&gt;si_value.sival_ptr);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">struct</span> sigaction sigAct;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">sigval_t</span> val;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">char</span> *pMsg = <span style="color:#0ff;font-weight:bold">&#34;i still believe&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    sigAct.sa_flags = SA_SIGINFO;
-</span></span><span style="display:flex;"><span>    sigAct.sa_sigaction=SigHandler;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(sigaction(SIGUSR1,&amp;sigAct,<span style="color:#fff;font-weight:bold">NULL</span>)==-<span style="color:#ff0;font-weight:bold">1</span>)
-</span></span><span style="display:flex;"><span>    {   
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;fail set sig_handler&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">1</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    val.sival_ptr=pMsg;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(sigqueue(getpid(),SIGUSR1,val)==-<span style="color:#ff0;font-weight:bold">1</span>)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;fail send sigqueue&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">2</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    sleep(<span style="color:#ff0;font-weight:bold">3</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>###sleep睡眠延时</p>
-<blockquote>
-<p>可以使用sleep函数将程序延迟一段时间后继续执行，其实现机制是：</p>
-<ol>
-<li>调用alarm函数设置延迟时间</li>
-<li>调用pause函数挂起进程，等待系统发送SIGALARM信号，当SIGALARM信号到达进程时，进程被唤醒。</li>
-</ol>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">设置时间闹钟
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	seconds表示闹钟间隔时间，原有闹钟无效
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">若调用alarm函数前，进程已经设置了闹钟，则返回上一个闹钟剩余时间，否则返回0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">int</span> alarm(<span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">int</span> seconds);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//等待信号,进程收到信号后，执行信号处理函数，pause函数返回，原进程继续执行
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> pause();
-</span></span></code></pre></div><p><strong>案例：实现sleep函数</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;signal.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> alarmhandler(<span style="color:#fff;font-weight:bold">int</span> signum)
-</span></span><span style="display:flex;"><span>{   
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;Alarm received from kernel</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> mysleep(<span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">int</span> time)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;about to sleep for %d seconds</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,time);
-</span></span><span style="display:flex;"><span>    signal(SIGALRM,alarmhandler);
-</span></span><span style="display:flex;"><span>    alarm(time);
-</span></span><span style="display:flex;"><span>    pause();
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;continue from alarm </span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">int</span> argc,<span style="color:#fff;font-weight:bold">char</span> *argv[])
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;start run the program.</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">unsigned</span> <span style="color:#fff;font-weight:bold">int</span> time = atoi(argv[<span style="color:#ff0;font-weight:bold">1</span>]);
-</span></span><span style="display:flex;"><span>    mysleep(time);
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;i am awake,haha</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h3 id="间隔计时器">间隔计时器<a hidden class="anchor" aria-hidden="true" href="#间隔计时器">#</a></h3>
-<blockquote>
-<p>alarm函数计时单位是秒，当延迟时间到来，只能触发一次。不能满足需要高精度时间、有周期性定时需求的需求。为此，引入间隔计时器，其原理是：</p>
-<p>当等待时间来到，内核向处于等待状态的进程发送信号，同时，再次设置时间间隔。间隔计时器属于面向进程的计时器。</p>
-</blockquote>
-<p><strong>进程运行时间</strong></p>
-<blockquote>
-<p>通常，LInux系统最小时钟间隔是10ms，意味着每秒产生100个时钟中断。进程以时间片的形式分享CPU，进程的执行有两种模式：用户态和内核态。当进程执行的是用户地址空间的代码，称进程运行在用户态；当进程进入系统调用或硬件中断，称进程运行在内核态。此外，进程还有休眠态，即将CPU交给其他进程。所以进程并非时刻都在运行，而是在用户态、内核态、休眠态之间切换。</p>
-<p>由此内核提供三种计时器：</p>
-<ul>
-<li>真实时间	用户态+内核态+休眠态时间</li>
-<li>虚拟时间	用户态时间</li>
-<li>实用时间	用户态+内核态时间</li>
-</ul>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">获得当前进程中指定类型间隔计时器的值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">which 计时器类型
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	ITIMER_REAL		真实时间，经过指定时间，内核发送SIGALRM限号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	ITIMER_VIRTUAL	用户态时间，经过指定时间，内核发送SIGVTALRM信号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	ITIMER_PROF		实用时间，经过指定时间，内核发送SIGPRT信号
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">value 存储获得的间隔计时器的值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> getitimer(<span style="color:#fff;font-weight:bold">int</span> which,<span style="color:#fff;font-weight:bold">struct</span> itmerval *value);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> itimerval
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">struct</span> timeval it_interval;	<span style="color:#007f7f">//下一个值
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">struct</span> timeval it_value		<span style="color:#007f7f">//当前值
-</span></span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">struct</span> timeval
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">long</span> tv_sec;	<span style="color:#007f7f">//秒
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">long</span> tv_usec;	<span style="color:#007f7f">//微秒
-</span></span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">设置间隔计时器
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">which 指定定时器类型
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">newval指向被设置值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">oldval指向被替换设置值
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回0，否则-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">若oldval不为NULL，之前计时器的值将被复制到oldval
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> setitimer(<span style="color:#fff;font-weight:bold">int</span> which,<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">struct</span> itimerval *newval,<span style="color:#fff;font-weight:bold">struct</span> itimerval *oldval);
-</span></span></code></pre></div>
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
-      <li><a href="https://blog.niuhemoon.win/tags/c/">C</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-1/">
-    <span class="title">« 上一页</span>
-    <span>Linux进程——地址空间</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-c-io/">
-    <span class="title">下一页 »</span>
-    <span>Linux下glic库操作文件和目录</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Linux信号处理——发送信号 | Niuhe's Blog</title><meta name=keywords content="Linux,C"><meta name=description content="学习使用C语言向其他进程发送信号"><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="Linux信号处理——发送信号"><meta property="og:description" content="学习使用C语言向其他进程发送信号"><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-10-07T00:00:00+00:00"><meta property="article:modified_time" content="2018-10-07T00:00:00+00:00"><meta property="article:tag" content="Linux"><meta property="article:tag" content="C"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux信号处理——发送信号"><meta name=twitter:description content="学习使用C语言向其他进程发送信号"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"Linux信号处理——发送信号","item":"https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Linux信号处理——发送信号","name":"Linux信号处理——发送信号","description":"学习使用C语言向其他进程发送信号","keywords":["Linux","C"],"articleBody":" Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进程智能向属于同一个回话或同一个用户的进程发送信号。\n###发送信号\n常用的函数原型如下\n/* 向进程发送信号 pid\u003e0 进程ID为pid的进程 pid=0 同一进程组的进程 pid\u003c0 \u0026\u0026 pid!=-1 进程组ID为-pid的所有进程 pid=-1 除发送给进程自身外，还发送给所有进程ID\u003e1的进程 成功返回0，否则-1 */ int kill(pid_t pid,int signo); /*向进程本身发送信号，等价于kill(getpid(),sig),成功返回0，否则-1*/ int raise(int signo); /*向进程发送SIGABORT信号,默认情况下进程会退出*/ void abort(void); /* 向进程发送实时信号 pid 接收信号的进程ID，只能向一个进程发送信号 sig 指定即将发送的信号 val指定信号传递的参数 成功返回0，否则-1 */ int sigqueue(pid_t pid,int sig,const union sigval val); union sigval { int sival_int;\t//传送一个整形数 void *sival_ptr;\t//传送任何数据结构的指针 }; typedef struct { int si_signo; int si_code; union sigval si_value; int si_errno; pid_t si_pid; uid_t si_uid; void *si_addr; int si_status; int si_band; } siginfo_t; 案例:使用sigqueue发送带参数的信号\n#include #include #include void SigHandler(int signo,siginfo_t *info,void *context) { printf(\"%s\\n\",(char *)info-\u003esi_value.sival_ptr); } int main() { struct sigaction sigAct; sigval_t val; char *pMsg = \"i still believe\"; sigAct.sa_flags = SA_SIGINFO; sigAct.sa_sigaction=SigHandler; if(sigaction(SIGUSR1,\u0026sigAct,NULL)==-1) { printf(\"fail set sig_handler\"); return 1; } val.sival_ptr=pMsg; if(sigqueue(getpid(),SIGUSR1,val)==-1) { printf(\"fail send sigqueue\"); return 2; } sleep(3); } ###sleep睡眠延时\n可以使用sleep函数将程序延迟一段时间后继续执行，其实现机制是：\n调用alarm函数设置延迟时间 调用pause函数挂起进程，等待系统发送SIGALARM信号，当SIGALARM信号到达进程时，进程被唤醒。 /* 设置时间闹钟 seconds表示闹钟间隔时间，原有闹钟无效 若调用alarm函数前，进程已经设置了闹钟，则返回上一个闹钟剩余时间，否则返回0 */ unsigned int alarm(unsigned int seconds); //等待信号,进程收到信号后，执行信号处理函数，pause函数返回，原进程继续执行 void pause(); 案例：实现sleep函数\n#include #include #include #include void alarmhandler(int signum) { printf(\"Alarm received from kernel\\n\"); } int mysleep(unsigned int time) { printf(\"about to sleep for %d seconds\\n\",time); signal(SIGALRM,alarmhandler); alarm(time); pause(); printf(\"continue from alarm \\n\"); return 0; } int main(int argc,char *argv[]) { printf(\"start run the program.\\n\"); unsigned int time = atoi(argv[1]); mysleep(time); printf(\"i am awake,haha\\n\"); return 0; } 间隔计时器 alarm函数计时单位是秒，当延迟时间到来，只能触发一次。不能满足需要高精度时间、有周期性定时需求的需求。为此，引入间隔计时器，其原理是：\n当等待时间来到，内核向处于等待状态的进程发送信号，同时，再次设置时间间隔。间隔计时器属于面向进程的计时器。\n进程运行时间\n通常，LInux系统最小时钟间隔是10ms，意味着每秒产生100个时钟中断。进程以时间片的形式分享CPU，进程的执行有两种模式：用户态和内核态。当进程执行的是用户地址空间的代码，称进程运行在用户态；当进程进入系统调用或硬件中断，称进程运行在内核态。此外，进程还有休眠态，即将CPU交给其他进程。所以进程并非时刻都在运行，而是在用户态、内核态、休眠态之间切换。\n由此内核提供三种计时器：\n真实时间\t用户态+内核态+休眠态时间 虚拟时间\t用户态时间 实用时间\t用户态+内核态时间 /* 获得当前进程中指定类型间隔计时器的值 which 计时器类型 ITIMER_REAL\t真实时间，经过指定时间，内核发送SIGALRM限号 ITIMER_VIRTUAL\t用户态时间，经过指定时间，内核发送SIGVTALRM信号 ITIMER_PROF\t实用时间，经过指定时间，内核发送SIGPRT信号 value 存储获得的间隔计时器的值 */ int getitimer(int which,struct itmerval *value); struct itimerval { struct timeval it_interval;\t//下一个值 struct timeval it_value\t//当前值 }; struct timeval { long tv_sec;\t//秒 long tv_usec;\t//微秒 }; /* 设置间隔计时器 which 指定定时器类型 newval指向被设置值 oldval指向被替换设置值 成功返回0，否则-1 若oldval不为NULL，之前计时器的值将被复制到oldval */ int setitimer(int which,const struct itimerval *newval,struct itimerval *oldval); ","wordCount":"1401","inLanguage":"zh","datePublished":"2018-10-07T00:00:00Z","dateModified":"2018-10-07T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/linux-c-signal-2/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Linux信号处理——发送信号</h1><div class=post-description>学习使用C语言向其他进程发送信号</div><div class=post-meta><span title='2018-10-07 00:00:00 +0000 UTC'>2018-10-07</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1401 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><details class=toc open><summary accesskey=c title="(Alt + C)"><span class=title>目录</span></summary><div class=inner><ul><li><a href=#%e9%97%b4%e9%9a%94%e8%ae%a1%e6%97%b6%e5%99%a8 aria-label=间隔计时器>间隔计时器</a></li></ul></div></details><div class="post-content md-content"><blockquote><p>Linux提供了应用编程接口，通过这些接口，进程可以向其他进程或进程组发送信号。root权限的进程可以向任何进程发送信号，非root权限的进程智能向属于同一个回话或同一个用户的进程发送信号。</p></blockquote><p>###发送信号</p><blockquote><p>常用的函数原型如下</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>向进程发送信号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	pid&gt;0 进程ID为pid的进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	pid=0 同一进程组的进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	pid&lt;0 &amp;&amp; pid!=-1 进程组ID为-pid的所有进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	pid=-1 除发送给进程自身外，还发送给所有进程ID&gt;1的进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回0，否则-1
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> kill(<span style=color:#fff;font-weight:700>pid_t</span> pid,<span style=color:#fff;font-weight:700>int</span> signo);
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*向进程本身发送信号，等价于kill(getpid(),sig),成功返回0，否则-1*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> raise(<span style=color:#fff;font-weight:700>int</span> signo);
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*向进程发送SIGABORT信号,默认情况下进程会退出*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>void</span> abort(<span style=color:#fff;font-weight:700>void</span>);
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>向进程发送实时信号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	pid 接收信号的进程ID，只能向一个进程发送信号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	sig 指定即将发送的信号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	val指定信号传递的参数
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回0，否则-1
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> sigqueue(<span style=color:#fff;font-weight:700>pid_t</span> pid,<span style=color:#fff;font-weight:700>int</span> sig,<span style=color:#fff;font-weight:700>const</span> <span style=color:#fff;font-weight:700>union</span> sigval val);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>union</span> sigval
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>int</span> sival_int;		<span style=color:#007f7f>//传送一个整形数
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>void</span> *sival_ptr;	<span style=color:#007f7f>//传送任何数据结构的指针
+</span></span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>typedef</span> <span style=color:#fff;font-weight:700>struct</span> {
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>int</span> si_signo;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>int</span> si_code;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>union</span> sigval si_value;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>int</span> si_errno;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>pid_t</span> si_pid;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>uid_t</span> si_uid;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>void</span> *si_addr;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>int</span> si_status;
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>int</span> si_band;
+</span></span><span style=display:flex><span>} <span style=color:#fff;font-weight:700>siginfo_t</span>;
+</span></span></code></pre></div><p><strong>案例:使用sigqueue发送带参数的信号</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;signal.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>void</span> SigHandler(<span style=color:#fff;font-weight:700>int</span> signo,<span style=color:#fff;font-weight:700>siginfo_t</span> *info,<span style=color:#fff;font-weight:700>void</span> *context)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;%s</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,(<span style=color:#fff;font-weight:700>char</span> *)info-&gt;si_value.sival_ptr);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>struct</span> sigaction sigAct;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>sigval_t</span> val;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>char</span> *pMsg = <span style=color:#0ff;font-weight:700>&#34;i still believe&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    sigAct.sa_flags = SA_SIGINFO;
+</span></span><span style=display:flex><span>    sigAct.sa_sigaction=SigHandler;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>(sigaction(SIGUSR1,&amp;sigAct,<span style=color:#fff;font-weight:700>NULL</span>)==-<span style=color:#ff0;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>    {   
+</span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;fail set sig_handler&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    val.sival_ptr=pMsg;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>(sigqueue(getpid(),SIGUSR1,val)==-<span style=color:#ff0;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;fail send sigqueue&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>2</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    sleep(<span style=color:#ff0;font-weight:700>3</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>###sleep睡眠延时</p><blockquote><p>可以使用sleep函数将程序延迟一段时间后继续执行，其实现机制是：</p><ol><li>调用alarm函数设置延迟时间</li><li>调用pause函数挂起进程，等待系统发送SIGALARM信号，当SIGALARM信号到达进程时，进程被唤醒。</li></ol></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>设置时间闹钟
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	seconds表示闹钟间隔时间，原有闹钟无效
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>若调用alarm函数前，进程已经设置了闹钟，则返回上一个闹钟剩余时间，否则返回0
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>unsigned</span> <span style=color:#fff;font-weight:700>int</span> alarm(<span style=color:#fff;font-weight:700>unsigned</span> <span style=color:#fff;font-weight:700>int</span> seconds);
+</span></span><span style=display:flex><span><span style=color:#007f7f>//等待信号,进程收到信号后，执行信号处理函数，pause函数返回，原进程继续执行
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>void</span> pause();
+</span></span></code></pre></div><p><strong>案例：实现sleep函数</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;signal.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>void</span> alarmhandler(<span style=color:#fff;font-weight:700>int</span> signum)
+</span></span><span style=display:flex><span>{   
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;Alarm received from kernel</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> mysleep(<span style=color:#fff;font-weight:700>unsigned</span> <span style=color:#fff;font-weight:700>int</span> time)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;about to sleep for %d seconds</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,time);
+</span></span><span style=display:flex><span>    signal(SIGALRM,alarmhandler);
+</span></span><span style=display:flex><span>    alarm(time);
+</span></span><span style=display:flex><span>    pause();
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;continue from alarm </span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main(<span style=color:#fff;font-weight:700>int</span> argc,<span style=color:#fff;font-weight:700>char</span> *argv[])
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;start run the program.</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>unsigned</span> <span style=color:#fff;font-weight:700>int</span> time = atoi(argv[<span style=color:#ff0;font-weight:700>1</span>]);
+</span></span><span style=display:flex><span>    mysleep(time);
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;i am awake,haha</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=间隔计时器>间隔计时器<a hidden class=anchor aria-hidden=true href=#间隔计时器>#</a></h3><blockquote><p>alarm函数计时单位是秒，当延迟时间到来，只能触发一次。不能满足需要高精度时间、有周期性定时需求的需求。为此，引入间隔计时器，其原理是：</p><p>当等待时间来到，内核向处于等待状态的进程发送信号，同时，再次设置时间间隔。间隔计时器属于面向进程的计时器。</p></blockquote><p><strong>进程运行时间</strong></p><blockquote><p>通常，LInux系统最小时钟间隔是10ms，意味着每秒产生100个时钟中断。进程以时间片的形式分享CPU，进程的执行有两种模式：用户态和内核态。当进程执行的是用户地址空间的代码，称进程运行在用户态；当进程进入系统调用或硬件中断，称进程运行在内核态。此外，进程还有休眠态，即将CPU交给其他进程。所以进程并非时刻都在运行，而是在用户态、内核态、休眠态之间切换。</p><p>由此内核提供三种计时器：</p><ul><li>真实时间 用户态+内核态+休眠态时间</li><li>虚拟时间 用户态时间</li><li>实用时间 用户态+内核态时间</li></ul></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>获得当前进程中指定类型间隔计时器的值
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>which 计时器类型
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	ITIMER_REAL		真实时间，经过指定时间，内核发送SIGALRM限号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	ITIMER_VIRTUAL	用户态时间，经过指定时间，内核发送SIGVTALRM信号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	ITIMER_PROF		实用时间，经过指定时间，内核发送SIGPRT信号
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>value 存储获得的间隔计时器的值
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> getitimer(<span style=color:#fff;font-weight:700>int</span> which,<span style=color:#fff;font-weight:700>struct</span> itmerval *value);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>struct</span> itimerval
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>struct</span> timeval it_interval;	<span style=color:#007f7f>//下一个值
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>struct</span> timeval it_value		<span style=color:#007f7f>//当前值
+</span></span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>struct</span> timeval
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>long</span> tv_sec;	<span style=color:#007f7f>//秒
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>long</span> tv_usec;	<span style=color:#007f7f>//微秒
+</span></span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>设置间隔计时器
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>which 指定定时器类型
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>newval指向被设置值
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>oldval指向被替换设置值
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回0，否则-1
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>若oldval不为NULL，之前计时器的值将被复制到oldval
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> setitimer(<span style=color:#fff;font-weight:700>int</span> which,<span style=color:#fff;font-weight:700>const</span> <span style=color:#fff;font-weight:700>struct</span> itimerval *newval,<span style=color:#fff;font-weight:700>struct</span> itimerval *oldval);
+</span></span></code></pre></div></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/linux/>Linux</a></li><li><a href=https://blog.niuhemoon.win/tags/c/>C</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/linux-c-process-1/><span class=title>« 上一页</span>
+<span>Linux进程——地址空间</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/linux-c-io/><span class=title>下一页 »</span>
+<span>Linux下glic库操作文件和目录</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

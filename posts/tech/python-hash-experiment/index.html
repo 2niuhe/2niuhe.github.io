@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Python实现MD5和Sha256 | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="Python, 密码学">
-<meta name="description" content="Python3实现哈希散列算法，包含MD5和sha256。
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Python实现MD5和Sha256 | Niuhe's Blog</title><meta name=keywords content="Python,密码学"><meta name=description content="Python3实现哈希散列算法，包含MD5和sha256。
 Hash函数算法编写
 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。
 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。
@@ -32,955 +23,364 @@ Python3标准库
 
 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。
 MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。
-填充的工作原理如下：">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="Python实现MD5和Sha256">
-  <meta property="og:description" content="Python3实现哈希散列算法，包含MD5和sha256。
+填充的工作原理如下："><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/python-hash-experiment/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/python-hash-experiment/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="Python实现MD5和Sha256"><meta property="og:description" content="Python3实现哈希散列算法，包含MD5和sha256。
 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。
 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。
 1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。
 MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。
-填充的工作原理如下：">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2018-05-18T00:00:00+00:00">
-    <meta property="article:modified_time" content="2018-05-18T00:00:00+00:00">
-    <meta property="article:tag" content="Python">
-    <meta property="article:tag" content="密码学">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Python实现MD5和Sha256">
-  <meta name="twitter:description" content="Python3实现哈希散列算法，包含MD5和sha256。
+填充的工作原理如下："><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-05-18T00:00:00+00:00"><meta property="article:modified_time" content="2018-05-18T00:00:00+00:00"><meta property="article:tag" content="Python"><meta property="article:tag" content="密码学"><meta name=twitter:card content="summary"><meta name=twitter:title content="Python实现MD5和Sha256"><meta name=twitter:description content="Python3实现哈希散列算法，包含MD5和sha256。
 Hash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。
 验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。
 1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。
 MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。
-填充的工作原理如下：">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "Python实现MD5和Sha256",
-      "item": "https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Python实现MD5和Sha256",
-  "name": "Python实现MD5和Sha256",
-  "description": "Python3实现哈希散列算法，包含MD5和sha256。\nHash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。\n验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。\n1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。\nMD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。\n填充的工作原理如下：\n",
-  "keywords": [
-    "Python", "密码学"
-  ],
-  "articleBody": "Python3实现哈希散列算法，包含MD5和sha256。\nHash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。\n验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。\n1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。\nMD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。\n填充的工作原理如下：\n首先将单个位1附加到消息的末尾 接着填充0，直到消息长度比512的整数倍少64 在接下来64位中填充真实消息的长度值 主MD5算法在128位状态下运行，分为四个32位字，分别表示为A，B，C和D.这些字被初始化为某些固定的常量。\n主算法然后依次使用每个512位消息块来修改状态。\n消息块的处理由四个相似的阶段组成，称为循环;每轮由基于非线性函数F，模加法和左旋等16种类似操作组成。\n图1说明了一轮内的一个操作流程。 图2表示F有四种可能的功能;每一轮使用不同的一个： 下图是非线性函数的四种可能\n4.3 查阅得MD5算法的伪代码 //Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating var int[64] s, K var int i //s specifies the per-round shift amounts s[ 0..15] := { 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22 } s[16..31] := { 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20 } s[32..47] := { 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23 } s[48..63] := { 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21 } //Use binary integer part of the sines of integers (Radians) as constants: for i from 0 to 63 K[i] := floor(232 × abs(sin(i + 1))) end for //Initialize variables: var int a0 := 0x67452301 //A var int b0 := 0xefcdab89 //B var int c0 := 0x98badcfe //C var int d0 := 0x10325476 //D //Pre-processing: adding a single 1 bit append \"1\" bit to message // Notice: the input bytes are considered as bits strings, // where the first bit is the most significant bit of the byte.[48] //Pre-processing: padding with zeros append \"0\" bit until message length in bits ≡ 448 (mod 512) append original length in bits mod 264 to message //Process the message in successive 512-bit chunks: for each 512-bit chunk of padded message break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15 //Initialize hash value for this chunk: var int A := a0 var int B := b0 var int C := c0 var int D := d0 //Main loop: for i from 0 to 63 var int F, g if 0 ≤ i ≤ 15 then F := (B and C) or ((not B) and D) g := i else if 16 ≤ i ≤ 31 F := (D and B) or ((not D) and C) g := (5×i + 1) mod 16 else if 32 ≤ i ≤ 47 F := B xor C xor D g := (3×i + 5) mod 16 else if 48 ≤ i ≤ 63 F := C xor (B or (not D)) g := (7×i) mod 16 //Be wary of the below definitions of a,b,c,d F := F + A + K[i] + M[g] A := D D := C C := B B := B + leftrotate(F, s[i]) end for //Add this chunk's hash to result so far: a0 := a0 + A b0 := b0 + B c0 := c0 + C d0 := d0 + D end for var char digest[16] := a0 append b0 append c0 append d0 //(Output is in little-endian) //leftrotate function definition leftrotate (x, c) return (x \u003c\u003c c) binary or (x \u003e\u003e (32-c)); 4.4 编写MD5算法测试用例 Python标准库hashlib中提供了生成MD5值的方法，是通过C语言实现的，我们用自己实现的MD5函数计算出MD5值，在和标准库的结果进行比较，如果结果相同，那么证明了MD5加密是正确的。 注意：\n只实现了对ASCII码字符串的处理 demo中存储了测试用例 my_md5()返回自己生成的MD5值 true_md5()返回Python标准库生成的MD5值 若两者结果不同，抛出AssertionError异常 测试程序如下：\nimport hashlib def my_md5(message): pass def true_md5(message): m = hashlib.md5() m.update(message) return m.hexdigest() if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_md5(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_md5(message)==my_md5(message) # 若和标准库中不同，会抛出异常 4.5 查阅sha256算法原理和伪代码 sha256是SHA2(Secure Hash Algorithm 2)算法的一个变体，具体内容。\n篇幅原因不再贴sha256的伪代码，维基百科中有详细说明。\n4.6 编写sha256算法的测试代码 import hashlib def my_sha256(message): pass def true_sha256(message): m = hashlib.sha256() m.update(message) return m.hexdigest() if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_sha256(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_sha256(message)==my_sha256(message) # 若和标准库中不同，会抛出异常 4.7 编写MD5和SHA256的python实现，并进行测试验证 代码和测试结果在报告最后\n4.8 总结实验，编写实验报告 5. 实验总结 需要善于借鉴前人经验，搜集资料 实验只支持ascii码，对其他字符编码没有解决 利用优秀的工具，如Jupyter可以提高学习效率 6. 实验完整代码 5.1 MD5实现 # MD5 实现及其验证 import math import hashlib rotate_amounts = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21] constants = [int(abs(math.sin(i+1)) * 2**32) \u0026 0xFFFFFFFF for i in range(64)] # A B C D init_values = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476] # 非线性函数 functions = 16*[lambda b, c, d: (b \u0026 c) | (~b \u0026 d)] + \\ 16*[lambda b, c, d: (d \u0026 b) | (~d \u0026 c)] + \\ 16*[lambda b, c, d: b ^ c ^ d] + \\ 16*[lambda b, c, d: c ^ (b | ~d)] index_functions = 16*[lambda i: i] + \\ 16*[lambda i: (5*i + 1)%16] + \\ 16*[lambda i: (3*i + 5)%16] + \\ 16*[lambda i: (7*i)%16] # 对x左移amount位 def left_rotate(x, amount): x \u0026= 0xFFFFFFFF return ((x\u003c\u003e(32-amount))) \u0026 0xFFFFFFFF def md5(message): message = bytearray(message) #copy our input into a mutable buffer orig_len_in_bits = (8 * len(message)) \u0026 0xffffffffffffffff message.append(0x80) while len(message)%64 != 56: message.append(0) message += orig_len_in_bits.to_bytes(8, byteorder='little') hash_pieces = init_values[:] for chunk_ofst in range(0, len(message), 64): a, b, c, d = hash_pieces chunk = message[chunk_ofst:chunk_ofst+64] for i in range(64): f = functions[i](b, c, d) g = index_functions[i](i) to_rotate = a + f + constants[i] + int.from_bytes(chunk[4*g:4*g+4], byteorder='little') new_b = (b + left_rotate(to_rotate, rotate_amounts[i])) \u0026 0xFFFFFFFF a, b, c, d = d, new_b, b, c for i, val in enumerate([a, b, c, d]): hash_pieces[i] += val hash_pieces[i] \u0026= 0xFFFFFFFF return sum(x\u003c\u003c(32*i) for i, x in enumerate(hash_pieces)) def md5_to_hex(digest): raw = digest.to_bytes(16, byteorder='little') return '{:032x}'.format(int.from_bytes(raw, byteorder='big')) def true_md5(message): m = hashlib.md5() m.update(message) return m.hexdigest() def my_md5(message): return md5_to_hex(md5(message)) if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_md5(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_md5(message)==my_md5(message) # 若和标准库中不同，会抛出异常 print('\\nMD5测试全部通过') # d41d8cd98f00b204e9800998ecf8427e \u003c= \"\" # 0cc175b9c0f1b6a831c399e269772661 \u003c= \"a\" # 900150983cd24fb0d6963f7d28e17f72 \u003c= \"abc\" # f96b697d7cb7938d525a2f31aaf161d0 \u003c= \"message digest\" # c3fcd3d76192e4007dfb496cca67e13b \u003c= \"abcdefghijklmnopqrstuvwxyz\" # d174ab98d277d9f5a5611c2c9f419d9f \u003c= \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\" # 57edf4a22be3c955ac49da2e2107b67a \u003c= \"12345678901234567890123456789012345678901234567890123456789012345678901234567890\" # # MD5测试全部通过 5.2 Sha256实现 import copy import struct import binascii import hashlib F32 = 0xFFFFFFFF _k = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2] _h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19] def _pad(msglen): mdi = msglen \u0026 0x3F length = struct.pack('!Q', msglen \u003c\u003c 3) if mdi \u003c 56: padlen = 55 - mdi else: padlen = 119 - mdi return b'\\x80' + (b'\\x00' * padlen) + length def _rotr(x, y): return ((x \u003e\u003e y) | (x \u003c\u003c (32 - y))) \u0026 F32 def _maj(x, y, z): return (x \u0026 y) ^ (x \u0026 z) ^ (y \u0026 z) def _ch(x, y, z): return (x \u0026 y) ^ ((~x) \u0026 z) class SHA256: _output_size = 8 blocksize = 1 block_size = 64 digest_size = 32 def __init__(self, m=None): self._counter = 0 self._cache = b'' self._k = copy.deepcopy(_k) self._h = copy.deepcopy(_h) self.update(m) def _compress(self, c): w = [0] * 64 w[0:16] = struct.unpack('!16L', c) for i in range(16, 64): s0 = _rotr(w[i-15], 7) ^ _rotr(w[i-15], 18) ^ (w[i-15] \u003e\u003e 3) s1 = _rotr(w[i-2], 17) ^ _rotr(w[i-2], 19) ^ (w[i-2] \u003e\u003e 10) w[i] = (w[i-16] + s0 + w[i-7] + s1) \u0026 F32 a, b, c, d, e, f, g, h = self._h for i in range(64): s0 = _rotr(a, 2) ^ _rotr(a, 13) ^ _rotr(a, 22) t2 = s0 + _maj(a, b, c) s1 = _rotr(e, 6) ^ _rotr(e, 11) ^ _rotr(e, 25) t1 = h + s1 + _ch(e, f, g) + self._k[i] + w[i] h = g g = f f = e e = (d + t1) \u0026 F32 d = c c = b b = a a = (t1 + t2) \u0026 F32 for i, (x, y) in enumerate(zip(self._h, [a, b, c, d, e, f, g, h])): self._h[i] = (x + y) \u0026 F32 def update(self, m): if not m: return self._counter += len(m) m = self._cache + m for i in range(0, len(m) // 64): self._compress(m[64 * i:64 * (i + 1)]) self._cache = m[-(len(m) % 64):] def digest(self): r = copy.deepcopy(self) r.update(_pad(self._counter)) data = [struct.pack('!L', i) for i in r._h[:self._output_size]] return b''.join(data) def hexdigest(self): return binascii.hexlify(self.digest()).decode('ascii') def true_sha256(message): m = hashlib.sha256() m.update(message) return m.hexdigest() def my_sha256(message): return SHA256(message).hexdigest() if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_sha256(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_sha256(message)==my_sha256(message) # 若和标准库中不同，会抛出异常 print('\\nSHA256测试全部通过') # e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 \u003c= \"\" # ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb \u003c= \"a\" # ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad \u003c= \"abc\" # f7846f55cf23e14eebeab5b4e1550cad5b509e3348fbc4efa3a1413d393cb650 \u003c= \"message digest\" # 71c480df93d6ae2f1efad1447c66c9525e316218cf51fc8d9ed832f2daf18b73 \u003c= \"abcdefghijklmnopqrstuvwxyz\" # db4bfcbd4da0cd85a60c3c37d3fbd8805c77f15fc6b1fdfe614ee0a7c8fdb4c0 \u003c= \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\" # f371bc4a311f2b009eef952dd83ca80e2b60026c8e935592d0f9c308453c813e \u003c= \"12345678901234567890123456789012345678901234567890123456789012345678901234567890\" # # SHA256测试全部通过 ",
-  "wordCount" : "2646",
-  "inLanguage": "zh",
-  "datePublished": "2018-05-18T00:00:00Z",
-  "dateModified": "2018-05-18T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      Python实现MD5和Sha256
-    </h1>
-    <div class="post-meta">
-
-<span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2646 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> <details class="toc"  open>
-    <summary accesskey="c" title="(Alt + C)">
-        <span class="title">目录</span>
-    </summary>
-
-    <div class="inner"><ul>
-            <li>
-                <a href="#hash%e5%87%bd%e6%95%b0%e7%ae%97%e6%b3%95%e7%bc%96%e5%86%99" aria-label="Hash函数算法编写">Hash函数算法编写</a><ul>
-                    
-            <li>
-                <a href="#1%e5%ae%9e%e9%aa%8c%e7%9b%ae%e7%9a%84" aria-label="1.实验目的">1.实验目的</a></li>
-            <li>
-                <a href="#2%e5%ae%9e%e9%aa%8c%e5%b7%a5%e5%85%b7" aria-label="2.实验工具">2.实验工具</a></li>
-            <li>
-                <a href="#3%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83" aria-label="3.实验环境">3.实验环境</a></li>
-            <li>
-                <a href="#4%e5%ae%9e%e9%aa%8c%e6%ad%a5%e9%aa%a4" aria-label="4.实验步骤">4.实验步骤</a><ul>
-                    
-            <li>
-                <a href="#41-%e5%9b%9e%e9%a1%be%e8%af%be%e7%a8%8b%e6%9f%a5%e9%98%85%e8%b5%84%e6%96%99" aria-label="4.1 回顾课程，查阅资料">4.1 回顾课程，查阅资料</a></li>
-            <li>
-                <a href="#42-%e7%86%9f%e6%82%89md5%e7%9a%84%e5%8e%9f%e7%90%86" aria-label="4.2 熟悉MD5的原理">4.2 熟悉MD5的原理</a></li>
-            <li>
-                <a href="#43-%e6%9f%a5%e9%98%85%e5%be%97md5%e7%ae%97%e6%b3%95%e7%9a%84%e4%bc%aa%e4%bb%a3%e7%a0%81" aria-label="4.3 查阅得MD5算法的伪代码">4.3 查阅得MD5算法的伪代码</a></li>
-            <li>
-                <a href="#44-%e7%bc%96%e5%86%99md5%e7%ae%97%e6%b3%95%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b" aria-label="4.4 编写MD5算法测试用例">4.4 编写MD5算法测试用例</a></li>
-            <li>
-                <a href="#45-%e6%9f%a5%e9%98%85sha256%e7%ae%97%e6%b3%95%e5%8e%9f%e7%90%86%e5%92%8c%e4%bc%aa%e4%bb%a3%e7%a0%81" aria-label="4.5 查阅sha256算法原理和伪代码">4.5 查阅sha256算法原理和伪代码</a></li>
-            <li>
-                <a href="#46-%e7%bc%96%e5%86%99sha256%e7%ae%97%e6%b3%95%e7%9a%84%e6%b5%8b%e8%af%95%e4%bb%a3%e7%a0%81" aria-label="4.6 编写sha256算法的测试代码">4.6 编写sha256算法的测试代码</a></li>
-            <li>
-                <a href="#47-%e7%bc%96%e5%86%99md5%e5%92%8csha256%e7%9a%84python%e5%ae%9e%e7%8e%b0%e5%b9%b6%e8%bf%9b%e8%a1%8c%e6%b5%8b%e8%af%95%e9%aa%8c%e8%af%81" aria-label="4.7 编写MD5和SHA256的python实现，并进行测试验证">4.7 编写MD5和SHA256的python实现，并进行测试验证</a></li>
-            <li>
-                <a href="#48-%e6%80%bb%e7%bb%93%e5%ae%9e%e9%aa%8c%e7%bc%96%e5%86%99%e5%ae%9e%e9%aa%8c%e6%8a%a5%e5%91%8a" aria-label="4.8 总结实验，编写实验报告">4.8 总结实验，编写实验报告</a></li></ul>
-            </li>
-            <li>
-                <a href="#5-%e5%ae%9e%e9%aa%8c%e6%80%bb%e7%bb%93" aria-label="5. 实验总结">5. 实验总结</a></li>
-            <li>
-                <a href="#6-%e5%ae%9e%e9%aa%8c%e5%ae%8c%e6%95%b4%e4%bb%a3%e7%a0%81" aria-label="6. 实验完整代码">6. 实验完整代码</a><ul>
-                    
-            <li>
-                <a href="#51-md5%e5%ae%9e%e7%8e%b0" aria-label="5.1 MD5实现">5.1 MD5实现</a></li>
-            <li>
-                <a href="#52-sha256%e5%ae%9e%e7%8e%b0" aria-label="5.2 Sha256实现">5.2 Sha256实现</a>
-            </li>
-        </ul>
-        </li>
-        </ul>
-        </li>
-        </ul>
-    </div>
-</details>
-
-  <div class="post-content md-content"><p>Python3实现哈希散列算法，包含MD5和sha256。</p>
-<h2 id="hash函数算法编写">Hash函数算法编写<a hidden class="anchor" aria-hidden="true" href="#hash函数算法编写">#</a></h2>
-<p>本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。<br>
-验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。</p>
-<h3 id="1实验目的">1.实验目的<a hidden class="anchor" aria-hidden="true" href="#1实验目的">#</a></h3>
-<ol>
-<li>熟悉MD5和SHA256加密函数的原理和应用</li>
-<li>实现MD5和SHA256加密函数并验证</li>
-</ol>
-<h3 id="2实验工具">2.实验工具<a hidden class="anchor" aria-hidden="true" href="#2实验工具">#</a></h3>
-<ul>
-<li>Jupyter Notebook</li>
-<li>Python3.5</li>
-</ul>
-<h3 id="3实验环境">3.实验环境<a hidden class="anchor" aria-hidden="true" href="#3实验环境">#</a></h3>
-<ul>
-<li>Ubuntu16.04LTS操作系统</li>
-<li>Python3标准库</li>
-</ul>
-<h3 id="4实验步骤">4.实验步骤<a hidden class="anchor" aria-hidden="true" href="#4实验步骤">#</a></h3>
-<h4 id="41-回顾课程查阅资料">4.1 回顾课程，查阅资料<a hidden class="anchor" aria-hidden="true" href="#41-回顾课程查阅资料">#</a></h4>
-<h4 id="42-熟悉md5的原理">4.2 熟悉MD5的原理<a hidden class="anchor" aria-hidden="true" href="#42-熟悉md5的原理">#</a></h4>
-<blockquote>
-<p><em>MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。</em><br>
-MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。<br>
-填充的工作原理如下：</p>
-</blockquote>
-<ul>
-<li>首先将单个位1附加到消息的末尾</li>
-<li>接着填充0，直到消息长度比512的整数倍少64</li>
-<li>在接下来64位中填充真实消息的长度值</li>
-</ul>
-<blockquote>
-<p>主MD5算法在128位状态下运行，分为四个32位字，分别表示为A，B，C和D.这些字被初始化为某些固定的常量。<br>
-主算法然后依次使用每个512位消息块来修改状态。<br>
-消息块的处理由四个相似的阶段组成，称为循环;每轮由基于非线性函数F，模加法和左旋等16种类似操作组成。</p>
-</blockquote>
-<ul>
-<li>图1说明了一轮内的一个操作流程。</li>
-<li>图2表示F有四种可能的功能;每一轮使用不同的一个：</li>
-</ul>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/MD5_algorithm.svg" alt="Drawing" style="width: 300px;text-align: center;vertical-align: middle"><img/></p>
-<blockquote>
-<p>下图是非线性函数的四种可能</p>
-</blockquote>
-<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b105d494a376d11f2eefd810082e1944cd8e2dc4" alt="Drawing" style="width: 300px;"/>
-<h4 id="43-查阅得md5算法的伪代码">4.3 查阅得MD5算法的伪代码<a hidden class="anchor" aria-hidden="true" href="#43-查阅得md5算法的伪代码">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating
-</span></span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">int</span>[<span style="color:#ff0;font-weight:bold">64</span>] s, K
-</span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">int</span> i
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//s specifies the per-round shift amounts
-</span></span></span><span style="display:flex;"><span>s[ <span style="color:#ff0;font-weight:bold">0..15</span>] := { <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>,  <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>,  <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>,  <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span> }
-</span></span><span style="display:flex;"><span>s[<span style="color:#ff0;font-weight:bold">16..31</span>] := { <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>,  <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>,  <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>,  <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span> }
-</span></span><span style="display:flex;"><span>s[<span style="color:#ff0;font-weight:bold">32..47</span>] := { <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>,  <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>,  <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>,  <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span> }
-</span></span><span style="display:flex;"><span>s[<span style="color:#ff0;font-weight:bold">48..63</span>] := { <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>,  <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>,  <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>,  <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span> }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Use binary integer part of the sines of integers (Radians) as constants:
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> i from <span style="color:#ff0;font-weight:bold">0</span> to <span style="color:#ff0;font-weight:bold">63</span>
-</span></span><span style="display:flex;"><span>    K[i] := floor(<span style="color:#ff0;font-weight:bold">232</span> <span style="color:#f00">×</span> abs(sin(i + <span style="color:#ff0;font-weight:bold">1</span>)))
-</span></span><span style="display:flex;"><span>end <span style="color:#fff;font-weight:bold">for</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Initialize variables:
-</span></span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">int</span> a0 := <span style="color:#ff0;font-weight:bold">0x67452301</span>   <span style="color:#007f7f">//A
-</span></span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">int</span> b0 := <span style="color:#ff0;font-weight:bold">0xefcdab89</span>   <span style="color:#007f7f">//B
-</span></span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">int</span> c0 := <span style="color:#ff0;font-weight:bold">0x98badcfe</span>   <span style="color:#007f7f">//C
-</span></span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">int</span> d0 := <span style="color:#ff0;font-weight:bold">0x10325476</span>   <span style="color:#007f7f">//D
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Pre-processing: adding a single 1 bit
-</span></span></span><span style="display:flex;"><span>append <span style="color:#0ff;font-weight:bold">&#34;1&#34;</span> bit to message    
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">// Notice: the input bytes are considered as bits strings,
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">//  where the first bit is the most significant bit of the byte.[48]
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Pre-processing: padding with zeros
-</span></span></span><span style="display:flex;"><span>append <span style="color:#0ff;font-weight:bold">&#34;0&#34;</span> bit until message length in bits <span style="color:#f00">≡</span> <span style="color:#ff0;font-weight:bold">448</span> (mod <span style="color:#ff0;font-weight:bold">512</span>)
-</span></span><span style="display:flex;"><span>append original length in bits mod <span style="color:#ff0;font-weight:bold">264</span> to message
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Process the message in successive 512-bit chunks:
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">for</span> each <span style="color:#ff0;font-weight:bold">512</span>-bit chunk of padded message
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">break</span> chunk into sixteen <span style="color:#ff0;font-weight:bold">32</span>-bit words M[j], <span style="color:#ff0;font-weight:bold">0</span> <span style="color:#f00">≤</span> j <span style="color:#f00">≤</span> <span style="color:#ff0;font-weight:bold">15</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Initialize hash value for this chunk:
-</span></span></span><span style="display:flex;"><span>    var <span style="color:#fff;font-weight:bold">int</span> A := a0
-</span></span><span style="display:flex;"><span>    var <span style="color:#fff;font-weight:bold">int</span> B := b0
-</span></span><span style="display:flex;"><span>    var <span style="color:#fff;font-weight:bold">int</span> C := c0
-</span></span><span style="display:flex;"><span>    var <span style="color:#fff;font-weight:bold">int</span> D := d0
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Main loop:
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> i from <span style="color:#ff0;font-weight:bold">0</span> to <span style="color:#ff0;font-weight:bold">63</span>
-</span></span><span style="display:flex;"><span>        var <span style="color:#fff;font-weight:bold">int</span> F, g
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> <span style="color:#ff0;font-weight:bold">0</span> <span style="color:#f00">≤</span> i <span style="color:#f00">≤</span> <span style="color:#ff0;font-weight:bold">15</span> then
-</span></span><span style="display:flex;"><span>            F := (B and C) or ((not B) and D)
-</span></span><span style="display:flex;"><span>            g := i
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">else</span> <span style="color:#fff;font-weight:bold">if</span> <span style="color:#ff0;font-weight:bold">16</span> <span style="color:#f00">≤</span> i <span style="color:#f00">≤</span> <span style="color:#ff0;font-weight:bold">31</span>
-</span></span><span style="display:flex;"><span>            F := (D and B) or ((not D) and C)
-</span></span><span style="display:flex;"><span>            g := (<span style="color:#ff0;font-weight:bold">5</span><span style="color:#f00">×</span>i + <span style="color:#ff0;font-weight:bold">1</span>) mod <span style="color:#ff0;font-weight:bold">16</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">else</span> <span style="color:#fff;font-weight:bold">if</span> <span style="color:#ff0;font-weight:bold">32</span> <span style="color:#f00">≤</span> i <span style="color:#f00">≤</span> <span style="color:#ff0;font-weight:bold">47</span>
-</span></span><span style="display:flex;"><span>            F := B xor C xor D
-</span></span><span style="display:flex;"><span>            g := (<span style="color:#ff0;font-weight:bold">3</span><span style="color:#f00">×</span>i + <span style="color:#ff0;font-weight:bold">5</span>) mod <span style="color:#ff0;font-weight:bold">16</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">else</span> <span style="color:#fff;font-weight:bold">if</span> <span style="color:#ff0;font-weight:bold">48</span> <span style="color:#f00">≤</span> i <span style="color:#f00">≤</span> <span style="color:#ff0;font-weight:bold">63</span>
-</span></span><span style="display:flex;"><span>            F := C xor (B or (not D))
-</span></span><span style="display:flex;"><span>            g := (<span style="color:#ff0;font-weight:bold">7</span><span style="color:#f00">×</span>i) mod <span style="color:#ff0;font-weight:bold">16</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Be wary of the below definitions of a,b,c,d
-</span></span></span><span style="display:flex;"><span>        F := F + A + K[i] + M[g]
-</span></span><span style="display:flex;"><span>        A := D
-</span></span><span style="display:flex;"><span>        D := C
-</span></span><span style="display:flex;"><span>        C := B
-</span></span><span style="display:flex;"><span>        B := B + leftrotate(F, s[i])
-</span></span><span style="display:flex;"><span>    end <span style="color:#fff;font-weight:bold">for</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//Add this chunk&#39;s hash to result so far:
-</span></span></span><span style="display:flex;"><span>    a0 := a0 + A
-</span></span><span style="display:flex;"><span>    b0 := b0 + B
-</span></span><span style="display:flex;"><span>    c0 := c0 + C
-</span></span><span style="display:flex;"><span>    d0 := d0 + D
-</span></span><span style="display:flex;"><span>end <span style="color:#fff;font-weight:bold">for</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>var <span style="color:#fff;font-weight:bold">char</span> digest[<span style="color:#ff0;font-weight:bold">16</span>] := a0 append b0 append c0 append d0 <span style="color:#007f7f">//(Output is in little-endian)
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//leftrotate function definition
-</span></span></span><span style="display:flex;"><span>leftrotate (x, c)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> (x &lt;&lt; c) binary or (x &gt;&gt; (<span style="color:#ff0;font-weight:bold">32</span>-c));
-</span></span></code></pre></div><h4 id="44-编写md5算法测试用例">4.4 编写MD5算法测试用例<a hidden class="anchor" aria-hidden="true" href="#44-编写md5算法测试用例">#</a></h4>
-<blockquote>
-<p>Python标准库hashlib中提供了生成MD5值的方法，是通过C语言实现的，我们用自己实现的MD5函数计算出MD5值，在和标准库的结果进行比较，如果结果相同，那么证明了MD5加密是正确的。 <br>
-<strong>注意：</strong></p>
-</blockquote>
-<ul>
-<li>只实现了对ASCII码字符串的处理</li>
-<li>demo中存储了测试用例</li>
-<li>my_md5()返回自己生成的MD5值</li>
-<li>true_md5()返回Python标准库生成的MD5值</li>
-<li>若两者结果不同，抛出AssertionError异常</li>
-</ul>
-<blockquote>
-<p>测试程序如下：</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> hashlib
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_md5(message):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">pass</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> true_md5(message):
-</span></span><span style="display:flex;"><span>    m = hashlib.md5()
-</span></span><span style="display:flex;"><span>    m.update(message)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> m.hexdigest()
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__==<span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
-</span></span><span style="display:flex;"><span>    demo = [<span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abc&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;message digest&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> message in demo:
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(my_md5(message),<span style="color:#0ff;font-weight:bold">&#39; &lt;= &#34;&#39;</span>,message.decode(<span style="color:#0ff;font-weight:bold">&#39;ascii&#39;</span>),<span style="color:#0ff;font-weight:bold">&#39;&#34;&#39;</span>, sep=<span style="color:#0ff;font-weight:bold">&#39;&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">assert</span> true_md5(message)==my_md5(message)  <span style="color:#007f7f"># 若和标准库中不同，会抛出异常</span>
-</span></span></code></pre></div><h4 id="45-查阅sha256算法原理和伪代码">4.5 查阅sha256算法原理和伪代码<a hidden class="anchor" aria-hidden="true" href="#45-查阅sha256算法原理和伪代码">#</a></h4>
-<blockquote>
-<p>sha256是SHA2(Secure Hash Algorithm 2)算法的一个变体，具体<a href="https://zh.wikipedia.org/wiki/SHA-2">内容</a>。<br>
-篇幅原因不再贴sha256的伪代码，维基百科中有详细说明。</p>
-</blockquote>
-<h4 id="46-编写sha256算法的测试代码">4.6 编写sha256算法的测试代码<a hidden class="anchor" aria-hidden="true" href="#46-编写sha256算法的测试代码">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> hashlib
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_sha256(message):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">pass</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> true_sha256(message):
-</span></span><span style="display:flex;"><span>    m = hashlib.sha256()
-</span></span><span style="display:flex;"><span>    m.update(message)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> m.hexdigest()
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__==<span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
-</span></span><span style="display:flex;"><span>    demo = [<span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abc&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;message digest&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> message in demo:
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(my_sha256(message),<span style="color:#0ff;font-weight:bold">&#39; &lt;= &#34;&#39;</span>,message.decode(<span style="color:#0ff;font-weight:bold">&#39;ascii&#39;</span>),<span style="color:#0ff;font-weight:bold">&#39;&#34;&#39;</span>, sep=<span style="color:#0ff;font-weight:bold">&#39;&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">assert</span> true_sha256(message)==my_sha256(message)  <span style="color:#007f7f"># 若和标准库中不同，会抛出异常</span>
-</span></span></code></pre></div><h4 id="47-编写md5和sha256的python实现并进行测试验证">4.7 编写MD5和SHA256的python实现，并进行测试验证<a hidden class="anchor" aria-hidden="true" href="#47-编写md5和sha256的python实现并进行测试验证">#</a></h4>
-<blockquote>
-<p>代码和测试结果在报告最后</p>
-</blockquote>
-<h4 id="48-总结实验编写实验报告">4.8 总结实验，编写实验报告<a hidden class="anchor" aria-hidden="true" href="#48-总结实验编写实验报告">#</a></h4>
-<h3 id="5-实验总结">5. 实验总结<a hidden class="anchor" aria-hidden="true" href="#5-实验总结">#</a></h3>
-<ul>
-<li>需要善于借鉴前人经验，搜集资料</li>
-<li>实验只支持ascii码，对其他字符编码没有解决</li>
-<li>利用优秀的工具，如Jupyter可以提高学习效率</li>
-</ul>
-<h3 id="6-实验完整代码">6. 实验完整代码<a hidden class="anchor" aria-hidden="true" href="#6-实验完整代码">#</a></h3>
-<h4 id="51-md5实现">5.1 MD5实现<a hidden class="anchor" aria-hidden="true" href="#51-md5实现">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># MD5 实现及其验证</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> math
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> hashlib
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>rotate_amounts = [<span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>, <span style="color:#ff0;font-weight:bold">7</span>, <span style="color:#ff0;font-weight:bold">12</span>, <span style="color:#ff0;font-weight:bold">17</span>, <span style="color:#ff0;font-weight:bold">22</span>,
-</span></span><span style="display:flex;"><span>                  <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>, <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>, <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>, <span style="color:#ff0;font-weight:bold">5</span>,  <span style="color:#ff0;font-weight:bold">9</span>, <span style="color:#ff0;font-weight:bold">14</span>, <span style="color:#ff0;font-weight:bold">20</span>,
-</span></span><span style="display:flex;"><span>                  <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>, <span style="color:#ff0;font-weight:bold">4</span>, <span style="color:#ff0;font-weight:bold">11</span>, <span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">23</span>,
-</span></span><span style="display:flex;"><span>                  <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>, <span style="color:#ff0;font-weight:bold">6</span>, <span style="color:#ff0;font-weight:bold">10</span>, <span style="color:#ff0;font-weight:bold">15</span>, <span style="color:#ff0;font-weight:bold">21</span>]
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>constants = [<span style="color:#fff;font-weight:bold">int</span>(<span style="color:#fff;font-weight:bold">abs</span>(math.sin(i+<span style="color:#ff0;font-weight:bold">1</span>)) * <span style="color:#ff0;font-weight:bold">2</span>**<span style="color:#ff0;font-weight:bold">32</span>) &amp; <span style="color:#ff0;font-weight:bold">0xFFFFFFFF</span> <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">64</span>)]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># A B C D</span>
-</span></span><span style="display:flex;"><span>init_values = [<span style="color:#ff0;font-weight:bold">0x67452301</span>, <span style="color:#ff0;font-weight:bold">0xefcdab89</span>, <span style="color:#ff0;font-weight:bold">0x98badcfe</span>, <span style="color:#ff0;font-weight:bold">0x10325476</span>]
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 非线性函数</span>
-</span></span><span style="display:flex;"><span>functions = <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> b, c, d: (b &amp; c) | (~b &amp; d)] + \
-</span></span><span style="display:flex;"><span>            <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> b, c, d: (d &amp; b) | (~d &amp; c)] + \
-</span></span><span style="display:flex;"><span>            <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> b, c, d: b ^ c ^ d] + \
-</span></span><span style="display:flex;"><span>            <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> b, c, d: c ^ (b | ~d)]
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>index_functions = <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> i: i] + \
-</span></span><span style="display:flex;"><span>                  <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> i: (<span style="color:#ff0;font-weight:bold">5</span>*i + <span style="color:#ff0;font-weight:bold">1</span>)%<span style="color:#ff0;font-weight:bold">16</span>] + \
-</span></span><span style="display:flex;"><span>                  <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> i: (<span style="color:#ff0;font-weight:bold">3</span>*i + <span style="color:#ff0;font-weight:bold">5</span>)%<span style="color:#ff0;font-weight:bold">16</span>] + \
-</span></span><span style="display:flex;"><span>                  <span style="color:#ff0;font-weight:bold">16</span>*[<span style="color:#fff;font-weight:bold">lambda</span> i: (<span style="color:#ff0;font-weight:bold">7</span>*i)%<span style="color:#ff0;font-weight:bold">16</span>]
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 对x左移amount位</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> left_rotate(x, amount):
-</span></span><span style="display:flex;"><span>    x &amp;= <span style="color:#ff0;font-weight:bold">0xFFFFFFFF</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> ((x&lt;&lt;amount) | (x&gt;&gt;(<span style="color:#ff0;font-weight:bold">32</span>-amount))) &amp; <span style="color:#ff0;font-weight:bold">0xFFFFFFFF</span>
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> md5(message):
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>    message = <span style="color:#fff;font-weight:bold">bytearray</span>(message) <span style="color:#007f7f">#copy our input into a mutable buffer</span>
-</span></span><span style="display:flex;"><span>    orig_len_in_bits = (<span style="color:#ff0;font-weight:bold">8</span> * <span style="color:#fff;font-weight:bold">len</span>(message)) &amp; <span style="color:#ff0;font-weight:bold">0xffffffffffffffff</span>
-</span></span><span style="display:flex;"><span>    message.append(<span style="color:#ff0;font-weight:bold">0x80</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span> <span style="color:#fff;font-weight:bold">len</span>(message)%<span style="color:#ff0;font-weight:bold">64</span> != <span style="color:#ff0;font-weight:bold">56</span>:
-</span></span><span style="display:flex;"><span>        message.append(<span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>    message += orig_len_in_bits.to_bytes(<span style="color:#ff0;font-weight:bold">8</span>, byteorder=<span style="color:#0ff;font-weight:bold">&#39;little&#39;</span>)
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>    hash_pieces = init_values[:]
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> chunk_ofst in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#fff;font-weight:bold">len</span>(message), <span style="color:#ff0;font-weight:bold">64</span>):
-</span></span><span style="display:flex;"><span>        a, b, c, d = hash_pieces
-</span></span><span style="display:flex;"><span>        chunk = message[chunk_ofst:chunk_ofst+<span style="color:#ff0;font-weight:bold">64</span>]
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">64</span>):
-</span></span><span style="display:flex;"><span>            f = functions[i](b, c, d)
-</span></span><span style="display:flex;"><span>            g = index_functions[i](i)
-</span></span><span style="display:flex;"><span>            to_rotate = a + f + constants[i] + <span style="color:#fff;font-weight:bold">int</span>.from_bytes(chunk[<span style="color:#ff0;font-weight:bold">4</span>*g:<span style="color:#ff0;font-weight:bold">4</span>*g+<span style="color:#ff0;font-weight:bold">4</span>], byteorder=<span style="color:#0ff;font-weight:bold">&#39;little&#39;</span>)
-</span></span><span style="display:flex;"><span>            new_b = (b + left_rotate(to_rotate, rotate_amounts[i])) &amp; <span style="color:#ff0;font-weight:bold">0xFFFFFFFF</span>
-</span></span><span style="display:flex;"><span>            a, b, c, d = d, new_b, b, c
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i, val in <span style="color:#fff;font-weight:bold">enumerate</span>([a, b, c, d]):
-</span></span><span style="display:flex;"><span>            hash_pieces[i] += val
-</span></span><span style="display:flex;"><span>            hash_pieces[i] &amp;= <span style="color:#ff0;font-weight:bold">0xFFFFFFFF</span>
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#fff;font-weight:bold">sum</span>(x&lt;&lt;(<span style="color:#ff0;font-weight:bold">32</span>*i) <span style="color:#fff;font-weight:bold">for</span> i, x in <span style="color:#fff;font-weight:bold">enumerate</span>(hash_pieces))
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> md5_to_hex(digest):
-</span></span><span style="display:flex;"><span>    raw = digest.to_bytes(<span style="color:#ff0;font-weight:bold">16</span>, byteorder=<span style="color:#0ff;font-weight:bold">&#39;little&#39;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">{:032x}</span><span style="color:#0ff;font-weight:bold">&#39;</span>.format(<span style="color:#fff;font-weight:bold">int</span>.from_bytes(raw, byteorder=<span style="color:#0ff;font-weight:bold">&#39;big&#39;</span>))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> true_md5(message):
-</span></span><span style="display:flex;"><span>    m = hashlib.md5()
-</span></span><span style="display:flex;"><span>    m.update(message)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> m.hexdigest()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_md5(message):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> md5_to_hex(md5(message))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__==<span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
-</span></span><span style="display:flex;"><span>    demo = [<span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abc&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;message digest&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> message in demo:
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(my_md5(message),<span style="color:#0ff;font-weight:bold">&#39; &lt;= &#34;&#39;</span>,message.decode(<span style="color:#0ff;font-weight:bold">&#39;ascii&#39;</span>),<span style="color:#0ff;font-weight:bold">&#39;&#34;&#39;</span>, sep=<span style="color:#0ff;font-weight:bold">&#39;&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">assert</span> true_md5(message)==my_md5(message)  <span style="color:#007f7f"># 若和标准库中不同，会抛出异常</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">MD5测试全部通过&#39;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># d41d8cd98f00b204e9800998ecf8427e &lt;= &#34;&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 0cc175b9c0f1b6a831c399e269772661 &lt;= &#34;a&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 900150983cd24fb0d6963f7d28e17f72 &lt;= &#34;abc&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># f96b697d7cb7938d525a2f31aaf161d0 &lt;= &#34;message digest&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># c3fcd3d76192e4007dfb496cca67e13b &lt;= &#34;abcdefghijklmnopqrstuvwxyz&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># d174ab98d277d9f5a5611c2c9f419d9f &lt;= &#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 57edf4a22be3c955ac49da2e2107b67a &lt;= &#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># </span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># MD5测试全部通过</span>
-</span></span></code></pre></div><h4 id="52-sha256实现">5.2 Sha256实现<a hidden class="anchor" aria-hidden="true" href="#52-sha256实现">#</a></h4>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> copy
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> struct
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> binascii
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">import</span> hashlib
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>F32 = <span style="color:#ff0;font-weight:bold">0xFFFFFFFF</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>_k = [<span style="color:#ff0;font-weight:bold">0x428a2f98</span>, <span style="color:#ff0;font-weight:bold">0x71374491</span>, <span style="color:#ff0;font-weight:bold">0xb5c0fbcf</span>, <span style="color:#ff0;font-weight:bold">0xe9b5dba5</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x3956c25b</span>, <span style="color:#ff0;font-weight:bold">0x59f111f1</span>, <span style="color:#ff0;font-weight:bold">0x923f82a4</span>, <span style="color:#ff0;font-weight:bold">0xab1c5ed5</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0xd807aa98</span>, <span style="color:#ff0;font-weight:bold">0x12835b01</span>, <span style="color:#ff0;font-weight:bold">0x243185be</span>, <span style="color:#ff0;font-weight:bold">0x550c7dc3</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x72be5d74</span>, <span style="color:#ff0;font-weight:bold">0x80deb1fe</span>, <span style="color:#ff0;font-weight:bold">0x9bdc06a7</span>, <span style="color:#ff0;font-weight:bold">0xc19bf174</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0xe49b69c1</span>, <span style="color:#ff0;font-weight:bold">0xefbe4786</span>, <span style="color:#ff0;font-weight:bold">0x0fc19dc6</span>, <span style="color:#ff0;font-weight:bold">0x240ca1cc</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x2de92c6f</span>, <span style="color:#ff0;font-weight:bold">0x4a7484aa</span>, <span style="color:#ff0;font-weight:bold">0x5cb0a9dc</span>, <span style="color:#ff0;font-weight:bold">0x76f988da</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x983e5152</span>, <span style="color:#ff0;font-weight:bold">0xa831c66d</span>, <span style="color:#ff0;font-weight:bold">0xb00327c8</span>, <span style="color:#ff0;font-weight:bold">0xbf597fc7</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0xc6e00bf3</span>, <span style="color:#ff0;font-weight:bold">0xd5a79147</span>, <span style="color:#ff0;font-weight:bold">0x06ca6351</span>, <span style="color:#ff0;font-weight:bold">0x14292967</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x27b70a85</span>, <span style="color:#ff0;font-weight:bold">0x2e1b2138</span>, <span style="color:#ff0;font-weight:bold">0x4d2c6dfc</span>, <span style="color:#ff0;font-weight:bold">0x53380d13</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x650a7354</span>, <span style="color:#ff0;font-weight:bold">0x766a0abb</span>, <span style="color:#ff0;font-weight:bold">0x81c2c92e</span>, <span style="color:#ff0;font-weight:bold">0x92722c85</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0xa2bfe8a1</span>, <span style="color:#ff0;font-weight:bold">0xa81a664b</span>, <span style="color:#ff0;font-weight:bold">0xc24b8b70</span>, <span style="color:#ff0;font-weight:bold">0xc76c51a3</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0xd192e819</span>, <span style="color:#ff0;font-weight:bold">0xd6990624</span>, <span style="color:#ff0;font-weight:bold">0xf40e3585</span>, <span style="color:#ff0;font-weight:bold">0x106aa070</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x19a4c116</span>, <span style="color:#ff0;font-weight:bold">0x1e376c08</span>, <span style="color:#ff0;font-weight:bold">0x2748774c</span>, <span style="color:#ff0;font-weight:bold">0x34b0bcb5</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x391c0cb3</span>, <span style="color:#ff0;font-weight:bold">0x4ed8aa4a</span>, <span style="color:#ff0;font-weight:bold">0x5b9cca4f</span>, <span style="color:#ff0;font-weight:bold">0x682e6ff3</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x748f82ee</span>, <span style="color:#ff0;font-weight:bold">0x78a5636f</span>, <span style="color:#ff0;font-weight:bold">0x84c87814</span>, <span style="color:#ff0;font-weight:bold">0x8cc70208</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x90befffa</span>, <span style="color:#ff0;font-weight:bold">0xa4506ceb</span>, <span style="color:#ff0;font-weight:bold">0xbef9a3f7</span>, <span style="color:#ff0;font-weight:bold">0xc67178f2</span>]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>_h = [<span style="color:#ff0;font-weight:bold">0x6a09e667</span>, <span style="color:#ff0;font-weight:bold">0xbb67ae85</span>, <span style="color:#ff0;font-weight:bold">0x3c6ef372</span>, <span style="color:#ff0;font-weight:bold">0xa54ff53a</span>,
-</span></span><span style="display:flex;"><span>      <span style="color:#ff0;font-weight:bold">0x510e527f</span>, <span style="color:#ff0;font-weight:bold">0x9b05688c</span>, <span style="color:#ff0;font-weight:bold">0x1f83d9ab</span>, <span style="color:#ff0;font-weight:bold">0x5be0cd19</span>]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> _pad(msglen):
-</span></span><span style="display:flex;"><span>    mdi = msglen &amp; <span style="color:#ff0;font-weight:bold">0x3F</span>
-</span></span><span style="display:flex;"><span>    length = struct.pack(<span style="color:#0ff;font-weight:bold">&#39;!Q&#39;</span>, msglen &lt;&lt; <span style="color:#ff0;font-weight:bold">3</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span> mdi &lt; <span style="color:#ff0;font-weight:bold">56</span>:
-</span></span><span style="display:flex;"><span>        padlen = <span style="color:#ff0;font-weight:bold">55</span> - mdi
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>:
-</span></span><span style="display:flex;"><span>        padlen = <span style="color:#ff0;font-weight:bold">119</span> - mdi
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\x80</span><span style="color:#0ff;font-weight:bold">&#39;</span> + (<span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\x00</span><span style="color:#0ff;font-weight:bold">&#39;</span> * padlen) + length
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> _rotr(x, y):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> ((x &gt;&gt; y) | (x &lt;&lt; (<span style="color:#ff0;font-weight:bold">32</span> - y))) &amp; F32
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> _maj(x, y, z):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> (x &amp; y) ^ (x &amp; z) ^ (y &amp; z)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> _ch(x, y, z):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> (x &amp; y) ^ ((~x) &amp; z)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">class</span> SHA256:
-</span></span><span style="display:flex;"><span>    _output_size = <span style="color:#ff0;font-weight:bold">8</span>
-</span></span><span style="display:flex;"><span>    blocksize = <span style="color:#ff0;font-weight:bold">1</span>
-</span></span><span style="display:flex;"><span>    block_size = <span style="color:#ff0;font-weight:bold">64</span>
-</span></span><span style="display:flex;"><span>    digest_size = <span style="color:#ff0;font-weight:bold">32</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> __init__(<span style="color:#fff;font-weight:bold">self</span>, m=<span style="color:#fff;font-weight:bold">None</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>._counter = <span style="color:#ff0;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>._cache = <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#39;&#39;</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>._k = copy.deepcopy(_k)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>._h = copy.deepcopy(_h)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>.update(m)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> _compress(<span style="color:#fff;font-weight:bold">self</span>, c):
-</span></span><span style="display:flex;"><span>        w = [<span style="color:#ff0;font-weight:bold">0</span>] * <span style="color:#ff0;font-weight:bold">64</span>
-</span></span><span style="display:flex;"><span>        w[<span style="color:#ff0;font-weight:bold">0</span>:<span style="color:#ff0;font-weight:bold">16</span>] = struct.unpack(<span style="color:#0ff;font-weight:bold">&#39;!16L&#39;</span>, c)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">16</span>, <span style="color:#ff0;font-weight:bold">64</span>):
-</span></span><span style="display:flex;"><span>            s0 = _rotr(w[i-<span style="color:#ff0;font-weight:bold">15</span>], <span style="color:#ff0;font-weight:bold">7</span>) ^ _rotr(w[i-<span style="color:#ff0;font-weight:bold">15</span>], <span style="color:#ff0;font-weight:bold">18</span>) ^ (w[i-<span style="color:#ff0;font-weight:bold">15</span>] &gt;&gt; <span style="color:#ff0;font-weight:bold">3</span>)
-</span></span><span style="display:flex;"><span>            s1 = _rotr(w[i-<span style="color:#ff0;font-weight:bold">2</span>], <span style="color:#ff0;font-weight:bold">17</span>) ^ _rotr(w[i-<span style="color:#ff0;font-weight:bold">2</span>], <span style="color:#ff0;font-weight:bold">19</span>) ^ (w[i-<span style="color:#ff0;font-weight:bold">2</span>] &gt;&gt; <span style="color:#ff0;font-weight:bold">10</span>)
-</span></span><span style="display:flex;"><span>            w[i] = (w[i-<span style="color:#ff0;font-weight:bold">16</span>] + s0 + w[i-<span style="color:#ff0;font-weight:bold">7</span>] + s1) &amp; F32
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        a, b, c, d, e, f, g, h = <span style="color:#fff;font-weight:bold">self</span>._h
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">64</span>):
-</span></span><span style="display:flex;"><span>            s0 = _rotr(a, <span style="color:#ff0;font-weight:bold">2</span>) ^ _rotr(a, <span style="color:#ff0;font-weight:bold">13</span>) ^ _rotr(a, <span style="color:#ff0;font-weight:bold">22</span>)
-</span></span><span style="display:flex;"><span>            t2 = s0 + _maj(a, b, c)
-</span></span><span style="display:flex;"><span>            s1 = _rotr(e, <span style="color:#ff0;font-weight:bold">6</span>) ^ _rotr(e, <span style="color:#ff0;font-weight:bold">11</span>) ^ _rotr(e, <span style="color:#ff0;font-weight:bold">25</span>)
-</span></span><span style="display:flex;"><span>            t1 = h + s1 + _ch(e, f, g) + <span style="color:#fff;font-weight:bold">self</span>._k[i] + w[i]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            h = g
-</span></span><span style="display:flex;"><span>            g = f
-</span></span><span style="display:flex;"><span>            f = e
-</span></span><span style="display:flex;"><span>            e = (d + t1) &amp; F32
-</span></span><span style="display:flex;"><span>            d = c
-</span></span><span style="display:flex;"><span>            c = b
-</span></span><span style="display:flex;"><span>            b = a
-</span></span><span style="display:flex;"><span>            a = (t1 + t2) &amp; F32
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i, (x, y) in <span style="color:#fff;font-weight:bold">enumerate</span>(<span style="color:#fff;font-weight:bold">zip</span>(<span style="color:#fff;font-weight:bold">self</span>._h, [a, b, c, d, e, f, g, h])):
-</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">self</span>._h[i] = (x + y) &amp; F32
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> update(<span style="color:#fff;font-weight:bold">self</span>, m):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span> not m:
-</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">return</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>._counter += <span style="color:#fff;font-weight:bold">len</span>(m)
-</span></span><span style="display:flex;"><span>        m = <span style="color:#fff;font-weight:bold">self</span>._cache + m
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">for</span> i in <span style="color:#fff;font-weight:bold">range</span>(<span style="color:#ff0;font-weight:bold">0</span>, <span style="color:#fff;font-weight:bold">len</span>(m) // <span style="color:#ff0;font-weight:bold">64</span>):
-</span></span><span style="display:flex;"><span>            <span style="color:#fff;font-weight:bold">self</span>._compress(m[<span style="color:#ff0;font-weight:bold">64</span> * i:<span style="color:#ff0;font-weight:bold">64</span> * (i + <span style="color:#ff0;font-weight:bold">1</span>)])
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">self</span>._cache = m[-(<span style="color:#fff;font-weight:bold">len</span>(m) % <span style="color:#ff0;font-weight:bold">64</span>):]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> digest(<span style="color:#fff;font-weight:bold">self</span>):
-</span></span><span style="display:flex;"><span>        r = copy.deepcopy(<span style="color:#fff;font-weight:bold">self</span>)
-</span></span><span style="display:flex;"><span>        r.update(_pad(<span style="color:#fff;font-weight:bold">self</span>._counter))
-</span></span><span style="display:flex;"><span>        data = [struct.pack(<span style="color:#0ff;font-weight:bold">&#39;!L&#39;</span>, i) <span style="color:#fff;font-weight:bold">for</span> i in r._h[:<span style="color:#fff;font-weight:bold">self</span>._output_size]]
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#39;&#39;</span>.join(data)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">def</span> hexdigest(<span style="color:#fff;font-weight:bold">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> binascii.hexlify(<span style="color:#fff;font-weight:bold">self</span>.digest()).decode(<span style="color:#0ff;font-weight:bold">&#39;ascii&#39;</span>)
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> true_sha256(message):
-</span></span><span style="display:flex;"><span>    m = hashlib.sha256()
-</span></span><span style="display:flex;"><span>    m.update(message)
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> m.hexdigest()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">def</span> my_sha256(message):
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> SHA256(message).hexdigest()
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">if</span> __name__==<span style="color:#0ff;font-weight:bold">&#39;__main__&#39;</span>:
-</span></span><span style="display:flex;"><span>    demo = [<span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abc&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;message digest&#34;</span>, <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#0ff;font-weight:bold">b</span><span style="color:#0ff;font-weight:bold">&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span> message in demo:
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">print</span>(my_sha256(message),<span style="color:#0ff;font-weight:bold">&#39; &lt;= &#34;&#39;</span>,message.decode(<span style="color:#0ff;font-weight:bold">&#39;ascii&#39;</span>),<span style="color:#0ff;font-weight:bold">&#39;&#34;&#39;</span>, sep=<span style="color:#0ff;font-weight:bold">&#39;&#39;</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">assert</span> true_sha256(message)==my_sha256(message)  <span style="color:#007f7f"># 若和标准库中不同，会抛出异常</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">print</span>(<span style="color:#0ff;font-weight:bold">&#39;</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">SHA256测试全部通过&#39;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 &lt;= &#34;&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb &lt;= &#34;a&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad &lt;= &#34;abc&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># f7846f55cf23e14eebeab5b4e1550cad5b509e3348fbc4efa3a1413d393cb650 &lt;= &#34;message digest&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 71c480df93d6ae2f1efad1447c66c9525e316218cf51fc8d9ed832f2daf18b73 &lt;= &#34;abcdefghijklmnopqrstuvwxyz&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># db4bfcbd4da0cd85a60c3c37d3fbd8805c77f15fc6b1fdfe614ee0a7c8fdb4c0 &lt;= &#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># f371bc4a311f2b009eef952dd83ca80e2b60026c8e935592d0f9c308453c813e &lt;= &#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># </span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># SHA256测试全部通过</span>
-</span></span></code></pre></div>
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/python/">Python</a></li>
-      <li><a href="https://blog.niuhemoon.win/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/">
-    <span class="title">« 上一页</span>
-    <span>Python对称AES和DES加密算法</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/">
-    <span class="title">下一页 »</span>
-    <span>在Linux终端里浏览知乎日报</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+填充的工作原理如下："><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"Python实现MD5和Sha256","item":"https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Python实现MD5和Sha256","name":"Python实现MD5和Sha256","description":"Python3实现哈希散列算法，包含MD5和sha256。\nHash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。\n验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。\n1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。\nMD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。\n填充的工作原理如下：\n","keywords":["Python","密码学"],"articleBody":"Python3实现哈希散列算法，包含MD5和sha256。\nHash函数算法编写 本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。\n验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。\n1.实验目的 熟悉MD5和SHA256加密函数的原理和应用 实现MD5和SHA256加密函数并验证 2.实验工具 Jupyter Notebook Python3.5 3.实验环境 Ubuntu16.04LTS操作系统 Python3标准库 4.实验步骤 4.1 回顾课程，查阅资料 4.2 熟悉MD5的原理 MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。\nMD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。\n填充的工作原理如下：\n首先将单个位1附加到消息的末尾 接着填充0，直到消息长度比512的整数倍少64 在接下来64位中填充真实消息的长度值 主MD5算法在128位状态下运行，分为四个32位字，分别表示为A，B，C和D.这些字被初始化为某些固定的常量。\n主算法然后依次使用每个512位消息块来修改状态。\n消息块的处理由四个相似的阶段组成，称为循环;每轮由基于非线性函数F，模加法和左旋等16种类似操作组成。\n图1说明了一轮内的一个操作流程。 图2表示F有四种可能的功能;每一轮使用不同的一个： 下图是非线性函数的四种可能\n4.3 查阅得MD5算法的伪代码 //Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating var int[64] s, K var int i //s specifies the per-round shift amounts s[ 0..15] := { 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22 } s[16..31] := { 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20 } s[32..47] := { 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23 } s[48..63] := { 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21 } //Use binary integer part of the sines of integers (Radians) as constants: for i from 0 to 63 K[i] := floor(232 × abs(sin(i + 1))) end for //Initialize variables: var int a0 := 0x67452301 //A var int b0 := 0xefcdab89 //B var int c0 := 0x98badcfe //C var int d0 := 0x10325476 //D //Pre-processing: adding a single 1 bit append \"1\" bit to message // Notice: the input bytes are considered as bits strings, // where the first bit is the most significant bit of the byte.[48] //Pre-processing: padding with zeros append \"0\" bit until message length in bits ≡ 448 (mod 512) append original length in bits mod 264 to message //Process the message in successive 512-bit chunks: for each 512-bit chunk of padded message break chunk into sixteen 32-bit words M[j], 0 ≤ j ≤ 15 //Initialize hash value for this chunk: var int A := a0 var int B := b0 var int C := c0 var int D := d0 //Main loop: for i from 0 to 63 var int F, g if 0 ≤ i ≤ 15 then F := (B and C) or ((not B) and D) g := i else if 16 ≤ i ≤ 31 F := (D and B) or ((not D) and C) g := (5×i + 1) mod 16 else if 32 ≤ i ≤ 47 F := B xor C xor D g := (3×i + 5) mod 16 else if 48 ≤ i ≤ 63 F := C xor (B or (not D)) g := (7×i) mod 16 //Be wary of the below definitions of a,b,c,d F := F + A + K[i] + M[g] A := D D := C C := B B := B + leftrotate(F, s[i]) end for //Add this chunk's hash to result so far: a0 := a0 + A b0 := b0 + B c0 := c0 + C d0 := d0 + D end for var char digest[16] := a0 append b0 append c0 append d0 //(Output is in little-endian) //leftrotate function definition leftrotate (x, c) return (x \u003c\u003c c) binary or (x \u003e\u003e (32-c)); 4.4 编写MD5算法测试用例 Python标准库hashlib中提供了生成MD5值的方法，是通过C语言实现的，我们用自己实现的MD5函数计算出MD5值，在和标准库的结果进行比较，如果结果相同，那么证明了MD5加密是正确的。 注意：\n只实现了对ASCII码字符串的处理 demo中存储了测试用例 my_md5()返回自己生成的MD5值 true_md5()返回Python标准库生成的MD5值 若两者结果不同，抛出AssertionError异常 测试程序如下：\nimport hashlib def my_md5(message): pass def true_md5(message): m = hashlib.md5() m.update(message) return m.hexdigest() if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_md5(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_md5(message)==my_md5(message) # 若和标准库中不同，会抛出异常 4.5 查阅sha256算法原理和伪代码 sha256是SHA2(Secure Hash Algorithm 2)算法的一个变体，具体内容。\n篇幅原因不再贴sha256的伪代码，维基百科中有详细说明。\n4.6 编写sha256算法的测试代码 import hashlib def my_sha256(message): pass def true_sha256(message): m = hashlib.sha256() m.update(message) return m.hexdigest() if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_sha256(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_sha256(message)==my_sha256(message) # 若和标准库中不同，会抛出异常 4.7 编写MD5和SHA256的python实现，并进行测试验证 代码和测试结果在报告最后\n4.8 总结实验，编写实验报告 5. 实验总结 需要善于借鉴前人经验，搜集资料 实验只支持ascii码，对其他字符编码没有解决 利用优秀的工具，如Jupyter可以提高学习效率 6. 实验完整代码 5.1 MD5实现 # MD5 实现及其验证 import math import hashlib rotate_amounts = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21] constants = [int(abs(math.sin(i+1)) * 2**32) \u0026 0xFFFFFFFF for i in range(64)] # A B C D init_values = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476] # 非线性函数 functions = 16*[lambda b, c, d: (b \u0026 c) | (~b \u0026 d)] + \\ 16*[lambda b, c, d: (d \u0026 b) | (~d \u0026 c)] + \\ 16*[lambda b, c, d: b ^ c ^ d] + \\ 16*[lambda b, c, d: c ^ (b | ~d)] index_functions = 16*[lambda i: i] + \\ 16*[lambda i: (5*i + 1)%16] + \\ 16*[lambda i: (3*i + 5)%16] + \\ 16*[lambda i: (7*i)%16] # 对x左移amount位 def left_rotate(x, amount): x \u0026= 0xFFFFFFFF return ((x\u003c\u003e(32-amount))) \u0026 0xFFFFFFFF def md5(message): message = bytearray(message) #copy our input into a mutable buffer orig_len_in_bits = (8 * len(message)) \u0026 0xffffffffffffffff message.append(0x80) while len(message)%64 != 56: message.append(0) message += orig_len_in_bits.to_bytes(8, byteorder='little') hash_pieces = init_values[:] for chunk_ofst in range(0, len(message), 64): a, b, c, d = hash_pieces chunk = message[chunk_ofst:chunk_ofst+64] for i in range(64): f = functions[i](b, c, d) g = index_functions[i](i) to_rotate = a + f + constants[i] + int.from_bytes(chunk[4*g:4*g+4], byteorder='little') new_b = (b + left_rotate(to_rotate, rotate_amounts[i])) \u0026 0xFFFFFFFF a, b, c, d = d, new_b, b, c for i, val in enumerate([a, b, c, d]): hash_pieces[i] += val hash_pieces[i] \u0026= 0xFFFFFFFF return sum(x\u003c\u003c(32*i) for i, x in enumerate(hash_pieces)) def md5_to_hex(digest): raw = digest.to_bytes(16, byteorder='little') return '{:032x}'.format(int.from_bytes(raw, byteorder='big')) def true_md5(message): m = hashlib.md5() m.update(message) return m.hexdigest() def my_md5(message): return md5_to_hex(md5(message)) if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_md5(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_md5(message)==my_md5(message) # 若和标准库中不同，会抛出异常 print('\\nMD5测试全部通过') # d41d8cd98f00b204e9800998ecf8427e \u003c= \"\" # 0cc175b9c0f1b6a831c399e269772661 \u003c= \"a\" # 900150983cd24fb0d6963f7d28e17f72 \u003c= \"abc\" # f96b697d7cb7938d525a2f31aaf161d0 \u003c= \"message digest\" # c3fcd3d76192e4007dfb496cca67e13b \u003c= \"abcdefghijklmnopqrstuvwxyz\" # d174ab98d277d9f5a5611c2c9f419d9f \u003c= \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\" # 57edf4a22be3c955ac49da2e2107b67a \u003c= \"12345678901234567890123456789012345678901234567890123456789012345678901234567890\" # # MD5测试全部通过 5.2 Sha256实现 import copy import struct import binascii import hashlib F32 = 0xFFFFFFFF _k = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2] _h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19] def _pad(msglen): mdi = msglen \u0026 0x3F length = struct.pack('!Q', msglen \u003c\u003c 3) if mdi \u003c 56: padlen = 55 - mdi else: padlen = 119 - mdi return b'\\x80' + (b'\\x00' * padlen) + length def _rotr(x, y): return ((x \u003e\u003e y) | (x \u003c\u003c (32 - y))) \u0026 F32 def _maj(x, y, z): return (x \u0026 y) ^ (x \u0026 z) ^ (y \u0026 z) def _ch(x, y, z): return (x \u0026 y) ^ ((~x) \u0026 z) class SHA256: _output_size = 8 blocksize = 1 block_size = 64 digest_size = 32 def __init__(self, m=None): self._counter = 0 self._cache = b'' self._k = copy.deepcopy(_k) self._h = copy.deepcopy(_h) self.update(m) def _compress(self, c): w = [0] * 64 w[0:16] = struct.unpack('!16L', c) for i in range(16, 64): s0 = _rotr(w[i-15], 7) ^ _rotr(w[i-15], 18) ^ (w[i-15] \u003e\u003e 3) s1 = _rotr(w[i-2], 17) ^ _rotr(w[i-2], 19) ^ (w[i-2] \u003e\u003e 10) w[i] = (w[i-16] + s0 + w[i-7] + s1) \u0026 F32 a, b, c, d, e, f, g, h = self._h for i in range(64): s0 = _rotr(a, 2) ^ _rotr(a, 13) ^ _rotr(a, 22) t2 = s0 + _maj(a, b, c) s1 = _rotr(e, 6) ^ _rotr(e, 11) ^ _rotr(e, 25) t1 = h + s1 + _ch(e, f, g) + self._k[i] + w[i] h = g g = f f = e e = (d + t1) \u0026 F32 d = c c = b b = a a = (t1 + t2) \u0026 F32 for i, (x, y) in enumerate(zip(self._h, [a, b, c, d, e, f, g, h])): self._h[i] = (x + y) \u0026 F32 def update(self, m): if not m: return self._counter += len(m) m = self._cache + m for i in range(0, len(m) // 64): self._compress(m[64 * i:64 * (i + 1)]) self._cache = m[-(len(m) % 64):] def digest(self): r = copy.deepcopy(self) r.update(_pad(self._counter)) data = [struct.pack('!L', i) for i in r._h[:self._output_size]] return b''.join(data) def hexdigest(self): return binascii.hexlify(self.digest()).decode('ascii') def true_sha256(message): m = hashlib.sha256() m.update(message) return m.hexdigest() def my_sha256(message): return SHA256(message).hexdigest() if __name__=='__main__': demo = [b\"\", b\"a\", b\"abc\", b\"message digest\", b\"abcdefghijklmnopqrstuvwxyz\", b\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\", b\"12345678901234567890123456789012345678901234567890123456789012345678901234567890\"] for message in demo: print(my_sha256(message),' \u003c= \"',message.decode('ascii'),'\"', sep='') assert true_sha256(message)==my_sha256(message) # 若和标准库中不同，会抛出异常 print('\\nSHA256测试全部通过') # e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 \u003c= \"\" # ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb \u003c= \"a\" # ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad \u003c= \"abc\" # f7846f55cf23e14eebeab5b4e1550cad5b509e3348fbc4efa3a1413d393cb650 \u003c= \"message digest\" # 71c480df93d6ae2f1efad1447c66c9525e316218cf51fc8d9ed832f2daf18b73 \u003c= \"abcdefghijklmnopqrstuvwxyz\" # db4bfcbd4da0cd85a60c3c37d3fbd8805c77f15fc6b1fdfe614ee0a7c8fdb4c0 \u003c= \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\" # f371bc4a311f2b009eef952dd83ca80e2b60026c8e935592d0f9c308453c813e \u003c= \"12345678901234567890123456789012345678901234567890123456789012345678901234567890\" # # SHA256测试全部通过 ","wordCount":"2646","inLanguage":"zh","datePublished":"2018-05-18T00:00:00Z","dateModified":"2018-05-18T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/python-hash-experiment/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Python实现MD5和Sha256</h1><div class=post-meta><span title='2018-05-18 00:00:00 +0000 UTC'>2018-05-18</span>&nbsp;·&nbsp;<span>6 分钟</span>&nbsp;·&nbsp;<span>2646 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><details class=toc open><summary accesskey=c title="(Alt + C)"><span class=title>目录</span></summary><div class=inner><ul><li><a href=#hash%e5%87%bd%e6%95%b0%e7%ae%97%e6%b3%95%e7%bc%96%e5%86%99 aria-label=Hash函数算法编写>Hash函数算法编写</a><ul><li><a href=#1%e5%ae%9e%e9%aa%8c%e7%9b%ae%e7%9a%84 aria-label=1.实验目的>1.实验目的</a></li><li><a href=#2%e5%ae%9e%e9%aa%8c%e5%b7%a5%e5%85%b7 aria-label=2.实验工具>2.实验工具</a></li><li><a href=#3%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83 aria-label=3.实验环境>3.实验环境</a></li><li><a href=#4%e5%ae%9e%e9%aa%8c%e6%ad%a5%e9%aa%a4 aria-label=4.实验步骤>4.实验步骤</a><ul><li><a href=#41-%e5%9b%9e%e9%a1%be%e8%af%be%e7%a8%8b%e6%9f%a5%e9%98%85%e8%b5%84%e6%96%99 aria-label="4.1 回顾课程，查阅资料">4.1 回顾课程，查阅资料</a></li><li><a href=#42-%e7%86%9f%e6%82%89md5%e7%9a%84%e5%8e%9f%e7%90%86 aria-label="4.2 熟悉MD5的原理">4.2 熟悉MD5的原理</a></li><li><a href=#43-%e6%9f%a5%e9%98%85%e5%be%97md5%e7%ae%97%e6%b3%95%e7%9a%84%e4%bc%aa%e4%bb%a3%e7%a0%81 aria-label="4.3 查阅得MD5算法的伪代码">4.3 查阅得MD5算法的伪代码</a></li><li><a href=#44-%e7%bc%96%e5%86%99md5%e7%ae%97%e6%b3%95%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b aria-label="4.4 编写MD5算法测试用例">4.4 编写MD5算法测试用例</a></li><li><a href=#45-%e6%9f%a5%e9%98%85sha256%e7%ae%97%e6%b3%95%e5%8e%9f%e7%90%86%e5%92%8c%e4%bc%aa%e4%bb%a3%e7%a0%81 aria-label="4.5 查阅sha256算法原理和伪代码">4.5 查阅sha256算法原理和伪代码</a></li><li><a href=#46-%e7%bc%96%e5%86%99sha256%e7%ae%97%e6%b3%95%e7%9a%84%e6%b5%8b%e8%af%95%e4%bb%a3%e7%a0%81 aria-label="4.6 编写sha256算法的测试代码">4.6 编写sha256算法的测试代码</a></li><li><a href=#47-%e7%bc%96%e5%86%99md5%e5%92%8csha256%e7%9a%84python%e5%ae%9e%e7%8e%b0%e5%b9%b6%e8%bf%9b%e8%a1%8c%e6%b5%8b%e8%af%95%e9%aa%8c%e8%af%81 aria-label="4.7 编写MD5和SHA256的python实现，并进行测试验证">4.7 编写MD5和SHA256的python实现，并进行测试验证</a></li><li><a href=#48-%e6%80%bb%e7%bb%93%e5%ae%9e%e9%aa%8c%e7%bc%96%e5%86%99%e5%ae%9e%e9%aa%8c%e6%8a%a5%e5%91%8a aria-label="4.8 总结实验，编写实验报告">4.8 总结实验，编写实验报告</a></li></ul></li><li><a href=#5-%e5%ae%9e%e9%aa%8c%e6%80%bb%e7%bb%93 aria-label="5. 实验总结">5. 实验总结</a></li><li><a href=#6-%e5%ae%9e%e9%aa%8c%e5%ae%8c%e6%95%b4%e4%bb%a3%e7%a0%81 aria-label="6. 实验完整代码">6. 实验完整代码</a><ul><li><a href=#51-md5%e5%ae%9e%e7%8e%b0 aria-label="5.1 MD5实现">5.1 MD5实现</a></li><li><a href=#52-sha256%e5%ae%9e%e7%8e%b0 aria-label="5.2 Sha256实现">5.2 Sha256实现</a></li></ul></li></ul></li></ul></div></details><div class="post-content md-content"><p>Python3实现哈希散列算法，包含MD5和sha256。</p><h2 id=hash函数算法编写>Hash函数算法编写<a hidden class=anchor aria-hidden=true href=#hash函数算法编写>#</a></h2><p>本实验是使用python来编写MD5和SHA256加密函数，并对加密函数的正确性进行验证。<br>验证的方式是通过和已有的标准库加密结果进行比较，如果结果相同，则加密函数正确。</p><h3 id=1实验目的>1.实验目的<a hidden class=anchor aria-hidden=true href=#1实验目的>#</a></h3><ol><li>熟悉MD5和SHA256加密函数的原理和应用</li><li>实现MD5和SHA256加密函数并验证</li></ol><h3 id=2实验工具>2.实验工具<a hidden class=anchor aria-hidden=true href=#2实验工具>#</a></h3><ul><li>Jupyter Notebook</li><li>Python3.5</li></ul><h3 id=3实验环境>3.实验环境<a hidden class=anchor aria-hidden=true href=#3实验环境>#</a></h3><ul><li>Ubuntu16.04LTS操作系统</li><li>Python3标准库</li></ul><h3 id=4实验步骤>4.实验步骤<a hidden class=anchor aria-hidden=true href=#4实验步骤>#</a></h3><h4 id=41-回顾课程查阅资料>4.1 回顾课程，查阅资料<a hidden class=anchor aria-hidden=true href=#41-回顾课程查阅资料>#</a></h4><h4 id=42-熟悉md5的原理>4.2 熟悉MD5的原理<a hidden class=anchor aria-hidden=true href=#42-熟悉md5的原理>#</a></h4><blockquote><p><em>MD5(Message-Digest Algorithm)消息摘要算法是一种广泛使用的密码散列函数，可以产生出一个128位（16字节）的散列值（hash value），用于确保信息传输完整一致。</em><br>MD5将可变长度的消息处理成128位的固定长度输出。输入消息被分解成512位块（16个32位字）块;该消息被填充以使其长度可以被512整除。<br>填充的工作原理如下：</p></blockquote><ul><li>首先将单个位1附加到消息的末尾</li><li>接着填充0，直到消息长度比512的整数倍少64</li><li>在接下来64位中填充真实消息的长度值</li></ul><blockquote><p>主MD5算法在128位状态下运行，分为四个32位字，分别表示为A，B，C和D.这些字被初始化为某些固定的常量。<br>主算法然后依次使用每个512位消息块来修改状态。<br>消息块的处理由四个相似的阶段组成，称为循环;每轮由基于非线性函数F，模加法和左旋等16种类似操作组成。</p></blockquote><ul><li>图1说明了一轮内的一个操作流程。</li><li>图2表示F有四种可能的功能;每一轮使用不同的一个：</li></ul><p><img src=https://upload.wikimedia.org/wikipedia/commons/a/a5/MD5_algorithm.svg alt=Drawing style=width:300px;text-align:center;vertical-align:middle><img></p><blockquote><p>下图是非线性函数的四种可能</p></blockquote><img src=https://wikimedia.org/api/rest_v1/media/math/render/svg/b105d494a376d11f2eefd810082e1944cd8e2dc4 alt=Drawing style=width:300px><h4 id=43-查阅得md5算法的伪代码>4.3 查阅得MD5算法的伪代码<a hidden class=anchor aria-hidden=true href=#43-查阅得md5算法的伪代码>#</a></h4><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>//Note: All variables are unsigned 32 bit and wrap modulo 2^32 when calculating
+</span></span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>int</span>[<span style=color:#ff0;font-weight:700>64</span>] s, K
+</span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>int</span> i
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//s specifies the per-round shift amounts
+</span></span></span><span style=display:flex><span>s[ <span style=color:#ff0;font-weight:700>0..15</span>] := { <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>,  <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>,  <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>,  <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span> }
+</span></span><span style=display:flex><span>s[<span style=color:#ff0;font-weight:700>16..31</span>] := { <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>,  <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>,  <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>,  <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span> }
+</span></span><span style=display:flex><span>s[<span style=color:#ff0;font-weight:700>32..47</span>] := { <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>,  <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>,  <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>,  <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span> }
+</span></span><span style=display:flex><span>s[<span style=color:#ff0;font-weight:700>48..63</span>] := { <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>,  <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>,  <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>,  <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span> }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Use binary integer part of the sines of integers (Radians) as constants:
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>for</span> i from <span style=color:#ff0;font-weight:700>0</span> to <span style=color:#ff0;font-weight:700>63</span>
+</span></span><span style=display:flex><span>    K[i] := floor(<span style=color:#ff0;font-weight:700>232</span> <span style=color:red>×</span> abs(sin(i + <span style=color:#ff0;font-weight:700>1</span>)))
+</span></span><span style=display:flex><span>end <span style=color:#fff;font-weight:700>for</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Initialize variables:
+</span></span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>int</span> a0 := <span style=color:#ff0;font-weight:700>0x67452301</span>   <span style=color:#007f7f>//A
+</span></span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>int</span> b0 := <span style=color:#ff0;font-weight:700>0xefcdab89</span>   <span style=color:#007f7f>//B
+</span></span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>int</span> c0 := <span style=color:#ff0;font-weight:700>0x98badcfe</span>   <span style=color:#007f7f>//C
+</span></span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>int</span> d0 := <span style=color:#ff0;font-weight:700>0x10325476</span>   <span style=color:#007f7f>//D
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Pre-processing: adding a single 1 bit
+</span></span></span><span style=display:flex><span>append <span style=color:#0ff;font-weight:700>&#34;1&#34;</span> bit to message    
+</span></span><span style=display:flex><span><span style=color:#007f7f>// Notice: the input bytes are considered as bits strings,
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>//  where the first bit is the most significant bit of the byte.[48]
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Pre-processing: padding with zeros
+</span></span></span><span style=display:flex><span>append <span style=color:#0ff;font-weight:700>&#34;0&#34;</span> bit until message length in bits <span style=color:red>≡</span> <span style=color:#ff0;font-weight:700>448</span> (mod <span style=color:#ff0;font-weight:700>512</span>)
+</span></span><span style=display:flex><span>append original length in bits mod <span style=color:#ff0;font-weight:700>264</span> to message
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Process the message in successive 512-bit chunks:
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>for</span> each <span style=color:#ff0;font-weight:700>512</span>-bit chunk of padded message
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>break</span> chunk into sixteen <span style=color:#ff0;font-weight:700>32</span>-bit words M[j], <span style=color:#ff0;font-weight:700>0</span> <span style=color:red>≤</span> j <span style=color:red>≤</span> <span style=color:#ff0;font-weight:700>15</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Initialize hash value for this chunk:
+</span></span></span><span style=display:flex><span>    var <span style=color:#fff;font-weight:700>int</span> A := a0
+</span></span><span style=display:flex><span>    var <span style=color:#fff;font-weight:700>int</span> B := b0
+</span></span><span style=display:flex><span>    var <span style=color:#fff;font-weight:700>int</span> C := c0
+</span></span><span style=display:flex><span>    var <span style=color:#fff;font-weight:700>int</span> D := d0
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Main loop:
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span> i from <span style=color:#ff0;font-weight:700>0</span> to <span style=color:#ff0;font-weight:700>63</span>
+</span></span><span style=display:flex><span>        var <span style=color:#fff;font-weight:700>int</span> F, g
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>if</span> <span style=color:#ff0;font-weight:700>0</span> <span style=color:red>≤</span> i <span style=color:red>≤</span> <span style=color:#ff0;font-weight:700>15</span> then
+</span></span><span style=display:flex><span>            F := (B and C) or ((not B) and D)
+</span></span><span style=display:flex><span>            g := i
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>else</span> <span style=color:#fff;font-weight:700>if</span> <span style=color:#ff0;font-weight:700>16</span> <span style=color:red>≤</span> i <span style=color:red>≤</span> <span style=color:#ff0;font-weight:700>31</span>
+</span></span><span style=display:flex><span>            F := (D and B) or ((not D) and C)
+</span></span><span style=display:flex><span>            g := (<span style=color:#ff0;font-weight:700>5</span><span style=color:red>×</span>i + <span style=color:#ff0;font-weight:700>1</span>) mod <span style=color:#ff0;font-weight:700>16</span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>else</span> <span style=color:#fff;font-weight:700>if</span> <span style=color:#ff0;font-weight:700>32</span> <span style=color:red>≤</span> i <span style=color:red>≤</span> <span style=color:#ff0;font-weight:700>47</span>
+</span></span><span style=display:flex><span>            F := B xor C xor D
+</span></span><span style=display:flex><span>            g := (<span style=color:#ff0;font-weight:700>3</span><span style=color:red>×</span>i + <span style=color:#ff0;font-weight:700>5</span>) mod <span style=color:#ff0;font-weight:700>16</span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>else</span> <span style=color:#fff;font-weight:700>if</span> <span style=color:#ff0;font-weight:700>48</span> <span style=color:red>≤</span> i <span style=color:red>≤</span> <span style=color:#ff0;font-weight:700>63</span>
+</span></span><span style=display:flex><span>            F := C xor (B or (not D))
+</span></span><span style=display:flex><span>            g := (<span style=color:#ff0;font-weight:700>7</span><span style=color:red>×</span>i) mod <span style=color:#ff0;font-weight:700>16</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Be wary of the below definitions of a,b,c,d
+</span></span></span><span style=display:flex><span>        F := F + A + K[i] + M[g]
+</span></span><span style=display:flex><span>        A := D
+</span></span><span style=display:flex><span>        D := C
+</span></span><span style=display:flex><span>        C := B
+</span></span><span style=display:flex><span>        B := B + leftrotate(F, s[i])
+</span></span><span style=display:flex><span>    end <span style=color:#fff;font-weight:700>for</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//Add this chunk&#39;s hash to result so far:
+</span></span></span><span style=display:flex><span>    a0 := a0 + A
+</span></span><span style=display:flex><span>    b0 := b0 + B
+</span></span><span style=display:flex><span>    c0 := c0 + C
+</span></span><span style=display:flex><span>    d0 := d0 + D
+</span></span><span style=display:flex><span>end <span style=color:#fff;font-weight:700>for</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>var <span style=color:#fff;font-weight:700>char</span> digest[<span style=color:#ff0;font-weight:700>16</span>] := a0 append b0 append c0 append d0 <span style=color:#007f7f>//(Output is in little-endian)
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>//leftrotate function definition
+</span></span></span><span style=display:flex><span>leftrotate (x, c)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> (x &lt;&lt; c) binary or (x &gt;&gt; (<span style=color:#ff0;font-weight:700>32</span>-c));
+</span></span></code></pre></div><h4 id=44-编写md5算法测试用例>4.4 编写MD5算法测试用例<a hidden class=anchor aria-hidden=true href=#44-编写md5算法测试用例>#</a></h4><blockquote><p>Python标准库hashlib中提供了生成MD5值的方法，是通过C语言实现的，我们用自己实现的MD5函数计算出MD5值，在和标准库的结果进行比较，如果结果相同，那么证明了MD5加密是正确的。<br><strong>注意：</strong></p></blockquote><ul><li>只实现了对ASCII码字符串的处理</li><li>demo中存储了测试用例</li><li>my_md5()返回自己生成的MD5值</li><li>true_md5()返回Python标准库生成的MD5值</li><li>若两者结果不同，抛出AssertionError异常</li></ul><blockquote><p>测试程序如下：</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> hashlib
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> my_md5(message):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>pass</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> true_md5(message):
+</span></span><span style=display:flex><span>    m = hashlib.md5()
+</span></span><span style=display:flex><span>    m.update(message)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> m.hexdigest()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>if</span> __name__==<span style=color:#0ff;font-weight:700>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    demo = [<span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;a&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abc&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;message digest&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span> message in demo:
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>print</span>(my_md5(message),<span style=color:#0ff;font-weight:700>&#39; &lt;= &#34;&#39;</span>,message.decode(<span style=color:#0ff;font-weight:700>&#39;ascii&#39;</span>),<span style=color:#0ff;font-weight:700>&#39;&#34;&#39;</span>, sep=<span style=color:#0ff;font-weight:700>&#39;&#39;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>assert</span> true_md5(message)==my_md5(message)  <span style=color:#007f7f># 若和标准库中不同，会抛出异常</span>
+</span></span></code></pre></div><h4 id=45-查阅sha256算法原理和伪代码>4.5 查阅sha256算法原理和伪代码<a hidden class=anchor aria-hidden=true href=#45-查阅sha256算法原理和伪代码>#</a></h4><blockquote><p>sha256是SHA2(Secure Hash Algorithm 2)算法的一个变体，具体<a href=https://zh.wikipedia.org/wiki/SHA-2>内容</a>。<br>篇幅原因不再贴sha256的伪代码，维基百科中有详细说明。</p></blockquote><h4 id=46-编写sha256算法的测试代码>4.6 编写sha256算法的测试代码<a hidden class=anchor aria-hidden=true href=#46-编写sha256算法的测试代码>#</a></h4><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> hashlib
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> my_sha256(message):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>pass</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> true_sha256(message):
+</span></span><span style=display:flex><span>    m = hashlib.sha256()
+</span></span><span style=display:flex><span>    m.update(message)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> m.hexdigest()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>if</span> __name__==<span style=color:#0ff;font-weight:700>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    demo = [<span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;a&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abc&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;message digest&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span> message in demo:
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>print</span>(my_sha256(message),<span style=color:#0ff;font-weight:700>&#39; &lt;= &#34;&#39;</span>,message.decode(<span style=color:#0ff;font-weight:700>&#39;ascii&#39;</span>),<span style=color:#0ff;font-weight:700>&#39;&#34;&#39;</span>, sep=<span style=color:#0ff;font-weight:700>&#39;&#39;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>assert</span> true_sha256(message)==my_sha256(message)  <span style=color:#007f7f># 若和标准库中不同，会抛出异常</span>
+</span></span></code></pre></div><h4 id=47-编写md5和sha256的python实现并进行测试验证>4.7 编写MD5和SHA256的python实现，并进行测试验证<a hidden class=anchor aria-hidden=true href=#47-编写md5和sha256的python实现并进行测试验证>#</a></h4><blockquote><p>代码和测试结果在报告最后</p></blockquote><h4 id=48-总结实验编写实验报告>4.8 总结实验，编写实验报告<a hidden class=anchor aria-hidden=true href=#48-总结实验编写实验报告>#</a></h4><h3 id=5-实验总结>5. 实验总结<a hidden class=anchor aria-hidden=true href=#5-实验总结>#</a></h3><ul><li>需要善于借鉴前人经验，搜集资料</li><li>实验只支持ascii码，对其他字符编码没有解决</li><li>利用优秀的工具，如Jupyter可以提高学习效率</li></ul><h3 id=6-实验完整代码>6. 实验完整代码<a hidden class=anchor aria-hidden=true href=#6-实验完整代码>#</a></h3><h4 id=51-md5实现>5.1 MD5实现<a hidden class=anchor aria-hidden=true href=#51-md5实现>#</a></h4><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># MD5 实现及其验证</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> math
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> hashlib
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>rotate_amounts = [<span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>, <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>, <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>, <span style=color:#ff0;font-weight:700>7</span>, <span style=color:#ff0;font-weight:700>12</span>, <span style=color:#ff0;font-weight:700>17</span>, <span style=color:#ff0;font-weight:700>22</span>,
+</span></span><span style=display:flex><span>                  <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>, <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>, <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>, <span style=color:#ff0;font-weight:700>5</span>,  <span style=color:#ff0;font-weight:700>9</span>, <span style=color:#ff0;font-weight:700>14</span>, <span style=color:#ff0;font-weight:700>20</span>,
+</span></span><span style=display:flex><span>                  <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>, <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>, <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>, <span style=color:#ff0;font-weight:700>4</span>, <span style=color:#ff0;font-weight:700>11</span>, <span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>23</span>,
+</span></span><span style=display:flex><span>                  <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>, <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>, <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>, <span style=color:#ff0;font-weight:700>6</span>, <span style=color:#ff0;font-weight:700>10</span>, <span style=color:#ff0;font-weight:700>15</span>, <span style=color:#ff0;font-weight:700>21</span>]
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>constants = [<span style=color:#fff;font-weight:700>int</span>(<span style=color:#fff;font-weight:700>abs</span>(math.sin(i+<span style=color:#ff0;font-weight:700>1</span>)) * <span style=color:#ff0;font-weight:700>2</span>**<span style=color:#ff0;font-weight:700>32</span>) &amp; <span style=color:#ff0;font-weight:700>0xFFFFFFFF</span> <span style=color:#fff;font-weight:700>for</span> i in <span style=color:#fff;font-weight:700>range</span>(<span style=color:#ff0;font-weight:700>64</span>)]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># A B C D</span>
+</span></span><span style=display:flex><span>init_values = [<span style=color:#ff0;font-weight:700>0x67452301</span>, <span style=color:#ff0;font-weight:700>0xefcdab89</span>, <span style=color:#ff0;font-weight:700>0x98badcfe</span>, <span style=color:#ff0;font-weight:700>0x10325476</span>]
+</span></span><span style=display:flex><span><span style=color:#007f7f># 非线性函数</span>
+</span></span><span style=display:flex><span>functions = <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> b, c, d: (b &amp; c) | (~b &amp; d)] + \
+</span></span><span style=display:flex><span>            <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> b, c, d: (d &amp; b) | (~d &amp; c)] + \
+</span></span><span style=display:flex><span>            <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> b, c, d: b ^ c ^ d] + \
+</span></span><span style=display:flex><span>            <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> b, c, d: c ^ (b | ~d)]
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>index_functions = <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> i: i] + \
+</span></span><span style=display:flex><span>                  <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> i: (<span style=color:#ff0;font-weight:700>5</span>*i + <span style=color:#ff0;font-weight:700>1</span>)%<span style=color:#ff0;font-weight:700>16</span>] + \
+</span></span><span style=display:flex><span>                  <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> i: (<span style=color:#ff0;font-weight:700>3</span>*i + <span style=color:#ff0;font-weight:700>5</span>)%<span style=color:#ff0;font-weight:700>16</span>] + \
+</span></span><span style=display:flex><span>                  <span style=color:#ff0;font-weight:700>16</span>*[<span style=color:#fff;font-weight:700>lambda</span> i: (<span style=color:#ff0;font-weight:700>7</span>*i)%<span style=color:#ff0;font-weight:700>16</span>]
+</span></span><span style=display:flex><span><span style=color:#007f7f># 对x左移amount位</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> left_rotate(x, amount):
+</span></span><span style=display:flex><span>    x &amp;= <span style=color:#ff0;font-weight:700>0xFFFFFFFF</span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> ((x&lt;&lt;amount) | (x&gt;&gt;(<span style=color:#ff0;font-weight:700>32</span>-amount))) &amp; <span style=color:#ff0;font-weight:700>0xFFFFFFFF</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> md5(message):
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>    message = <span style=color:#fff;font-weight:700>bytearray</span>(message) <span style=color:#007f7f>#copy our input into a mutable buffer</span>
+</span></span><span style=display:flex><span>    orig_len_in_bits = (<span style=color:#ff0;font-weight:700>8</span> * <span style=color:#fff;font-weight:700>len</span>(message)) &amp; <span style=color:#ff0;font-weight:700>0xffffffffffffffff</span>
+</span></span><span style=display:flex><span>    message.append(<span style=color:#ff0;font-weight:700>0x80</span>)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>while</span> <span style=color:#fff;font-weight:700>len</span>(message)%<span style=color:#ff0;font-weight:700>64</span> != <span style=color:#ff0;font-weight:700>56</span>:
+</span></span><span style=display:flex><span>        message.append(<span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>    message += orig_len_in_bits.to_bytes(<span style=color:#ff0;font-weight:700>8</span>, byteorder=<span style=color:#0ff;font-weight:700>&#39;little&#39;</span>)
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>    hash_pieces = init_values[:]
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span> chunk_ofst in <span style=color:#fff;font-weight:700>range</span>(<span style=color:#ff0;font-weight:700>0</span>, <span style=color:#fff;font-weight:700>len</span>(message), <span style=color:#ff0;font-weight:700>64</span>):
+</span></span><span style=display:flex><span>        a, b, c, d = hash_pieces
+</span></span><span style=display:flex><span>        chunk = message[chunk_ofst:chunk_ofst+<span style=color:#ff0;font-weight:700>64</span>]
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>for</span> i in <span style=color:#fff;font-weight:700>range</span>(<span style=color:#ff0;font-weight:700>64</span>):
+</span></span><span style=display:flex><span>            f = functions[i](b, c, d)
+</span></span><span style=display:flex><span>            g = index_functions[i](i)
+</span></span><span style=display:flex><span>            to_rotate = a + f + constants[i] + <span style=color:#fff;font-weight:700>int</span>.from_bytes(chunk[<span style=color:#ff0;font-weight:700>4</span>*g:<span style=color:#ff0;font-weight:700>4</span>*g+<span style=color:#ff0;font-weight:700>4</span>], byteorder=<span style=color:#0ff;font-weight:700>&#39;little&#39;</span>)
+</span></span><span style=display:flex><span>            new_b = (b + left_rotate(to_rotate, rotate_amounts[i])) &amp; <span style=color:#ff0;font-weight:700>0xFFFFFFFF</span>
+</span></span><span style=display:flex><span>            a, b, c, d = d, new_b, b, c
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>for</span> i, val in <span style=color:#fff;font-weight:700>enumerate</span>([a, b, c, d]):
+</span></span><span style=display:flex><span>            hash_pieces[i] += val
+</span></span><span style=display:flex><span>            hash_pieces[i] &amp;= <span style=color:#ff0;font-weight:700>0xFFFFFFFF</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#fff;font-weight:700>sum</span>(x&lt;&lt;(<span style=color:#ff0;font-weight:700>32</span>*i) <span style=color:#fff;font-weight:700>for</span> i, x in <span style=color:#fff;font-weight:700>enumerate</span>(hash_pieces))
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> md5_to_hex(digest):
+</span></span><span style=display:flex><span>    raw = digest.to_bytes(<span style=color:#ff0;font-weight:700>16</span>, byteorder=<span style=color:#0ff;font-weight:700>&#39;little&#39;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#0ff;font-weight:700>&#39;</span><span style=color:#0ff;font-weight:700>{:032x}</span><span style=color:#0ff;font-weight:700>&#39;</span>.format(<span style=color:#fff;font-weight:700>int</span>.from_bytes(raw, byteorder=<span style=color:#0ff;font-weight:700>&#39;big&#39;</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> true_md5(message):
+</span></span><span style=display:flex><span>    m = hashlib.md5()
+</span></span><span style=display:flex><span>    m.update(message)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> m.hexdigest()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> my_md5(message):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> md5_to_hex(md5(message))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>if</span> __name__==<span style=color:#0ff;font-weight:700>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    demo = [<span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;a&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abc&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;message digest&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span> message in demo:
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>print</span>(my_md5(message),<span style=color:#0ff;font-weight:700>&#39; &lt;= &#34;&#39;</span>,message.decode(<span style=color:#0ff;font-weight:700>&#39;ascii&#39;</span>),<span style=color:#0ff;font-weight:700>&#39;&#34;&#39;</span>, sep=<span style=color:#0ff;font-weight:700>&#39;&#39;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>assert</span> true_md5(message)==my_md5(message)  <span style=color:#007f7f># 若和标准库中不同，会抛出异常</span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>print</span>(<span style=color:#0ff;font-weight:700>&#39;</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>MD5测试全部通过&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># d41d8cd98f00b204e9800998ecf8427e &lt;= &#34;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 0cc175b9c0f1b6a831c399e269772661 &lt;= &#34;a&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 900150983cd24fb0d6963f7d28e17f72 &lt;= &#34;abc&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># f96b697d7cb7938d525a2f31aaf161d0 &lt;= &#34;message digest&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># c3fcd3d76192e4007dfb496cca67e13b &lt;= &#34;abcdefghijklmnopqrstuvwxyz&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># d174ab98d277d9f5a5611c2c9f419d9f &lt;= &#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 57edf4a22be3c955ac49da2e2107b67a &lt;= &#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># </span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># MD5测试全部通过</span>
+</span></span></code></pre></div><h4 id=52-sha256实现>5.2 Sha256实现<a hidden class=anchor aria-hidden=true href=#52-sha256实现>#</a></h4><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> copy
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> struct
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> binascii
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>import</span> hashlib
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>F32 = <span style=color:#ff0;font-weight:700>0xFFFFFFFF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>_k = [<span style=color:#ff0;font-weight:700>0x428a2f98</span>, <span style=color:#ff0;font-weight:700>0x71374491</span>, <span style=color:#ff0;font-weight:700>0xb5c0fbcf</span>, <span style=color:#ff0;font-weight:700>0xe9b5dba5</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x3956c25b</span>, <span style=color:#ff0;font-weight:700>0x59f111f1</span>, <span style=color:#ff0;font-weight:700>0x923f82a4</span>, <span style=color:#ff0;font-weight:700>0xab1c5ed5</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0xd807aa98</span>, <span style=color:#ff0;font-weight:700>0x12835b01</span>, <span style=color:#ff0;font-weight:700>0x243185be</span>, <span style=color:#ff0;font-weight:700>0x550c7dc3</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x72be5d74</span>, <span style=color:#ff0;font-weight:700>0x80deb1fe</span>, <span style=color:#ff0;font-weight:700>0x9bdc06a7</span>, <span style=color:#ff0;font-weight:700>0xc19bf174</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0xe49b69c1</span>, <span style=color:#ff0;font-weight:700>0xefbe4786</span>, <span style=color:#ff0;font-weight:700>0x0fc19dc6</span>, <span style=color:#ff0;font-weight:700>0x240ca1cc</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x2de92c6f</span>, <span style=color:#ff0;font-weight:700>0x4a7484aa</span>, <span style=color:#ff0;font-weight:700>0x5cb0a9dc</span>, <span style=color:#ff0;font-weight:700>0x76f988da</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x983e5152</span>, <span style=color:#ff0;font-weight:700>0xa831c66d</span>, <span style=color:#ff0;font-weight:700>0xb00327c8</span>, <span style=color:#ff0;font-weight:700>0xbf597fc7</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0xc6e00bf3</span>, <span style=color:#ff0;font-weight:700>0xd5a79147</span>, <span style=color:#ff0;font-weight:700>0x06ca6351</span>, <span style=color:#ff0;font-weight:700>0x14292967</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x27b70a85</span>, <span style=color:#ff0;font-weight:700>0x2e1b2138</span>, <span style=color:#ff0;font-weight:700>0x4d2c6dfc</span>, <span style=color:#ff0;font-weight:700>0x53380d13</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x650a7354</span>, <span style=color:#ff0;font-weight:700>0x766a0abb</span>, <span style=color:#ff0;font-weight:700>0x81c2c92e</span>, <span style=color:#ff0;font-weight:700>0x92722c85</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0xa2bfe8a1</span>, <span style=color:#ff0;font-weight:700>0xa81a664b</span>, <span style=color:#ff0;font-weight:700>0xc24b8b70</span>, <span style=color:#ff0;font-weight:700>0xc76c51a3</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0xd192e819</span>, <span style=color:#ff0;font-weight:700>0xd6990624</span>, <span style=color:#ff0;font-weight:700>0xf40e3585</span>, <span style=color:#ff0;font-weight:700>0x106aa070</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x19a4c116</span>, <span style=color:#ff0;font-weight:700>0x1e376c08</span>, <span style=color:#ff0;font-weight:700>0x2748774c</span>, <span style=color:#ff0;font-weight:700>0x34b0bcb5</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x391c0cb3</span>, <span style=color:#ff0;font-weight:700>0x4ed8aa4a</span>, <span style=color:#ff0;font-weight:700>0x5b9cca4f</span>, <span style=color:#ff0;font-weight:700>0x682e6ff3</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x748f82ee</span>, <span style=color:#ff0;font-weight:700>0x78a5636f</span>, <span style=color:#ff0;font-weight:700>0x84c87814</span>, <span style=color:#ff0;font-weight:700>0x8cc70208</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x90befffa</span>, <span style=color:#ff0;font-weight:700>0xa4506ceb</span>, <span style=color:#ff0;font-weight:700>0xbef9a3f7</span>, <span style=color:#ff0;font-weight:700>0xc67178f2</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>_h = [<span style=color:#ff0;font-weight:700>0x6a09e667</span>, <span style=color:#ff0;font-weight:700>0xbb67ae85</span>, <span style=color:#ff0;font-weight:700>0x3c6ef372</span>, <span style=color:#ff0;font-weight:700>0xa54ff53a</span>,
+</span></span><span style=display:flex><span>      <span style=color:#ff0;font-weight:700>0x510e527f</span>, <span style=color:#ff0;font-weight:700>0x9b05688c</span>, <span style=color:#ff0;font-weight:700>0x1f83d9ab</span>, <span style=color:#ff0;font-weight:700>0x5be0cd19</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> _pad(msglen):
+</span></span><span style=display:flex><span>    mdi = msglen &amp; <span style=color:#ff0;font-weight:700>0x3F</span>
+</span></span><span style=display:flex><span>    length = struct.pack(<span style=color:#0ff;font-weight:700>&#39;!Q&#39;</span>, msglen &lt;&lt; <span style=color:#ff0;font-weight:700>3</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span> mdi &lt; <span style=color:#ff0;font-weight:700>56</span>:
+</span></span><span style=display:flex><span>        padlen = <span style=color:#ff0;font-weight:700>55</span> - mdi
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>else</span>:
+</span></span><span style=display:flex><span>        padlen = <span style=color:#ff0;font-weight:700>119</span> - mdi
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#39;</span><span style=color:#0ff;font-weight:700>\x80</span><span style=color:#0ff;font-weight:700>&#39;</span> + (<span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#39;</span><span style=color:#0ff;font-weight:700>\x00</span><span style=color:#0ff;font-weight:700>&#39;</span> * padlen) + length
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> _rotr(x, y):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> ((x &gt;&gt; y) | (x &lt;&lt; (<span style=color:#ff0;font-weight:700>32</span> - y))) &amp; F32
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> _maj(x, y, z):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> (x &amp; y) ^ (x &amp; z) ^ (y &amp; z)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> _ch(x, y, z):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> (x &amp; y) ^ ((~x) &amp; z)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>class</span> SHA256:
+</span></span><span style=display:flex><span>    _output_size = <span style=color:#ff0;font-weight:700>8</span>
+</span></span><span style=display:flex><span>    blocksize = <span style=color:#ff0;font-weight:700>1</span>
+</span></span><span style=display:flex><span>    block_size = <span style=color:#ff0;font-weight:700>64</span>
+</span></span><span style=display:flex><span>    digest_size = <span style=color:#ff0;font-weight:700>32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>def</span> __init__(<span style=color:#fff;font-weight:700>self</span>, m=<span style=color:#fff;font-weight:700>None</span>):
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>._counter = <span style=color:#ff0;font-weight:700>0</span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>._cache = <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#39;&#39;</span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>._k = copy.deepcopy(_k)
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>._h = copy.deepcopy(_h)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>.update(m)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>def</span> _compress(<span style=color:#fff;font-weight:700>self</span>, c):
+</span></span><span style=display:flex><span>        w = [<span style=color:#ff0;font-weight:700>0</span>] * <span style=color:#ff0;font-weight:700>64</span>
+</span></span><span style=display:flex><span>        w[<span style=color:#ff0;font-weight:700>0</span>:<span style=color:#ff0;font-weight:700>16</span>] = struct.unpack(<span style=color:#0ff;font-weight:700>&#39;!16L&#39;</span>, c)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>for</span> i in <span style=color:#fff;font-weight:700>range</span>(<span style=color:#ff0;font-weight:700>16</span>, <span style=color:#ff0;font-weight:700>64</span>):
+</span></span><span style=display:flex><span>            s0 = _rotr(w[i-<span style=color:#ff0;font-weight:700>15</span>], <span style=color:#ff0;font-weight:700>7</span>) ^ _rotr(w[i-<span style=color:#ff0;font-weight:700>15</span>], <span style=color:#ff0;font-weight:700>18</span>) ^ (w[i-<span style=color:#ff0;font-weight:700>15</span>] &gt;&gt; <span style=color:#ff0;font-weight:700>3</span>)
+</span></span><span style=display:flex><span>            s1 = _rotr(w[i-<span style=color:#ff0;font-weight:700>2</span>], <span style=color:#ff0;font-weight:700>17</span>) ^ _rotr(w[i-<span style=color:#ff0;font-weight:700>2</span>], <span style=color:#ff0;font-weight:700>19</span>) ^ (w[i-<span style=color:#ff0;font-weight:700>2</span>] &gt;&gt; <span style=color:#ff0;font-weight:700>10</span>)
+</span></span><span style=display:flex><span>            w[i] = (w[i-<span style=color:#ff0;font-weight:700>16</span>] + s0 + w[i-<span style=color:#ff0;font-weight:700>7</span>] + s1) &amp; F32
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        a, b, c, d, e, f, g, h = <span style=color:#fff;font-weight:700>self</span>._h
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>for</span> i in <span style=color:#fff;font-weight:700>range</span>(<span style=color:#ff0;font-weight:700>64</span>):
+</span></span><span style=display:flex><span>            s0 = _rotr(a, <span style=color:#ff0;font-weight:700>2</span>) ^ _rotr(a, <span style=color:#ff0;font-weight:700>13</span>) ^ _rotr(a, <span style=color:#ff0;font-weight:700>22</span>)
+</span></span><span style=display:flex><span>            t2 = s0 + _maj(a, b, c)
+</span></span><span style=display:flex><span>            s1 = _rotr(e, <span style=color:#ff0;font-weight:700>6</span>) ^ _rotr(e, <span style=color:#ff0;font-weight:700>11</span>) ^ _rotr(e, <span style=color:#ff0;font-weight:700>25</span>)
+</span></span><span style=display:flex><span>            t1 = h + s1 + _ch(e, f, g) + <span style=color:#fff;font-weight:700>self</span>._k[i] + w[i]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            h = g
+</span></span><span style=display:flex><span>            g = f
+</span></span><span style=display:flex><span>            f = e
+</span></span><span style=display:flex><span>            e = (d + t1) &amp; F32
+</span></span><span style=display:flex><span>            d = c
+</span></span><span style=display:flex><span>            c = b
+</span></span><span style=display:flex><span>            b = a
+</span></span><span style=display:flex><span>            a = (t1 + t2) &amp; F32
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>for</span> i, (x, y) in <span style=color:#fff;font-weight:700>enumerate</span>(<span style=color:#fff;font-weight:700>zip</span>(<span style=color:#fff;font-weight:700>self</span>._h, [a, b, c, d, e, f, g, h])):
+</span></span><span style=display:flex><span>            <span style=color:#fff;font-weight:700>self</span>._h[i] = (x + y) &amp; F32
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>def</span> update(<span style=color:#fff;font-weight:700>self</span>, m):
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>if</span> not m:
+</span></span><span style=display:flex><span>            <span style=color:#fff;font-weight:700>return</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>._counter += <span style=color:#fff;font-weight:700>len</span>(m)
+</span></span><span style=display:flex><span>        m = <span style=color:#fff;font-weight:700>self</span>._cache + m
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>for</span> i in <span style=color:#fff;font-weight:700>range</span>(<span style=color:#ff0;font-weight:700>0</span>, <span style=color:#fff;font-weight:700>len</span>(m) // <span style=color:#ff0;font-weight:700>64</span>):
+</span></span><span style=display:flex><span>            <span style=color:#fff;font-weight:700>self</span>._compress(m[<span style=color:#ff0;font-weight:700>64</span> * i:<span style=color:#ff0;font-weight:700>64</span> * (i + <span style=color:#ff0;font-weight:700>1</span>)])
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>self</span>._cache = m[-(<span style=color:#fff;font-weight:700>len</span>(m) % <span style=color:#ff0;font-weight:700>64</span>):]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>def</span> digest(<span style=color:#fff;font-weight:700>self</span>):
+</span></span><span style=display:flex><span>        r = copy.deepcopy(<span style=color:#fff;font-weight:700>self</span>)
+</span></span><span style=display:flex><span>        r.update(_pad(<span style=color:#fff;font-weight:700>self</span>._counter))
+</span></span><span style=display:flex><span>        data = [struct.pack(<span style=color:#0ff;font-weight:700>&#39;!L&#39;</span>, i) <span style=color:#fff;font-weight:700>for</span> i in r._h[:<span style=color:#fff;font-weight:700>self</span>._output_size]]
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>return</span> <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#39;&#39;</span>.join(data)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>def</span> hexdigest(<span style=color:#fff;font-weight:700>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>return</span> binascii.hexlify(<span style=color:#fff;font-weight:700>self</span>.digest()).decode(<span style=color:#0ff;font-weight:700>&#39;ascii&#39;</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> true_sha256(message):
+</span></span><span style=display:flex><span>    m = hashlib.sha256()
+</span></span><span style=display:flex><span>    m.update(message)
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> m.hexdigest()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>def</span> my_sha256(message):
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> SHA256(message).hexdigest()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>if</span> __name__==<span style=color:#0ff;font-weight:700>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    demo = [<span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;a&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abc&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;message digest&#34;</span>, <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;abcdefghijklmnopqrstuvwxyz&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#0ff;font-weight:700>b</span><span style=color:#0ff;font-weight:700>&#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>]
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span> message in demo:
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>print</span>(my_sha256(message),<span style=color:#0ff;font-weight:700>&#39; &lt;= &#34;&#39;</span>,message.decode(<span style=color:#0ff;font-weight:700>&#39;ascii&#39;</span>),<span style=color:#0ff;font-weight:700>&#39;&#34;&#39;</span>, sep=<span style=color:#0ff;font-weight:700>&#39;&#39;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>assert</span> true_sha256(message)==my_sha256(message)  <span style=color:#007f7f># 若和标准库中不同，会抛出异常</span>
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>print</span>(<span style=color:#0ff;font-weight:700>&#39;</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>SHA256测试全部通过&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 &lt;= &#34;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb &lt;= &#34;a&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad &lt;= &#34;abc&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># f7846f55cf23e14eebeab5b4e1550cad5b509e3348fbc4efa3a1413d393cb650 &lt;= &#34;message digest&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># 71c480df93d6ae2f1efad1447c66c9525e316218cf51fc8d9ed832f2daf18b73 &lt;= &#34;abcdefghijklmnopqrstuvwxyz&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># db4bfcbd4da0cd85a60c3c37d3fbd8805c77f15fc6b1fdfe614ee0a7c8fdb4c0 &lt;= &#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># f371bc4a311f2b009eef952dd83ca80e2b60026c8e935592d0f9c308453c813e &lt;= &#34;12345678901234567890123456789012345678901234567890123456789012345678901234567890&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># </span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># SHA256测试全部通过</span>
+</span></span></code></pre></div></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/python/>Python</a></li><li><a href=https://blog.niuhemoon.win/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/>密码学</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/python-symmetric-encryption/><span class=title>« 上一页</span>
+<span>Python对称AES和DES加密算法</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/zhihu-daily-crawler/><span class=title>下一页 »</span>
+<span>在Linux终端里浏览知乎日报</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

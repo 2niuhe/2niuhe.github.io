@@ -1,623 +1,107 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Linux进程——进程环境与加载可执行映像 | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="Linux, C">
-<meta name="description" content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="Linux进程——进程环境与加载可执行映像">
-  <meta property="og:description" content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2018-10-09T00:00:00+00:00">
-    <meta property="article:modified_time" content="2018-10-09T00:00:00+00:00">
-    <meta property="article:tag" content="Linux">
-    <meta property="article:tag" content="C">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Linux进程——进程环境与加载可执行映像">
-  <meta name="twitter:description" content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "Linux进程——进程环境与加载可执行映像",
-      "item": "https://blog.niuhemoon.win/posts/tech/linux-c-process-3/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Linux进程——进程环境与加载可执行映像",
-  "name": "Linux进程——进程环境与加载可执行映像",
-  "description": "介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像",
-  "keywords": [
-    "Linux", "C"
-  ],
-  "articleBody": " 进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。\n###用户和用户组\n//获得当前进程实际用户ID pid_t getuid(void); //获得当前进程有效用户ID pid_t geteuid(void); //获得当前进程实际用户组ID pid_t getgid(void); //获得当前进程有效用户组ID pid_t getegid(void); ###进程和进程组 获得父子进程ID\n//获得当前进程ID pid_t getpid(void); //获得父进程ID pid_t getppid(void); 进程组\n有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。\n会话\n会话用于标识用户登录的每一个终端，每个登录终端都有一个会话ID与其对应； 会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。\n如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。\n/* 获得进程所属会话ID 成功返回会话ID，错误返回-1 */ pid_t getsid(pid_t pid); /* 创建一个新的会话，使进程组ID等于该会话ID 成功返回新的进程组ID，否则-1 */ pid_t setsid(void); 案例：在子进程中创建新的领头会话\n#include #include #include int main(void) { int p,pid; printf(\"now session id %d\\n\\n\",getsid(getpid())); p = fork(); if(p) //父进程退出 exit(0); pid = setsid(); printf(\"new session id %d\\n\",pid); return pid; } ###守护进程\n守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭标准输入、标准输出、标准错误输出的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。\n同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。 创建守护进程步骤：\n创建子进程后结束父进程 在子进程中建立新的领头会话 修改工作目录和权限掩码信息 关闭文件描述符0,1,2 案例：创建一个守护进程\n#include #include #include #include int daemon_init() { pid_t pid; char buf[80]; FILE * fout; if((pid = fork()) \u003c 0) return -1; else if(pid != 0) exit(0); //结束父进程 setsid(); //创建领头会话 system(\"cd /\"); //改变工作目录 umask(0); //清除权限掩码 close(0); //关闭文件描述符 close(1); close(2); getcwd(buf,sizeof(buf)); fout = fopen(\"/tmp/result.txt\",\"w\"); fprintf(fout,\"work dirctory is %s\\n\",buf); fprintf(fout,\"daemon pid is %d\\n\",getpid()); fprintf(fout,\"daemon parent pid is %d\\n\",getppid()); fclose(fout); return 0; } int main() { FILE * fout; printf(\"start init daemon ...\"); daemon_init(); while(1) { fout = fopen(\"/tmp/result.txt\",\"a\"); fputs(\"i am still alive\\n\",fout); fflush(fout); sleep(1); } } ###加载可执行映像\n可执行映像是链接好的可执行的代码。\n通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。\nELF格式\nLinux系统中，采用ELF(Excutable and Linkable Format)，ELF有3中基本格式\n可执行格式 目标文件(.o文件) 共享库（.so文件) 加载可执行文件\nELF的可执行文件的加载是通过系统调用exec完成的，当进程调用exec函数加载ELF可执行文件时，exec将以新加载程序的段替换当前进程的相应的正文、数据、堆和栈段；同时保留大部分的进程属性。例如进程ID、父进程ID、进程组ID、实际用户ID、会话ID、当前目录、文件描述符等。\n但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。 exec相关函数原型：\n#include int execl(const char *path,const char *arg,...) int execv(.........)......... int execle(........) int execve(.........) int execlp(.........) int execvp(.........) ",
-  "wordCount" : "1417",
-  "inLanguage": "zh",
-  "datePublished": "2018-10-09T00:00:00Z",
-  "dateModified": "2018-10-09T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/linux-c-process-3/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      Linux进程——进程环境与加载可执行映像
-    </h1>
-    <div class="post-description">
-      介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像
-    </div>
-    <div class="post-meta">
-
-<span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1417 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> 
-
-  <div class="post-content md-content"><blockquote>
-<p>进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。</p>
-</blockquote>
-<p>###用户和用户组</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程实际用户ID
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> getuid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程有效用户ID
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> geteuid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程实际用户组ID
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> getgid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程有效用户组ID
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> getegid(<span style="color:#fff;font-weight:bold">void</span>);
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Linux进程——进程环境与加载可执行映像 | Niuhe's Blog</title><meta name=keywords content="Linux,C"><meta name=description content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像"><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/linux-c-process-3/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/linux-c-process-3/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="Linux进程——进程环境与加载可执行映像"><meta property="og:description" content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像"><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-10-09T00:00:00+00:00"><meta property="article:modified_time" content="2018-10-09T00:00:00+00:00"><meta property="article:tag" content="Linux"><meta property="article:tag" content="C"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux进程——进程环境与加载可执行映像"><meta name=twitter:description content="介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"Linux进程——进程环境与加载可执行映像","item":"https://blog.niuhemoon.win/posts/tech/linux-c-process-3/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Linux进程——进程环境与加载可执行映像","name":"Linux进程——进程环境与加载可执行映像","description":"介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像","keywords":["Linux","C"],"articleBody":" 进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。\n###用户和用户组\n//获得当前进程实际用户ID pid_t getuid(void); //获得当前进程有效用户ID pid_t geteuid(void); //获得当前进程实际用户组ID pid_t getgid(void); //获得当前进程有效用户组ID pid_t getegid(void); ###进程和进程组 获得父子进程ID\n//获得当前进程ID pid_t getpid(void); //获得父进程ID pid_t getppid(void); 进程组\n有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。\n会话\n会话用于标识用户登录的每一个终端，每个登录终端都有一个会话ID与其对应； 会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。\n如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。\n/* 获得进程所属会话ID 成功返回会话ID，错误返回-1 */ pid_t getsid(pid_t pid); /* 创建一个新的会话，使进程组ID等于该会话ID 成功返回新的进程组ID，否则-1 */ pid_t setsid(void); 案例：在子进程中创建新的领头会话\n#include #include #include int main(void) { int p,pid; printf(\"now session id %d\\n\\n\",getsid(getpid())); p = fork(); if(p) //父进程退出 exit(0); pid = setsid(); printf(\"new session id %d\\n\",pid); return pid; } ###守护进程\n守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭标准输入、标准输出、标准错误输出的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。\n同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。 创建守护进程步骤：\n创建子进程后结束父进程 在子进程中建立新的领头会话 修改工作目录和权限掩码信息 关闭文件描述符0,1,2 案例：创建一个守护进程\n#include #include #include #include int daemon_init() { pid_t pid; char buf[80]; FILE * fout; if((pid = fork()) \u003c 0) return -1; else if(pid != 0) exit(0); //结束父进程 setsid(); //创建领头会话 system(\"cd /\"); //改变工作目录 umask(0); //清除权限掩码 close(0); //关闭文件描述符 close(1); close(2); getcwd(buf,sizeof(buf)); fout = fopen(\"/tmp/result.txt\",\"w\"); fprintf(fout,\"work dirctory is %s\\n\",buf); fprintf(fout,\"daemon pid is %d\\n\",getpid()); fprintf(fout,\"daemon parent pid is %d\\n\",getppid()); fclose(fout); return 0; } int main() { FILE * fout; printf(\"start init daemon ...\"); daemon_init(); while(1) { fout = fopen(\"/tmp/result.txt\",\"a\"); fputs(\"i am still alive\\n\",fout); fflush(fout); sleep(1); } } ###加载可执行映像\n可执行映像是链接好的可执行的代码。\n通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。\nELF格式\nLinux系统中，采用ELF(Excutable and Linkable Format)，ELF有3中基本格式\n可执行格式 目标文件(.o文件) 共享库（.so文件) 加载可执行文件\nELF的可执行文件的加载是通过系统调用exec完成的，当进程调用exec函数加载ELF可执行文件时，exec将以新加载程序的段替换当前进程的相应的正文、数据、堆和栈段；同时保留大部分的进程属性。例如进程ID、父进程ID、进程组ID、实际用户ID、会话ID、当前目录、文件描述符等。\n但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。 exec相关函数原型：\n#include int execl(const char *path,const char *arg,...) int execv(.........)......... int execle(........) int execve(.........) int execlp(.........) int execvp(.........) ","wordCount":"1417","inLanguage":"zh","datePublished":"2018-10-09T00:00:00Z","dateModified":"2018-10-09T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/linux-c-process-3/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Linux进程——进程环境与加载可执行映像</h1><div class=post-description>介绍Linux进程控制块中的内容，以及如何在子进程中加载可执行映像</div><div class=post-meta><span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;<span>3 分钟</span>&nbsp;·&nbsp;<span>1417 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><div class="post-content md-content"><blockquote><p>进程是程序的一次运行过程，除了进程虚拟地址空间和文件描述符等，进程控制块中还存放了进程运行的环境信息，包括用户、用户组、父进程、进程组和会话等。</p></blockquote><p>###用户和用户组</p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>//获得当前进程实际用户ID
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> getuid(<span style=color:#fff;font-weight:700>void</span>);
+</span></span><span style=display:flex><span><span style=color:#007f7f>//获得当前进程有效用户ID
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> geteuid(<span style=color:#fff;font-weight:700>void</span>);
+</span></span><span style=display:flex><span><span style=color:#007f7f>//获得当前进程实际用户组ID
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> getgid(<span style=color:#fff;font-weight:700>void</span>);
+</span></span><span style=display:flex><span><span style=color:#007f7f>//获得当前进程有效用户组ID
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> getegid(<span style=color:#fff;font-weight:700>void</span>);
 </span></span></code></pre></div><p>###进程和进程组
-<strong>获得父子进程ID</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">//获得当前进程ID
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> getpid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//获得父进程ID
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> getppid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span></code></pre></div><p><strong>进程组</strong></p>
-<blockquote>
-<p>有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。</p>
-</blockquote>
-<p><strong>会话</strong></p>
-<blockquote>
-<p>会话用于标识用户登录的每一个终端，每个登录终端都有一个会话ID与其对应；
-会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。</p>
-<p>如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">获得进程所属会话ID
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回会话ID，错误返回-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> getsid(<span style="color:#fff;font-weight:bold">pid_t</span> pid);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">创建一个新的会话，使进程组ID等于该会话ID
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回新的进程组ID，否则-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> setsid(<span style="color:#fff;font-weight:bold">void</span>);
-</span></span></code></pre></div><p><strong>案例：在子进程中创建新的领头会话</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">void</span>)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">int</span> p,pid;
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;now session id %d</span><span style="color:#0ff;font-weight:bold">\n\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,getsid(getpid()));
-</span></span><span style="display:flex;"><span>    p = fork();
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(p)       <span style="color:#007f7f">//父进程退出
-</span></span></span><span style="display:flex;"><span>        exit(<span style="color:#ff0;font-weight:bold">0</span>);
-</span></span><span style="display:flex;"><span>    pid = setsid();
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;new session id  %d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,pid);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> pid;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>###守护进程</p>
-<blockquote>
-<p>守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭<strong>标准输入、标准输出、标准错误输出</strong>的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。</p>
-<p>同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。
-<strong>创建守护进程步骤：</strong></p>
-<ol>
-<li>创建子进程后结束父进程</li>
-<li>在子进程中建立新的领头会话</li>
-<li>修改工作目录和权限掩码信息</li>
-<li>关闭文件描述符0,1,2</li>
-</ol>
-</blockquote>
-<p><strong>案例：创建一个守护进程</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> daemon_init()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">pid_t</span> pid;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">char</span> buf[<span style="color:#ff0;font-weight:bold">80</span>];
-</span></span><span style="display:flex;"><span>    FILE * fout;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>((pid = fork()) &lt; <span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">return</span> -<span style="color:#ff0;font-weight:bold">1</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span> <span style="color:#fff;font-weight:bold">if</span>(pid != <span style="color:#ff0;font-weight:bold">0</span>)       
-</span></span><span style="display:flex;"><span>        exit(<span style="color:#ff0;font-weight:bold">0</span>);            <span style="color:#007f7f">//结束父进程
-</span></span></span><span style="display:flex;"><span>    setsid();               <span style="color:#007f7f">//创建领头会话
-</span></span></span><span style="display:flex;"><span>    system(<span style="color:#0ff;font-weight:bold">&#34;cd /&#34;</span>);         <span style="color:#007f7f">//改变工作目录
-</span></span></span><span style="display:flex;"><span>    umask(<span style="color:#ff0;font-weight:bold">0</span>);               <span style="color:#007f7f">//清除权限掩码
-</span></span></span><span style="display:flex;"><span>    close(<span style="color:#ff0;font-weight:bold">0</span>);               <span style="color:#007f7f">//关闭文件描述符
-</span></span></span><span style="display:flex;"><span>    close(<span style="color:#ff0;font-weight:bold">1</span>);
-</span></span><span style="display:flex;"><span>    close(<span style="color:#ff0;font-weight:bold">2</span>);
-</span></span><span style="display:flex;"><span>    getcwd(buf,<span style="color:#fff;font-weight:bold">sizeof</span>(buf));
-</span></span><span style="display:flex;"><span>    fout = fopen(<span style="color:#0ff;font-weight:bold">&#34;/tmp/result.txt&#34;</span>,<span style="color:#0ff;font-weight:bold">&#34;w&#34;</span>);
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    fprintf(fout,<span style="color:#0ff;font-weight:bold">&#34;work dirctory is %s</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,buf);
-</span></span><span style="display:flex;"><span>    fprintf(fout,<span style="color:#0ff;font-weight:bold">&#34;daemon pid is %d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,getpid());
-</span></span><span style="display:flex;"><span>    fprintf(fout,<span style="color:#0ff;font-weight:bold">&#34;daemon parent pid is %d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,getppid());
-</span></span><span style="display:flex;"><span>    fclose(fout);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
-</span></span><span style="display:flex;"><span>{  
-</span></span><span style="display:flex;"><span>    FILE * fout;
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;start init daemon ...&#34;</span>);
-</span></span><span style="display:flex;"><span>    daemon_init();
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">while</span>(<span style="color:#ff0;font-weight:bold">1</span>)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        fout = fopen(<span style="color:#0ff;font-weight:bold">&#34;/tmp/result.txt&#34;</span>,<span style="color:#0ff;font-weight:bold">&#34;a&#34;</span>);
-</span></span><span style="display:flex;"><span>        fputs(<span style="color:#0ff;font-weight:bold">&#34;i am still alive</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,fout);
-</span></span><span style="display:flex;"><span>        fflush(fout);
-</span></span><span style="display:flex;"><span>        sleep(<span style="color:#ff0;font-weight:bold">1</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>###加载可执行映像</p>
-<blockquote>
-<p>可执行映像是链接好的可执行的代码。</p>
-<p>通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。</p>
-</blockquote>
-<p><strong>ELF格式</strong></p>
-<blockquote>
-<p>Linux系统中，采用ELF(Excutable and Linkable Format)，ELF有3中基本格式</p>
-<ol>
-<li>可执行格式</li>
-<li>目标文件(.o文件)</li>
-<li>共享库（.so文件)</li>
-</ol>
-</blockquote>
-<p><strong>加载可执行文件</strong></p>
-<blockquote>
-<p>ELF的可执行文件的加载是通过系统调用exec完成的，当进程调用exec函数加载ELF可执行文件时，exec将以新加载程序的段替换当前进程的相应的正文、数据、堆和栈段；同时保留大部分的进程属性。例如进程ID、父进程ID、进程组ID、实际用户ID、会话ID、当前目录、文件描述符等。</p>
-<p>但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。
-exec相关函数原型：</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execl(<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *path,<span style="color:#fff;font-weight:bold">const</span> <span style="color:#fff;font-weight:bold">char</span> *arg,...)
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execv(.........).........
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execle(........)
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execve(.........)
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execlp(.........)
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> execvp(.........)
-</span></span></code></pre></div>
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
-      <li><a href="https://blog.niuhemoon.win/tags/c/">C</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/">
-    <span class="title">« 上一页</span>
-    <span>Linux进程——进程创建和同步控制</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-1/">
-    <span class="title">下一页 »</span>
-    <span>Linux进程——地址空间</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+<strong>获得父子进程ID</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>//获得当前进程ID
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> getpid(<span style=color:#fff;font-weight:700>void</span>);
+</span></span><span style=display:flex><span><span style=color:#007f7f>//获得父进程ID
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> getppid(<span style=color:#fff;font-weight:700>void</span>);
+</span></span></code></pre></div><p><strong>进程组</strong></p><blockquote><p>有时，为了完成某个工作，需多个进程参与协作，为便于管理，可以将多个进程定义为一个进程组。一个进程组包含一个以上的进程，领头进程的进程ID等于进程组ID，进程组中不包含进程时，进程组自动消失。</p></blockquote><p><strong>会话</strong></p><blockquote><p>会话用于标识用户登录的每一个终端，每个登录终端都有一个会话ID与其对应；
+会话包括控制进程（与终端建立连接的领头进程）、一个前台进程组和任意后台进程组。一个会话只能有一个控制终端，通常是登录到其上的终端设备或伪终端设备，产生在控制终端上的输入和信号将发送给会话的前台进程组中的所有进程。</p><p>如果调用setsid函数的进程不是进程组中的领头进程，则可建立新的会话，（可在子进程中建立新的会话），该进程成为领头会话，同时产生一个新的进程组，且该进程为新进程组的领头进程，但不拥有终端。</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>获得进程所属会话ID
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回会话ID，错误返回-1
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> getsid(<span style=color:#fff;font-weight:700>pid_t</span> pid);
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>创建一个新的会话，使进程组ID等于该会话ID
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回新的进程组ID，否则-1
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> setsid(<span style=color:#fff;font-weight:700>void</span>);
+</span></span></code></pre></div><p><strong>案例：在子进程中创建新的领头会话</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main(<span style=color:#fff;font-weight:700>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>int</span> p,pid;
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;now session id %d</span><span style=color:#0ff;font-weight:700>\n\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,getsid(getpid()));
+</span></span><span style=display:flex><span>    p = fork();
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>(p)       <span style=color:#007f7f>//父进程退出
+</span></span></span><span style=display:flex><span>        exit(<span style=color:#ff0;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    pid = setsid();
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;new session id  %d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,pid);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> pid;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>###守护进程</p><blockquote><p>守护进程是一种运行在后台，且不受任何终端影响的进程，因此，需要关闭<strong>标准输入、标准输出、标准错误输出</strong>的文件描述符.通常守护进程以服务进程的形式存在，例如web服务器。</p><p>同时要使守护进程脱离用户环境，所以要将工作目录修改为系统工作目录。
+<strong>创建守护进程步骤：</strong></p><ol><li>创建子进程后结束父进程</li><li>在子进程中建立新的领头会话</li><li>修改工作目录和权限掩码信息</li><li>关闭文件描述符0,1,2</li></ol></blockquote><p><strong>案例：创建一个守护进程</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;sys/stat.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> daemon_init()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>pid_t</span> pid;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>char</span> buf[<span style=color:#ff0;font-weight:700>80</span>];
+</span></span><span style=display:flex><span>    FILE * fout;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>((pid = fork()) &lt; <span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>return</span> -<span style=color:#ff0;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>else</span> <span style=color:#fff;font-weight:700>if</span>(pid != <span style=color:#ff0;font-weight:700>0</span>)       
+</span></span><span style=display:flex><span>        exit(<span style=color:#ff0;font-weight:700>0</span>);            <span style=color:#007f7f>//结束父进程
+</span></span></span><span style=display:flex><span>    setsid();               <span style=color:#007f7f>//创建领头会话
+</span></span></span><span style=display:flex><span>    system(<span style=color:#0ff;font-weight:700>&#34;cd /&#34;</span>);         <span style=color:#007f7f>//改变工作目录
+</span></span></span><span style=display:flex><span>    umask(<span style=color:#ff0;font-weight:700>0</span>);               <span style=color:#007f7f>//清除权限掩码
+</span></span></span><span style=display:flex><span>    close(<span style=color:#ff0;font-weight:700>0</span>);               <span style=color:#007f7f>//关闭文件描述符
+</span></span></span><span style=display:flex><span>    close(<span style=color:#ff0;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>    close(<span style=color:#ff0;font-weight:700>2</span>);
+</span></span><span style=display:flex><span>    getcwd(buf,<span style=color:#fff;font-weight:700>sizeof</span>(buf));
+</span></span><span style=display:flex><span>    fout = fopen(<span style=color:#0ff;font-weight:700>&#34;/tmp/result.txt&#34;</span>,<span style=color:#0ff;font-weight:700>&#34;w&#34;</span>);
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    fprintf(fout,<span style=color:#0ff;font-weight:700>&#34;work dirctory is %s</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,buf);
+</span></span><span style=display:flex><span>    fprintf(fout,<span style=color:#0ff;font-weight:700>&#34;daemon pid is %d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,getpid());
+</span></span><span style=display:flex><span>    fprintf(fout,<span style=color:#0ff;font-weight:700>&#34;daemon parent pid is %d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,getppid());
+</span></span><span style=display:flex><span>    fclose(fout);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main()
+</span></span><span style=display:flex><span>{  
+</span></span><span style=display:flex><span>    FILE * fout;
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;start init daemon ...&#34;</span>);
+</span></span><span style=display:flex><span>    daemon_init();
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>while</span>(<span style=color:#ff0;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        fout = fopen(<span style=color:#0ff;font-weight:700>&#34;/tmp/result.txt&#34;</span>,<span style=color:#0ff;font-weight:700>&#34;a&#34;</span>);
+</span></span><span style=display:flex><span>        fputs(<span style=color:#0ff;font-weight:700>&#34;i am still alive</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,fout);
+</span></span><span style=display:flex><span>        fflush(fout);
+</span></span><span style=display:flex><span>        sleep(<span style=color:#ff0;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>###加载可执行映像</p><blockquote><p>可执行映像是链接好的可执行的代码。</p><p>通常，子进程创建时，继承了父进程的资源，父子进程可以并发运行，它们由同一代码流程控制，具有相似行为。有时，希望子进程拥有独立代码流程，可以通过加载可执行二进制映像文件来实现。内核通过exec系统调用在进程中建立新的运行环境。</p></blockquote><p><strong>ELF格式</strong></p><blockquote><p>Linux系统中，采用ELF(Excutable and Linkable Format)，ELF有3中基本格式</p><ol><li>可执行格式</li><li>目标文件(.o文件)</li><li>共享库（.so文件)</li></ol></blockquote><p><strong>加载可执行文件</strong></p><blockquote><p>ELF的可执行文件的加载是通过系统调用exec完成的，当进程调用exec函数加载ELF可执行文件时，exec将以新加载程序的段替换当前进程的相应的正文、数据、堆和栈段；同时保留大部分的进程属性。例如进程ID、父进程ID、进程组ID、实际用户ID、会话ID、当前目录、文件描述符等。</p><p>但当加载可执行文件的SETUID或SETGID位被设置，进程的有效用户ID和有效用户组ID被设置为该文件的属主ID和属主用户组ID。
+exec相关函数原型：</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> execl(<span style=color:#fff;font-weight:700>const</span> <span style=color:#fff;font-weight:700>char</span> *path,<span style=color:#fff;font-weight:700>const</span> <span style=color:#fff;font-weight:700>char</span> *arg,...)
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> execv(.........).........
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> execle(........)
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> execve(.........)
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> execlp(.........)
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> execvp(.........)
+</span></span></code></pre></div></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/linux/>Linux</a></li><li><a href=https://blog.niuhemoon.win/tags/c/>C</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/linux-c-process-2/><span class=title>« 上一页</span>
+<span>Linux进程——进程创建和同步控制</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/linux-c-process-1/><span class=title>下一页 »</span>
+<span>Linux进程——地址空间</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

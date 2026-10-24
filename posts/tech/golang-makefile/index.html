@@ -1,678 +1,170 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Go语言和Makefile | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="Go, Makefile">
-<meta name="description" content="Makefile基础和Golang的Makefile模板">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/golang-makefile/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/golang-makefile/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/golang-makefile/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="Go语言和Makefile">
-  <meta property="og:description" content="Makefile基础和Golang的Makefile模板">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2021-02-27T00:00:00+00:00">
-    <meta property="article:modified_time" content="2021-02-27T00:00:00+00:00">
-    <meta property="article:tag" content="Go">
-    <meta property="article:tag" content="Makefile">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Go语言和Makefile">
-  <meta name="twitter:description" content="Makefile基础和Golang的Makefile模板">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "Go语言和Makefile",
-      "item": "https://blog.niuhemoon.win/posts/tech/golang-makefile/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Go语言和Makefile",
-  "name": "Go语言和Makefile",
-  "description": "Makefile基础和Golang的Makefile模板",
-  "keywords": [
-    "Go", "Makefile"
-  ],
-  "articleBody": "Makefile基础 语法\n# 目标 ：依赖 # 根据依赖生成目标的命令 targets : prerequisites command 变量\nMakefile 允许使用等号自定义变量。\ntxt = Hello World test: @echo $(txt) 上面代码中，变量 txt 等于 Hello World。调用时，变量需要放在 $( ) 之中。\n调用Shell变量，需要在美元符号前，再加一个美元符号，这是因为Make命令会对美元符号转义。\ntest: @echo $$HOME 有时，变量的值可能指向另一个变量。\nv1 = $(v2) 上面代码中，变量 v1 的值是另一个变量 v2。这时会产生一个问题，v1 的值到底在定义时扩展（静态扩展），还是在运行时扩展（动态扩展）？如果 v2 的值是动态的，这两种扩展方式的结果可能会差异很大。\n为了解决类似问题，Makefile一共提供了四个赋值运算符 （=、:=、？=、+=），它们的区别请看StackOverflow。\nVARIABLE = value # 在执行时扩展，允许递归扩展。 VARIABLE := value # 在定义时扩展。 VARIABLE ?= value # 只有在该变量为空时才设置值。 VARIABLE += value # 将值追加到变量的尾端。 特殊变量\n$@ ： target文件名 $\u003c ： 第一个dependencies文件 $? ： 所有比target文件更新的dependencies文件 $^ ： 所有的dependencies文件，不管文件修改时间如何。 跨平台\n让makefile支持跨平台，在不同平台作出不同的反应\n# Detect system OS. ifeq ($(OS),Windows_NT) detected_OS := Windows else detected_OS := $(shell sh -c 'uname -s 2\u003e/dev/null || echo not') endif Go语言Makefile模板 -include .env PROJECTNAME=$(shell basename \"$(PWD)\") # Binary package name for release BINARY=go_trans VERSION=0.0.3 # Go related variables. GOBASE=$(shell pwd) GOPATH :=$(shell echo ${GOPATH}) # Go binary store place. GOBIN=$(GOBASE)/bin GORELEASE=$(GOBASE)/release GOFILES=$(wildcard *.go) GOBUILD_RACE=go build -race -o GOBUILD=go build -o # Redirect error output to a file, so we can show it in development mode. STDERR=/tmp/.$(PROJECTNAME)-stderr.txt # PID file will keep the process id of the server PID=/tmp/.$(PROJECTNAME).pid # Make is verbose in Linux. Make it silent. MAKEFLAGS += --silent .PHONY: help all: help help: Makefile @echo @echo \" Choose a command run in \"$(PROJECTNAME)\":\" @echo @sed -n 's/^##//p' $\u003c | column -t -s ':' | sed -e 's/^/ /' @echo go-compile: clean-bin go-get go-build go-build: @echo \" \u003e Building binary...\" @GOOS=linux GOARCH=amd64 $(GOBUILD) $(GOBIN)/$(PROJECTNAME) @echo \" \u003e Building done.\" go-race-check: go-get @echo \" \u003e Race check start...\" @GOOS=linux GOARCH=amd64 $(GOBUILD_RACE) $(GOBIN)/$(PROJECTNAME)_tmp @echo \" \u003e Race check done.\" @-rm $(GOBIN)/$(PROJECTNAME)_tmp go-generate: @echo \" \u003e Generating dependency files...\" @GOPATH=$(GOPATH) GOBIN=$(GOBIN) go generate $(generate) go-get: @echo \" \u003e Checking if there is any missing dependencies...\" #@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get $(get) go-install: @GOPATH=$(GOPATH) GOBIN=$(GOBIN) go install $(GOFILES) clean-bin: @echo \" \u003e Cleaning build cache...\" @-rm $(GOBIN)/* 2\u003e /dev/null clean-release: @echo \" \u003e Cleaning release file...\" @-rm $(GORELEASE)/* 2\u003e /dev/null ## test: Run all test. test: echo \"Test Not Implement.\" ## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar install: go-get stop: stop-server start-server: stop-server @echo \" \u003e $(PROJECTNAME) is available at $(ADDR)\" @-$(GOBIN)/$(PROJECTNAME) 2\u003e\u00261 \u0026 echo $$! \u003e $(PID) @cat $(PID) | sed \"/^/s/^/ \\\u003e PID: /\" stop-server: @-touch $(PID) @-kill `cat $(PID)` 2\u003e /dev/null || true @-rm $(PID) restart-server: stop-server start-server ## compile: Compile the x86_64 Linux binary without race check. compile: @-touch $(STDERR) @-rm $(STDERR) @-$(MAKE) go-compile 2\u003e $(STDERR) @cat $(STDERR) | sed -e '1s/.*/\\nError:\\n/' | sed 's/make\\[.*/ /' | sed \"/^/s/^/ /\" 1\u003e\u00262 ## clean: Clean build files and release file. clean: clean-bin clean-release ## race: Race check. race: @-touch $(STDERR) @-rm $(STDERR) @-$(MAKE) go-race-check 2\u003e $(STDERR) @cat $(STDERR) | sed -e '1s/.*/\\nError:\\n/' | sed 's/make\\[.*/ /' | sed \"/^/s/^/ /\" 1\u003e\u00262 ## release: Release arm64 and x86_64 linux binary package. release: clean-release @echo \" \u003e Creating release file...\" # Build for arm linux @CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) $(GORELEASE)/$(BINARY)-arm64-liunx-$(VERSION) # Build for x86_64 linux @CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) $(GORELEASE)/$(BINARY)-x86-64-linux-$(VERSION) 参考 跟我一起写Makefile\nhttps://github.com/crossoverJie/btb/blob/master/Makefile Makefiles for Go Developers\ngo-makefile-example\nMake 命令教程\n一个为go准备的优秀makefile\nGNU make\nmakefile跨平台\n",
-  "wordCount" : "976",
-  "inLanguage": "zh",
-  "datePublished": "2021-02-27T00:00:00Z",
-  "dateModified": "2021-02-27T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/golang-makefile/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      Go语言和Makefile
-    </h1>
-    <div class="post-description">
-      Makefile基础和Golang的Makefile模板
-    </div>
-    <div class="post-meta">
-
-<span title='2021-02-27 00:00:00 +0000 UTC'>2021-02-27</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>976 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> <details class="toc"  open>
-    <summary accesskey="c" title="(Alt + C)">
-        <span class="title">目录</span>
-    </summary>
-
-    <div class="inner"><ul>
-            <li>
-                <a href="#makefile%e5%9f%ba%e7%a1%80" aria-label="Makefile基础">Makefile基础</a></li>
-            <li>
-                <a href="#go%e8%af%ad%e8%a8%80makefile%e6%a8%a1%e6%9d%bf" aria-label="Go语言Makefile模板">Go语言Makefile模板</a></li>
-            <li>
-                <a href="#%e5%8f%82%e8%80%83" aria-label="参考">参考</a>
-            </li>
-        </ul>
-    </div>
-</details>
-
-  <div class="post-content md-content"><h3 id="makefile基础">Makefile基础<a hidden class="anchor" aria-hidden="true" href="#makefile基础">#</a></h3>
-<p><strong>语法</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#007f7f"># 目标 ：依赖
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f"># 根据依赖生成目标的命令
-</span></span></span><span style="display:flex;"><span>targets : prerequisites
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">command</span>
-</span></span></code></pre></div><p><strong>变量</strong></p>
-<p>Makefile 允许使用等号自定义变量。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>txt = Hello World
-</span></span><span style="display:flex;"><span>test:
-</span></span><span style="display:flex;"><span> @echo <span style="color:#fff;font-weight:bold">$(</span>txt<span style="color:#fff;font-weight:bold">)</span>
-</span></span></code></pre></div><p>上面代码中，变量 txt 等于 Hello World。调用时，变量需要放在 $( ) 之中。</p>
-<p>调用Shell变量，需要在美元符号前，再加一个美元符号，这是因为Make命令会对美元符号转义。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>test:
-</span></span><span style="display:flex;"><span> @echo $$HOME
-</span></span></code></pre></div><p>有时，变量的值可能指向另一个变量。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>v1 = <span style="color:#fff;font-weight:bold">$(</span>v2<span style="color:#fff;font-weight:bold">)</span>
-</span></span></code></pre></div><p>上面代码中，变量 v1 的值是另一个变量 v2。这时会产生一个问题，v1 的值到底在定义时扩展（静态扩展），还是在运行时扩展（动态扩展）？如果 v2 的值是动态的，这两种扩展方式的结果可能会差异很大。</p>
-<p>为了解决类似问题，Makefile一共提供了四个赋值运算符 （=、:=、？=、+=），它们的区别请看<a href="http://stackoverflow.com/questions/448910/makefile-variable-assignment">StackOverflow</a>。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>VARIABLE = value
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 在执行时扩展，允许递归扩展。</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>VARIABLE := value
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 在定义时扩展。</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>VARIABLE ?= value
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 只有在该变量为空时才设置值。</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>VARIABLE += value
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># 将值追加到变量的尾端。</span>
-</span></span></code></pre></div><p><strong>特殊变量</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">$@</span> <span style="color:#f00">：</span> <span style="color:#f00">target文件名</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">$&lt;</span> <span style="color:#f00">：</span> <span style="color:#f00">第一个dependencies文件</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">$?</span> <span style="color:#f00">：</span> <span style="color:#f00">所有比target文件更新的dependencies文件</span>
-</span></span><span style="display:flex;"><span><span style="color:#f00">$^</span> <span style="color:#f00">：</span> <span style="color:#f00">所有的dependencies文件，不管文件修改时间如何。</span>
-</span></span></code></pre></div><p><strong>跨平台</strong></p>
-<blockquote>
-<p>让makefile支持跨平台，在不同平台作出不同的反应</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#007f7f"># Detect system OS.
-</span></span></span><span style="display:flex;"><span><span style="color:#f00">ifeq</span> <span style="color:#f00">(</span><span style="color:#fff;font-weight:bold">$(</span>OS<span style="color:#fff;font-weight:bold">)</span><span style="color:#f00">,Windows_NT)</span>
-</span></span><span style="display:flex;"><span>    detected_OS := Windows
-</span></span><span style="display:flex;"><span><span style="color:#f00">else</span>
-</span></span><span style="display:flex;"><span>    detected_OS := <span style="color:#fff;font-weight:bold">$(</span>shell sh -c <span style="color:#0ff;font-weight:bold">&#39;uname -s 2&gt;/dev/null || echo not&#39;</span><span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#f00">endif</span>
-</span></span></code></pre></div><h3 id="go语言makefile模板">Go语言Makefile模板<a hidden class="anchor" aria-hidden="true" href="#go语言makefile模板">#</a></h3>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#f00">-include</span> <span style="color:#f00">.env</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>PROJECTNAME=<span style="color:#fff;font-weight:bold">$(</span>shell basename <span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#fff;font-weight:bold">$(</span>PWD<span style="color:#fff;font-weight:bold">)</span><span style="color:#0ff;font-weight:bold">&#34;</span><span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Binary package name for release
-</span></span></span><span style="display:flex;"><span>BINARY=go_trans
-</span></span><span style="display:flex;"><span>VERSION=0.0.3
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Go related variables.
-</span></span></span><span style="display:flex;"><span>GOBASE=<span style="color:#fff;font-weight:bold">$(</span>shell <span style="color:#fff;font-weight:bold">pwd</span><span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>GOPATH :=<span style="color:#fff;font-weight:bold">$(</span>shell <span style="color:#fff;font-weight:bold">echo</span> <span style="color:#0ff;font-weight:bold">${</span>GOPATH<span style="color:#0ff;font-weight:bold">}</span><span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Go binary store place.
-</span></span></span><span style="display:flex;"><span>GOBIN=<span style="color:#fff;font-weight:bold">$(</span>GOBASE<span style="color:#fff;font-weight:bold">)</span>/bin
-</span></span><span style="display:flex;"><span>GORELEASE=<span style="color:#fff;font-weight:bold">$(</span>GOBASE<span style="color:#fff;font-weight:bold">)</span>/release
-</span></span><span style="display:flex;"><span>GOFILES=<span style="color:#fff;font-weight:bold">$(</span>wildcard *.go<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>GOBUILD_RACE=go build -race -o 
-</span></span><span style="display:flex;"><span>GOBUILD=go build -o
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Redirect error output to a file, so we can show it in development mode.
-</span></span></span><span style="display:flex;"><span>STDERR=/tmp/.<span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span>-stderr.txt
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># PID file will keep the process id of the server
-</span></span></span><span style="display:flex;"><span>PID=/tmp/.<span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span>.pid
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f"># Make is verbose in Linux. Make it silent.
-</span></span></span><span style="display:flex;"><span>MAKEFLAGS += --silent
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>.PHONY: help
-</span></span><span style="display:flex;"><span>all: help
-</span></span><span style="display:flex;"><span>help: Makefile
-</span></span><span style="display:flex;"><span>	@echo
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34; Choose a command run in &#34;</span><span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span><span style="color:#0ff;font-weight:bold">&#34;:&#34;</span>
-</span></span><span style="display:flex;"><span>	@echo
-</span></span><span style="display:flex;"><span>	@sed -n <span style="color:#0ff;font-weight:bold">&#39;s/^##//p&#39;</span> $&lt; | column -t -s <span style="color:#0ff;font-weight:bold">&#39;:&#39;</span> |  sed -e <span style="color:#0ff;font-weight:bold">&#39;s/^/ /&#39;</span>
-</span></span><span style="display:flex;"><span>	@echo
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>go-compile: clean-bin go-get go-build
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>go-build:
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Building binary...&#34;</span>
-</span></span><span style="display:flex;"><span>	@GOOS=linux GOARCH=amd64 <span style="color:#fff;font-weight:bold">$(</span>GOBUILD<span style="color:#fff;font-weight:bold">)</span> <span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span>/<span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Building done.&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>go-race-check: go-get
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Race check start...&#34;</span>
-</span></span><span style="display:flex;"><span>	@GOOS=linux GOARCH=amd64 <span style="color:#fff;font-weight:bold">$(</span>GOBUILD_RACE<span style="color:#fff;font-weight:bold">)</span> <span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span>/<span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span>_tmp
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Race check done.&#34;</span>
-</span></span><span style="display:flex;"><span>	@-rm <span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span>/<span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span>_tmp
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>go-generate:
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Generating dependency files...&#34;</span>
-</span></span><span style="display:flex;"><span>	@GOPATH=<span style="color:#fff;font-weight:bold">$(</span>GOPATH<span style="color:#fff;font-weight:bold">)</span> GOBIN=<span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span> go generate <span style="color:#fff;font-weight:bold">$(</span>generate<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>go-get:
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Checking if there is any missing dependencies...&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">#@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get $(get)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>go-install:
-</span></span><span style="display:flex;"><span>	@GOPATH=<span style="color:#fff;font-weight:bold">$(</span>GOPATH<span style="color:#fff;font-weight:bold">)</span> GOBIN=<span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span> go install <span style="color:#fff;font-weight:bold">$(</span>GOFILES<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>clean-bin:
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Cleaning build cache...&#34;</span>
-</span></span><span style="display:flex;"><span>	@-rm <span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span>/* 2&gt; /dev/null
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>clean-release:
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Cleaning release file...&#34;</span>
-</span></span><span style="display:flex;"><span>	@-rm <span style="color:#fff;font-weight:bold">$(</span>GORELEASE<span style="color:#fff;font-weight:bold">)</span>/* 2&gt; /dev/null
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">## test: Run all test.
-</span></span></span><span style="display:flex;"><span>test:
-</span></span><span style="display:flex;"><span>	<span style="color:#fff;font-weight:bold">echo</span> <span style="color:#0ff;font-weight:bold">&#34;Test Not Implement.&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar
-</span></span></span><span style="display:flex;"><span>install: go-get
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>stop: stop-server
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>start-server: stop-server
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  </span><span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span><span style="color:#0ff;font-weight:bold"> is available at </span><span style="color:#fff;font-weight:bold">$(</span>ADDR<span style="color:#fff;font-weight:bold">)</span><span style="color:#0ff;font-weight:bold">&#34;</span>
-</span></span><span style="display:flex;"><span>	@-<span style="color:#fff;font-weight:bold">$(</span>GOBIN<span style="color:#fff;font-weight:bold">)</span>/<span style="color:#fff;font-weight:bold">$(</span>PROJECTNAME<span style="color:#fff;font-weight:bold">)</span> 2&gt;&amp;<span style="color:#ff0;font-weight:bold">1</span> &amp; <span style="color:#fff;font-weight:bold">echo</span> $$! &gt; <span style="color:#fff;font-weight:bold">$(</span>PID<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@cat <span style="color:#fff;font-weight:bold">$(</span>PID<span style="color:#fff;font-weight:bold">)</span> | sed <span style="color:#0ff;font-weight:bold">&#34;/^/s/^/  \&gt;  PID: /&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>stop-server:
-</span></span><span style="display:flex;"><span>	@-touch <span style="color:#fff;font-weight:bold">$(</span>PID<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@-kill <span style="color:#0ff;font-weight:bold">`</span>cat <span style="color:#fff;font-weight:bold">$(</span>PID<span style="color:#fff;font-weight:bold">)</span><span style="color:#0ff;font-weight:bold">`</span> 2&gt; /dev/null || <span style="color:#fff;font-weight:bold">true</span>
-</span></span><span style="display:flex;"><span>	@-rm <span style="color:#fff;font-weight:bold">$(</span>PID<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>restart-server: stop-server start-server
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">## compile: Compile the x86_64 Linux binary without race check.
-</span></span></span><span style="display:flex;"><span>compile:
-</span></span><span style="display:flex;"><span>	@-touch <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@-rm <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@-<span style="color:#fff;font-weight:bold">$(</span>MAKE<span style="color:#fff;font-weight:bold">)</span> go-compile 2&gt; <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@cat <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span> | sed -e <span style="color:#0ff;font-weight:bold">&#39;1s/.*/\nError:\n/&#39;</span>  | sed <span style="color:#0ff;font-weight:bold">&#39;s/make\[.*/ /&#39;</span> | sed <span style="color:#0ff;font-weight:bold">&#34;/^/s/^/     /&#34;</span> 1&gt;&amp;<span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">## clean: Clean build files and release file.
-</span></span></span><span style="display:flex;"><span>clean: clean-bin clean-release
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">## race: Race check.
-</span></span></span><span style="display:flex;"><span>race:
-</span></span><span style="display:flex;"><span>	@-touch <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@-rm <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@-<span style="color:#fff;font-weight:bold">$(</span>MAKE<span style="color:#fff;font-weight:bold">)</span> go-race-check 2&gt; <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	@cat <span style="color:#fff;font-weight:bold">$(</span>STDERR<span style="color:#fff;font-weight:bold">)</span> | sed -e <span style="color:#0ff;font-weight:bold">&#39;1s/.*/\nError:\n/&#39;</span>  | sed <span style="color:#0ff;font-weight:bold">&#39;s/make\[.*/ /&#39;</span> | sed <span style="color:#0ff;font-weight:bold">&#34;/^/s/^/     /&#34;</span> 1&gt;&amp;<span style="color:#ff0;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">## release: Release arm64 and x86_64 linux binary package.
-</span></span></span><span style="display:flex;"><span>release: clean-release
-</span></span><span style="display:flex;"><span>	@echo <span style="color:#0ff;font-weight:bold">&#34;  &gt;  Creating release file...&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#007f7f"># Build for arm linux</span>
-</span></span><span style="display:flex;"><span>	@CGO_ENABLED=<span style="color:#ff0;font-weight:bold">0</span> GOOS=linux GOARCH=arm64 <span style="color:#fff;font-weight:bold">$(</span>GOBUILD<span style="color:#fff;font-weight:bold">)</span> <span style="color:#fff;font-weight:bold">$(</span>GORELEASE<span style="color:#fff;font-weight:bold">)</span>/<span style="color:#fff;font-weight:bold">$(</span>BINARY<span style="color:#fff;font-weight:bold">)</span>-arm64-liunx-<span style="color:#fff;font-weight:bold">$(</span>VERSION<span style="color:#fff;font-weight:bold">)</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#007f7f"># Build for x86_64 linux</span>
-</span></span><span style="display:flex;"><span>	@CGO_ENABLED=<span style="color:#ff0;font-weight:bold">0</span> GOOS=linux GOARCH=amd64 <span style="color:#fff;font-weight:bold">$(</span>GOBUILD<span style="color:#fff;font-weight:bold">)</span> <span style="color:#fff;font-weight:bold">$(</span>GORELEASE<span style="color:#fff;font-weight:bold">)</span>/<span style="color:#fff;font-weight:bold">$(</span>BINARY<span style="color:#fff;font-weight:bold">)</span>-x86-64-linux-<span style="color:#fff;font-weight:bold">$(</span>VERSION<span style="color:#fff;font-weight:bold">)</span>
-</span></span></code></pre></div><h3 id="参考">参考<a hidden class="anchor" aria-hidden="true" href="#参考">#</a></h3>
-<p><a href="https://seisman.github.io/how-to-write-makefile/Makefile.pdf">跟我一起写Makefile</a></p>
-<p><a href="https://github.com/crossoverJie/btb/blob/master/Makefile">https://github.com/crossoverJie/btb/blob/master/Makefile</a>
-<a href="https://tutorialedge.net/golang/makefiles-for-go-developers/">Makefiles for Go Developers</a></p>
-<p><a href="https://github.com/azer/go-makefile-example">go-makefile-example</a></p>
-<p><a href="https://www.ruanyifeng.com/blog/2015/02/make.html">Make 命令教程</a></p>
-<p><a href="https://blog.wangjunfeng.com/post/golang-makefile/">一个为go准备的优秀makefile</a></p>
-<p><a href="https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents">GNU make</a></p>
-<p><a href="https://michaelchen.tech/gnu-make/cross-platform-makefile-for-application/">makefile跨平台</a></p>
-
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/go/">Go</a></li>
-      <li><a href="https://blog.niuhemoon.win/tags/makefile/">Makefile</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/">
-    <span class="title">« 上一页</span>
-    <span>golang限制函数同时调用次数</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/typescript-doc/">
-    <span class="title">下一页 »</span>
-    <span>Typescript基础</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Go语言和Makefile | Niuhe's Blog</title><meta name=keywords content="Go,Makefile"><meta name=description content="Makefile基础和Golang的Makefile模板"><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/golang-makefile/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/golang-makefile/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/golang-makefile/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="Go语言和Makefile"><meta property="og:description" content="Makefile基础和Golang的Makefile模板"><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-02-27T00:00:00+00:00"><meta property="article:modified_time" content="2021-02-27T00:00:00+00:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="Makefile"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go语言和Makefile"><meta name=twitter:description content="Makefile基础和Golang的Makefile模板"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"Go语言和Makefile","item":"https://blog.niuhemoon.win/posts/tech/golang-makefile/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Go语言和Makefile","name":"Go语言和Makefile","description":"Makefile基础和Golang的Makefile模板","keywords":["Go","Makefile"],"articleBody":"Makefile基础 语法\n# 目标 ：依赖 # 根据依赖生成目标的命令 targets : prerequisites command 变量\nMakefile 允许使用等号自定义变量。\ntxt = Hello World test: @echo $(txt) 上面代码中，变量 txt 等于 Hello World。调用时，变量需要放在 $( ) 之中。\n调用Shell变量，需要在美元符号前，再加一个美元符号，这是因为Make命令会对美元符号转义。\ntest: @echo $$HOME 有时，变量的值可能指向另一个变量。\nv1 = $(v2) 上面代码中，变量 v1 的值是另一个变量 v2。这时会产生一个问题，v1 的值到底在定义时扩展（静态扩展），还是在运行时扩展（动态扩展）？如果 v2 的值是动态的，这两种扩展方式的结果可能会差异很大。\n为了解决类似问题，Makefile一共提供了四个赋值运算符 （=、:=、？=、+=），它们的区别请看StackOverflow。\nVARIABLE = value # 在执行时扩展，允许递归扩展。 VARIABLE := value # 在定义时扩展。 VARIABLE ?= value # 只有在该变量为空时才设置值。 VARIABLE += value # 将值追加到变量的尾端。 特殊变量\n$@ ： target文件名 $\u003c ： 第一个dependencies文件 $? ： 所有比target文件更新的dependencies文件 $^ ： 所有的dependencies文件，不管文件修改时间如何。 跨平台\n让makefile支持跨平台，在不同平台作出不同的反应\n# Detect system OS. ifeq ($(OS),Windows_NT) detected_OS := Windows else detected_OS := $(shell sh -c 'uname -s 2\u003e/dev/null || echo not') endif Go语言Makefile模板 -include .env PROJECTNAME=$(shell basename \"$(PWD)\") # Binary package name for release BINARY=go_trans VERSION=0.0.3 # Go related variables. GOBASE=$(shell pwd) GOPATH :=$(shell echo ${GOPATH}) # Go binary store place. GOBIN=$(GOBASE)/bin GORELEASE=$(GOBASE)/release GOFILES=$(wildcard *.go) GOBUILD_RACE=go build -race -o GOBUILD=go build -o # Redirect error output to a file, so we can show it in development mode. STDERR=/tmp/.$(PROJECTNAME)-stderr.txt # PID file will keep the process id of the server PID=/tmp/.$(PROJECTNAME).pid # Make is verbose in Linux. Make it silent. MAKEFLAGS += --silent .PHONY: help all: help help: Makefile @echo @echo \" Choose a command run in \"$(PROJECTNAME)\":\" @echo @sed -n 's/^##//p' $\u003c | column -t -s ':' | sed -e 's/^/ /' @echo go-compile: clean-bin go-get go-build go-build: @echo \" \u003e Building binary...\" @GOOS=linux GOARCH=amd64 $(GOBUILD) $(GOBIN)/$(PROJECTNAME) @echo \" \u003e Building done.\" go-race-check: go-get @echo \" \u003e Race check start...\" @GOOS=linux GOARCH=amd64 $(GOBUILD_RACE) $(GOBIN)/$(PROJECTNAME)_tmp @echo \" \u003e Race check done.\" @-rm $(GOBIN)/$(PROJECTNAME)_tmp go-generate: @echo \" \u003e Generating dependency files...\" @GOPATH=$(GOPATH) GOBIN=$(GOBIN) go generate $(generate) go-get: @echo \" \u003e Checking if there is any missing dependencies...\" #@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get $(get) go-install: @GOPATH=$(GOPATH) GOBIN=$(GOBIN) go install $(GOFILES) clean-bin: @echo \" \u003e Cleaning build cache...\" @-rm $(GOBIN)/* 2\u003e /dev/null clean-release: @echo \" \u003e Cleaning release file...\" @-rm $(GORELEASE)/* 2\u003e /dev/null ## test: Run all test. test: echo \"Test Not Implement.\" ## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar install: go-get stop: stop-server start-server: stop-server @echo \" \u003e $(PROJECTNAME) is available at $(ADDR)\" @-$(GOBIN)/$(PROJECTNAME) 2\u003e\u00261 \u0026 echo $$! \u003e $(PID) @cat $(PID) | sed \"/^/s/^/ \\\u003e PID: /\" stop-server: @-touch $(PID) @-kill `cat $(PID)` 2\u003e /dev/null || true @-rm $(PID) restart-server: stop-server start-server ## compile: Compile the x86_64 Linux binary without race check. compile: @-touch $(STDERR) @-rm $(STDERR) @-$(MAKE) go-compile 2\u003e $(STDERR) @cat $(STDERR) | sed -e '1s/.*/\\nError:\\n/' | sed 's/make\\[.*/ /' | sed \"/^/s/^/ /\" 1\u003e\u00262 ## clean: Clean build files and release file. clean: clean-bin clean-release ## race: Race check. race: @-touch $(STDERR) @-rm $(STDERR) @-$(MAKE) go-race-check 2\u003e $(STDERR) @cat $(STDERR) | sed -e '1s/.*/\\nError:\\n/' | sed 's/make\\[.*/ /' | sed \"/^/s/^/ /\" 1\u003e\u00262 ## release: Release arm64 and x86_64 linux binary package. release: clean-release @echo \" \u003e Creating release file...\" # Build for arm linux @CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) $(GORELEASE)/$(BINARY)-arm64-liunx-$(VERSION) # Build for x86_64 linux @CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) $(GORELEASE)/$(BINARY)-x86-64-linux-$(VERSION) 参考 跟我一起写Makefile\nhttps://github.com/crossoverJie/btb/blob/master/Makefile Makefiles for Go Developers\ngo-makefile-example\nMake 命令教程\n一个为go准备的优秀makefile\nGNU make\nmakefile跨平台\n","wordCount":"976","inLanguage":"zh","datePublished":"2021-02-27T00:00:00Z","dateModified":"2021-02-27T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/golang-makefile/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Go语言和Makefile</h1><div class=post-description>Makefile基础和Golang的Makefile模板</div><div class=post-meta><span title='2021-02-27 00:00:00 +0000 UTC'>2021-02-27</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;·&nbsp;<span>976 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><details class=toc open><summary accesskey=c title="(Alt + C)"><span class=title>目录</span></summary><div class=inner><ul><li><a href=#makefile%e5%9f%ba%e7%a1%80 aria-label=Makefile基础>Makefile基础</a></li><li><a href=#go%e8%af%ad%e8%a8%80makefile%e6%a8%a1%e6%9d%bf aria-label=Go语言Makefile模板>Go语言Makefile模板</a></li><li><a href=#%e5%8f%82%e8%80%83 aria-label=参考>参考</a></li></ul></div></details><div class="post-content md-content"><h3 id=makefile基础>Makefile基础<a hidden class=anchor aria-hidden=true href=#makefile基础>#</a></h3><p><strong>语法</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#007f7f># 目标 ：依赖
+</span></span></span><span style=display:flex><span><span style=color:#007f7f># 根据依赖生成目标的命令
+</span></span></span><span style=display:flex><span>targets : prerequisites
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>command</span>
+</span></span></code></pre></div><p><strong>变量</strong></p><p>Makefile 允许使用等号自定义变量。</p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>txt = Hello World
+</span></span><span style=display:flex><span>test:
+</span></span><span style=display:flex><span> @echo <span style=color:#fff;font-weight:700>$(</span>txt<span style=color:#fff;font-weight:700>)</span>
+</span></span></code></pre></div><p>上面代码中，变量 txt 等于 Hello World。调用时，变量需要放在 $( ) 之中。</p><p>调用Shell变量，需要在美元符号前，再加一个美元符号，这是因为Make命令会对美元符号转义。</p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>test:
+</span></span><span style=display:flex><span> @echo $$HOME
+</span></span></code></pre></div><p>有时，变量的值可能指向另一个变量。</p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>v1 = <span style=color:#fff;font-weight:700>$(</span>v2<span style=color:#fff;font-weight:700>)</span>
+</span></span></code></pre></div><p>上面代码中，变量 v1 的值是另一个变量 v2。这时会产生一个问题，v1 的值到底在定义时扩展（静态扩展），还是在运行时扩展（动态扩展）？如果 v2 的值是动态的，这两种扩展方式的结果可能会差异很大。</p><p>为了解决类似问题，Makefile一共提供了四个赋值运算符 （=、:=、？=、+=），它们的区别请看<a href=http://stackoverflow.com/questions/448910/makefile-variable-assignment>StackOverflow</a>。</p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>VARIABLE = value
+</span></span><span style=display:flex><span><span style=color:#007f7f># 在执行时扩展，允许递归扩展。</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>VARIABLE := value
+</span></span><span style=display:flex><span><span style=color:#007f7f># 在定义时扩展。</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>VARIABLE ?= value
+</span></span><span style=display:flex><span><span style=color:#007f7f># 只有在该变量为空时才设置值。</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>VARIABLE += value
+</span></span><span style=display:flex><span><span style=color:#007f7f># 将值追加到变量的尾端。</span>
+</span></span></code></pre></div><p><strong>特殊变量</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#fff;font-weight:700>$@</span> <span style=color:red>：</span> <span style=color:red>target文件名</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>$&lt;</span> <span style=color:red>：</span> <span style=color:red>第一个dependencies文件</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>$?</span> <span style=color:red>：</span> <span style=color:red>所有比target文件更新的dependencies文件</span>
+</span></span><span style=display:flex><span><span style=color:red>$^</span> <span style=color:red>：</span> <span style=color:red>所有的dependencies文件，不管文件修改时间如何。</span>
+</span></span></code></pre></div><p><strong>跨平台</strong></p><blockquote><p>让makefile支持跨平台，在不同平台作出不同的反应</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:#007f7f># Detect system OS.
+</span></span></span><span style=display:flex><span><span style=color:red>ifeq</span> <span style=color:red>(</span><span style=color:#fff;font-weight:700>$(</span>OS<span style=color:#fff;font-weight:700>)</span><span style=color:red>,Windows_NT)</span>
+</span></span><span style=display:flex><span>    detected_OS := Windows
+</span></span><span style=display:flex><span><span style=color:red>else</span>
+</span></span><span style=display:flex><span>    detected_OS := <span style=color:#fff;font-weight:700>$(</span>shell sh -c <span style=color:#0ff;font-weight:700>&#39;uname -s 2&gt;/dev/null || echo not&#39;</span><span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span><span style=color:red>endif</span>
+</span></span></code></pre></div><h3 id=go语言makefile模板>Go语言Makefile模板<a hidden class=anchor aria-hidden=true href=#go语言makefile模板>#</a></h3><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-makefile data-lang=makefile><span style=display:flex><span><span style=color:red>-include</span> <span style=color:red>.env</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>PROJECTNAME=<span style=color:#fff;font-weight:700>$(</span>shell basename <span style=color:#0ff;font-weight:700>&#34;</span><span style=color:#fff;font-weight:700>$(</span>PWD<span style=color:#fff;font-weight:700>)</span><span style=color:#0ff;font-weight:700>&#34;</span><span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># Binary package name for release
+</span></span></span><span style=display:flex><span>BINARY=go_trans
+</span></span><span style=display:flex><span>VERSION=0.0.3
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># Go related variables.
+</span></span></span><span style=display:flex><span>GOBASE=<span style=color:#fff;font-weight:700>$(</span>shell <span style=color:#fff;font-weight:700>pwd</span><span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>GOPATH :=<span style=color:#fff;font-weight:700>$(</span>shell <span style=color:#fff;font-weight:700>echo</span> <span style=color:#0ff;font-weight:700>${</span>GOPATH<span style=color:#0ff;font-weight:700>}</span><span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># Go binary store place.
+</span></span></span><span style=display:flex><span>GOBIN=<span style=color:#fff;font-weight:700>$(</span>GOBASE<span style=color:#fff;font-weight:700>)</span>/bin
+</span></span><span style=display:flex><span>GORELEASE=<span style=color:#fff;font-weight:700>$(</span>GOBASE<span style=color:#fff;font-weight:700>)</span>/release
+</span></span><span style=display:flex><span>GOFILES=<span style=color:#fff;font-weight:700>$(</span>wildcard *.go<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>GOBUILD_RACE=go build -race -o 
+</span></span><span style=display:flex><span>GOBUILD=go build -o
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># Redirect error output to a file, so we can show it in development mode.
+</span></span></span><span style=display:flex><span>STDERR=/tmp/.<span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span>-stderr.txt
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># PID file will keep the process id of the server
+</span></span></span><span style=display:flex><span>PID=/tmp/.<span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span>.pid
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f># Make is verbose in Linux. Make it silent.
+</span></span></span><span style=display:flex><span>MAKEFLAGS += --silent
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>.PHONY: help
+</span></span><span style=display:flex><span>all: help
+</span></span><span style=display:flex><span>help: Makefile
+</span></span><span style=display:flex><span>	@echo
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34; Choose a command run in &#34;</span><span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span><span style=color:#0ff;font-weight:700>&#34;:&#34;</span>
+</span></span><span style=display:flex><span>	@echo
+</span></span><span style=display:flex><span>	@sed -n <span style=color:#0ff;font-weight:700>&#39;s/^##//p&#39;</span> $&lt; | column -t -s <span style=color:#0ff;font-weight:700>&#39;:&#39;</span> |  sed -e <span style=color:#0ff;font-weight:700>&#39;s/^/ /&#39;</span>
+</span></span><span style=display:flex><span>	@echo
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>go-compile: clean-bin go-get go-build
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>go-build:
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Building binary...&#34;</span>
+</span></span><span style=display:flex><span>	@GOOS=linux GOARCH=amd64 <span style=color:#fff;font-weight:700>$(</span>GOBUILD<span style=color:#fff;font-weight:700>)</span> <span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span>/<span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Building done.&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>go-race-check: go-get
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Race check start...&#34;</span>
+</span></span><span style=display:flex><span>	@GOOS=linux GOARCH=amd64 <span style=color:#fff;font-weight:700>$(</span>GOBUILD_RACE<span style=color:#fff;font-weight:700>)</span> <span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span>/<span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span>_tmp
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Race check done.&#34;</span>
+</span></span><span style=display:flex><span>	@-rm <span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span>/<span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span>_tmp
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>go-generate:
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Generating dependency files...&#34;</span>
+</span></span><span style=display:flex><span>	@GOPATH=<span style=color:#fff;font-weight:700>$(</span>GOPATH<span style=color:#fff;font-weight:700>)</span> GOBIN=<span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span> go generate <span style=color:#fff;font-weight:700>$(</span>generate<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>go-get:
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Checking if there is any missing dependencies...&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#007f7f>#@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get $(get)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>go-install:
+</span></span><span style=display:flex><span>	@GOPATH=<span style=color:#fff;font-weight:700>$(</span>GOPATH<span style=color:#fff;font-weight:700>)</span> GOBIN=<span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span> go install <span style=color:#fff;font-weight:700>$(</span>GOFILES<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>clean-bin:
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Cleaning build cache...&#34;</span>
+</span></span><span style=display:flex><span>	@-rm <span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span>/* 2&gt; /dev/null
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>clean-release:
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Cleaning release file...&#34;</span>
+</span></span><span style=display:flex><span>	@-rm <span style=color:#fff;font-weight:700>$(</span>GORELEASE<span style=color:#fff;font-weight:700>)</span>/* 2&gt; /dev/null
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>## test: Run all test.
+</span></span></span><span style=display:flex><span>test:
+</span></span><span style=display:flex><span>	<span style=color:#fff;font-weight:700>echo</span> <span style=color:#0ff;font-weight:700>&#34;Test Not Implement.&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar
+</span></span></span><span style=display:flex><span>install: go-get
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>stop: stop-server
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>start-server: stop-server
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  </span><span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span><span style=color:#0ff;font-weight:700> is available at </span><span style=color:#fff;font-weight:700>$(</span>ADDR<span style=color:#fff;font-weight:700>)</span><span style=color:#0ff;font-weight:700>&#34;</span>
+</span></span><span style=display:flex><span>	@-<span style=color:#fff;font-weight:700>$(</span>GOBIN<span style=color:#fff;font-weight:700>)</span>/<span style=color:#fff;font-weight:700>$(</span>PROJECTNAME<span style=color:#fff;font-weight:700>)</span> 2&gt;&amp;<span style=color:#ff0;font-weight:700>1</span> &amp; <span style=color:#fff;font-weight:700>echo</span> $$! &gt; <span style=color:#fff;font-weight:700>$(</span>PID<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@cat <span style=color:#fff;font-weight:700>$(</span>PID<span style=color:#fff;font-weight:700>)</span> | sed <span style=color:#0ff;font-weight:700>&#34;/^/s/^/  \&gt;  PID: /&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>stop-server:
+</span></span><span style=display:flex><span>	@-touch <span style=color:#fff;font-weight:700>$(</span>PID<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@-kill <span style=color:#0ff;font-weight:700>`</span>cat <span style=color:#fff;font-weight:700>$(</span>PID<span style=color:#fff;font-weight:700>)</span><span style=color:#0ff;font-weight:700>`</span> 2&gt; /dev/null || <span style=color:#fff;font-weight:700>true</span>
+</span></span><span style=display:flex><span>	@-rm <span style=color:#fff;font-weight:700>$(</span>PID<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>restart-server: stop-server start-server
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>## compile: Compile the x86_64 Linux binary without race check.
+</span></span></span><span style=display:flex><span>compile:
+</span></span><span style=display:flex><span>	@-touch <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@-rm <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@-<span style=color:#fff;font-weight:700>$(</span>MAKE<span style=color:#fff;font-weight:700>)</span> go-compile 2&gt; <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@cat <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span> | sed -e <span style=color:#0ff;font-weight:700>&#39;1s/.*/\nError:\n/&#39;</span>  | sed <span style=color:#0ff;font-weight:700>&#39;s/make\[.*/ /&#39;</span> | sed <span style=color:#0ff;font-weight:700>&#34;/^/s/^/     /&#34;</span> 1&gt;&amp;<span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>## clean: Clean build files and release file.
+</span></span></span><span style=display:flex><span>clean: clean-bin clean-release
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>## race: Race check.
+</span></span></span><span style=display:flex><span>race:
+</span></span><span style=display:flex><span>	@-touch <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@-rm <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@-<span style=color:#fff;font-weight:700>$(</span>MAKE<span style=color:#fff;font-weight:700>)</span> go-race-check 2&gt; <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	@cat <span style=color:#fff;font-weight:700>$(</span>STDERR<span style=color:#fff;font-weight:700>)</span> | sed -e <span style=color:#0ff;font-weight:700>&#39;1s/.*/\nError:\n/&#39;</span>  | sed <span style=color:#0ff;font-weight:700>&#39;s/make\[.*/ /&#39;</span> | sed <span style=color:#0ff;font-weight:700>&#34;/^/s/^/     /&#34;</span> 1&gt;&amp;<span style=color:#ff0;font-weight:700>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>## release: Release arm64 and x86_64 linux binary package.
+</span></span></span><span style=display:flex><span>release: clean-release
+</span></span><span style=display:flex><span>	@echo <span style=color:#0ff;font-weight:700>&#34;  &gt;  Creating release file...&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#007f7f># Build for arm linux</span>
+</span></span><span style=display:flex><span>	@CGO_ENABLED=<span style=color:#ff0;font-weight:700>0</span> GOOS=linux GOARCH=arm64 <span style=color:#fff;font-weight:700>$(</span>GOBUILD<span style=color:#fff;font-weight:700>)</span> <span style=color:#fff;font-weight:700>$(</span>GORELEASE<span style=color:#fff;font-weight:700>)</span>/<span style=color:#fff;font-weight:700>$(</span>BINARY<span style=color:#fff;font-weight:700>)</span>-arm64-liunx-<span style=color:#fff;font-weight:700>$(</span>VERSION<span style=color:#fff;font-weight:700>)</span>
+</span></span><span style=display:flex><span>	<span style=color:#007f7f># Build for x86_64 linux</span>
+</span></span><span style=display:flex><span>	@CGO_ENABLED=<span style=color:#ff0;font-weight:700>0</span> GOOS=linux GOARCH=amd64 <span style=color:#fff;font-weight:700>$(</span>GOBUILD<span style=color:#fff;font-weight:700>)</span> <span style=color:#fff;font-weight:700>$(</span>GORELEASE<span style=color:#fff;font-weight:700>)</span>/<span style=color:#fff;font-weight:700>$(</span>BINARY<span style=color:#fff;font-weight:700>)</span>-x86-64-linux-<span style=color:#fff;font-weight:700>$(</span>VERSION<span style=color:#fff;font-weight:700>)</span>
+</span></span></code></pre></div><h3 id=参考>参考<a hidden class=anchor aria-hidden=true href=#参考>#</a></h3><p><a href=https://seisman.github.io/how-to-write-makefile/Makefile.pdf>跟我一起写Makefile</a></p><p><a href=https://github.com/crossoverJie/btb/blob/master/Makefile>https://github.com/crossoverJie/btb/blob/master/Makefile</a>
+<a href=https://tutorialedge.net/golang/makefiles-for-go-developers/>Makefiles for Go Developers</a></p><p><a href=https://github.com/azer/go-makefile-example>go-makefile-example</a></p><p><a href=https://www.ruanyifeng.com/blog/2015/02/make.html>Make 命令教程</a></p><p><a href=https://blog.wangjunfeng.com/post/golang-makefile/>一个为go准备的优秀makefile</a></p><p><a href=https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents>GNU make</a></p><p><a href=https://michaelchen.tech/gnu-make/cross-platform-makefile-for-application/>makefile跨平台</a></p></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/go/>Go</a></li><li><a href=https://blog.niuhemoon.win/tags/makefile/>Makefile</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/golang-frequency-limit/><span class=title>« 上一页</span>
+<span>golang限制函数同时调用次数</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/typescript-doc/><span class=title>下一页 »</span>
+<span>Typescript基础</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

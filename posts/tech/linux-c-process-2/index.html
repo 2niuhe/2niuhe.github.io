@@ -1,650 +1,149 @@
-<!DOCTYPE html>
-<html lang="zh" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Linux进程——进程创建和同步控制 | Niuhe&#39;s Blog</title>
-<meta name="keywords" content="Linux, C">
-<meta name="description" content="创建子进程，并进行父子进程同步控制">
-<meta name="author" content="Niuhe">
-<link rel="canonical" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="https://blog.niuhemoon.win/base/favicon.ico">
-<link rel="apple-touch-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<link rel="mask-icon" href="https://blog.niuhemoon.win/base/avatar.jpeg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="zh" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-
-<style>
-.notice {
-    --root-color: #444;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #c33;
-    --warning-content: #fee;
-    --info-title: #fb7;
-    --info-content: #fec;
-    --note-title: #6be;
-    --note-content: #e7f2fa;
-    --tip-title: #5a5;
-    --tip-content: #efe;
-    padding: 18px;
-    line-height: 24px;
-    margin-bottom: 24px;
-    border-radius: 4px;
-    color: var(--root-color);
-    background: var(--root-background);
-}
-
-html[data-theme="dark"] .notice {
-    --root-color: #ddd;
-    --root-background: #eff;
-    --title-color: #fff;
-    --title-background: #7bd;
-    --warning-title: #800;
-    --warning-content: #400;
-    --info-title: #a50;
-    --info-content: #420;
-    --note-title: #069;
-    --note-content: #023;
-    --tip-title: #363;
-    --tip-content: #121;
-}
-
-.notice p:last-child {
-    margin-bottom: 0;
-}
-
-.notice-title {
-    margin: -18px -18px 12px;
-    padding: 4px 18px;
-    border-radius: 4px 4px 0 0;
-    font-weight: 700;
-    color: var(--title-color);
-    background: var(--title-background);
-}
-
-.notice.warning .notice-title { background: var(--warning-title); }
-.notice.warning { background: var(--warning-content); }
-.notice.info .notice-title { background: var(--info-title); }
-.notice.info { background: var(--info-content); }
-.notice.note .notice-title { background: var(--note-title); }
-.notice.note { background: var(--note-content); }
-.notice.tip .notice-title { background: var(--tip-title); }
-.notice.tip { background: var(--tip-content); }
-
-.icon-notice {
-    display: inline-flex;
-    align-self: center;
-    margin-right: 8px;
-}
-
-.icon-notice svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.icon-notice.baseline svg {
-    position: relative;
-    top: .125em;
-}
-
-.mermaid-wrapper {
-    margin: 1rem 0;
-    overflow-x: auto;
-}
-
-.mermaid-wrapper .mermaid {
-    background: transparent;
-    text-align: center;
-}
-</style>
-<meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/">
-  <meta property="og:site_name" content="Niuhe&#39;s Blog">
-  <meta property="og:title" content="Linux进程——进程创建和同步控制">
-  <meta property="og:description" content="创建子进程，并进行父子进程同步控制">
-  <meta property="og:locale" content="zh">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2018-10-09T00:00:00+00:00">
-    <meta property="article:modified_time" content="2018-10-09T00:00:00+00:00">
-    <meta property="article:tag" content="Linux">
-    <meta property="article:tag" content="C">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Linux进程——进程创建和同步控制">
-  <meta name="twitter:description" content="创建子进程，并进行父子进程同步控制">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "📚文章",
-      "item": "https://blog.niuhemoon.win/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "👨🏻‍💻 技术",
-      "item": "https://blog.niuhemoon.win/posts/tech/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  3 ,
-      "name": "Linux进程——进程创建和同步控制",
-      "item": "https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Linux进程——进程创建和同步控制",
-  "name": "Linux进程——进程创建和同步控制",
-  "description": "创建子进程，并进行父子进程同步控制",
-  "keywords": [
-    "Linux", "C"
-  ],
-  "articleBody": " Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使用内核资源时，通过系统调用进入内核态，系统调用结束后，重新返回用户态。\n###创建进程\n可通过fork函数创建子进程，理论上，父子进程拥有各自独立的用户空间。但Linux为了提高效率，采用COW(copy on write)算法。\nfork函数原型如下:\n/* 成功：子进程pid返回给父进程，0返回给子进程 失败：\t-1返回给父进程，设置errno */ pid_t fork(); 案例：创建子进程\n#include #include int glob = 10; int main() { int local; pid_t pid; local = 8; //向子进程的pid传值0 if((pid = fork()) == 0) {\t//子进程 sleep(1); printf(\"i am in child process,%d\\n\",getpid()); }zijc else {\t//父进程 printf(\"i am in father process,%d\\n\",getpid()); glob++; local--; sleep(5); } printf(\"pid = %d,glob = %d,localar = %d\\n\",getpid(),glob,local); return 0; } /*输出为： i am in father process,13023 i am in child process,13024 pid = 13024,glob = 10,localar = 8 pid = 13023,glob = 11,localar = 7 */ 当用fork()函数创建子进程时，Linux内核为子进程分配一个进程控制块task_struct。子进程的进程控制块用来存放子进程拥有的资源、管理信息和进程状态等。\n此时，在父子进程没有对数据进行读写操作之前，父子进程共享用户地址空间。当父进程执行glob++，Linux内核采用COW算法，首先为子进程创建相应的数据区，接着内核将父进程地址空间中的数据区相关页复制到子进程地址空间中数据区的相关页,此时，父子进程各自拥有独立的全局变量glob。当执行local–语句，内核以同样方法在子进程用户地址空间的栈区的相应页建立复制。而代码区是只读的，所以父子进程共享代码区，直接建立映射，不进行复制。\n###程序启动和结束 初始化程序\n在加载可执行文件后，首先运行的是称为start-up的代码，此部分代码在程序链接为可执行程序时，由链接器加入，作用是从内核读取进程运行的环境信息，如环境变量、命令行参数等。\nstart-up完成初始化工作后，调用main函数，执行完进程后，通过exit函数结束进程。\n结束进程\n每个进程都有父进程，当子进程运行结束后，子进程进程僵尸状态，并向父进程发送SIGCHLD信号，通知子进程已经终止。在该状态下子进程几乎释放了所有内存资源，不能被重新调度，仅在进程列表中保留一个位置，只保留进程如何终止的一些状态信息，以供回收者使用。父进程可以通过调用wait或waitpid函数获取子进程的退出码，以便判断子进程结束的原因。由父进程释放子进程余下的所有资源。\n但当父进程在子进程之前终止，子进程的父进程将更改为init进程，由init进程负责子进程的善后处理工作。\n//终止进程,status返回值 void exit(int status); /* 登记终止处理函数，ANSI C规定，一个进程可以登记最多32个终止处理函数，这些函数由exit自动调用。exit以先进后出的方式调用atexit登记的函数，同一函数登记多次，也被调用多次。 根据ANSI C，exit首先调用终止处理函数，然后按需调用fclose，关闭所有打开的文件流，保证基于缓冲区的文件I/O操作完整性。 这样，在进程结束前，将未写入文件的缓冲区数据，通过exit函数进行保存。 func终止处理函数 成功返回0，否则非0 */ int atexit(void(*func)(void)); //直接结束进程，不进行任何其他处理 void _exit(int status); 案例：直接退出进程\n#include #include int main() { printf(\"output begin\\n\"); printf(\"content in buffer\"); printf(\"drop the buffer\"); _exit(0); } 案例：登记终止处理函数\n#include #include static void my_exit1(void) { printf(\"first exit handler\\n\"); } static void my_exit2(void) { printf(\"second exit handler\\n\"); } int main(void) { if(atexit(my_exit2) != 0) printf(\"can't register my_exit2\"); if(atexit(my_exit1) != 0) printf(\"can't register my_exit1\"); if(atexit(my_exit1) != 0) printf(\"can't register my_exit1\"); printf(\"main is done\\n\"); return 0; } ###进程同步控制\n当创建一个子进程后，父子进程的执行顺序无法控制。当父子进程同事操作共享资源，不同的执行次序有可能导致不同的运行结果，从而出现数据不一致性。为解决这一问题，必须提供进程间的同步控制机制。\nwait和waitpid可用来实现父子进程同步，用来等待子进程结束。 wait函数的功能是获取子进程如何终止的信息，清除子进程的剩余资源。父进程调用wait函数，进入阻塞队列，等待某个子进程的结束。当子进程结束，会产生结束状态字status,并向父进程发送SIGCHLD信号。 父进程收到SIGCHLD信号，若希望知道子进程结束状态，调用wait,否则忽略该信号。\n/* 暂停执行，将子进程结束状态写入status中，并确认子进程已经结束 status 子进程状态 成功返回子进程PID，否则返回-1 */ pid_t wait(int *status); /* 等待指定子进程结束 pid 指定等待的子进程 \u003c-1 pid所代表进程组中进程 -1 任何子进程 0 与该进程同组的进程 \u003e0 进程标识符为pid的进程 status 保存子进程状态 options 等待方式 WNOHANG\t进程不阻塞 WUNTRACED 当有子进程结束时返回 */ pid_t waitpid(pid_t pid,int *status,int options); 案例：依次等待多个子进程结束，并显示结束状态\n#include #include #include #include int main(void) { pid_t pid[10],wpid; int child_status,i; //创建5个子进程 for(i=0;i\u003c5;i++) { if((pid[i]=fork()) == 0) exit(100+i); } //等待子进程结束，输出status for(i=0;i\u003c5;i++) { wpid = waitpid(pid[i],\u0026child_status,0); if(WIFEXITED(child_status)) printf(\"Child %d exit with status %d\\n\", wpid,WEXITSTATUS(child_status)); else printf(\"Child %d terminated abnormally\\n\",wpid); } return 0; } ",
-  "wordCount" : "1919",
-  "inLanguage": "zh",
-  "datePublished": "2018-10-09T00:00:00Z",
-  "dateModified": "2018-10-09T00:00:00Z",
-  "author":{
-    "@type": "Person",
-    "name": "Niuhe"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Niuhe's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://blog.niuhemoon.win/base/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://blog.niuhemoon.win/" accesskey="h" title="Niuhe&#39;s Blog (Alt + H)">
-                <img src="https://blog.niuhemoon.win/base/avatar.jpeg" alt="" aria-label="logo"
-                    height="35">Niuhe&#39;s Blog</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-            <li>
-                <a href="https://blog.niuhemoon.win/search" title="🔍搜索 (Alt &#43; /)" accesskey=/>
-                    <span>🔍搜索</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/" title="🏠主页">
-                    <span>🏠主页</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/posts" title="📚文章">
-                    <span>📚文章</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/tags" title="🔖标签">
-                    <span>🔖标签</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/archives/" title="⏱时间轴">
-                    <span>⏱时间轴</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://blog.niuhemoon.win/about" title="🙋🏻‍♂️关于">
-                    <span>🙋🏻‍♂️关于</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
-            <a href="/">主页</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/">📚文章</a>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <a href="/posts/tech/">👨🏻‍💻 技术</a>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
-        <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-</nav>
-    <h1 class="post-title entry-hint-parent">
-      Linux进程——进程创建和同步控制
-    </h1>
-    <div class="post-description">
-      创建子进程，并进行父子进程同步控制
-    </div>
-    <div class="post-meta">
-
-<span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>1919 字</span>&nbsp;·&nbsp;<span>Niuhe</span>
-
-</div>
-  </header> 
-
-  <div class="post-content md-content"><blockquote>
-<p>Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使用内核资源时，通过系统调用进入内核态，系统调用结束后，重新返回用户态。</p>
-</blockquote>
-<p>###创建进程</p>
-<blockquote>
-<p>可通过fork函数创建子进程，理论上，父子进程拥有各自独立的用户空间。但Linux为了提高效率，采用<a href="https://en.wikipedia.org/wiki/Copy-on-write">COW(copy on write)</a>算法。</p>
-<p>fork函数原型如下:</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功：子进程pid返回给父进程，0返回给子进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">失败：	-1返回给父进程，设置errno
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> fork();
-</span></span></code></pre></div><p><strong>案例：创建子进程</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> glob = <span style="color:#ff0;font-weight:bold">10</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">int</span> local;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">pid_t</span> pid;
-</span></span><span style="display:flex;"><span>    local = <span style="color:#ff0;font-weight:bold">8</span>;
-</span></span><span style="display:flex;"><span>	<span style="color:#007f7f">//向子进程的pid传值0
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>((pid = fork()) == <span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>    {	<span style="color:#007f7f">//子进程
-</span></span></span><span style="display:flex;"><span>        sleep(<span style="color:#ff0;font-weight:bold">1</span>);
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;i am in child process,%d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,getpid());
-</span></span><span style="display:flex;"><span>    }zijc
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">else</span>
-</span></span><span style="display:flex;"><span>    {	<span style="color:#007f7f">//父进程
-</span></span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;i am in father process,%d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,getpid());
-</span></span><span style="display:flex;"><span>        glob++;
-</span></span><span style="display:flex;"><span>        local--;
-</span></span><span style="display:flex;"><span>        sleep(<span style="color:#ff0;font-weight:bold">5</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;pid = %d,glob = %d,localar = %d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,getpid(),glob,local);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*输出为：
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">i am in father process,13023
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">i am in child process,13024
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">pid = 13024,glob = 10,localar = 8
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">pid = 13023,glob = 11,localar = 7
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span></code></pre></div><blockquote>
-<p>当用fork()函数创建子进程时，Linux内核为子进程分配一个进程控制块task_struct。子进程的进程控制块用来存放子进程拥有的资源、管理信息和进程状态等。</p>
-<p>此时，在父子进程没有对数据进行读写操作之前，父子进程共享用户地址空间。当父进程执行glob++，Linux内核采用COW算法，首先为子进程创建相应的数据区，接着内核<strong>将父进程地址空间中的数据区相关页复制到子进程地址空间中数据区的相关页</strong>,此时，父子进程各自拥有独立的全局变量glob。<strong>当执行local&ndash;语句，内核以同样方法在子进程用户地址空间的栈区的相应页建立复制</strong>。而代码区是只读的，所以父子进程共享代码区，直接建立映射，不进行复制。</p>
-</blockquote>
-<p>###程序启动和结束
-<strong>初始化程序</strong></p>
-<blockquote>
-<p>在加载可执行文件后，首先运行的是称为start-up的代码，此部分代码在程序链接为可执行程序时，由链接器加入，作用是从内核读取进程运行的环境信息，如环境变量、命令行参数等。</p>
-<p>start-up完成初始化工作后，调用main函数，执行完进程后，通过exit函数结束进程。</p>
-</blockquote>
-<p><strong>结束进程</strong></p>
-<blockquote>
-<p>每个进程都有父进程，当子进程运行结束后，子进程进程僵尸状态，并向父进程发送SIGCHLD信号，通知子进程已经终止。在该状态下子进程几乎释放了所有内存资源，不能被重新调度，仅在进程列表中保留一个位置，只保留进程如何终止的一些状态信息，以供回收者使用。父进程可以通过调用<strong>wait或waitpid函数</strong>获取子进程的退出码，以便判断子进程结束的原因。由父进程释放子进程余下的所有资源。</p>
-<p>但当父进程在子进程之前终止，子进程的父进程将更改为init进程，由init进程负责子进程的善后处理工作。</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#007f7f">//终止进程,status返回值
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> exit(<span style="color:#fff;font-weight:bold">int</span> status);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">登记终止处理函数，ANSI C规定，一个进程可以登记最多32个终止处理函数，这些函数由exit自动调用。exit以先进后出的方式调用atexit登记的函数，同一函数登记多次，也被调用多次。
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">根据ANSI C，exit首先调用终止处理函数，然后按需调用fclose，关闭所有打开的文件流，保证基于缓冲区的文件I/O操作完整性。
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">这样，在进程结束前，将未写入文件的缓冲区数据，通过exit函数进行保存。
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">func终止处理函数
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回0，否则非0
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> atexit(<span style="color:#fff;font-weight:bold">void</span>(*func)(<span style="color:#fff;font-weight:bold">void</span>));
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">//直接结束进程，不进行任何其他处理
-</span></span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">void</span> _exit(<span style="color:#fff;font-weight:bold">int</span> status);
-</span></span></code></pre></div><p><strong>案例：直接退出进程</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;output begin</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;content in buffer&#34;</span>);
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;drop the buffer&#34;</span>);
-</span></span><span style="display:flex;"><span>    _exit(<span style="color:#ff0;font-weight:bold">0</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p><strong>案例：登记终止处理函数</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">static</span> <span style="color:#fff;font-weight:bold">void</span> my_exit1(<span style="color:#fff;font-weight:bold">void</span>)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;first exit handler</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">static</span> <span style="color:#fff;font-weight:bold">void</span> my_exit2(<span style="color:#fff;font-weight:bold">void</span>)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;second exit handler</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">void</span>)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(atexit(my_exit2) != <span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;can&#39;t register my_exit2&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(atexit(my_exit1) != <span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;can&#39;t register my_exit1&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">if</span>(atexit(my_exit1) != <span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#0ff;font-weight:bold">&#34;can&#39;t register my_exit1&#34;</span>);
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#0ff;font-weight:bold">&#34;main is done</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>###进程同步控制</p>
-<blockquote>
-<p>当创建一个子进程后，<strong>父子进程的执行顺序无法控制</strong>。当父子进程同事操作共享资源，不同的执行次序有可能导致不同的运行结果，从而出现数据不一致性。为解决这一问题，必须提供进程间的同步控制机制。</p>
-<p>wait和waitpid可用来实现父子进程同步，用来等待子进程结束。
+<!doctype html><html lang=zh dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Linux进程——进程创建和同步控制 | Niuhe's Blog</title><meta name=keywords content="Linux,C"><meta name=description content="创建子进程，并进行父子进程同步控制"><meta name=author content="Niuhe"><link rel=canonical href=https://blog.niuhemoon.win/posts/tech/linux-c-process-2/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=icon type=image/png sizes=32x32 href=https://blog.niuhemoon.win/base/favicon.ico><link rel=apple-touch-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><link rel=mask-icon href=https://blog.niuhemoon.win/base/avatar.jpeg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://blog.niuhemoon.win/posts/tech/linux-c-process-2/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><style>.notice{--root-color:#444;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#c33;--warning-content:#fee;--info-title:#fb7;--info-content:#fec;--note-title:#6be;--note-content:#e7f2fa;--tip-title:#5a5;--tip-content:#efe;padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:var(--root-color);background:var(--root-background)}html[data-theme=dark] .notice{--root-color:#ddd;--root-background:#eff;--title-color:#fff;--title-background:#7bd;--warning-title:#800;--warning-content:#400;--info-title:#a50;--info-content:#420;--note-title:#069;--note-content:#023;--tip-title:#363;--tip-content:#121}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:var(--title-color);background:var(--title-background)}.notice.warning .notice-title{background:var(--warning-title)}.notice.warning{background:var(--warning-content)}.notice.info .notice-title{background:var(--info-title)}.notice.info{background:var(--info-content)}.notice.note .notice-title{background:var(--note-title)}.notice.note{background:var(--note-content)}.notice.tip .notice-title{background:var(--tip-title)}.notice.tip{background:var(--tip-content)}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice svg{width:1em;height:1em;fill:currentColor}.icon-notice.baseline svg{position:relative;top:.125em}.mermaid-wrapper{margin:1rem 0;overflow-x:auto}.mermaid-wrapper .mermaid{background:0 0;text-align:center}</style><meta property="og:url" content="https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"><meta property="og:site_name" content="Niuhe's Blog"><meta property="og:title" content="Linux进程——进程创建和同步控制"><meta property="og:description" content="创建子进程，并进行父子进程同步控制"><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-10-09T00:00:00+00:00"><meta property="article:modified_time" content="2018-10-09T00:00:00+00:00"><meta property="article:tag" content="Linux"><meta property="article:tag" content="C"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux进程——进程创建和同步控制"><meta name=twitter:description content="创建子进程，并进行父子进程同步控制"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"📚文章","item":"https://blog.niuhemoon.win/posts/"},{"@type":"ListItem","position":2,"name":"👨🏻‍💻 技术","item":"https://blog.niuhemoon.win/posts/tech/"},{"@type":"ListItem","position":3,"name":"Linux进程——进程创建和同步控制","item":"https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Linux进程——进程创建和同步控制","name":"Linux进程——进程创建和同步控制","description":"创建子进程，并进行父子进程同步控制","keywords":["Linux","C"],"articleBody":" Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使用内核资源时，通过系统调用进入内核态，系统调用结束后，重新返回用户态。\n###创建进程\n可通过fork函数创建子进程，理论上，父子进程拥有各自独立的用户空间。但Linux为了提高效率，采用COW(copy on write)算法。\nfork函数原型如下:\n/* 成功：子进程pid返回给父进程，0返回给子进程 失败：\t-1返回给父进程，设置errno */ pid_t fork(); 案例：创建子进程\n#include #include int glob = 10; int main() { int local; pid_t pid; local = 8; //向子进程的pid传值0 if((pid = fork()) == 0) {\t//子进程 sleep(1); printf(\"i am in child process,%d\\n\",getpid()); }zijc else {\t//父进程 printf(\"i am in father process,%d\\n\",getpid()); glob++; local--; sleep(5); } printf(\"pid = %d,glob = %d,localar = %d\\n\",getpid(),glob,local); return 0; } /*输出为： i am in father process,13023 i am in child process,13024 pid = 13024,glob = 10,localar = 8 pid = 13023,glob = 11,localar = 7 */ 当用fork()函数创建子进程时，Linux内核为子进程分配一个进程控制块task_struct。子进程的进程控制块用来存放子进程拥有的资源、管理信息和进程状态等。\n此时，在父子进程没有对数据进行读写操作之前，父子进程共享用户地址空间。当父进程执行glob++，Linux内核采用COW算法，首先为子进程创建相应的数据区，接着内核将父进程地址空间中的数据区相关页复制到子进程地址空间中数据区的相关页,此时，父子进程各自拥有独立的全局变量glob。当执行local–语句，内核以同样方法在子进程用户地址空间的栈区的相应页建立复制。而代码区是只读的，所以父子进程共享代码区，直接建立映射，不进行复制。\n###程序启动和结束 初始化程序\n在加载可执行文件后，首先运行的是称为start-up的代码，此部分代码在程序链接为可执行程序时，由链接器加入，作用是从内核读取进程运行的环境信息，如环境变量、命令行参数等。\nstart-up完成初始化工作后，调用main函数，执行完进程后，通过exit函数结束进程。\n结束进程\n每个进程都有父进程，当子进程运行结束后，子进程进程僵尸状态，并向父进程发送SIGCHLD信号，通知子进程已经终止。在该状态下子进程几乎释放了所有内存资源，不能被重新调度，仅在进程列表中保留一个位置，只保留进程如何终止的一些状态信息，以供回收者使用。父进程可以通过调用wait或waitpid函数获取子进程的退出码，以便判断子进程结束的原因。由父进程释放子进程余下的所有资源。\n但当父进程在子进程之前终止，子进程的父进程将更改为init进程，由init进程负责子进程的善后处理工作。\n//终止进程,status返回值 void exit(int status); /* 登记终止处理函数，ANSI C规定，一个进程可以登记最多32个终止处理函数，这些函数由exit自动调用。exit以先进后出的方式调用atexit登记的函数，同一函数登记多次，也被调用多次。 根据ANSI C，exit首先调用终止处理函数，然后按需调用fclose，关闭所有打开的文件流，保证基于缓冲区的文件I/O操作完整性。 这样，在进程结束前，将未写入文件的缓冲区数据，通过exit函数进行保存。 func终止处理函数 成功返回0，否则非0 */ int atexit(void(*func)(void)); //直接结束进程，不进行任何其他处理 void _exit(int status); 案例：直接退出进程\n#include #include int main() { printf(\"output begin\\n\"); printf(\"content in buffer\"); printf(\"drop the buffer\"); _exit(0); } 案例：登记终止处理函数\n#include #include static void my_exit1(void) { printf(\"first exit handler\\n\"); } static void my_exit2(void) { printf(\"second exit handler\\n\"); } int main(void) { if(atexit(my_exit2) != 0) printf(\"can't register my_exit2\"); if(atexit(my_exit1) != 0) printf(\"can't register my_exit1\"); if(atexit(my_exit1) != 0) printf(\"can't register my_exit1\"); printf(\"main is done\\n\"); return 0; } ###进程同步控制\n当创建一个子进程后，父子进程的执行顺序无法控制。当父子进程同事操作共享资源，不同的执行次序有可能导致不同的运行结果，从而出现数据不一致性。为解决这一问题，必须提供进程间的同步控制机制。\nwait和waitpid可用来实现父子进程同步，用来等待子进程结束。 wait函数的功能是获取子进程如何终止的信息，清除子进程的剩余资源。父进程调用wait函数，进入阻塞队列，等待某个子进程的结束。当子进程结束，会产生结束状态字status,并向父进程发送SIGCHLD信号。 父进程收到SIGCHLD信号，若希望知道子进程结束状态，调用wait,否则忽略该信号。\n/* 暂停执行，将子进程结束状态写入status中，并确认子进程已经结束 status 子进程状态 成功返回子进程PID，否则返回-1 */ pid_t wait(int *status); /* 等待指定子进程结束 pid 指定等待的子进程 \u003c-1 pid所代表进程组中进程 -1 任何子进程 0 与该进程同组的进程 \u003e0 进程标识符为pid的进程 status 保存子进程状态 options 等待方式 WNOHANG\t进程不阻塞 WUNTRACED 当有子进程结束时返回 */ pid_t waitpid(pid_t pid,int *status,int options); 案例：依次等待多个子进程结束，并显示结束状态\n#include #include #include #include int main(void) { pid_t pid[10],wpid; int child_status,i; //创建5个子进程 for(i=0;i\u003c5;i++) { if((pid[i]=fork()) == 0) exit(100+i); } //等待子进程结束，输出status for(i=0;i\u003c5;i++) { wpid = waitpid(pid[i],\u0026child_status,0); if(WIFEXITED(child_status)) printf(\"Child %d exit with status %d\\n\", wpid,WEXITSTATUS(child_status)); else printf(\"Child %d terminated abnormally\\n\",wpid); } return 0; } ","wordCount":"1919","inLanguage":"zh","datePublished":"2018-10-09T00:00:00Z","dateModified":"2018-10-09T00:00:00Z","author":{"@type":"Person","name":"Niuhe"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.niuhemoon.win/posts/tech/linux-c-process-2/"},"publisher":{"@type":"Organization","name":"Niuhe's Blog","logo":{"@type":"ImageObject","url":"https://blog.niuhemoon.win/base/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://blog.niuhemoon.win/ accesskey=h title="Niuhe's Blog (Alt + H)"><img src=https://blog.niuhemoon.win/base/avatar.jpeg alt aria-label=logo height=35>Niuhe's Blog</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu><li><a href=https://blog.niuhemoon.win/search title="🔍搜索 (Alt + /)" accesskey=/><span>🔍搜索</span></a></li><li><a href=https://blog.niuhemoon.win/ title=🏠主页><span>🏠主页</span></a></li><li><a href=https://blog.niuhemoon.win/posts title=📚文章><span>📚文章</span></a></li><li><a href=https://blog.niuhemoon.win/tags title=🔖标签><span>🔖标签</span></a></li><li><a href=https://blog.niuhemoon.win/archives/ title=⏱时间轴><span>⏱时间轴</span></a></li><li><a href=https://blog.niuhemoon.win/about title=🙋🏻‍♂️关于><span>🙋🏻‍♂️关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><nav class=breadcrumbs role=navigation aria-label=Breadcrumb><a href=/>主页</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/>📚文章</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg>
+<a href=/posts/tech/>👨🏻‍💻 技术</a>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"/></svg></nav><h1 class="post-title entry-hint-parent">Linux进程——进程创建和同步控制</h1><div class=post-description>创建子进程，并进行父子进程同步控制</div><div class=post-meta><span title='2018-10-09 00:00:00 +0000 UTC'>2018-10-09</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>1919 字</span>&nbsp;·&nbsp;<span>Niuhe</span></div></header><div class="post-content md-content"><blockquote><p>Linux内核支持用户进程和内核进程两种进程。内核进程指完全运行在内核空间的进程，这种进程主要处理内核事务；用户进程一般运行在用户态，需要使用内核资源时，通过系统调用进入内核态，系统调用结束后，重新返回用户态。</p></blockquote><p>###创建进程</p><blockquote><p>可通过fork函数创建子进程，理论上，父子进程拥有各自独立的用户空间。但Linux为了提高效率，采用<a href=https://en.wikipedia.org/wiki/Copy-on-write>COW(copy on write)</a>算法。</p><p>fork函数原型如下:</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功：子进程pid返回给父进程，0返回给子进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>失败：	-1返回给父进程，设置errno
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> fork();
+</span></span></code></pre></div><p><strong>案例：创建子进程</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> glob = <span style=color:#ff0;font-weight:700>10</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>int</span> local;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>pid_t</span> pid;
+</span></span><span style=display:flex><span>    local = <span style=color:#ff0;font-weight:700>8</span>;
+</span></span><span style=display:flex><span>	<span style=color:#007f7f>//向子进程的pid传值0
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>((pid = fork()) == <span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>    {	<span style=color:#007f7f>//子进程
+</span></span></span><span style=display:flex><span>        sleep(<span style=color:#ff0;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;i am in child process,%d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,getpid());
+</span></span><span style=display:flex><span>    }zijc
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>else</span>
+</span></span><span style=display:flex><span>    {	<span style=color:#007f7f>//父进程
+</span></span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;i am in father process,%d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,getpid());
+</span></span><span style=display:flex><span>        glob++;
+</span></span><span style=display:flex><span>        local--;
+</span></span><span style=display:flex><span>        sleep(<span style=color:#ff0;font-weight:700>5</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;pid = %d,glob = %d,localar = %d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,getpid(),glob,local);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*输出为：
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>i am in father process,13023
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>i am in child process,13024
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>pid = 13024,glob = 10,localar = 8
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>pid = 13023,glob = 11,localar = 7
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span></code></pre></div><blockquote><p>当用fork()函数创建子进程时，Linux内核为子进程分配一个进程控制块task_struct。子进程的进程控制块用来存放子进程拥有的资源、管理信息和进程状态等。</p><p>此时，在父子进程没有对数据进行读写操作之前，父子进程共享用户地址空间。当父进程执行glob++，Linux内核采用COW算法，首先为子进程创建相应的数据区，接着内核<strong>将父进程地址空间中的数据区相关页复制到子进程地址空间中数据区的相关页</strong>,此时，父子进程各自拥有独立的全局变量glob。<strong>当执行local&ndash;语句，内核以同样方法在子进程用户地址空间的栈区的相应页建立复制</strong>。而代码区是只读的，所以父子进程共享代码区，直接建立映射，不进行复制。</p></blockquote><p>###程序启动和结束
+<strong>初始化程序</strong></p><blockquote><p>在加载可执行文件后，首先运行的是称为start-up的代码，此部分代码在程序链接为可执行程序时，由链接器加入，作用是从内核读取进程运行的环境信息，如环境变量、命令行参数等。</p><p>start-up完成初始化工作后，调用main函数，执行完进程后，通过exit函数结束进程。</p></blockquote><p><strong>结束进程</strong></p><blockquote><p>每个进程都有父进程，当子进程运行结束后，子进程进程僵尸状态，并向父进程发送SIGCHLD信号，通知子进程已经终止。在该状态下子进程几乎释放了所有内存资源，不能被重新调度，仅在进程列表中保留一个位置，只保留进程如何终止的一些状态信息，以供回收者使用。父进程可以通过调用<strong>wait或waitpid函数</strong>获取子进程的退出码，以便判断子进程结束的原因。由父进程释放子进程余下的所有资源。</p><p>但当父进程在子进程之前终止，子进程的父进程将更改为init进程，由init进程负责子进程的善后处理工作。</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#007f7f>//终止进程,status返回值
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>void</span> exit(<span style=color:#fff;font-weight:700>int</span> status);
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>登记终止处理函数，ANSI C规定，一个进程可以登记最多32个终止处理函数，这些函数由exit自动调用。exit以先进后出的方式调用atexit登记的函数，同一函数登记多次，也被调用多次。
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>根据ANSI C，exit首先调用终止处理函数，然后按需调用fclose，关闭所有打开的文件流，保证基于缓冲区的文件I/O操作完整性。
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>这样，在进程结束前，将未写入文件的缓冲区数据，通过exit函数进行保存。
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>func终止处理函数
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回0，否则非0
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> atexit(<span style=color:#fff;font-weight:700>void</span>(*func)(<span style=color:#fff;font-weight:700>void</span>));
+</span></span><span style=display:flex><span><span style=color:#007f7f>//直接结束进程，不进行任何其他处理
+</span></span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>void</span> _exit(<span style=color:#fff;font-weight:700>int</span> status);
+</span></span></code></pre></div><p><strong>案例：直接退出进程</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;output begin</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;content in buffer&#34;</span>);
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;drop the buffer&#34;</span>);
+</span></span><span style=display:flex><span>    _exit(<span style=color:#ff0;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>案例：登记终止处理函数</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>static</span> <span style=color:#fff;font-weight:700>void</span> my_exit1(<span style=color:#fff;font-weight:700>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;first exit handler</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>static</span> <span style=color:#fff;font-weight:700>void</span> my_exit2(<span style=color:#fff;font-weight:700>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;second exit handler</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main(<span style=color:#fff;font-weight:700>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>(atexit(my_exit2) != <span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;can&#39;t register my_exit2&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>(atexit(my_exit1) != <span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;can&#39;t register my_exit1&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>if</span>(atexit(my_exit1) != <span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>        printf(<span style=color:#0ff;font-weight:700>&#34;can&#39;t register my_exit1&#34;</span>);
+</span></span><span style=display:flex><span>    printf(<span style=color:#0ff;font-weight:700>&#34;main is done</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>###进程同步控制</p><blockquote><p>当创建一个子进程后，<strong>父子进程的执行顺序无法控制</strong>。当父子进程同事操作共享资源，不同的执行次序有可能导致不同的运行结果，从而出现数据不一致性。为解决这一问题，必须提供进程间的同步控制机制。</p><p>wait和waitpid可用来实现父子进程同步，用来等待子进程结束。
 wait函数的功能是获取子进程如何终止的信息，清除子进程的剩余资源。父进程调用wait函数，进入阻塞队列，等待某个子进程的结束。当子进程结束，会产生结束状态字status,并向父进程发送SIGCHLD信号。
-父进程收到SIGCHLD信号，若希望知道子进程结束状态，调用wait,否则忽略该信号。</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">暂停执行，将子进程结束状态写入status中，并确认子进程已经结束
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">status 子进程状态
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">成功返回子进程PID，否则返回-1
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> wait(<span style="color:#fff;font-weight:bold">int</span> *status);
-</span></span><span style="display:flex;"><span><span style="color:#007f7f">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">等待指定子进程结束
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">pid  指定等待的子进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	&lt;-1 pid所代表进程组中进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	-1 任何子进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	0 与该进程同组的进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	&gt;0 进程标识符为pid的进程
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">status 保存子进程状态
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">options 等待方式
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	WNOHANG	进程不阻塞
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">	WUNTRACED 当有子进程结束时返回
-</span></span></span><span style="display:flex;"><span><span style="color:#007f7f">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">pid_t</span> waitpid(<span style="color:#fff;font-weight:bold">pid_t</span> pid,<span style="color:#fff;font-weight:bold">int</span> *status,<span style="color:#fff;font-weight:bold">int</span> options);
-</span></span></code></pre></div><p><strong>案例：依次等待多个子进程结束，并显示结束状态</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;sys/wait.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span><span style="color:#0f0;font-weight:bold">#include</span> <span style="color:#0f0;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#0f0;font-weight:bold">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#fff;font-weight:bold">int</span> main(<span style="color:#fff;font-weight:bold">void</span>)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">pid_t</span> pid[<span style="color:#ff0;font-weight:bold">10</span>],wpid;
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">int</span> child_status,i;
-</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//创建5个子进程
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span>(i=<span style="color:#ff0;font-weight:bold">0</span>;i&lt;<span style="color:#ff0;font-weight:bold">5</span>;i++)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span>((pid[i]=fork()) == <span style="color:#ff0;font-weight:bold">0</span>)
-</span></span><span style="display:flex;"><span>            exit(<span style="color:#ff0;font-weight:bold">100</span>+i);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#007f7f">//等待子进程结束，输出status
-</span></span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">for</span>(i=<span style="color:#ff0;font-weight:bold">0</span>;i&lt;<span style="color:#ff0;font-weight:bold">5</span>;i++)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        wpid = waitpid(pid[i],&amp;child_status,<span style="color:#ff0;font-weight:bold">0</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">if</span>(WIFEXITED(child_status))
-</span></span><span style="display:flex;"><span>            printf(<span style="color:#0ff;font-weight:bold">&#34;Child %d exit with status %d</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,
-</span></span><span style="display:flex;"><span>                wpid,WEXITSTATUS(child_status));
-</span></span><span style="display:flex;"><span>        <span style="color:#fff;font-weight:bold">else</span>
-</span></span><span style="display:flex;"><span>            printf(<span style="color:#0ff;font-weight:bold">&#34;Child %d terminated abnormally</span><span style="color:#0ff;font-weight:bold">\n</span><span style="color:#0ff;font-weight:bold">&#34;</span>,wpid);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#fff;font-weight:bold">return</span> <span style="color:#ff0;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div>
-
-  </div>
-<div class="footer-comments">
-    <p>For comments, please <a href="mailto:carlton2tang@gmail.com" class="email-button" style="font-size: inherit; padding: 5px 10px; background-color: #3f6b9a; color: white; text-decoration: none; border-radius: 3px; transition: background-color 0.3s;">send an email</a> to me</p>
-</div>
-
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="https://blog.niuhemoon.win/tags/linux/">Linux</a></li>
-      <li><a href="https://blog.niuhemoon.win/tags/c/">C</a></li>
-    </ul>
-<nav class="paginav">
-  <a class="prev" href="https://blog.niuhemoon.win/posts/tech/python3-qrcode/">
-    <span class="title">« 上一页</span>
-    <span>Python3操作二维码图片</span>
-  </a>
-  <a class="next" href="https://blog.niuhemoon.win/posts/tech/linux-c-process-3/">
-    <span class="title">下一页 »</span>
-    <span>Linux进程——进程环境与加载可执行映像</span>
-  </a>
-</nav>
-
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://blog.niuhemoon.win/">Niuhe&#39;s Blog</a></span> · 
-        Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-<script>
-    document.querySelectorAll('pre > code').forEach((codeblock) => {
-        const container = codeblock.parentNode.parentNode;
-
-        const copybutton = document.createElement('button');
-        copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '复制';
-
-        function copyingDone() {
-            copybutton.innerHTML = '已复制！';
-            setTimeout(() => {
-                copybutton.innerHTML = '复制';
-            }, 2000);
-        }
-
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
-                return;
-            }
-
-            const range = document.createRange();
-            range.selectNodeContents(codeblock);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
-            selection.removeRange(range);
-        });
-
-        if (container.classList.contains("highlight")) {
-            container.appendChild(copybutton);
-        } else if (container.parentNode.firstChild == container) {
-            
-        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            
-            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
-        } else {
-            
-            codeblock.parentNode.appendChild(copybutton);
-        }
-    });
-</script>
-</body>
-
-</html>
+父进程收到SIGCHLD信号，若希望知道子进程结束状态，调用wait,否则忽略该信号。</p></blockquote><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>暂停执行，将子进程结束状态写入status中，并确认子进程已经结束
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>status 子进程状态
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>成功返回子进程PID，否则返回-1
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> wait(<span style=color:#fff;font-weight:700>int</span> *status);
+</span></span><span style=display:flex><span><span style=color:#007f7f>/*
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>等待指定子进程结束
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>pid  指定等待的子进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	&lt;-1 pid所代表进程组中进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	-1 任何子进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	0 与该进程同组的进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	&gt;0 进程标识符为pid的进程
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>status 保存子进程状态
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>options 等待方式
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	WNOHANG	进程不阻塞
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>	WUNTRACED 当有子进程结束时返回
+</span></span></span><span style=display:flex><span><span style=color:#007f7f>*/</span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>pid_t</span> waitpid(<span style=color:#fff;font-weight:700>pid_t</span> pid,<span style=color:#fff;font-weight:700>int</span> *status,<span style=color:#fff;font-weight:700>int</span> options);
+</span></span></code></pre></div><p><strong>案例：依次等待多个子进程结束，并显示结束状态</strong></p><div class=highlight><pre tabindex=0 style=color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;sys/wait.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#0f0;font-weight:700>#include</span> <span style=color:#0f0;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#0f0;font-weight:700>
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#fff;font-weight:700>int</span> main(<span style=color:#fff;font-weight:700>void</span>)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>pid_t</span> pid[<span style=color:#ff0;font-weight:700>10</span>],wpid;
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>int</span> child_status,i;
+</span></span><span style=display:flex><span>    <span style=color:#007f7f>//创建5个子进程
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span>(i=<span style=color:#ff0;font-weight:700>0</span>;i&lt;<span style=color:#ff0;font-weight:700>5</span>;i++)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>if</span>((pid[i]=fork()) == <span style=color:#ff0;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>            exit(<span style=color:#ff0;font-weight:700>100</span>+i);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#007f7f>//等待子进程结束，输出status
+</span></span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>for</span>(i=<span style=color:#ff0;font-weight:700>0</span>;i&lt;<span style=color:#ff0;font-weight:700>5</span>;i++)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        wpid = waitpid(pid[i],&amp;child_status,<span style=color:#ff0;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>if</span>(WIFEXITED(child_status))
+</span></span><span style=display:flex><span>            printf(<span style=color:#0ff;font-weight:700>&#34;Child %d exit with status %d</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,
+</span></span><span style=display:flex><span>                wpid,WEXITSTATUS(child_status));
+</span></span><span style=display:flex><span>        <span style=color:#fff;font-weight:700>else</span>
+</span></span><span style=display:flex><span>            printf(<span style=color:#0ff;font-weight:700>&#34;Child %d terminated abnormally</span><span style=color:#0ff;font-weight:700>\n</span><span style=color:#0ff;font-weight:700>&#34;</span>,wpid);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#fff;font-weight:700>return</span> <span style=color:#ff0;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div></div><div class=footer-comments><p>For comments, please <a href=mailto:carlton2tang@gmail.com class=email-button style="font-size:inherit;padding:5px 10px;background-color:#3f6b9a;color:#fff;text-decoration:none;border-radius:3px;transition:background-color .3s">send an email</a> to me</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.niuhemoon.win/tags/linux/>Linux</a></li><li><a href=https://blog.niuhemoon.win/tags/c/>C</a></li></ul><nav class=paginav><a class=prev href=https://blog.niuhemoon.win/posts/tech/python3-qrcode/><span class=title>« 上一页</span>
+<span>Python3操作二维码图片</span>
+</a><a class=next href=https://blog.niuhemoon.win/posts/tech/linux-c-process-3/><span class=title>下一页 »</span>
+<span>Linux进程——进程环境与加载可执行映像</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://blog.niuhemoon.win/>Niuhe's Blog</a></span> ·
+Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target=_blank rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>
